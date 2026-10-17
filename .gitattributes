@@ -1,0 +1,2 @@
+# Preserve imported bytes and native source provenance across Windows clones.
+* -text

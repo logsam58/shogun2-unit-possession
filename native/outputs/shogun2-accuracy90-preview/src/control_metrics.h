@@ -1,0 +1,34 @@
+#pragma once
+inline void control_metrics(std::ostream& out,const Status& s){
+    out<<",\"actor_id\":"<<s.actor_id<<",\"unit_id\":"<<s.unit_id<<",\"lease_generation\":"<<s.lease_generation
+        <<",\"identity_releases\":"<<s.identity_releases<<",\"native_walk_speed\":"<<s.native_walk_speed
+        <<",\"native_motion_thread\":"<<s.native_motion_thread<<",\"camera_input_thread\":"<<s.camera_input_thread<<",\"camera_callback_thread\":"<<s.camera_callback_thread<<",\"acquisition_posts\":"<<s.acquisition_posts
+        <<",\"camera_acquisitions\":"<<s.camera_acquisitions<<",\"acquisition_error\":"<<s.acquisition_error
+        <<",\"effective_speed\":"<<s.effective_speed<<",\"native_movement_factor\":"<<s.native_movement_factor
+        <<",\"native_turn_rate_rad_s\":"<<s.native_turn_rate
+        <<",\"ungraded_speed\":"<<s.ungraded_speed<<",\"terrain_grade\":"<<s.terrain_grade
+        <<",\"terrain_speed_factor\":"<<s.terrain_speed_factor<<",\"terrain_probe_distance\":"<<s.terrain_probe_distance
+        <<",\"terrain_queries\":"<<s.terrain_queries<<",\"terrain_errors\":"<<s.terrain_errors
+        <<",\"surface_speed_factor\":"<<s.surface_speed_factor<<",\"fatigue_speed_factor\":"<<s.fatigue_speed_factor
+        <<",\"ground_type\":"<<s.ground_type<<",\"requested_speed\":"<<s.requested_speed
+        <<",\"previous_motion_speed\":"<<s.previous_motion_speed<<",\"native_acceleration\":"<<s.native_acceleration
+        <<",\"native_deceleration\":"<<s.native_deceleration<<",\"speed_modifier_queries\":"<<s.speed_modifier_queries
+        <<",\"speed_step_updates\":"<<s.speed_step_updates<<",\"speed_modifier_errors\":"<<s.speed_modifier_errors
+        <<",\"fatigue_updates\":"<<s.fatigue_updates<<",\"fatigue_action_updates\":"<<s.fatigue_action_updates
+        <<",\"fatigue_errors\":"<<s.fatigue_errors<<",\"fatigue_grade_restores\":"<<s.fatigue_grade_restores
+        <<",\"fatigue_action_mode\":"<<s.fatigue_action_mode<<",\"fatigue_before\":"<<s.fatigue_before
+        <<",\"fatigue_after\":"<<s.fatigue_after<<",\"fatigue_native_action_cost\":"<<s.fatigue_native_action_cost
+        <<",\"fatigue_personal_action_cost\":"<<s.fatigue_personal_action_cost
+        <<",\"fatigue_personal_grade\":"<<s.fatigue_personal_grade
+        <<",\"native_intent_calls\":"<<s.native_intent_calls<<",\"native_intent_errors\":"<<s.native_intent_errors
+        <<",\"native_intent_flag\":"<<s.native_intent_flag<<",\"native_intent_magnitude\":"<<s.native_intent_magnitude
+        <<",\"native_intent_x\":"<<s.native_intent_x<<",\"native_intent_z\":"<<s.native_intent_z
+        <<",\"motion_animation_speed\":"<<s.motion_animation_speed
+        <<",\"conical_shots\":"<<s.conical_shots<<",\"cone_errors\":"<<s.cone_errors
+        <<",\"cone_half_angle_rad\":"<<s.cone_half_angle<<",\"native_spread_horizontal\":"<<s.native_spread_horizontal
+        <<",\"native_spread_vertical\":"<<s.native_spread_vertical
+        <<",\"arrow_release_overrides\":"<<s.arrow_release_overrides<<",\"arrow_release_errors\":"<<s.arrow_release_errors
+        <<",\"arrow_visual_updates\":"<<s.arrow_visual_updates<<",\"arrow_visual_hidden\":"<<s.arrow_visual_hidden<<",\"arrow_visual_bone\":"<<s.arrow_visual_bone
+        <<",\"bow_attachment_origins\":"<<s.bow_attachment_origins<<",\"bow_attachment_misses\":"<<s.bow_attachment_misses
+        <<",\"bow_attachment_origin\":["<<s.bow_attachment_origin[0]<<','<<s.bow_attachment_origin[1]<<','<<s.bow_attachment_origin[2]<<']';
+}

@@ -1,0 +1,196 @@
+{
+  "date": "2026-10-17",
+  "pass": true,
+  "source_import_files_byte_preserved": 310,
+  "fresh_checkout_builds": [
+    "adapter",
+    "styled QTE",
+    "HUD",
+    "integrated loader",
+    "setup wizard/CLI (compiled only)"
+  ],
+  "adapter_executables": 50,
+  "styled_qte_executables": 32,
+  "hud_policy_executables": 1,
+  "loader_executables": 2,
+  "installer_fixture_executables": 1,
+  "diagnostic_synthetic_tests": 7,
+  "installer_upgrade_and_seven_stage_rollback_fixtures": "PASS including Test87/89/90/91/92/93/94/95/96/97/98",
+  "local_dependency_inputs": {
+    "UI_files": 24,
+    "historical_loader_marker_and_runtime_files": 53,
+    "tracked_in_git": false
+  },
+  "stages": [
+    {
+      "name": "minhook",
+      "passed": true,
+      "seconds": 3.332,
+      "log": "artifacts\\logs\\minhook.log"
+    },
+    {
+      "name": "adapter",
+      "passed": true,
+      "seconds": 6.432,
+      "log": "artifacts\\logs\\adapter.log"
+    },
+    {
+      "name": "adapter-tests",
+      "passed": true,
+      "seconds": 87.194,
+      "log": "artifacts\\logs\\adapter-tests.log",
+      "executables": 50
+    },
+    {
+      "name": "qte",
+      "passed": true,
+      "seconds": 5.642,
+      "log": "artifacts\\logs\\qte.log"
+    },
+    {
+      "name": "qte-tests",
+      "passed": true,
+      "seconds": 68.745,
+      "log": "artifacts\\logs\\qte-tests.log",
+      "executables": 32
+    },
+    {
+      "name": "hud",
+      "passed": true,
+      "seconds": 3.996,
+      "log": "artifacts\\logs\\hud.log"
+    },
+    {
+      "name": "hud-tests",
+      "passed": true,
+      "seconds": 2.807,
+      "log": "artifacts\\logs\\hud-tests.log"
+    },
+    {
+      "name": "loader",
+      "passed": true,
+      "seconds": 3.972,
+      "log": "artifacts\\logs\\loader.log"
+    },
+    {
+      "name": "loader-tests",
+      "passed": true,
+      "seconds": 5.968,
+      "log": "artifacts\\logs\\loader-tests.log"
+    },
+    {
+      "name": "installer",
+      "passed": true,
+      "seconds": 7.618,
+      "log": "artifacts\\logs\\installer.log"
+    },
+    {
+      "name": "installer-tests",
+      "passed": true,
+      "seconds": 114.909,
+      "log": "artifacts\\logs\\installer-tests.log"
+    }
+  ],
+  "local_log_hashes": [
+    {
+      "component": "minhook",
+      "sha256": "dc8c5849812a4685d32b4ade623c83776e10a08e32a814a4f6314709731822d9",
+      "bytes": 340,
+      "pass_lines": 0
+    },
+    {
+      "component": "adapter",
+      "sha256": "b65fdec7d3e562313eb2e59e05f577fe459075e2eb376e654817f32b527e7424",
+      "bytes": 3758,
+      "pass_lines": 0
+    },
+    {
+      "component": "adapter-tests",
+      "sha256": "9d92643d70a46fcc18934180d80bb29b542a3a69625b1f56e87f2d23e067669a",
+      "bytes": 61791,
+      "pass_lines": 49
+    },
+    {
+      "component": "qte",
+      "sha256": "6a1c89b7b05f6e67e2e7929556bcb1e668f1927fbaeb0d1711ba25e4e13ca69c",
+      "bytes": 1238,
+      "pass_lines": 0
+    },
+    {
+      "component": "qte-tests",
+      "sha256": "1185851fae415ddf2a8e8a10695615f3f286bcf18eba09e625664178eec1e680",
+      "bytes": 19817,
+      "pass_lines": 32
+    },
+    {
+      "component": "hud",
+      "sha256": "0d881b9ead9136ad41d1dbf3b7248d530f759e54fc714dc3231b7bc5b33baed4",
+      "bytes": 492,
+      "pass_lines": 0
+    },
+    {
+      "component": "hud-tests",
+      "sha256": "9ff356c085ebde9b06da11f9564410a78aa1b00989601a5c0093bf2252939dcd",
+      "bytes": 460,
+      "pass_lines": 1
+    },
+    {
+      "component": "loader",
+      "sha256": "336b023a25405f667730122dec3fe3f7b5016f9ef9aa3c70d5503ba48ca378aa",
+      "bytes": 1176,
+      "pass_lines": 0
+    },
+    {
+      "component": "loader-tests",
+      "sha256": "c915aa440aa4a051d8cfd5614cc901a0f7df7cac1521d31d40397735aa0c3aeb",
+      "bytes": 947,
+      "pass_lines": 2
+    },
+    {
+      "component": "installer",
+      "sha256": "8267be106920bb7a4a725c43f2187afc6b7554336c755ec7b261c041a5b19a24",
+      "bytes": 704,
+      "pass_lines": 0
+    },
+    {
+      "component": "installer-tests",
+      "sha256": "da8d3e759bd944e9517a670a0f54a3f33fcb68ba148f0157417c929ccf602a27",
+      "bytes": 2615,
+      "pass_lines": 14
+    }
+  ],
+  "initial_checkout_failures": [
+    "Installer runtime seeding initially lacked three ignored historical runtime inputs; original failure logs retained locally.",
+    "An attempted local-input repair used v79 where the predecessor catalog requires v78; corrected before final validation.",
+    "Installer original fixture also requires its own working directory; wrapper corrected without source changes."
+  ],
+  "installed_files_preservation": {
+    "game_backing_hashes": [
+      {
+        "name": "DINPUT8.dll",
+        "sha256": "d18e70424a90eca1545b4bd157e90443d51a3308c57eca5aadb69cf8ad1ecf30",
+        "unchanged": true
+      },
+      {
+        "name": "data/shogun2_possession_checkpoint45.pack",
+        "sha256": "5086260202764f77752a578319e8748bed1d8057f2afd9e3415f9e0213ec9ec5",
+        "unchanged": true
+      },
+      {
+        "name": "Empire.Retail.dll",
+        "sha256": "022fae2e2da92b59b8b1b8ee52887003c624e3c8eca060b209f5d792a7f874f5",
+        "unchanged": true
+      }
+    ],
+    "build_quote_validated": true
+  },
+  "limitations": [
+    "These are offline tests, not new gameplay acceptance.",
+    "Newly rebuilt payload/cache identities differ from the installed Test99; no new payload was installed.",
+    "Local UI resources, original engine and historical upgrade payloads are not distributed in Git.",
+    "Raw logs/dumps/shared decoding and local absolute-path config are excluded."
+  ],
+  "game_installed_or_launched": false,
+  "watcher_restarted_or_duplicated": false,
+  "known_crash_fixed": false
+}

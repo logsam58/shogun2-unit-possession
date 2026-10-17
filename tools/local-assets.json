@@ -1,0 +1,149 @@
+{
+  "note": "Local game UI build inputs only; binaries/fonts/artwork are intentionally not tracked. Import from a licensed local preserved source tree.",
+  "files": [
+    {
+      "path": "native/outputs/shogun2-authentic-hud80-preview/assets/processed/atlases/game-atlas-0.png",
+      "source_relative": "outputs/shogun2-authentic-hud80-preview/assets/processed/atlases/game-atlas-0.png",
+      "bytes": 8946935,
+      "sha256": "214a41f46ac15595539f1a96a17baedfb9a192b1bee626893ae33e3b1e4e70f7"
+    },
+    {
+      "path": "native/outputs/shogun2-authentic-hud80-preview/assets/processed/atlases/game-atlas-1.png",
+      "source_relative": "outputs/shogun2-authentic-hud80-preview/assets/processed/atlases/game-atlas-1.png",
+      "bytes": 7443642,
+      "sha256": "4b3d948be623dd97f32940150d742c588ba9bb2f0d6766fa7342dd603c7244d7"
+    },
+    {
+      "path": "native/outputs/shogun2-authentic-hud80-preview/assets/processed/atlases/game-atlas-2.png",
+      "source_relative": "outputs/shogun2-authentic-hud80-preview/assets/processed/atlases/game-atlas-2.png",
+      "bytes": 483213,
+      "sha256": "e4f29efa931d8580a9b69bedde8b6a7941525b935819507a55bdd9907a8c2fdb"
+    },
+    {
+      "path": "native/outputs/shogun2-authentic-hud80-preview/assets/processed/qte-atlas/qte-atlas.png",
+      "source_relative": "outputs/shogun2-authentic-hud80-preview/assets/processed/qte-atlas/qte-atlas.png",
+      "bytes": 91736,
+      "sha256": "1e86be93a4d253ab05b5f0d8ca95ef2281a97cfae9d6a578c884b138b0f2d183"
+    },
+    {
+      "path": "native/outputs/shogun2-authentic-hud80-preview/ui_reference/original/local_en/font/bardi_12.cuf",
+      "source_relative": "outputs/shogun2-authentic-hud80-preview/ui_reference/original/local_en/font/bardi_12.cuf",
+      "bytes": 291571,
+      "sha256": "9bd3df0834da460fbf4446e03b39fd396b0b3967b7e5375cd1d4d6615b76cc28"
+    },
+    {
+      "path": "native/outputs/shogun2-authentic-hud80-preview/ui_reference/original/local_en/font/bardi_14.cuf",
+      "source_relative": "outputs/shogun2-authentic-hud80-preview/ui_reference/original/local_en/font/bardi_14.cuf",
+      "bytes": 303712,
+      "sha256": "7f7e9e12f5ddc91ca712394fb4b7fbb6017d66264348da8b212a2fd9ca999f18"
+    },
+    {
+      "path": "native/outputs/shogun2-authentic-hud80-preview/ui_reference/original/local_en/font/bardi_16.cuf",
+      "source_relative": "outputs/shogun2-authentic-hud80-preview/ui_reference/original/local_en/font/bardi_16.cuf",
+      "bytes": 315808,
+      "sha256": "0ce305039a4378d528779ba79aedc515503da66c7ece77c1e860489e3b4c0a3e"
+    },
+    {
+      "path": "native/outputs/shogun2-authentic-hud80-preview/ui_reference/original/local_en/font/bardi_18.cuf",
+      "source_relative": "outputs/shogun2-authentic-hud80-preview/ui_reference/original/local_en/font/bardi_18.cuf",
+      "bytes": 328981,
+      "sha256": "c6e9cac998ee6e2692c36202e6e26af01390bb3ee28ed9cdf924962b4673db34"
+    },
+    {
+      "path": "native/outputs/shogun2-authentic-hud80-preview/ui_reference/original/local_en/font/bardi_20.cuf",
+      "source_relative": "outputs/shogun2-authentic-hud80-preview/ui_reference/original/local_en/font/bardi_20.cuf",
+      "bytes": 344415,
+      "sha256": "190f9ef23247f2c0458c34957b0cfb79ab8babca3cebd3dc04d040a4f5f2d3da"
+    },
+    {
+      "path": "native/outputs/shogun2-authentic-hud80-preview/ui_reference/original/local_en/font/bardi_22.cuf",
+      "source_relative": "outputs/shogun2-authentic-hud80-preview/ui_reference/original/local_en/font/bardi_22.cuf",
+      "bytes": 361428,
+      "sha256": "3746dcd0db4588e6918cb7043300f6f3206aeb9607ecacd50a540df79d0dca1c"
+    },
+    {
+      "path": "native/outputs/shogun2-authentic-hud80-preview/ui_reference/original/local_en/font/bardi_24.cuf",
+      "source_relative": "outputs/shogun2-authentic-hud80-preview/ui_reference/original/local_en/font/bardi_24.cuf",
+      "bytes": 378051,
+      "sha256": "e14f96874adcaf4281686eb517afabfe81b7fbed70cb1ff43283b9a4e4c99d40"
+    },
+    {
+      "path": "native/outputs/shogun2-authentic-hud80-preview/ui_reference/original/local_en/font/bardi_28.cuf",
+      "source_relative": "outputs/shogun2-authentic-hud80-preview/ui_reference/original/local_en/font/bardi_28.cuf",
+      "bytes": 419187,
+      "sha256": "c42f93c22d9702a8e9e9c1d18813c9113a248cbb92030e2190e2c233284f8a4e"
+    },
+    {
+      "path": "native/outputs/shogun2-authentic-hud80-preview/ui_reference/original/local_en/font/bardi_32.cuf",
+      "source_relative": "outputs/shogun2-authentic-hud80-preview/ui_reference/original/local_en/font/bardi_32.cuf",
+      "bytes": 467127,
+      "sha256": "58f6ca6414b39536cfbd56f29105606b665ed33d086b09784f90cf45f05918e6"
+    },
+    {
+      "path": "native/outputs/shogun2-authentic-hud80-preview/ui_reference/original/local_en/font/bardi_38.cuf",
+      "source_relative": "outputs/shogun2-authentic-hud80-preview/ui_reference/original/local_en/font/bardi_38.cuf",
+      "bytes": 550285,
+      "sha256": "09c046da8798e9905c89af3b951c80ca19f42be48605024f63dfd1f228fb6e83"
+    },
+    {
+      "path": "native/outputs/shogun2-authentic-hud80-preview/ui_reference/original/local_en/font/boshin/bardi_12.cuf",
+      "source_relative": "outputs/shogun2-authentic-hud80-preview/ui_reference/original/local_en/font/boshin/bardi_12.cuf",
+      "bytes": 304655,
+      "sha256": "b9606a842b6f4b927c8caad79eccaf118717284b497d354e65258357aa159554"
+    },
+    {
+      "path": "native/outputs/shogun2-authentic-hud80-preview/ui_reference/original/local_en/font/boshin/bardi_14.cuf",
+      "source_relative": "outputs/shogun2-authentic-hud80-preview/ui_reference/original/local_en/font/boshin/bardi_14.cuf",
+      "bytes": 321691,
+      "sha256": "3e0358c0a8832b181671528746364ccf71ddf3336f4a850ce8dd4b727a40c10f"
+    },
+    {
+      "path": "native/outputs/shogun2-authentic-hud80-preview/ui_reference/original/local_en/font/boshin/bardi_16.cuf",
+      "source_relative": "outputs/shogun2-authentic-hud80-preview/ui_reference/original/local_en/font/boshin/bardi_16.cuf",
+      "bytes": 336831,
+      "sha256": "0ead16a5ebe17055940b2f4ed56f44f0b4718b8fd3e14c79b7a8a9bbe6e9b793"
+    },
+    {
+      "path": "native/outputs/shogun2-authentic-hud80-preview/ui_reference/original/local_en/font/boshin/bardi_18.cuf",
+      "source_relative": "outputs/shogun2-authentic-hud80-preview/ui_reference/original/local_en/font/boshin/bardi_18.cuf",
+      "bytes": 358876,
+      "sha256": "adcf6e183c1d81e7e355d870700ede07f7c31ee38563382dd61f62130f7ba2b5"
+    },
+    {
+      "path": "native/outputs/shogun2-authentic-hud80-preview/ui_reference/original/local_en/font/boshin/bardi_20.cuf",
+      "source_relative": "outputs/shogun2-authentic-hud80-preview/ui_reference/original/local_en/font/boshin/bardi_20.cuf",
+      "bytes": 378700,
+      "sha256": "5aa6ec602e60a97b167466dabd9c4494a918ee6c32ac9187319b1380a86f9ecd"
+    },
+    {
+      "path": "native/outputs/shogun2-authentic-hud80-preview/ui_reference/original/local_en/font/boshin/bardi_22.cuf",
+      "source_relative": "outputs/shogun2-authentic-hud80-preview/ui_reference/original/local_en/font/boshin/bardi_22.cuf",
+      "bytes": 391495,
+      "sha256": "becf9b9ff394668563cd3042873ae0a6c332b8b7edfaf037d3efe900149ea82f"
+    },
+    {
+      "path": "native/outputs/shogun2-authentic-hud80-preview/ui_reference/original/local_en/font/boshin/bardi_24.cuf",
+      "source_relative": "outputs/shogun2-authentic-hud80-preview/ui_reference/original/local_en/font/boshin/bardi_24.cuf",
+      "bytes": 418113,
+      "sha256": "cd2e13adde4fe77dc5c59ee3e9574f9a6d7bff70aa3853096b66b2f232b9d3ce"
+    },
+    {
+      "path": "native/outputs/shogun2-authentic-hud80-preview/ui_reference/original/local_en/font/boshin/bardi_28.cuf",
+      "source_relative": "outputs/shogun2-authentic-hud80-preview/ui_reference/original/local_en/font/boshin/bardi_28.cuf",
+      "bytes": 474736,
+      "sha256": "4237628f2cb2a61b6692a76f1d43009dcf6e6402c1a0c68c9d654a85989e0d57"
+    },
+    {
+      "path": "native/outputs/shogun2-authentic-hud80-preview/ui_reference/original/local_en/font/boshin/bardi_32.cuf",
+      "source_relative": "outputs/shogun2-authentic-hud80-preview/ui_reference/original/local_en/font/boshin/bardi_32.cuf",
+      "bytes": 539157,
+      "sha256": "b66696d98e90d30d4a19c59dca5bf857d65987cebe5025dbd3eb5581de616445"
+    },
+    {
+      "path": "native/outputs/shogun2-authentic-hud80-preview/ui_reference/original/local_en/font/boshin/bardi_38.cuf",
+      "source_relative": "outputs/shogun2-authentic-hud80-preview/ui_reference/original/local_en/font/boshin/bardi_38.cuf",
+      "bytes": 659975,
+      "sha256": "f16c66ae9c621ce57eb7b26420fb9272f5615b5ba22aa9aad966abe714c2deba"
+    }
+  ]
+}

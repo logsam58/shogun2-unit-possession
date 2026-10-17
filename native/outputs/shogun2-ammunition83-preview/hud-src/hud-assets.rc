@@ -1,0 +1,4 @@
+101 RCDATA "../../shogun2-authentic-hud80-preview/assets/processed/atlases/game-atlas-0.png"
+102 RCDATA "../../shogun2-authentic-hud80-preview/assets/processed/atlases/game-atlas-1.png"
+103 RCDATA "../../shogun2-authentic-hud80-preview/assets/processed/atlases/game-atlas-2.png"
+#include "native-fonts.rc"

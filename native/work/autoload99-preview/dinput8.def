@@ -1,0 +1,9 @@
+LIBRARY DINPUT8
+EXPORTS
+ DirectInput8Create=_forward_DirectInput8Create@20 @1
+ DllCanUnloadNow=_forward_DllCanUnloadNow@0 @2 PRIVATE
+ DllGetClassObject=_forward_DllGetClassObject@12 @3 PRIVATE
+ DllRegisterServer=_forward_DllRegisterServer@0 @4 PRIVATE
+ DllUnregisterServer=_forward_DllUnregisterServer@0 @5 PRIVATE
+ GetdfDIJoystick=_forward_GetdfDIJoystick@0 @6
+ CheckpointAutoloadProbe=_CheckpointAutoloadProbe@0 @7

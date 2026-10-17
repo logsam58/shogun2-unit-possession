@@ -1,0 +1,2 @@
+101 RCDATA "../assets/processed/qte-atlas/qte-atlas.png"
+#include "../src/native-fonts.rc"
