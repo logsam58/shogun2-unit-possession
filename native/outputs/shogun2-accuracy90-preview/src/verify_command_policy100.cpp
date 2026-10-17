@@ -28,6 +28,24 @@ int main(){try{
     }
     require(!follow.changed({10.5f,0,20},100000)&&follow.changed({11,0,20},100000),"Follow translation threshold differs");
     require(!follow.changed({NAN,0,20},100000),"Nonfinite follow target accepted");
+    Tap102 tap;
+    for(unsigned window:{100u,250u,500u,900u}){
+        tap.arm(1000,7);require(tap.consume(1000+window,window,7),"Double tap lost system interval boundary");
+        require(!tap.consume(1001+window,window,7),"Third tap inherited consumed pair");
+        tap.arm(1000,7);require(!tap.consume(1001+window,window,7),"Late tap became run");
+        tap.arm(1000,7);require(!tap.consume(1100,window,8),"New lease inherited double tap");
+        tap.arm(1000,7);require(!tap.consume(999,window,7),"Backward clock became double tap");
+        tap.arm(1000,7);tap.reset();require(!tap.consume(1001,window,7),"Focus/reset retained tap");
+    }
+    FollowPace102 pace;
+    require(pace.update(8,false)&&pace.catchup,"Distant walking leader did not request native catch-up run");
+    for(unsigned frame=0;frame<1000;++frame)require(pace.update(frame%2?2.1f:3.9f,false),"Catch-up boundary churn");
+    require(!pace.update(2,false)&&!pace.catchup&&!pace.update(4,false),"Arrived formation did not return to walk");
+    require(pace.update(1,true)&&!pace.catchup&&!pace.update(1,false),"Caught-up formation did not match leader gait");
+    follow.reset();follow.accepted(p,1.2f,1000,false);
+    require(!follow.changed(p,1249,true)&&follow.changed(p,1250,true),"Pace change lost cadence");
+    require(follow.heading(p,2.4f)==1.2f&&follow.target({10.2f,0,20}).x==10,"Pace-only order rotated or drifted target");
+    follow.accepted(p,1.2f,1250,true);require(!follow.changed(p,100000,true),"Unchanged run restarted native formation");
     int32_t parents[8]={-1,0,0,0,3,-1,-1,-1};unsigned weapons[3]={5,6,7};float native[96]{},visible[96]{};
     for(unsigned i=0;i<8;++i){native[i*12]=native[i*12+5]=native[i*12+10]=1;native[i*12+7]=1.6f;native[i*12+11]=.2f;}native[4*12+7]=1.8f;
     memcpy(visible,native,sizeof native);

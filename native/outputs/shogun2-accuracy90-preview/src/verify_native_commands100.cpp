@@ -6,6 +6,8 @@
 struct Packet100 {unsigned key{},integer_count{},byte_count{},short_count{},float_count{};unsigned integers[8]{},bytes[8]{},shorts[4]{};float floats[4]{};MovePoint100 point{};bool has_point{};};
 struct Writer100 {unsigned char* packet;unsigned size,key,index;};
 static std::vector<Packet100> packets100;
+static bool run_allowed102=true;
+static bool __fastcall native_run102(void*,void*){return run_allowed102;}
 static unsigned group_cleanups100,context_cleanups100,sorts100,queries100,frees100,native_releases100,release_stage100;
 static unsigned char native_cursor_hit100[60]{},native_cursor_copy100[60]{};static unsigned native_cursor_frees100;
 static std::vector<UINT> native_messages100;static std::vector<unsigned> native_events100;
@@ -15,14 +17,15 @@ static void __cdecl cursor_free100(void* block,unsigned size){require(block==nat
 static void __fastcall cursor_refresh100(void* cursor,void*,unsigned,unsigned,unsigned){field<uintptr_t>(reinterpret_cast<uintptr_t>(cursor),0x24)=reinterpret_cast<uintptr_t>(native_cursor_hit100);}
 static LRESULT CALLBACK stock_window100(HWND window,UINT message,WPARAM flags,LPARAM point){
     native_messages100.push_back(message);if(message==WM_CANCELMODE)return 0;
-    if(message==WM_RBUTTONDOWN||message==WM_RBUTTONUP)require((flags&(MK_SHIFT|MK_CONTROL))==command_native_modifiers100(),"Native Q lost Shift/Ctrl modifiers");
+    if(message==WM_RBUTTONDOWN||message==WM_RBUTTONUP||message==WM_RBUTTONDBLCLK)require((flags&(MK_SHIFT|MK_CONTROL))==command_native_modifiers100(),"Native Q lost Shift/Ctrl modifiers");
     RECT client{};GetClientRect(window,&client);
     require(LOWORD(point)==client.right/2&&HIWORD(point)==client.bottom/2,"Q target left the visible first-person aim point");
     unsigned type=reinterpret_cast<NativeMouseDecode100>(base+0xbd4a10)(window,message,flags,point,client.right,client.bottom,0);native_events100.push_back(type);
-    if(type==5||type==4||type==12){auto root=field<uintptr_t>(base,0x1bc8180);reinterpret_cast<NativeCursorEvent100>(base+0x2f7350)(reinterpret_cast<void*>(root+0x10c),&type,0,0,1);}
+    if(type==5||type==4||type==12||type==7||type==6){auto root=field<uintptr_t>(base,0x1bc8180);reinterpret_cast<NativeCursorEvent100>(base+0x2f7350)(reinterpret_cast<void*>(root+0x10c),&type,0,0,1);}
     return 0;
 }
 
+static float scene_origin102[3]{};
 static uintptr_t fixture_group100,fixture_world_one100,fixture_world_two100;
 static unsigned scene_object100[4]{};static unsigned char scene_hits100[28]{};
 static void append100(Writer100* writer,const void* bytes,unsigned count){
@@ -54,7 +57,7 @@ static float __fastcall ground100(void*,void*,const float* xz){return xz[0]*.1f+
 static void __fastcall world_one100(void* world,void*,void* result,const void* shape,unsigned mode,unsigned sorted,unsigned mask,unsigned visible){
     require(reinterpret_cast<uintptr_t>(world)==fixture_world_one100&&mode==0&&sorted==1&&mask==0x303,"Native scene-query receiver/arguments differ");
     require(*static_cast<const unsigned*>(shape)==3,"Placement ray is not a native segment");(void)visible;
-    auto ray=static_cast<const float*>(shape);require(std::abs(std::hypot(std::hypot(ray[4]-ray[1],ray[5]-ray[2]),ray[6]-ray[3])-4096.f)<.01f,"Native ray extent differs");
+    auto ray=static_cast<const float*>(shape);memcpy(scene_origin102,ray+1,12);require(std::abs(std::hypot(std::hypot(ray[4]-ray[1],ray[5]-ray[2]),ray[6]-ray[3])-4096.f)<.01f,"Native ray extent differs");
     auto vector=static_cast<unsigned*>(result);vector[0]=vector[1]=1;vector[2]=reinterpret_cast<unsigned>(scene_hits100);++queries100;
 }
 static void __fastcall world_two100(void* world,void*,void*,const void*,unsigned,unsigned,unsigned,unsigned,unsigned){require(reinterpret_cast<uintptr_t>(world)==fixture_world_two100,"Native second scene provider differs");}
@@ -89,6 +92,7 @@ struct NativeFixture100 {
             for(unsigned i=0;i<count;++i)if((entries[i]>>12)==IMAGE_REL_BASED_HIGHLOW)field<unsigned>(base,block->VirtualAddress+(entries[i]&4095))+=unsigned(base-nt->OptionalHeader.ImageBase);
             cursor+=block->SizeOfBlock;
         }
+        jump(0x15cb80,reinterpret_cast<void*>(&native_run102));
         jump(0x10ac90,reinterpret_cast<void*>(&copy_vector100));jump(0x1cc200,reinterpret_cast<void*>(&context100));jump(0x1d0d40,reinterpret_cast<void*>(&destroy_context100));jump(0x1d10f0,reinterpret_cast<void*>(&destroy_group100));
         jump(0x342930,reinterpret_cast<void*>(&write_group100));jump(0x285990,reinterpret_cast<void*>(&write_point100));jump(0x2859e0,reinterpret_cast<void*>(&write_uint100));jump(0x285a00,reinterpret_cast<void*>(&write_uint100));
         jump(0x285d00,reinterpret_cast<void*>(&write_byte100));jump(0x285ce0,reinterpret_cast<void*>(&write_short100));jump(0x285a20,reinterpret_cast<void*>(&write_float100));
@@ -137,6 +141,14 @@ int main(){SetUnhandledExceptionFilter(&fault100);try{
         if(width>0)require(packet.float_count==1&&packet.floats[0]==width&&packet.integer_count==2&&packet.integers[0]==0&&packet.integers[1]==9&&packet.byte_count==2,"Native width/move-speed/queue fields differ");
         else require(packet.float_count==0&&packet.byte_count==2&&packet.bytes[0]==0&&packet.bytes[1]==0,"Native preserved-width orientation flags differ");
         ++calls;
+    }
+    for(bool run:{false,true})for(unsigned repeat=0;repeat<100;++repeat){
+        fixture.clear_queue();unsigned stack_before{},stack_after{};__asm mov stack_before,esp
+        require(command_serialize100(&destination,1234,0,-1,false,false,nullptr,nullptr,run),"Native gait packet refused");
+        __asm mov stack_after,esp
+        require(stack_before==stack_after&&packets100.back().bytes[0]==unsigned(run)&&packets100.back().bytes[1]==0,"Original move serializer changed run or queue flag/ABI");
+        fixture.clear_queue();require(command_hold_here100(destination,1234,run),"Native Hold Here gait refused");
+        require(packets100[0].bytes[0]==unsigned(run)&&packets100[0].bytes[1]==0&&packets100[1].bytes[0]==1,"Hold gait lost guard or changed queue semantics");
     }
     fixture.clear_queue();require(command_serialize100(&destination,0,0,-1,true),"Native point move refused");require(packets100.back().short_count==0&&packets100.back().float_count==0,"Point move changed native facing or width");
     for(unsigned mode:{0u,1u}){fixture.clear_queue();unsigned char native_before=field<unsigned char>(unit,0xeb0);require(command_serialize100(nullptr,0,0,int(mode)),"Native fire policy packet refused");
@@ -261,6 +273,46 @@ int main(){SetUnhandledExceptionFilter(&fault100);try{
     field<float>(possessed,0x48)=11;command_follow100.next=0;state->heartbeat=GetTickCount64();process_orders(P::ptr(fixture.camera));
     require(packets100.size()==2&&packets100.back().shorts[0]==16384,"Follow did not use actual travel direction");
     state->follow=0;command_follow100.reset();
+    // Actual follow service, original move constructors/serializer, synthetic
+    // current peer positions; native AI path completion is not simulated.
+    auto service102=[&](){command_follow100.next=0;state->heartbeat=GetTickCount64();process_orders(P::ptr(fixture.camera));};
+    field<float>(P::ptr(fixture.peer),0x48)=11;field<float>(P::ptr(fixture.peer),0x50)=20;
+    state->follow=1;command_pace102.reset();fixture.clear_queue();state->input=FORWARD;service102();
+    require(packets100.size()==1&&packets100.back().bytes[0]==0,"Caught-up walk did not serialize native walk");
+    state->input=FORWARD|RUN;service102();require(packets100.size()==2&&packets100.back().bytes[0]==1,"Player run did not update native formation gait");
+    for(unsigned i=0;i<600;++i){state->yaw=float(i);service102();require(packets100.size()==2,"Stationary gaze churned running formation");}
+    run_allowed102=false;service102();require(packets100.size()==3&&packets100.back().bytes[0]==0,"Native denied player run was not matched");run_allowed102=true;
+    state->input=FORWARD;service102();require(packets100.size()==3,"Unchanged walk reissued order");
+    field<float>(P::ptr(fixture.peer),0x48)=1;service102();require(packets100.size()==4&&packets100.back().bytes[0]==1&&command_pace102.catchup,"Lagging formation did not run to catch up");
+    field<float>(P::ptr(fixture.peer),0x48)=8;service102();require(packets100.size()==4,"Catch-up hysteresis restarted order inside band");
+    field<float>(P::ptr(fixture.peer),0x48)=10;service102();require(packets100.size()==5&&packets100.back().bytes[0]==0&&!command_pace102.catchup,"Arrived formation failed to match walking leader");
+    state->input=RUN;service102();require(packets100.size()==5,"Standing with Shift triggered running");
+    state->input=FORWARD|BACKWARD|RUN;service102();require(packets100.size()==5,"Opposed movement inputs requested run");
+    state->input=LEFT|RIGHT|RUN;service102();require(packets100.size()==5,"Opposed strafe inputs requested run");
+    equipment_crouch81=1;state->input=FORWARD|RUN;service102();require(packets100.size()==5,"Crouch-locked player requested matching run");equipment_crouch81=0;state->input=0;
+    // Foreign/dead peers cannot pull the formation into catch-up.
+    field<float>(P::ptr(fixture.peer),0x48)=-500;field<uintptr_t>(P::ptr(fixture.peer),0x214)=unit+4;service102();require(packets100.size()==5,"Foreign unit affected catch-up");field<uintptr_t>(P::ptr(fixture.peer),0x214)=unit;
+    field<unsigned char>(P::ptr(fixture.peer),0xf0)=0;service102();require(packets100.size()==5,"Dead actor affected catch-up");field<unsigned char>(P::ptr(fixture.peer),0xf0)=1;
+    state->follow=0;state->input=0;command_follow100.reset();command_pace102.reset();
+    // Q forwards a true stock double-click (7 -> 6), not two single releases.
+    command_key_held100=0;command_q_tap102.reset();native_events100.clear();
+    require(command_window100(window,WM_KEYDOWN,'Q',0)&&command_window100(window,WM_KEYUP,'Q',0),"Single Q tap failed");
+    require(command_window100(window,WM_KEYDOWN,'Q',0)&&command_window100(window,WM_KEYUP,'Q',0),"Double Q tap failed");
+    require(native_events100.size()==4&&native_events100[0]==5&&native_events100[1]==4&&native_events100[2]==7&&native_events100[3]==6,"Q did not preserve actual native contextual run events");
+    require(field<unsigned char>(base,0x1b31169)==0&&!command_placing100,"Native double-click flag leaked after Q release");
+    command_window100(window,WM_KEYDOWN,'Q',0);command_window100(window,WM_KEYUP,'Q',0);require(native_events100[native_events100.size()-2]==5,"Third Q incorrectly inherited double");
+    command_q_tap102.reset();command_window100(window,WM_KEYDOWN,'Q',0);command_window100(window,WM_KILLFOCUS,0,0);require(!command_q_tap102.armed,"Focus cancellation retained double tap");command_key_held100=0;
+    // First Z is immediate walk. Second is run to the same captured anchor and
+    // facing, even if the player moved/looked between taps. Repeat cannot upgrade.
+    fixture.clear_queue();command_z_tap102.reset();field<float>(possessed,0x48)=10;field<float>(possessed,0x4c)=5;state->yaw=.25f;service102();
+    require(command_window100(window,WM_KEYDOWN,'Z',0),"Z single press");process_orders(P::ptr(fixture.camera));
+    require(packets100.size()==2&&packets100[0].bytes[0]==0,"Single Z did not immediately walk with guard");
+    require(command_window100(window,WM_KEYDOWN,'Z',1L<<30),"Z repeat");process_orders(P::ptr(fixture.camera));require(packets100.size()==2,"Held Z autorepeat issued run");
+    command_window100(window,WM_KEYUP,'Z',0);field<float>(possessed,0x48)=14;state->yaw=1.5f;service102();
+    command_window100(window,WM_KEYDOWN,'Z',0);process_orders(P::ptr(fixture.camera));
+    require(packets100.size()==4&&packets100[2].bytes[0]==1&&packets100[2].shorts[0]==command100::bearing(.25f)&&packets100[2].point.position[0]==10&&scene_origin102[0]==10,"Double Z lost original Hold Here anchor/facing or run flag");
+    command_window100(window,WM_KEYUP,'Z',0);command_window100(window,WM_KILLFOCUS,0,0);command_key_held100=0;
+
     std::array<unsigned char,32> controller101{},crosshair101{};
     interface_root=P::ptr(fixture.root);interface_environment=environment;
     interface_controller=reinterpret_cast<uintptr_t>(controller101.data());interface_crosshair=reinterpret_cast<uintptr_t>(crosshair101.data());

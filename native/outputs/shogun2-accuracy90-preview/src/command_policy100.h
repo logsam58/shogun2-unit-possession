@@ -57,16 +57,38 @@ struct Edges {
         unsigned pressed=accepted&~held;held=accepted;return pressed;
     }
 };
+// A completed first tap arms a second press; a pair consumes the arm, so a
+// third press starts a new pair. Window repeat never reaches this policy.
+struct Tap102 {
+    bool armed{};std::uint64_t tick{};unsigned lease{};
+    void reset(){*this={};}
+    void arm(std::uint64_t now,unsigned generation){armed=true;tick=now;lease=generation;}
+    bool consume(std::uint64_t now,unsigned interval,unsigned generation){
+        bool pair=armed&&lease==generation&&now>=tick&&now-tick<=interval;reset();return pair;
+    }
+};
+// Catch-up uses the current peer formation center. Hysteresis avoids repeated
+// walk/run task changes at one boundary. Individual path/formation AI stays native.
+struct FollowPace102 {
+    bool catchup{};
+    void reset(){*this={};}
+    bool update(float gap,bool leader_running){
+        if(std::isfinite(gap)&&gap>=0){if(gap>4.f)catchup=true;else if(gap<=2.f)catchup=false;}
+        return catchup||leader_running;
+    }
+};
 // Follow tracks the leader's translation, never mouse-look/body facing. The
 // first order uses the captured heading; later headings come from travel. A
 // stationary order finishes without continual rotation/path/task restarts.
 struct FollowTarget {
-    bool valid{};Point position{};float yaw{};std::uint64_t next{};
+    bool valid{},running102{};Point position{};float yaw{};std::uint64_t next{};
     void reset(){*this={};}
-    bool changed(Point p,std::uint64_t now)const{
-        return finite(p)&&now>=next&&(!valid||std::hypot(p.x-position.x,p.z-position.z)>=.75f);
+    bool translated(Point p)const{return !valid||std::hypot(p.x-position.x,p.z-position.z)>=.75f;}
+    bool changed(Point p,std::uint64_t now,bool running=false)const{
+        return finite(p)&&now>=next&&(!valid||translated(p)||running!=running102);
     }
-    float heading(Point p,float initial)const{return valid?std::atan2(p.x-position.x,p.z-position.z):initial;}
-    void accepted(Point p,float angle,std::uint64_t now){valid=true;position=p;yaw=angle;next=now+250;}
+    Point target(Point p)const{return translated(p)?p:position;}
+    float heading(Point p,float initial)const{return !valid?initial:translated(p)?std::atan2(p.x-position.x,p.z-position.z):yaw;}
+    void accepted(Point p,float angle,std::uint64_t now,bool running=false){valid=true;position=p;yaw=angle;running102=running;next=now+250;}
 };
 }

@@ -4,6 +4,10 @@
 using NativeMouseDecode100=unsigned(__cdecl*)(HWND,UINT,WPARAM,LPARAM,int,int,int);
 using NativeCursorEvent100=void(__thiscall*)(void*,const unsigned*,unsigned,unsigned,unsigned);
 static uintptr_t command_native_root100;
+static bool command_native_double102,command_native_drag102;
+static float command_native_yaw102,command_native_pitch102;
+static uint64_t command_native_down102;
+static volatile LONG command_native_doubles102;
 static unsigned command_native_lease100,command_native_sequence100;
 static uintptr_t command_native_environment100;
 static volatile LONG command_native_presses100,command_native_moves100,command_native_releases100,command_native_cancels100;
@@ -21,6 +25,7 @@ static LPARAM command_native_point100(HWND window,RECT& client){
     return MAKELPARAM(client.right/2,client.bottom/2);
 }
 static void command_native_cancel100(){
+    AcquireSRWLockExclusive(&command_input_lock100);command_q_tap102.reset();ReleaseSRWLockExclusive(&command_input_lock100);
     if(!command_native_root100)return;
     if(state&&GetCurrentThreadId()!=state->window_thread){
         InterlockedExchange(&command_placing100,0);InterlockedExchange(&command_recenter100,1);
@@ -52,7 +57,10 @@ static bool command_native_begin100(HWND window){
         RECT client{};auto point=command_native_point100(window,client);if(point==-1)return false;
         command_native_root100=root;command_native_environment100=environment;command_native_lease100=possession_lease.generation;if(!++command_native_sequence100)++command_native_sequence100;InterlockedExchange(&command_placing100,1);
         InterlockedExchange(&state->aiming,0);InterlockedExchange(&state->fire_request,0);
-        CallWindowProcW(native_window_proc,window,WM_RBUTTONDOWN,MK_RBUTTON|command_native_modifiers100(),point);InterlockedIncrement(&command_native_presses100);return true;
+        command_native_down102=GetTickCount64();command_native_yaw102=state->yaw;command_native_pitch102=state->pitch;command_native_drag102=false;
+        AcquireSRWLockExclusive(&command_input_lock100);command_native_double102=command_q_tap102.consume(command_native_down102,GetDoubleClickTime(),possession_lease.generation);ReleaseSRWLockExclusive(&command_input_lock100);
+        if(command_native_double102)InterlockedIncrement(&command_native_doubles102);
+        CallWindowProcW(native_window_proc,window,command_native_double102?WM_RBUTTONDBLCLK:WM_RBUTTONDOWN,MK_RBUTTON|command_native_modifiers100(),point);InterlockedIncrement(&command_native_presses100);return true;
     }__except(EXCEPTION_EXECUTE_HANDLER){command_native_cancel100();return false;}
 }
 static bool command_native_end100(HWND window){
@@ -61,7 +69,13 @@ static bool command_native_end100(HWND window){
             command_native_cancel100();return false;
         }
         RECT client{};auto point=command_native_point100(window,client);if(point==-1){command_native_cancel100();return false;}
-        CallWindowProcW(native_window_proc,window,WM_RBUTTONUP,command_native_modifiers100(),point);command_native_root100=0;command_native_environment100=0;command_native_lease100=0;
+        auto now102=GetTickCount64();
+        bool tap102=!command_native_drag102&&std::hypot(std::remainder(state->yaw-command_native_yaw102,command100::tau),state->pitch-command_native_pitch102)<.01f&&now102>=command_native_down102&&now102-command_native_down102<=GetDoubleClickTime();
+        CallWindowProcW(native_window_proc,window,WM_RBUTTONUP,command_native_modifiers100(),point);
+        AcquireSRWLockExclusive(&command_input_lock100);
+        if(tap102&&!command_native_double102)command_q_tap102.arm(command_native_down102,possession_lease.generation);else command_q_tap102.reset();
+        ReleaseSRWLockExclusive(&command_input_lock100);
+        command_native_root100=0;command_native_environment100=0;command_native_lease100=0;
         InterlockedExchange(&command_placing100,0);InterlockedExchange(&command_recenter100,1);InterlockedIncrement(&command_native_releases100);return true;
     }__except(EXCEPTION_EXECUTE_HANDLER){command_native_cancel100();return false;}
 }
@@ -71,6 +85,7 @@ static bool command_native_mouse100(HWND window,UINT message,WPARAM flags,LPARAM
     __try{
         if(!command_native_context100(command_native_root100)){command_native_cancel100();return false;}
         if(message==WM_MOUSEMOVE){
+            if(std::hypot(std::remainder(state->yaw-command_native_yaw102,command100::tau),state->pitch-command_native_pitch102)>=.01f)command_native_drag102=true;
             RECT client{};point=command_native_point100(window,client);if(point==-1){command_native_cancel100();return true;}
             CallWindowProcW(native_window_proc,window,message,(flags|MK_RBUTTON)&~MK_LBUTTON,point);InterlockedIncrement(&command_native_moves100);return true;
         }

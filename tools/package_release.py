@@ -1,4 +1,4 @@
-"""Verify and package the pinned v0.15 Windows release without installing or launching the game."""
+"""Verify and package the pinned Windows product build without installing or launching the game."""
 import argparse
 import ctypes
 from ctypes import wintypes
@@ -13,13 +13,15 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 BIN = ROOT / 'artifacts/bin'
-VERSION = '0.15'
+VERSION = (ROOT / 'VERSION').read_text().strip()
+if not re.fullmatch(r'[0-9]+\.[0-9]+(?:\.[0-9]+)?', VERSION):
+    raise RuntimeError('Invalid product version')
 TAG = 'v' + VERSION
-SETUP = 'Shogun2-First-Person-v0.15-Setup.exe'
-ARCHIVE = 'Shogun2-First-Person-v0.15-Windows.zip'
+SETUP = 'Shogun2-First-Person-' + TAG + '-Setup.exe'
+ARCHIVE = 'Shogun2-First-Person-' + TAG + '-Windows.zip'
 ENGINE_SHA = '022fae2e2da92b59b8b1b8ee52887003c624e3c8eca060b209f5d792a7f874f5'
 COMPONENTS = ['possession-v46.dll', 'possession-hud.exe', 'qte-playable-v79.dll']
-RECEIPT = ROOT / 'docs/releases/v0.15-validation.json'
+RECEIPT = ROOT / 'docs/releases' / (TAG + '-validation.json')
 
 
 def require(condition, message):
@@ -94,7 +96,9 @@ def pe_version(path):
     def version(ms, ls):
         return [ms >> 16, ms & 65535, ls >> 16, ls & 65535]
     result = {'file': version(fixed[2], fixed[3]), 'product': version(fixed[4], fixed[5])}
-    require(result['file'] == [0, 15, 0, 0] and result['product'] == [0, 15, 0, 0], 'Installer version is not 0.15.0.0')
+    expected = [int(x) for x in VERSION.split('.')]
+    expected += [0] * (4 - len(expected))
+    require(result['file'] == expected and result['product'] == expected, 'Installer version differs from VERSION')
     return result
 
 
@@ -107,11 +111,19 @@ def verify_inputs():
         require(sha(ROOT / item['file']) == item['sha256'], 'Build source changed: ' + item['file'])
     for item in receipt['release_binaries']:
         require(record(BIN / item['name']) == item, 'Build output changed: ' + item['name'])
-    provenance = json.loads((ROOT / 'docs/source-import.json').read_text())
-    gameplay = [item for item in provenance['files'] if item['path'].startswith('native/outputs/')]
-    require(len(gameplay) == receipt['gameplay']['source_files'], 'Gameplay source inventory differs')
-    for item in gameplay:
-        require(sha(ROOT / item['path']) == item['sha256'], 'Retained gameplay source changed: ' + item['path'])
+    if VERSION == '0.15':
+        # Historical v0.15 used the exact imported gameplay source closure.
+        provenance = json.loads((ROOT / 'docs/source-import.json').read_text())
+        gameplay = [item for item in provenance['files'] if item['path'].startswith('native/outputs/')]
+        require(len(gameplay) == receipt['gameplay']['source_files'], 'Gameplay source inventory differs')
+        for item in gameplay:
+            require(sha(ROOT / item['path']) == item['sha256'], 'Retained gameplay source changed: ' + item['path'])
+    else:
+        # Later builds intentionally modify gameplay. Pin the complete tracked
+        # native/tool closure instead of rewriting the immutable import manifest.
+        tracked = set(git('ls-files', 'native', 'tools').splitlines()) - {'tools/local.json'}
+        pinned = {item['file'] for item in receipt['build_inputs']}
+        require(tracked == pinned, 'Build source closure differs from the receipt')
     for item in receipt['gameplay']['components']:
         require(sha(BIN / item['name']) == item['sha256'], 'Retained gameplay binary changed')
     setup = BIN / 'Shogun2-Possession-Setup.exe'
@@ -124,7 +136,8 @@ def verify_inputs():
     header = struct.unpack_from('<4s5IQ', pack)
     require(header[0] == b'PFH3' and header[4] == 1, 'Invalid marker pack')
     marker = json.loads(pack[32 + header[5]:])
-    require(marker['version'] == VERSION and marker['title'].endswith('v' + VERSION), 'Marker version differs')
+    require(marker['version'] == VERSION, 'Marker version differs')
+    require(marker.get('revision') == receipt.get('candidate', 99) and bool(marker.get('development_candidate')) == bool(receipt.get('development_candidate', False)), 'Marker candidate differs')
     require(marker['adapter_sha256'] == sha(BIN / COMPONENTS[0]), 'Marker adapter hash differs')
     cache = hashlib.sha256(''.join(sha(BIN / n) for n in [*COMPONENTS, 'marker.pack']).encode()).hexdigest()[:16]
     require(cache == receipt['cache_id'], 'Cache identity differs')
@@ -177,7 +190,7 @@ def main():
         'product': 'Shogun 2 First-Person Possession', 'version': VERSION, 'tag': TAG,
         'source_commit': head, 'cache_id': receipt['cache_id'], 'engine_sha256': ENGINE_SHA,
         'pe_version': versions, 'components': receipt['release_binaries'],
-        'installer': record(folder / SETUP), 'validation': 'docs/releases/v0.15-validation.json',
+        'installer': record(folder / SETUP), 'validation': 'docs/releases/' + TAG + '-validation.json', 'candidate': receipt.get('candidate'), 'development_candidate': receipt.get('development_candidate', False),
         'validation_sha256': sha(RECEIPT), 'target_check': target,
         'game_installed_or_launched': False,
         'known_issues': ['Unresolved extended-play native effects crash; mod involvement undetermined', 'Mounted-bow presentation', 'Incomplete specialty-unit, roster and siege-map validation']
@@ -185,7 +198,7 @@ def main():
     manifest_path = folder / 'release-manifest.json'
     manifest_path.write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8', newline='\n')
     members = {SETUP: (folder / SETUP).read_bytes(), 'release-manifest.json': manifest_path.read_bytes()}
-    for source, name in [('README.md', 'README.md'), ('docs/KNOWN_ISSUES.md', 'KNOWN_ISSUES.md'), ('THIRD_PARTY_NOTICES.md', 'THIRD_PARTY_NOTICES.md'), ('docs/releases/v0.15.md', 'RELEASE_NOTES.md')]:
+    for source, name in [('README.md', 'README.md'), ('docs/KNOWN_ISSUES.md', 'KNOWN_ISSUES.md'), ('THIRD_PARTY_NOTICES.md', 'THIRD_PARTY_NOTICES.md'), ('docs/releases/' + TAG + '.md', 'RELEASE_NOTES.md')]:
         members[name] = web_links((ROOT / source).read_text(encoding='utf-8'), Path(source)).encode('utf-8')
     members['LICENSE-MINHOOK.txt'] = (ROOT / 'native/outputs/shogun2-accuracy90-preview/vendor/LICENSE.txt').read_bytes()
     members['PACKAGE_SHA256SUMS.txt'] = ''.join(hashlib.sha256(data).hexdigest() + '  ' + name + '\n' for name, data in sorted(members.items())).encode()

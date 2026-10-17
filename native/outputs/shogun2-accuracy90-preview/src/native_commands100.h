@@ -19,6 +19,9 @@ static uint64_t command_feedback_until100;
 static unsigned command_generation100,command_error100;
 static command100::FollowTarget command_follow100;
 static volatile LONG follow_updates101;
+static command100::FollowPace102 command_pace102;
+static float command_gap102;
+static volatile LONG command_follow_run102,command_hold_runs102,command_hold_walks102;
 static SRWLOCK command_mapping_lock100=SRWLOCK_INIT;
 static void command_reset_volley100();
 static HANDLE command_mapping100;static command100::Status* command_shared100;
@@ -32,7 +35,7 @@ static bool command_native_signatures100(uintptr_t image){
     return field<uintptr_t>(image+0x15cffe0,0)==image+0x2e6eb0&&field<uintptr_t>(image+0x15cffdc,0)==image+0x2e6f00&&
         field<uintptr_t>(image+0x15d002c,0)==image+0x2e6c40;
 }
-static bool command_serialize100(const MovePoint100* destination,unsigned facing,float width,int fire_policy=-1,bool plain=false,bool guard=false,unsigned char* prepared=nullptr,unsigned* prepared_size=nullptr){
+static bool command_serialize100(const MovePoint100* destination,unsigned facing,float width,int fire_policy=-1,bool plain=false,bool guard=false,unsigned char* prepared=nullptr,unsigned* prepared_size=nullptr,bool running102=false){
     alignas(16) unsigned char order[0x80]{},context[16]{},packet[QUEUE_CAPACITY+4]{};
     bool constructed=false,context_live=false,result=false;
     __try{
@@ -47,9 +50,9 @@ static bool command_serialize100(const MovePoint100* destination,unsigned facing
         }else{
             if(!destination||!command100::finite({destination->position[0],destination->position[1],destination->position[2]})||
                !std::isfinite(width)||width<0||width>4096)return false;
-            if(plain)reinterpret_cast<MoveConstructor>(base+0x255550)(order,reinterpret_cast<void*>(group),destination,0,0);
-            else if(width>0)reinterpret_cast<FacingConstructor100>(base+0x2557e0)(order,reinterpret_cast<void*>(group),destination,facing,width,0,0);
-            else reinterpret_cast<OrientationConstructor100>(base+0x255680)(order,reinterpret_cast<void*>(group),destination,facing,0,0);
+            if(plain)reinterpret_cast<MoveConstructor>(base+0x255550)(order,reinterpret_cast<void*>(group),destination,unsigned(running102),0);
+            else if(width>0)reinterpret_cast<FacingConstructor100>(base+0x2557e0)(order,reinterpret_cast<void*>(group),destination,facing,width,unsigned(running102),0);
+            else reinterpret_cast<OrientationConstructor100>(base+0x255680)(order,reinterpret_cast<void*>(group),destination,facing,unsigned(running102),0);
         }
         constructed=true;auto expected=base+(guard?0x15cffe8:fire_policy>=0?0x15d002c:plain?0x15cffd8:width>0?0x15cffdc:0x15cffe0);
         if(field<uintptr_t>(reinterpret_cast<uintptr_t>(order),0)!=expected){command_error100=47;}
@@ -73,9 +76,9 @@ static bool command_serialize100(const MovePoint100* destination,unsigned facing
     if(constructed){__try{reinterpret_cast<NativeCleanup>(base+0x1d10f0)(order+4);}__except(EXCEPTION_EXECUTE_HANDLER){command_error100=61;result=false;}}
     return result;
 }
-static bool command_hold_here100(const MovePoint100& point,unsigned facing){
+static bool command_hold_here100(const MovePoint100& point,unsigned facing,bool running102=false){
     alignas(16) unsigned char move[QUEUE_CAPACITY+4]{},guard[QUEUE_CAPACITY+4]{};unsigned move_size=0,guard_size=0;
-    if(!command_serialize100(&point,facing,0,-1,false,false,move,&move_size)||
+    if(!command_serialize100(&point,facing,0,-1,false,false,move,&move_size,running102)||
        !command_serialize100(nullptr,0,0,1,false,true,guard,&guard_size))return false;
     auto queue=field<uintptr_t>(environment,0x28048);if(!queue)return false;
     auto& used=field<unsigned>(queue+4,QUEUE_CAPACITY);unsigned before=used,total=move_size+guard_size;
@@ -142,7 +145,7 @@ static bool command_frame_matches100(const command100::Frame& frame){
         GetTickCount64()>=frame.tick&&GetTickCount64()-frame.tick<=250;
 }
 static void command_reset100(){
-    command_native_cancel100();command_input_reset100();command_follow100.reset();command_generation100=0;
+    command_native_cancel100();command_input_reset100();command_follow100.reset();command_pace102.reset();command_gap102=0;command_follow_run102=0;command_generation100=0;
     command_mode100=command100::MoveMode::None;InterlockedExchange(&command_fire_mode100,0);
     command_reset_volley100();
     AcquireSRWLockExclusive(&command_mapping_lock100);
@@ -239,6 +242,24 @@ static void command_on_shot100(){
     if(command_fire_mode100!=LONG(command100::FireMode::OnCommand)||!possession_lease.active||!followed(possessed,false))return;
     AcquireSRWLockExclusive(&command_volley_lock100);command_volley100.shot();ReleaseSRWLockExclusive(&command_volley_lock100);
 }
+static bool command_formation_gap102(uintptr_t camera,command100::Point leader,float& gap){
+    auto view=field<uintptr_t>(camera,0x184);
+    if(view!=possession_lease.identity.view)return false;
+    auto count=field<unsigned>(view,0x18),array=field<uintptr_t>(view,0x1c);
+    if(!array||!count||count>1000)return false;
+    double x=0,z=0;unsigned peers=0;
+    for(unsigned i=0;i<count;++i){
+        auto holder=field<uintptr_t>(array,i*4),actor=holder?field<uintptr_t>(holder,8):0;
+        if(!actor||actor==possessed||field<uintptr_t>(actor,0)!=base+0x15dfec8||field<unsigned char>(actor,0xf0)!=1||
+           field<uintptr_t>(actor,0x214)!=unit||field<uintptr_t>(actor,0x28)!=environment)continue;
+        command100::Point p{field<float>(actor,0x48),field<float>(actor,0x4c),field<float>(actor,0x50)};
+        if(!command100::finite(p)||field<uintptr_t>(holder,8)!=actor)continue;
+        x+=p.x;z+=p.z;++peers;
+    }
+    // A lone survivor needs no catch-up run. All identity guards still apply.
+    gap=peers?float(std::hypot(x/peers-leader.x,z/peers-leader.z)):0;
+    return std::isfinite(gap)&&followed(possessed,false)&&camera_owned(camera);
+}
 static bool command_window100(HWND window,UINT message,WPARAM key,LPARAM flags){
     if(message==COMMAND_CANCEL_MESSAGE100){if(unsigned(key)==command_native_sequence100)command_native_cancel100();return true;}
     if(command_native_root100&&!command_placing100)command_native_cancel100();
@@ -255,6 +276,7 @@ static bool command_window100(HWND window,UINT message,WPARAM key,LPARAM flags){
     if(!owned)return drain;
     if(pressed){if((flags&(1L<<30))||drain)return true;command_key_held100|=bit;}
     if(key=='Q'){
+        if(pressed){AcquireSRWLockExclusive(&command_input_lock100);command_z_tap102.reset();ReleaseSRWLockExclusive(&command_input_lock100);}
         if(pressed){if(!command_native_begin100(window))command_feedback_set100(command100::Feedback::Unavailable);}
         else if(command_native_root100){if(command_native_end100(window)){command_mode100=command100::MoveMode::Advance;InterlockedExchange(&state->follow,0);command_follow100.reset();}}
         return true;
@@ -265,7 +287,15 @@ static bool command_window100(HWND window,UINT message,WPARAM key,LPARAM flags){
     event.input=key=='E'?command100::Input::Stop:
         key=='Z'?command100::Input::Hold:key=='C'?command100::Input::Follow:command100::Input::Fire;
     AcquireSRWLockExclusive(&command_input_lock100);event.frame=command_frame100;
-    if(command_write100-command_read100>=32){command_read100=command_write100;InterlockedExchange(&command_input_overflow100,1);InterlockedExchange(&command_placing100,0);}
+    command_q_tap102.reset();
+    if(key=='Z'){
+        event.running102=command_z_tap102.consume(event.tick,GetDoubleClickTime(),event.frame.lease)&&
+            event.frame.actor==command_z_anchor102.actor&&event.frame.unit==command_z_anchor102.unit;
+        if(event.running102){
+            auto current_tick=event.frame.tick;event.frame=command_z_anchor102;event.frame.tick=current_tick;
+        }else {command_z_anchor102=event.frame;command_z_tap102.arm(event.tick,event.frame.lease);}
+    }else command_z_tap102.reset();
+    if(command_write100-command_read100>=32){command_read100=command_write100;command_q_tap102.reset();command_z_tap102.reset();InterlockedExchange(&command_input_overflow100,1);InterlockedExchange(&command_placing100,0);}
     else command_events100[command_write100++%32]=event;
     ReleaseSRWLockExclusive(&command_input_lock100);
     return true;
@@ -296,6 +326,8 @@ static void command_log100(std::ofstream& log){
        <<",\"peer_releases\":"<<command_peer_releases100<<",\"peer_blocks\":"<<command_peer_blocks100<<",\"error\":"<<sample.error
        <<",\"native_q_presses\":"<<command_native_presses100<<",\"native_q_moves\":"<<command_native_moves100<<",\"native_q_releases\":"<<command_native_releases100<<",\"native_q_cancels\":"<<command_native_cancels100
        <<",\"commands101\":1,\"q_aim_center101\":1,\"q_mouse_look101\":1,\"follow_translation101\":1,\"follow_updates101\":"<<follow_updates101
+       <<",\"commands102\":1,\"follow_catchup102\":"<<(command_pace102.catchup?1:0)<<",\"follow_gap102\":"<<command_gap102<<",\"follow_run102\":"<<command_follow_run102
+       <<",\"hold_walks102\":"<<command_hold_walks102<<",\"hold_runs102\":"<<command_hold_runs102<<",\"q_doubles102\":"<<command_native_doubles102
        <<",\"clip101\":1,\"native_near101\":"<<interface_clip101.native<<",\"presented_near101\":"<<interface_clip101.presented
        <<",\"infantry_eye_updates101\":"<<infantry_eye_updates101<<",\"infantry_eye_rejects101\":"<<infantry_eye_rejects101
        <<",\"self_visibility_updates\":"<<self_visibility_updates100<<",\"self_visibility_rejects\":"<<self_visibility_rejects100<<",\"self_visibility_restores\":"<<self_visibility_restores100<<"}\n";
@@ -327,13 +359,14 @@ static void process_orders(uintptr_t camera){
             }else if(event.input==command100::Input::Hold){
                 MovePoint100 point{};
                 ViewRay down{};down.origin[0]=event.frame.position.x;down.origin[1]=event.frame.position.y+.15f;down.origin[2]=event.frame.position.z;down.direction[1]=-1;
-                if(command_pick100(down,point)&&std::abs(point.position[1]-event.frame.position.y)<.3f&&command_hold_here100(point,command100::bearing(event.frame.yaw))){
+                if(command_pick100(down,point)&&std::abs(point.position[1]-event.frame.position.y)<.3f&&command_hold_here100(point,command100::bearing(event.frame.yaw),event.running102)){
                     InterlockedExchange(&command_placing100,0);InterlockedExchange(&command_recenter100,1);
+                    if(event.running102)InterlockedIncrement(&command_hold_runs102);else InterlockedIncrement(&command_hold_walks102);
                     command_mode100=command100::MoveMode::Hold;InterlockedExchange(&state->follow,0);command_follow100.reset();command_feedback_set100(command100::Feedback::Holding);
                 }else command_feedback_set100(command100::Feedback::Unavailable,command_error100);
             }else if(event.input==command100::Input::Follow){
                 InterlockedExchange(&command_placing100,0);InterlockedExchange(&command_recenter100,1);
-                InterlockedExchange(&state->follow,1);command_follow100.reset();command_mode100=command100::MoveMode::Follow;
+                InterlockedExchange(&state->follow,1);command_follow100.reset();command_pace102.reset();command_mode100=command100::MoveMode::Follow;
                 state->last_order=ORDER_FOLLOW;command_feedback_set100(command100::Feedback::Following);
             }else if(event.input==command100::Input::Fire){
                 if(!bow_record(unit)){command_feedback_set100(command100::Feedback::Unavailable);continue;}
@@ -349,12 +382,25 @@ static void process_orders(uintptr_t camera){
             // A normal native formation centered on the leader forms beside and
             // around them, rather than chasing a point six metres behind.
             float initial=field<unsigned short>(possessed,0x64)*command100::tau/65536.f;
-            if(command_follow100.changed(frame.position,frame.tick)){
-                float heading=command_follow100.heading(frame.position,initial);
-                MovePoint100 destination{};
-                if(command_actor_point100(frame.position,destination)&&command_serialize100(&destination,command100::bearing(heading),0)){
-                    command_follow100.accepted(frame.position,heading,frame.tick);InterlockedIncrement(&follow_updates101);
+            if(frame.tick>=command_follow100.next){
+                if(command_formation_gap102(camera,frame.position,command_gap102)){
+                    // Match the same native Shift walk/run selection as personal
+                    // locomotion. Catch-up can request run even while stationary;
+                    // the stock order consumer still applies native run permission.
+                    unsigned input=equipment81::movement_input(unsigned(state->input),equipment_crouch81!=0);
+                    bool translating=bool(input&FORWARD)!=bool(input&BACKWARD)||(!possession_lease.identity.mount&&(bool(input&LEFT)!=bool(input&RIGHT)));
+                    bool leader_running=(input&RUN)&&translating&&
+                        reinterpret_cast<UnitRunAllowed>(base+0x15cb80)(reinterpret_cast<void*>(unit));
+                    bool running=command_pace102.update(command_gap102,leader_running);
+                    if(command_follow100.changed(frame.position,frame.tick,running)){
+                        float heading=command_follow100.heading(frame.position,initial);
+                        auto goal=command_follow100.target(frame.position);MovePoint100 destination{};
+                        if(command_actor_point100(goal,destination)&&command_serialize100(&destination,command100::bearing(heading),0,-1,false,false,nullptr,nullptr,running)){
+                            command_follow100.accepted(goal,heading,frame.tick,running);command_follow_run102=running?1:0;InterlockedIncrement(&follow_updates101);
+                        }
+                    }
                 }
+                command_follow100.next=frame.tick+250;
             }
         }
         command100::Status status{};

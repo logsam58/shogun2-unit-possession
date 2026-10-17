@@ -1,0 +1,138 @@
+{
+  "version": "0.16",
+  "candidate": 102,
+  "date": "2026-10-17",
+  "passed": true,
+  "offline_passed": true,
+  "published": false,
+  "development_candidate": true,
+  "live_accepted": false,
+  "predecessor": "Test101 scoped BIG improvement feedback; exact loaded/capture receipt retained",
+  "engine_sha256": "022fae2e2da92b59b8b1b8ee52887003c624e3c8eca060b209f5d792a7f874f5",
+  "components": {
+    "adapter": {
+      "file": "possession-v46.dll",
+      "bytes": 491520,
+      "sha256": "4999d2d2499e79ff7cf02baa594f6ee7d52f778553fcde8d5e3d356af6b7e413"
+    },
+    "hud": {
+      "file": "possession-hud.exe",
+      "bytes": 25308672,
+      "sha256": "ff5963e3f5f923897732c15d3282c24f5f284eb85be471005ec1aab93224d8d1"
+    },
+    "qte": {
+      "file": "qte-playable-v79.dll",
+      "bytes": 8436736,
+      "sha256": "acc3e6dba3a6ad58088a5e240f9eae5ca2e47debd10d6db9a5aace879df7bd5b"
+    },
+    "loader": {
+      "file": "dinput8.dll",
+      "bytes": 34545152,
+      "sha256": "cd7f4d3a40ec9164d5cc99f23d8438ca678a2c8c2345e3052a3a4d8cb1a092e4"
+    },
+    "marker": {
+      "file": "marker.pack",
+      "bytes": 859,
+      "sha256": "59219510e47fe867b5e48e52d797606613e88117091558193a99a6a25dcc1b32"
+    },
+    "setup": {
+      "file": "Shogun2-Possession-Setup.exe",
+      "bytes": 34967552,
+      "sha256": "5a4365e2d69ddd0c8334e8c747f89bb165349776ea01ad5eed9ce4d4290db101"
+    },
+    "maintenance_cli": {
+      "file": "install_cli.exe",
+      "bytes": 34947584,
+      "sha256": "5a1805598807a44ee3dfd5a1a8790993f9dbe276ecc610bcdee2aca944c93b3c"
+    }
+  },
+  "cache_id": "994a23734cbf7b40",
+  "fresh_checks": [
+    {
+      "name": "minhook",
+      "passed": true,
+      "seconds": 3.345,
+      "log": "artifacts\\logs\\minhook.log",
+      "log_sha256": "dc8c5849812a4685d32b4ade623c83776e10a08e32a814a4f6314709731822d9"
+    },
+    {
+      "name": "adapter",
+      "passed": true,
+      "seconds": 6.939,
+      "log": "artifacts\\logs\\adapter.log",
+      "log_sha256": "0bc87fe1048a42ad9976f60bbe216dd657d387276d3d007583aa569be6a0edf1"
+    },
+    {
+      "name": "adapter-tests",
+      "passed": true,
+      "seconds": 100.077,
+      "log": "artifacts\\logs\\adapter-tests.log",
+      "executables": 53,
+      "log_sha256": "a090dd72d946f41e9120edbd5b703d7881d02f45c3e7949b89b40d3494e0bedb"
+    },
+    {
+      "name": "loader",
+      "passed": true,
+      "seconds": 3.931,
+      "log": "artifacts\\logs\\loader.log",
+      "log_sha256": "336b023a25405f667730122dec3fe3f7b5016f9ef9aa3c70d5503ba48ca378aa"
+    },
+    {
+      "name": "loader-tests",
+      "passed": true,
+      "seconds": 5.988,
+      "log": "artifacts\\logs\\loader-tests.log",
+      "log_sha256": "c915aa440aa4a051d8cfd5614cc901a0f7df7cac1521d31d40397735aa0c3aeb"
+    },
+    {
+      "name": "installer",
+      "passed": true,
+      "seconds": 7.649,
+      "log": "artifacts\\logs\\installer.log",
+      "log_sha256": "8267be106920bb7a4a725c43f2187afc6b7554336c755ec7b261c041a5b19a24"
+    },
+    {
+      "name": "installer-tests",
+      "passed": true,
+      "seconds": 135.825,
+      "log": "artifacts\\logs\\installer-tests.log",
+      "log_sha256": "22b6073edf670136e1563b1517d91eac9bc518fcb6a6c88dfd23112e992db420"
+    }
+  ],
+  "fresh_suites": {
+    "adapter_executables": 53,
+    "loader_executables": 2,
+    "installer": "Full final-payload upgrade/interruption/rollback/collision/retention suite, including exact Test101 and repeated install backup retention"
+  },
+  "retained_checks": {
+    "hud": "Exact Test101 binary; HUD implementation source unchanged, private shared command-policy helpers added without enum/status layout changes; no fresh HUD suite or rendering claimed",
+    "qte": "Exact published v0.15/Test101 binary and QTE source; earlier32-case receipt retained, not rerun"
+  },
+  "regressions": {
+    "original_native_gait_packets": 200,
+    "native_hold_guard_gait_transactions": 200,
+    "stationary_follow_frames_retained": 600,
+    "new_stationary_run_follow_frames": 600,
+    "catchup_band_policy_frames": 1000,
+    "production_cases": [
+      "native denied run",
+      "catch-up run while leader walks",
+      "return to walk on arrival",
+      "pace-only retained heading/goal",
+      "opposing keys and crouch lock",
+      "foreign/dead peer exclusion",
+      "actual native Q7/6 double-click and flag clear",
+      "third-tap and focus cleanup",
+      "Z immediate walk/repeat suppression/second-tap run with original position/facing",
+      "Tap interval boundary/late/lease/clock/reset cases"
+    ]
+  },
+  "numeric_protocols_unchanged": true,
+  "command_protocol": {
+    "version": 100,
+    "bytes": 80
+  },
+  "new_native_hooks": 0,
+  "live_limits": "Fixture world/window providers, synthetic actor/peer records and substituted native run predicate; full native contextual target classification/attack, AI path completion, native gait/formation behavior and roster/map visuals require recorded user play. No effects crash fix claimed.",
+  "validation_refinement": "First full adapter run passed; compile caught one missed local variable rename during edge-case refinement; corrected and full final suites rerun. Tap state synchronized with existing input/lifecycle lock before final payload build."
+}

@@ -7,7 +7,7 @@ struct Frame {
     Point position{};float yaw{};
     std::uint64_t tick{};unsigned lease{},actor{},unit{};
 };
-struct Event {Input input{};Frame frame{};std::uint64_t tick{};};
+struct Event {Input input{};Frame frame{};std::uint64_t tick{};bool running102{};};
 
 }
 // Window messages preserve short taps. Only numeric published camera data crosses
@@ -17,11 +17,13 @@ static SRWLOCK command_input_lock100=SRWLOCK_INIT;
 static command100::Frame command_frame100;
 static command100::Event command_events100[32];
 static unsigned command_read100,command_write100,command_key_held100;
+static command100::Tap102 command_q_tap102,command_z_tap102;
+static command100::Frame command_z_anchor102;
 static volatile LONG command_placing100,command_input_overflow100,command_recenter100;
 static constexpr UINT COMMAND_CANCEL_MESSAGE100=WM_APP+0x53c;
 static bool command_window100(HWND window,UINT message,WPARAM key,LPARAM flags);
 static void command_input_reset100(){
-    AcquireSRWLockExclusive(&command_input_lock100);command_read100=command_write100=0;command_frame100={};
+    AcquireSRWLockExclusive(&command_input_lock100);command_read100=command_write100=0;command_frame100={};command_q_tap102.reset();command_z_tap102.reset();command_z_anchor102={};
     ReleaseSRWLockExclusive(&command_input_lock100);InterlockedExchange(&command_placing100,0);InterlockedExchange(&command_recenter100,1);
 }
 static void command_publish_frame100(const command100::Frame& frame){
