@@ -23,7 +23,7 @@ static void begin_weapon(const uint32_t*,uintptr_t);
 static volatile LONG fire_busy;
 static uint32_t ticket_actor,ticket_unit,ticket_index;
 static uintptr_t ticket_environment;
-struct AimFrame {ViewRay ray;uintptr_t actor,env;uint64_t tick;};
+struct AimFrame {ViewRay ray;uintptr_t actor,env;uint64_t tick;unsigned lease101{},serial101{},unit101{};};
 static AimFrame aim_frame;
 static volatile LONG aim_sequence;
 static void capture_aim_frame(uintptr_t camera){
@@ -32,15 +32,17 @@ static void capture_aim_frame(uintptr_t camera){
         AimFrame frame{};
         if(!camera_ray(reinterpret_cast<float*>(camera+8),reinterpret_cast<float*>(camera+0x14),frame.ray))return;
         frame.actor=possessed;frame.env=environment;frame.tick=GetTickCount64();
+        frame.lease101=possession_lease.generation;frame.serial101=possession_lease.identity.actor_id;frame.unit101=possession_lease.identity.unit_id;
         InterlockedIncrement(&aim_sequence);MemoryBarrier();memcpy(&aim_frame,&frame,sizeof(frame));MemoryBarrier();InterlockedIncrement(&aim_sequence);
     }__except(EXCEPTION_EXECUTE_HANDLER){InterlockedExchange(&state->release,1);state->shot_error=94;}
 }
-static bool read_aim_frame(ViewRay& ray){
+static bool read_aim_frame(ViewRay& ray,bool presentation101=false){
     for(unsigned i=0;i<4;++i){
         LONG seq=aim_sequence;if(seq&1)continue;
         AimFrame frame{};MemoryBarrier();memcpy(&frame,&aim_frame,sizeof(frame));MemoryBarrier();
         if(seq!=aim_sequence)continue;
         if(frame.actor!=possessed||frame.env!=environment||GetTickCount64()-frame.tick>250)return false;
+        if(presentation101&&(frame.lease101!=possession_lease.generation||frame.serial101!=possession_lease.identity.actor_id||frame.unit101!=possession_lease.identity.unit_id))return false;
         ray=frame.ray;return true;
     }
     return false;

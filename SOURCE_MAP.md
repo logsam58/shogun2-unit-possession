@@ -4,7 +4,7 @@ The mod is native C++ with Python build and diagnostic tools. VERSION is the pro
 
 | Component | Active path | Responsibilities |
 | --- | --- | --- |
-| Possession adapter | native/outputs/shogun2-accuracy90-preview/src | Actor ownership, camera, movement, weapons, accuracy, equipment, unit orders, siege traversal and 50 fixture executables |
+| Possession adapter | native/outputs/shogun2-accuracy90-preview/src | Actor ownership, camera, movement, weapons, accuracy, equipment, unit orders, siege traversal and native regression fixtures |
 | Adapter hooks | native/outputs/shogun2-accuracy90-preview/vendor | MinHook and x86 trampoline/disassembler support |
 | Melee QTE runtime | native/outputs/shogun2-authentic-hud80-preview/qte-src | Native pair preparation, combat state, response clock, input queue, interruption and renderer fixtures |
 | Styled QTE renderer | native/outputs/shogun2-authentic-hud80-preview/src | Shared native-style surface, fonts, artwork/resource definitions |
@@ -30,3 +30,5 @@ Read [architecture](docs/ARCHITECTURE.md) for component data flow and [local dep
 
 
 Test100 development changes are in the maintained adapter's `native_advance100.h` (Q to stock window messages and native cursor cleanup), `native_commands100.h` (native Z/C/fire packets and same-unit command-fire scope), `command_policy100.h`, `command_input100.h`, `command_protocol100.h` (optional 80-byte numeric status), and `self_visibility100.h` plus `soldier_pose.h` (render-only head/neck hiding and raw native head-cache preservation). The main HUD's renderer has the new key labels; formation graphics are entirely native. `hud_surface100.h` reuses the actual DIB/DC at the prior HUD cadence. No QTE source changed. Isolated weapon fixtures explicitly substitute inactive command mode; the new full-adapter fixture exercises active command ownership and original native mouse/cursor primitives.
+
+Test101 keeps the compatibility filenames/protocols above. `native_advance100.h` now feeds the crosshair while FPS mouse-look remains active. `command_policy100.h` follows translation/travel rather than gaze. `first_person_presentation101.h`, `first_person_interface.h` and `soldier_pose.h` implement owned near-plane restoration and eye-relative foot weapon-look; `native_bow.h` adds identity to the private eye sample without changing published shot/status layouts. `verify_presentation101.cpp` and expanded native projection/command/camera fixtures cover those changes.

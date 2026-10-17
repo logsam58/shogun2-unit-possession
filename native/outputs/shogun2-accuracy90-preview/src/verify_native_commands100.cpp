@@ -17,6 +17,7 @@ static LRESULT CALLBACK stock_window100(HWND window,UINT message,WPARAM flags,LP
     native_messages100.push_back(message);if(message==WM_CANCELMODE)return 0;
     if(message==WM_RBUTTONDOWN||message==WM_RBUTTONUP)require((flags&(MK_SHIFT|MK_CONTROL))==command_native_modifiers100(),"Native Q lost Shift/Ctrl modifiers");
     RECT client{};GetClientRect(window,&client);
+    require(LOWORD(point)==client.right/2&&HIWORD(point)==client.bottom/2,"Q target left the visible first-person aim point");
     unsigned type=reinterpret_cast<NativeMouseDecode100>(base+0xbd4a10)(window,message,flags,point,client.right,client.bottom,0);native_events100.push_back(type);
     if(type==5||type==4||type==12){auto root=field<uintptr_t>(base,0x1bc8180);reinterpret_cast<NativeCursorEvent100>(base+0x2f7350)(reinterpret_cast<void*>(root+0x10c),&type,0,0,1);}
     return 0;
@@ -182,9 +183,19 @@ int main(){SetUnhandledExceptionFilter(&fault100);try{
     for(unsigned mode:{0u,8u,14u,18u,30u})for(unsigned frame=0;frame<200;++frame){
         field<unsigned>(possessed,0x1f0)=mode;skin_ready_hook(fixture.holder.data(),nullptr,result.data());
         require(std::abs(field<float>(P::ptr(fixture.holder),0x1b0)-1.8f)<1e-6f,"Native cached head position followed the collapsed head");
-        require(palette[3*12]==.0001f&&palette[4*12]==.0001f,"Self visibility missing or accumulated on non-ranged/paired states");
+        require(palette[3*12]==1.f&&palette[4*12]==.0001f,"Self visibility missing or accumulated on non-ranged/paired states");
         for(unsigned bone:{0u,1u,2u,5u,6u,7u})require(!memcmp(palette+bone*12,raw+bone*12,48),"Body/arms/weapon altered by self visibility");
     }
+    restore_soldier_pose();require(!memcmp(palette,raw,sizeof raw),"Exact previous self palette was not restored on exit");
+    SelfSkin100 cache101{};require(prepare_self_skin100(P::ptr(fixture.holder),P::ptr(result),cache101),"Raw cache snapshot");
+    palette[cache101.head*12+7]+=2;palette[cache101.left*12+11]+=3;palette[cache101.right*12+3]-=4;
+    float presented101[96];memcpy(presented101,palette,sizeof palette);
+    native_skin_cache101(fixture.holder.data(),result.data(),cache101);
+    require(std::abs(field<float>(P::ptr(fixture.holder),0x1b0)-raw[cache101.head*12+7])<1e-6f&&
+        std::abs(field<float>(P::ptr(fixture.holder),0x1b8)-(raw[cache101.left*12+11]-raw[cache101.right*12+11]))<1e-6f&&
+        std::abs(field<float>(P::ptr(fixture.holder),0x1c0)-(raw[cache101.right*12+3]-raw[cache101.left*12+3]))<1e-6f,"Presented arms/head leaked into original native camera caches");
+    require(!memcmp(palette,presented101,sizeof palette),"Temporary native-cache capture lost presented socket translations");
+    memcpy(palette,raw,sizeof raw);
     require(field<uintptr_t>(P::ptr(render_object),0x14)==P::ptr(result),"Native renderer did not retain its actual palette");
     restore_soldier_pose();require(!memcmp(palette,raw,sizeof raw),"First-person exit did not restore exact native model matrices");
     SelfSkin100 prepared{};require(prepare_self_skin100(P::ptr(fixture.holder),P::ptr(result),prepared)&&current_self_skin100(prepared),"Current self-skin snapshot rejected");
@@ -200,6 +211,26 @@ int main(){SetUnhandledExceptionFilter(&fault100);try{
     auto cursor=P::ptr(fixture.root)+0x10c;unsigned packets_before=unsigned(packets100.size());
     require(command_window100(window,WM_KEYDOWN,'Q',0)&&command_window100(window,WM_KEYDOWN,'Q',1L<<30),"Q press/repeat capture differs");
     require(command_placing100&&native_messages100.size()==1&&native_messages100[0]==WM_RBUTTONDOWN&&native_events100[0]==5&&field<unsigned char>(cursor,0x5b)==1,"Q did not enter exact native RMB/cursor state");
+    // Use the exact render-camera unprojection and native drag-width pipeline
+    // with a flat fixture ground provider. Width is never computed by production.
+    auto aim_ground101=[](float yaw,float pitch){
+        std::array<unsigned char,0x180> render{};auto a=reinterpret_cast<uintptr_t>(render.data());
+        field<float>(a,0x60)=0;field<float>(a,0x64)=2;field<float>(a,0x68)=0;
+        field<float>(a,0x15c)=std::sin(yaw)*std::cos(pitch);field<float>(a,0x160)=std::sin(pitch);field<float>(a,0x164)=std::cos(yaw)*std::cos(pitch);
+        using Unproject=float*(__thiscall*)(void*,float*,float,float,float);float point[3]{};
+        reinterpret_cast<Unproject>(base+0x13660f0)(render.data(),point,0,0,1);
+        float distance=-2/(point[1]-2);return MovePoint100{{point[0]*distance,0,point[2]*distance},0,0};
+    };
+    state->yaw=-.2f;state->pitch=-.3f;auto start101=aim_ground101(state->yaw,state->pitch);
+    float old_yaw=state->yaw,old_pitch=state->pitch;mouse_look101(160,-20,0,.008f);
+    auto end101=aim_ground101(state->yaw,state->pitch);
+    auto held101=field<uintptr_t>(cursor,0x28),current101=field<uintptr_t>(cursor,0x24);
+    field<uintptr_t>(held101,0xc)=reinterpret_cast<uintptr_t>(&start101);field<uintptr_t>(current101,0xc)=reinterpret_cast<uintptr_t>(&end101);
+    using NativeWidth101=float(__thiscall*)(void*,unsigned,float,float);
+    float width101=reinterpret_cast<NativeWidth101>(base+0x2acfa0)(reinterpret_cast<void*>(cursor),0,0,4096);
+    require(end101.position[0]>start101.position[0]&&std::abs(width101-std::hypot(end101.position[0]-start101.position[0],end101.position[2]-start101.position[2]))<.0001f,"Original native left/right drag width disagrees with aimed endpoints");
+    field<uintptr_t>(held101,0xc)=field<uintptr_t>(current101,0xc)=0;
+    require(state->yaw!=old_yaw&&state->pitch!=old_pitch&&command_placing100,"Q froze or exited first-person mouse aim");
     require(command_window100(window,WM_MOUSEMOVE,0,MAKELPARAM(64,96))&&field<unsigned char>(base,0x17acf95)==1,"Q drag lost the native right-button bit");
     require(command_window100(window,WM_KEYUP,'Q',0)&&!command_placing100&&native_messages100.back()==WM_RBUTTONUP&&native_events100.back()==4&&field<unsigned char>(cursor,0x5b)==0&&field<unsigned char>(base,0x17acf95)==0,"Q release did not use native event4 cleanup");
     command100::Event event{};require(!command_pop100(event)&&packets100.size()==packets_before,"Q constructed a custom movement packet");
@@ -214,6 +245,44 @@ int main(){SetUnhandledExceptionFilter(&fault100);try{
     field<uintptr_t>(P::ptr(fixture.root),0)=0;require(command_window100(window,WM_KEYDOWN,'Q',0)&&!command_placing100,"Foreign UI root admitted stock input");field<uintptr_t>(P::ptr(fixture.root),0)=base+0x170d284;
     auto characters_before=native_messages100.size();for(auto key:{'q','e','z','c','r'})weapon_window_proc(window,WM_CHAR,key,0);
     require(native_messages100.size()==characters_before&&!keyboard_window_owned84(VK_F2),"Command characters leaked or native F2 was remapped");
+    require(!command_window100(window,RETURN_RTS_MESSAGE90,12345,0),"Q cleanup consumed the saved RTS-return message");
+    // Execute the actual camera-boundary follow service with stationary actor
+    // translation and changing body/view angles. Only the initial native order
+    // is permitted; a subsequent real translation must issue a travel heading.
+    fixture.clear_queue();command_key_held100=0;command_follow100.reset();state->follow=1;
+    field<float>(possessed,0x48)=10;field<float>(possessed,0x4c)=3;field<float>(possessed,0x50)=20;
+    state->heartbeat=GetTickCount64();process_orders(P::ptr(fixture.camera));
+    require(packets100.size()==1,"Stationary Follow Me failed to form up initially");
+    for(unsigned i=0;i<600;++i){
+        command_follow100.next=0;field<unsigned short>(possessed,0x64)=static_cast<unsigned short>(i*109);
+        state->yaw=float(i)*.1f;state->heartbeat=GetTickCount64();process_orders(P::ptr(fixture.camera));
+        require(packets100.size()==1,"Mouse/body facing restarted stationary native formation");
+    }
+    field<float>(possessed,0x48)=11;command_follow100.next=0;state->heartbeat=GetTickCount64();process_orders(P::ptr(fixture.camera));
+    require(packets100.size()==2&&packets100.back().shorts[0]==16384,"Follow did not use actual travel direction");
+    state->follow=0;command_follow100.reset();
+    std::array<unsigned char,32> controller101{},crosshair101{};
+    interface_root=P::ptr(fixture.root);interface_environment=environment;
+    interface_controller=reinterpret_cast<uintptr_t>(controller101.data());interface_crosshair=reinterpret_cast<uintptr_t>(crosshair101.data());
+    field<uintptr_t>(base,0x1bbe364)=interface_root;field<uintptr_t>(P::ptr(fixture.root),0xd08)=interface_controller;
+    field<uintptr_t>(interface_controller,4)=interface_crosshair;interface_original_state[0]=0;saved_widget_count=0;
+    auto test_camera=P::ptr(fixture.camera);interface_hip_fov=.6f;
+    for(unsigned lifecycle=0;lifecycle<3;++lifecycle){
+        interface_camera=test_camera;interface_active=1;field<float>(test_camera,0x34)=.15f;field<float>(test_camera,0x38)=5000;
+        require(interface_clip101.capture(.15f,5000)&&interface_clip101.apply(field<float>(test_camera,0x34)),"Native interface near capture");
+        if(lifecycle==1)field<float>(test_camera,0x34)=.07f;
+        if(lifecycle==2)field<uintptr_t>(P::ptr(fixture.manager),0x8e0)=test_camera+4;
+        interface_restore();
+        require(field<float>(test_camera,0x34)==(lifecycle==0?.15f:lifecycle==1?.07f:.02f),"Interface changed a foreign/stale clip plane or failed exact restoration");
+        require(field<float>(test_camera,0x38)==5000,"Near correction changed native far plane");
+        field<uintptr_t>(P::ptr(fixture.manager),0x8e0)=test_camera;
+    }
+    aim_frame={};aim_frame.actor=possessed;aim_frame.env=environment;aim_frame.tick=GetTickCount64();
+    aim_frame.lease101=possession_lease.generation;aim_frame.serial101=possession_lease.identity.actor_id;aim_frame.unit101=possession_lease.identity.unit_id;
+    ViewRay strict_eye101{};require(read_aim_frame(strict_eye101,true),"Current eye identity rejected");
+    ++aim_frame.lease101;require(!read_aim_frame(strict_eye101,true),"Prior possession eye reused");--aim_frame.lease101;
+    ++aim_frame.serial101;require(!read_aim_frame(strict_eye101,true),"Foreign actor eye reused");--aim_frame.serial101;
+    ++aim_frame.unit101;require(!read_aim_frame(strict_eye101,true),"Foreign unit eye reused");
     input_window=nullptr;native_window_proc=nullptr;DestroyWindow(window);
     require(context_cleanups100==group_cleanups100,"Native order/context cleanup lifecycles differ");
     std::cout<<"PASS: "<<calls<<" original native formation packets; point/fire/guard ABI and atomic queue failure; actual lease/foreign guards; native scene/sort lifetime; per-draw command volleys; 1000 original skin-cache/visibility cycles and restoration; stock native Q/RMB press-drag-release and no-order focus cleanup. Providers/allocators are fixture substitutions; no game loaded or launched.\n";return 0;

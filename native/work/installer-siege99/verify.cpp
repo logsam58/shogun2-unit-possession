@@ -344,6 +344,21 @@ int wmain(){try{
     require(read_bytes(dll+L".possession-previous")==published_loader&&read_bytes(pack+L".possession-previous")==published_pack,"Published predecessor rollback backup differs");
     std::cout<<"PASS: exact published v0.15 predecessor upgrade and seven interruption rollbacks.\n";
 
+    auto previous100_loader=read_bytes(L"../autoload-test100-baseline/dinput8.dll"),previous100_pack=read_bytes(L"../autoload-test100-baseline/marker.pack");
+    require(!previous100_loader.empty()&&!previous100_pack.empty(),"Test100 predecessor fixtures missing");
+    for(int interruption=0;interruption<7;++interruption){
+        {flashstartup86::Key key;require(RegOpenKeyExW(flashstartup86::hive,flashstartup86::key_path.c_str(),0,KEY_SET_VALUE|KEY_WOW64_32KEY,&key.value)==ERROR_SUCCESS,"Test100 fixture flag reset");DWORD zero=0;
+         for(auto name:flashstartup86::names)require(RegSetValueExW(key.value,name,0,REG_DWORD,reinterpret_cast<BYTE*>(&zero),4)==ERROR_SUCCESS,"Test100 fixture flag write");}
+        atomic_bytes(dll,previous100_loader);atomic_bytes(pack,previous100_pack);auto saved_selection=read_bytes(selection),saved_cache=read_bytes(cache);
+        failed=false;try{install_all(game,data,{},interruption,local);}catch(...){failed=true;}
+        require(failed&&read_bytes(dll)==previous100_loader&&read_bytes(pack)==previous100_pack&&read_bytes(selection)==saved_selection&&read_bytes(cache)==saved_cache,"Test100 interruption failed rollback");
+    }
+    install_all(game,data,{},-1,local);require(hash_file(dll)==SETUP_BOOTSTRAP_SHA&&hash_file(pack)==EMBEDDED_PACK_SHA,"Test100 predecessor upgrade failed");
+    require(read_bytes(dll+L".possession-previous")==previous100_loader&&read_bytes(pack+L".possession-previous")==previous100_pack,"Test100 rollback backup differs");
+    install_all(game,data,{},-1,local);
+    require(read_bytes(dll+L".possession-previous")==previous100_loader&&read_bytes(pack+L".possession-previous")==previous100_pack,"Repeat install rotated Test100 backup");
+    std::cout<<"PASS: exact Test100 predecessor upgrade, seven interruption rollbacks and repeat-install backup retention.\n";
+
     failed=false;try{launcher_selection("{\"unknown\":true}",game);}catch(...){failed=true;}require(failed,"Unknown cache accepted");
     std::string result="PASS: embedded payload hashes, transaction rollback, install/update/idempotency, actual checkpoint45 upgrade and interrupted-upgrade rollback, launcher activation and unrelated-entry preservation, DLL collision refusal, UTF8/UTF16 selection preservation, unknown-cache refusal. Fixture: "+utf8(root)+"\n";
     std::ofstream report(root.substr(0,root.find_last_of(L'\\'))+L"\\verification-result.txt");report<<result;report.close();std::cout<<result;return 0;

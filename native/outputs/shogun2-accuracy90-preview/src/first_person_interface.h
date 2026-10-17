@@ -1,4 +1,5 @@
 #pragma once
+#include "first_person_presentation101.h"
 // Native UI operations execute only on the game's window/camera thread.
 using UIVisible=void(__thiscall*)(void*,unsigned);
 using UIState=bool(__thiscall*)(void*,const void*);
@@ -18,6 +19,7 @@ static unsigned saved_widget_count;
 static uintptr_t interface_root,interface_environment,interface_crosshair,interface_controller,interface_camera;
 static volatile LONG interface_active;
 static float interface_hip_fov;
+static firstperson101::NearClip interface_clip101;
 static float interface_original_up[3];
 static unsigned char interface_matrix_override;
 static char interface_original_state[64];
@@ -62,6 +64,7 @@ static void interface_restore(){
             if(interface_original_state[0])ui_state(interface_crosshair,interface_original_state);
             uintptr_t manager=field<uintptr_t>(interface_environment,0x281fc);
             if(manager&&field<uintptr_t>(manager,0x8e0)==interface_camera&&field<uintptr_t>(interface_camera,0)==base+0x15d22e8){
+                interface_clip101.restore(field<float>(interface_camera,0x34),true);
                 reinterpret_cast<CameraFOV>(base+0x136ec70)(reinterpret_cast<void*>(interface_camera),interface_hip_fov);
                 for(unsigned i=0;i<3;++i)field<float>(interface_camera,0x58+i*4)=interface_original_up[i];
                 field<unsigned char>(interface_camera,0xa4)=interface_matrix_override;
@@ -71,7 +74,7 @@ static void interface_restore(){
         if(original_set_cursor)original_set_cursor(interface_cursor?interface_cursor:LoadCursorW(nullptr,MAKEINTRESOURCEW(32512)));
         ++state->interface_restores;
     }__except(EXCEPTION_EXECUTE_HANDLER){state->interface_error=103;own_ui_call=0;}
-    saved_widget_count=0;interface_camera=0;state->hud_hidden=state->crosshair_visible=0;
+    interface_clip101={};saved_widget_count=0;interface_camera=0;state->hud_hidden=state->crosshair_visible=0;
 }
 static void __fastcall ui_visible_hook(void* widget,void*,unsigned visible){
     if(interface_active&&!own_ui_call&&enabled&&!state->stop&&!state->release&&state->mode==POSSESSED){
@@ -112,6 +115,7 @@ static bool interface_capture(uintptr_t camera){
         unsigned n=field<unsigned>(interface_root,0x9c);uintptr_t array=field<uintptr_t>(interface_root,0xa0);
         if(!array||n<1||n>64)return false;
         interface_hip_fov=field<float>(camera,0x24);
+        if(!interface_clip101.capture(field<float>(camera,0x34),field<float>(camera,0x38)))return false;
         interface_matrix_override=field<unsigned char>(camera,0xa4);
         for(unsigned i=0;i<3;++i)interface_original_up[i]=field<float>(camera,0x58+i*4);
         if(!std::isfinite(interface_hip_fov)||interface_hip_fov<0.1f||interface_hip_fov>2.5f)return false;
@@ -154,6 +158,7 @@ static void interface_update(uintptr_t camera){
             save_widget(widget,widget==interface_crosshair?1:0);
             if(old_count!=saved_widget_count){own_ui_call=1;original_ui_visible(reinterpret_cast<void*>(widget),widget==interface_crosshair?1:0);own_ui_call=0;}
         }
+        // During Q the stock context cursor stays at the centered aim point.
         unsigned crosshair=0;
         auto kind=native_personal_kind(bow_record(unit));
         // Test90 HUD owns the four movable firearm bars and projectile drop dashes.
@@ -181,6 +186,7 @@ static void interface_update(uintptr_t camera){
         state->native_matrix_override=interface_matrix_override;
         state->aim_blend=0;state->view_fov=POSSESSION_FOV;
         reinterpret_cast<CameraFOV>(base+0x136ec70)(reinterpret_cast<void*>(camera),state->view_fov);
+        interface_clip101.apply(field<float>(camera,0x34),!dead_view());
         float projection[16]{};
         using Projection90=float*(__thiscall*)(void*,float*);
         reinterpret_cast<Projection90>(base+0x1367e20)(reinterpret_cast<void*>(camera),projection);

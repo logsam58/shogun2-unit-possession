@@ -18,7 +18,7 @@ static command100::Frame command_frame100;
 static command100::Event command_events100[32];
 static unsigned command_read100,command_write100,command_key_held100;
 static volatile LONG command_placing100,command_input_overflow100,command_recenter100;
-static constexpr UINT COMMAND_CANCEL_MESSAGE100=WM_APP+0x53b;
+static constexpr UINT COMMAND_CANCEL_MESSAGE100=WM_APP+0x53c;
 static bool command_window100(HWND window,UINT message,WPARAM key,LPARAM flags);
 static void command_input_reset100(){
     AcquireSRWLockExclusive(&command_input_lock100);command_read100=command_write100=0;command_frame100={};

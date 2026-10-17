@@ -68,10 +68,13 @@ inline bool pitch_world_point(float* origin,const float* pivot_model,const float
     for(unsigned row=0;row<3;++row){origin[row]=pivot[row];for(unsigned col=0;col<3;++col)origin[row]+=world[row*4+col]*local[col];}
     return true;
 }
-inline bool pose_owned_matrices(float* m,unsigned n,const int32_t* parents,unsigned left,unsigned right,unsigned head,unsigned neck,const unsigned* weapons,float pitch,bool aiming){
+inline bool pose_owned_matrices(float* m,unsigned n,const int32_t* parents,unsigned left,unsigned right,unsigned head,unsigned neck,const unsigned* weapons,float pitch,bool aiming,const float* eye_pivot=nullptr){
     if(!m||!parents||n<1||n>256||left>=n||right>=n||head>=n||neck>=n||!std::isfinite(pitch))return false;
     for(unsigned i=0;i<n*12;++i)if(!std::isfinite(m[i]))return false;
-    float pivot[3];for(unsigned k=0;k<3;++k)pivot[k]=(m[left*12+3+k*4]+m[right*12+3+k*4])*0.5f;
+    float pivot[3];for(unsigned k=0;k<3;++k){
+        pivot[k]=eye_pivot?eye_pivot[k]:(m[left*12+3+k*4]+m[right*12+3+k*4])*0.5f;
+        if(!std::isfinite(pivot[k]))return false;
+    }
     float hidden[3]={m[neck*12+3],m[neck*12+7],m[neck*12+11]};
     for(unsigned i=0;i<n;++i){
         if(aiming&&(bone_descends(i,left,parents,n)||bone_descends(i,right,parents,n)||i==weapons[0]||i==weapons[1]||i==weapons[2]))pitch_matrix(m+i*12,pivot,pitch);

@@ -2,6 +2,8 @@
 #include "pose_geometry.h"
 #include "self_visibility100.h"
 #include "seated_weapon_geometry.h"
+#include "first_person_presentation101.h"
+static volatile LONG infantry_eye_updates101,infantry_eye_rejects101;
 #include "arrow_render_geometry.h"
 #include "mounted_hold_geometry.h"
 #include "mounted_settle_geometry88.h"
@@ -40,6 +42,7 @@ static bool pose_carbine_valid;
 static float pose_carbine_world[3];
 static float pose_muzzle_transform[12];
 static bool pose_muzzle_transform_valid;
+static bool pose_infantry_pitch101;
 static bool carbine_socket_profile(uintptr_t actor,uintptr_t binding,unsigned clip){
     if(clip!=758)return false;
     if(!mounted_carbine_native_profile(actor))return false;
@@ -113,7 +116,7 @@ static void restore_soldier_pose(){
             memcpy(reinterpret_cast<void*>(pose_array),pose_before,pose_count*48);++state->pose_restores;
         }
     }__except(EXCEPTION_EXECUTE_HANDLER){state->pose_error=3;}
-    pose_saved=false;pose_arrow_valid=false;pose_carbine_valid=false;pose_muzzle_transform_valid=false;mounted_held_palette.reset();mounted_acquisition88.reset();mounted_transition71.reset();
+    pose_saved=false;pose_arrow_valid=false;pose_carbine_valid=false;pose_muzzle_transform_valid=false;pose_infantry_pitch101=false;mounted_held_palette.reset();mounted_acquisition88.reset();mounted_transition71.reset();
     ReleaseSRWLockExclusive(&pose_lock);
 }
 static void apply_soldier_pose(uintptr_t holder,uintptr_t result){
@@ -122,6 +125,7 @@ static void apply_soldier_pose(uintptr_t holder,uintptr_t result){
         bool mounted=possession_lease.identity.mount!=0;bool climbing97=!mounted&&wall_subject97(possessed);
         if(field<unsigned char>(possessed,0xf0)!=1||field<uintptr_t>(holder,8)!=possessed||!followed(possessed,false)||
            (!mounted&&!climbing97&&field<unsigned>(possessed,0x1f0)>=18))return;
+        pose_infantry_pitch101=false;
         melee60::Request commitment;bool combat_pose96=melee_request(commitment);if(mounted&&combat_pose96){mounted_transition71.reset();return;} // Native paired animation owns the complete rig.
         uintptr_t binding=field<uintptr_t>(holder,0x1e4);if(!binding)return;
         uintptr_t asset=field<uintptr_t>(binding,0x1c);if(!asset)return;
@@ -186,6 +190,13 @@ static void apply_soldier_pose(uintptr_t holder,uintptr_t result){
         // Native lowering/reload still animates the arms. Keep the same look-space
         // correction when RMB goes up, rather than removing it on that input edge.
         bool infantry_look96=!mounted&&!climbing97&&equipment_ranged_selected81()&&!combat_pose96;
+        if(infantry_look96){
+            ViewRay view101{};
+            if(!read_aim_frame(view101,true)||!firstperson101::eye_in_model(pose_world,view101.origin,pose_pivot)){
+                InterlockedIncrement(&infantry_eye_rejects101);return;
+            }
+            InterlockedIncrement(&infantry_eye_updates101);
+        }
         pose_muzzle_transform_valid=false;pose_carbine_valid=false;
         if(mounted){
             unsigned spine=mounted_spine_index;
@@ -221,7 +232,7 @@ static void apply_soldier_pose(uintptr_t holder,uintptr_t result){
                 memcpy(reinterpret_cast<void*>(array),pose_before,n*48);
                 mounted_held_palette.reset();pose_muzzle_transform_valid=false;return;
             }
-        }else if(!pose_owned_matrices(reinterpret_cast<float*>(array),n,parents,indices[0],indices[1],indices[2],indices[3],indices+4,pitch,infantry_look96))return;
+        }else if(!pose_owned_matrices(reinterpret_cast<float*>(array),n,parents,indices[0],indices[1],indices[2],indices[3],indices+4,pitch,infantry_look96,infantry_look96?pose_pivot:nullptr))return;
         if(carbine_profile&&aiming){
             ViewRay ray{};if(read_aim_frame(ray))align_mounted_carbine(reinterpret_cast<float*>(array),n,parents,indices[0],indices[1],indices+4,pose_world,ray.direction);
         }
@@ -277,7 +288,7 @@ static void apply_soldier_pose(uintptr_t holder,uintptr_t result){
 
         pose_actor=possessed;pose_environment=environment;pose_tick=GetTickCount64();
         pose_actor_id=possession_lease.identity.actor_id;pose_unit=unit;pose_unit_id=possession_lease.identity.unit_id;
-        pose_config=possession_lease.identity.config;
+        pose_config=possession_lease.identity.config;pose_infantry_pitch101=infantry_look96;
         ++state->pose_updates;if(aiming)++state->pose_aim_updates;state->pose_pitch=(mounted||infantry_look96)?pitch:0;state->pose_bones=n;
         state->pose_weapon_record=record_id;state->pose_native_clip=native_clip;state->pose_native_bias=state->pitch-pitch;
     }__except(EXCEPTION_EXECUTE_HANDLER){state->pose_error=1;}
@@ -310,6 +321,7 @@ static bool prepare_self_skin100(uintptr_t holder,uintptr_t result,SelfSkin100& 
         const unsigned offsets[7]={0x9c,0xa0,0xa8,0xa4,0x90,0x94,0x98};unsigned indices[7]{};
         for(unsigned i=0;i<7;++i){auto bone=field<uintptr_t>(skin.binding,offsets[i]);if(!bone)return false;indices[i]=field<unsigned>(bone,4);if(indices[i]>=skin.count)return false;}
         skin.head=indices[0];skin.neck=indices[1];skin.left=indices[2];skin.right=indices[3];memcpy(skin.weapons,indices+4,sizeof skin.weapons);
+        if(skin.head==skin.left||skin.head==skin.right||skin.left==skin.right)return false;
         for(unsigned i=0;i<skin.count;++i)skin.parents[i]=field<int32_t>(hierarchy,i*20+16);
         memcpy(skin.native,reinterpret_cast<void*>(skin.array),skin.count*48);
         return true;
@@ -337,20 +349,28 @@ static void finish_self_skin100(const SelfSkin100& skin){
         InterlockedIncrement(&self_visibility_updates100);
     }__except(EXCEPTION_EXECUTE_HANDLER){InterlockedIncrement(&self_visibility_rejects100);}
 }
+static void native_skin_cache101(void* holder,void* result,const SelfSkin100& skin){
+    // The original method retains the live palette pointer and caches raw head
+    // position plus the shoulder axis. Presentation must not feed back into
+    // native camera/animation calculations. All three sockets are proven unique.
+    const unsigned sockets[3]={skin.head,skin.left,skin.right};float presented[3][3]{};
+    for(unsigned socket=0;socket<3;++socket)for(unsigned row=0;row<3;++row){
+        auto offset=sockets[socket]*12+row*4+3;auto palette=reinterpret_cast<float*>(skin.array);
+        presented[socket][row]=palette[offset];palette[offset]=skin.native[offset];
+    }
+    __try{original_skin_ready(holder,result);}
+    __finally{for(unsigned socket=0;socket<3;++socket)for(unsigned row=0;row<3;++row)
+        reinterpret_cast<float*>(skin.array)[sockets[socket]*12+row*4+3]=presented[socket][row];}
+}
 static void __fastcall skin_ready_hook(void* holder,void*,void* result){
     AcquireSRWLockExclusive(&pose_lock);
     __try{
         SelfSkin100 skin{};bool owned=prepare_self_skin100(reinterpret_cast<uintptr_t>(holder),reinterpret_cast<uintptr_t>(result),skin);
-        if(owned){pose_arrow_valid=false;pose_carbine_valid=false;pose_muzzle_transform_valid=false;}
+        if(owned){pose_arrow_valid=false;pose_carbine_valid=false;pose_muzzle_transform_valid=false;pose_infantry_pitch101=false;}
         capture_model_eye(reinterpret_cast<uintptr_t>(holder),reinterpret_cast<uintptr_t>(result));
         apply_soldier_pose(reinterpret_cast<uintptr_t>(holder),reinterpret_cast<uintptr_t>(result));
         if(owned&&current_self_skin100(skin)){
-            float presented_head[3]{};auto head=reinterpret_cast<float*>(skin.array)+skin.head*12;
-            for(unsigned i=0;i<3;++i){presented_head[i]=head[i*4+3];head[i*4+3]=skin.native[skin.head*12+i*4+3];}
-            // Native4c56d0 retains the palette and caches the head position.
-            // Let it cache the real head before collapsing self-only geometry.
-            __try{original_skin_ready(holder,result);}
-            __finally{for(unsigned i=0;i<3;++i)head[i*4+3]=presented_head[i];}
+            native_skin_cache101(holder,result,skin);
             finish_self_skin100(skin);
         }else original_skin_ready(holder,result);
     }__finally{ReleaseSRWLockExclusive(&pose_lock);}
@@ -369,7 +389,7 @@ static void pose_manual_origin(float* origin){
             float next[3];for(unsigned r=0;r<3;++r){next[r]=pose_muzzle_transform[r*4+3];for(unsigned c=0;c<3;++c)next[r]+=pose_muzzle_transform[r*4+c]*origin[c];}
             bool valid=true;for(unsigned r=0;r<3;++r)if(!std::isfinite(next[r])||std::abs(next[r]-field<float>(possessed,0x48+r*4))>4)valid=false;
             if(valid){memcpy(origin,next,sizeof next);++state->pose_muzzle_updates;}
-        }else if(record){float pitch=weapon_pose_pitch(is_bow_projectile(record)?3:field<unsigned>(record,0),weapon_clip,state->pitch);
+        }else if(record&&pose_infantry_pitch101){float pitch=weapon_pose_pitch(is_bow_projectile(record)?3:field<unsigned>(record,0),weapon_clip,state->pitch);
             if(pitch_world_point(origin,pose_pivot,pose_world,pitch))++state->pose_muzzle_updates;}
     }
     }__finally{ReleaseSRWLockShared(&pose_lock);}

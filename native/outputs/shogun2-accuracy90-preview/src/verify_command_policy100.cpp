@@ -21,14 +21,19 @@ int main(){try{
     for(unsigned scan:scans)current[scan]=0x80;filter.apply(current,previous,false,true);for(unsigned scan:scans)require(current[scan]==0,"Held key leaked into RTS handoff");
     memset(current,0,sizeof current);filter.apply(current,previous,false,true);current[scans[0]]=0x80;filter.apply(current,previous,false,true);require(current[scans[0]]==0x80,"Released command key stayed masked in RTS");
     require(next_fire(FireMode::Hold)==FireMode::AtWill&&next_fire(FireMode::AtWill)==FireMode::OnCommand&&next_fire(FireMode::OnCommand)==FireMode::Hold,"Requested firing cycle differs");
-    FollowTarget follow;Point p{10,0,20};require(follow.changed(p,0,1000),"Stationary initial follow not issued");follow.accepted(p,0,1000);
-    require(!follow.changed(p,0,100000),"Stationary formation restarts continuously");require(follow.changed({11,0,20},0,100000)&&follow.changed(p,.2f,100000),"Leader movement/facing not followed");
+    FollowTarget follow;Point p{10,0,20};require(follow.changed(p,1000),"Stationary initial follow not issued");follow.accepted(p,0,1000);
+    for(unsigned i=0;i<3600;++i){
+        float look=float(i)*.1f;require(!follow.changed(p,2000+i*16),"Mouse look restarted a stationary formation");
+        require(std::abs(follow.heading({11,0,20},look)-tau*.25f)<1e-6f,"Travel heading inherited mouse look");
+    }
+    require(!follow.changed({10.5f,0,20},100000)&&follow.changed({11,0,20},100000),"Follow translation threshold differs");
+    require(!follow.changed({NAN,0,20},100000),"Nonfinite follow target accepted");
     int32_t parents[8]={-1,0,0,0,3,-1,-1,-1};unsigned weapons[3]={5,6,7};float native[96]{},visible[96]{};
     for(unsigned i=0;i<8;++i){native[i*12]=native[i*12+5]=native[i*12+10]=1;native[i*12+7]=1.6f;native[i*12+11]=.2f;}native[4*12+7]=1.8f;
     memcpy(visible,native,sizeof native);
     for(unsigned i=0;i<1000;++i)require(visibility100::hide(visible,native,8,parents,4,3,1,2,weapons),"Self visibility rejected valid native rig");
     for(unsigned i:{0u,1u,2u,5u,6u,7u})require(!memcmp(visible+i*12,native+i*12,48),"Self visibility changed body/arms/weapon");
-    require(visible[3*12]==.0001f&&visible[4*12]==.0001f,"Neck/head hiding accumulated scale");
+    require(visible[3*12]==1.f&&visible[4*12]==.0001f,"Neck/head hiding accumulated scale");
     parents[1]=3;memcpy(visible,native,sizeof native);require(visibility100::hide(visible,native,8,parents,4,3,1,2,weapons)&&visible[1*12]==1&&visible[3*12]==1,"Neck branch swallowed an arm");
     parents[1]=0;parents[0]=4;float untouched[96];memcpy(untouched,visible,sizeof visible);require(!visibility100::hide(visible,native,8,parents,4,3,1,2,weapons)&&!memcmp(visible,untouched,sizeof visible),"Invalid hierarchy partially mutated");
     command100::Status sample{};sample.magic=magic;sample.version=100;sample.size=sizeof sample;sample.pid=1;sample.lease=2;sample.actor=3;sample.unit=4;sample.tick=100;

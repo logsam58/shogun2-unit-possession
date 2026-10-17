@@ -6,7 +6,7 @@ The battle continues around you. The game still runs the armies, formations, pat
 
 **[Download v0.15](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.15)** | [Known issues](docs/KNOWN_ISSUES.md) | [Build instructions](BUILD_AND_TEST.md) | [Contributing](CONTRIBUTING.md)
 
-**Development branch:** Test100 adds the Q/E/Z/C/R unit controls below and a first-person self-visibility correction. It is an unpublished candidate awaiting live validation. The linked v0.15 download retains its original F5/F6/F7 unit orders and Q/E steering.
+**Development branch:** Test100 was rejected in live play for Q placement, mouse-driven Follow Me movement and rifle/arm clipping. Test101 is the unpublished correction candidate described below; live acceptance is pending. The linked v0.15 download retains its original F5/F6/F7 unit orders and Q/E steering.
 
 ## What the mod does
 
@@ -50,10 +50,10 @@ Climbing uses native wall geometry, the unit's climb-speed parameters and animat
 
 The development build uses the controls below while possessed:
 
-- **Q - Advance:** tap to give the ordinary RTS order at the pointer; hold Q and drag to use the game's original formation placement, then release to commit. Q remaps the stock right-button gesture through the native game window procedure. The game owns placement graphics, frontage, target selection, constraints and order submission; there is no replacement formation overlay.
+- **Q - Advance:** aim at the ground and tap Q for the ordinary RTS point order. Hold Q and move your aim from left to right to lay out the formation, then release Q to commit. First-person mouse-look stays active and the native context cursor stays at the crosshair. Q remaps the stock right-button gesture at that aim point; the game owns placement graphics, frontage, constraints and order submission. There is no replacement formation overlay.
 - **E - Stop:** issue the native halt command.
 - **Z - Hold Here:** form up at the possessed soldier's position and facing captured at the keypress, with native guard behavior.
-- **C - Follow Me:** keep a normal native formation beside/around the possessed soldier, including forming up when the player is stationary. Movement and facing changes update its native goal; an unchanged goal is allowed to finish without repeated restarts.
+- **C - Follow Me:** keep a normal native formation beside/around the possessed soldier, including forming up when the player is stationary. Actual movement updates its native goal and travel direction. Looking around while stationary does not issue new orders; the existing formation is allowed to finish.
 - **R - Firing policy:** cycle **Hold Fire -> Fire at Will -> Fire on Command**. Command mode allows a same-unit native volley after a successful personal shot. Failed clicks/dry draws do not authorize one; native aiming, reload, ammunition and weapon release sequences remain in charge.
 
 These commands retain native pathfinding, formation movement, morale and casualties. E/Z/C replace following; Q replaces it when its gesture is released. Commands are unavailable during owned paired combat, climbing or airborne landing. Ordinary firing outside the explicitly selected command-fire mode retains independent unit AI. The published v0.15 release uses F5/F6/F7 for halt/advance/follow.
@@ -86,7 +86,7 @@ The supported `Empire.Retail.dll` SHA256 is `022fae2e2da92b59b8b1b8ee52887003c62
 | WASD | Move; W/S become ascent/descent while climbing |
 | Shift | Run when the native unit state permits |
 | Mouse | Look and aim |
-| Q | Native RTS point order; hold and drag for native formation placement |
+| Q | Aim at the ground; tap for a point order or hold and move aim left/right for native formation placement |
 | E | Stop the possessed unit |
 | Z | Hold at the player position and facing captured at keypress |
 | C | Follow and form up beside/around the player |

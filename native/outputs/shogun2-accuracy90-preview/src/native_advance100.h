@@ -1,6 +1,6 @@
 #pragma once
-// Q remaps the stock RMB gesture. No frontage math, custom target picking,
-// custom preview or independently constructed Q move packet lives here.
+// Q remaps the stock RMB gesture at the first-person aim point. Mouse look
+// stays active; no free cursor, frontage math, replacement preview or Q packet.
 using NativeMouseDecode100=unsigned(__cdecl*)(HWND,UINT,WPARAM,LPARAM,int,int,int);
 using NativeCursorEvent100=void(__thiscall*)(void*,const unsigned*,unsigned,unsigned,unsigned);
 static uintptr_t command_native_root100;
@@ -15,8 +15,10 @@ static bool command_native_context100(uintptr_t root,uintptr_t expected_environm
 }
 static WPARAM command_native_modifiers100(){return ((GetKeyState(VK_SHIFT)&0x8000)?MK_SHIFT:0)|((GetKeyState(VK_CONTROL)&0x8000)?MK_CONTROL:0);}
 static LPARAM command_native_point100(HWND window,RECT& client){
-    POINT p{};if(!GetClientRect(window,&client)||client.right<200||client.bottom<200||!GetCursorPos(&p)||!ScreenToClient(window,&p))return -1;
-    p.x=std::clamp(p.x,0L,client.right-1);p.y=std::clamp(p.y,0L,client.bottom-1);return MAKELPARAM(p.x,p.y);
+    if(!GetClientRect(window,&client)||client.right<200||client.bottom<200)return -1;
+    // The visible aim point is the client center. Physical cursor motion is
+    // consumed by normal FPS look, including while Q is held.
+    return MAKELPARAM(client.right/2,client.bottom/2);
 }
 static void command_native_cancel100(){
     if(!command_native_root100)return;
@@ -68,7 +70,10 @@ static bool command_native_mouse100(HWND window,UINT message,WPARAM flags,LPARAM
     if(!command_native_ready100(window)||command_native_lease100!=possession_lease.generation){command_native_cancel100();return false;}
     __try{
         if(!command_native_context100(command_native_root100)){command_native_cancel100();return false;}
-        if(message==WM_MOUSEMOVE){CallWindowProcW(native_window_proc,window,message,(flags|MK_RBUTTON)&~MK_LBUTTON,point);InterlockedIncrement(&command_native_moves100);return true;}
+        if(message==WM_MOUSEMOVE){
+            RECT client{};point=command_native_point100(window,client);if(point==-1){command_native_cancel100();return true;}
+            CallWindowProcW(native_window_proc,window,message,(flags|MK_RBUTTON)&~MK_LBUTTON,point);InterlockedIncrement(&command_native_moves100);return true;
+        }
     }__except(EXCEPTION_EXECUTE_HANDLER){command_native_cancel100();}
     return false;
 }

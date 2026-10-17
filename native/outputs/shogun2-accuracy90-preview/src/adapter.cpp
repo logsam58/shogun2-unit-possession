@@ -31,6 +31,7 @@ static constexpr UINT RETURN_RTS_MESSAGE90=WM_APP+0x53b;
 static void request_rts_restore90();
 static void restore_rts_on_window90(uint32_t generation=0);
 static constexpr UINT ENTER_SOLDIER_MESSAGE=WM_APP+0x53a;
+static_assert(COMMAND_CANCEL_MESSAGE100!=RETURN_RTS_MESSAGE90&&COMMAND_CANCEL_MESSAGE100!=ENTER_SOLDIER_MESSAGE&&COMMAND_CANCEL_MESSAGE100!=RESTORE_INTERFACE_MESSAGE,"Private command/window messages must remain distinct");
 static __declspec(thread) LONG camera_callback_depth;
 static volatile LONG motion_callback_depth,entry_pending,entry_attempted;
 static volatile LONG climb_action97;
@@ -758,6 +759,20 @@ static void snapshot_log(std::ofstream& log) {
         <<",\"before\":["<<s.before[0]<<','<<s.before[1]<<','<<s.before[2]<<"],\"after\":["<<s.after[0]<<','<<s.after[1]<<','<<s.after[2]
         <<"],\"velocity\":["<<s.velocity[0]<<','<<s.velocity[1]<<','<<s.velocity[2]<<"],\"bearing\":"<<s.bearing<<",\"yaw\":"<<s.yaw<<",\"pitch\":"<<s.pitch<<",\"native_eye_y\":"<<s.native_eye_y<<",\"raised_eye_y\":"<<s.raised_eye_y<<",\"mouse_events\":"<<s.mouse_events<<",\"controlled_updates\":"<<s.controlled_updates<<",\"other_updates\":"<<s.other_updates<<",\"camera_cancels\":"<<s.camera_cancels<<",\"camera_suppressed\":"<<s.camera_suppressed<<",\"cancel_caller_rva\":"<<s.cancel_caller<<",\"orders_sent\":"<<s.orders_sent<<",\"last_order\":"<<s.last_order<<",\"order_error\":"<<s.order_error<<",\"follow\":"<<s.follow<<",\"packet_size\":"<<s.packet_size<<",\"queue_before\":"<<s.queue_before<<",\"queue_after\":"<<s.queue_after<<",\"window_thread\":"<<s.window_thread<<",\"camera_thread\":"<<s.camera_thread<<",\"order_target\":["<<s.order_target_x<<','<<s.order_target_z<<"],\"formation\":["<<s.formation_x<<','<<s.formation_z<<"],\"formation_count\":"<<s.formation_count<<",\"projectile_camera_suppressed\":"<<s.projectile_camera_suppressed<<",\"weapon_phase\":"<<s.weapon_phase<<",\"weapon_record\":"<<s.weapon_record<<",\"weapon_animation\":"<<s.weapon_animation<<",\"weapon_mouse_captured\":"<<s.weapon_mouse_captured<<",\"aiming\":"<<s.aiming<<",\"aim_pose\":"<<s.aim_pose<<",\"aim_blend\":"<<s.aim_blend<<",\"hip_fov\":"<<s.hip_fov<<",\"view_fov\":"<<s.view_fov<<",\"hud_hidden\":"<<s.hud_hidden<<",\"crosshair_visible\":"<<s.crosshair_visible<<",\"pose_muzzle_updates\":"<<s.pose_muzzle_updates<<",\"pose_weapon_record\":"<<s.pose_weapon_record<<",\"pose_native_clip\":"<<s.pose_native_clip<<",\"pose_native_bias\":"<<s.pose_native_bias<<",\"bow_origin_aligned\":"<<s.bow_origin_aligned<<",\"bow_origin_correction\":"<<s.bow_origin_correction<<",\"shot_camera_origin\":["<<s.shot_camera_origin[0]<<','<<s.shot_camera_origin[1]<<','<<s.shot_camera_origin[2]<<']'<<",\"pose_updates\":"<<s.pose_updates<<",\"pose_aim_updates\":"<<s.pose_aim_updates<<",\"pose_restores\":"<<s.pose_restores<<",\"pose_error\":"<<s.pose_error<<",\"pose_bones\":"<<s.pose_bones<<",\"pose_pitch\":"<<s.pose_pitch<<",\"camera_pitch\":"<<s.camera_pitch<<",\"native_matrix_override\":"<<s.native_matrix_override<<",\"raw_mouse_active\":"<<s.raw_mouse_active<<",\"raw_mouse_error\":"<<s.raw_mouse_error<<",\"raw_mouse_events\":"<<s.raw_mouse_events<<",\"raw_aim_events\":"<<s.raw_aim_events<<",\"raw_y_total\":"<<s.raw_y_total<<",\"raw_aim_y_total\":"<<s.raw_aim_y_total<<",\"interface_error\":"<<s.interface_error<<",\"interface_restores\":"<<s.interface_restores<<",\"cursor_suppressed\":"<<s.cursor_suppressed<<",\"aim_clip\":"<<s.aim_clip<<",\"draws_started\":"<<s.draws_started<<",\"reloads_started\":"<<s.reloads_started<<",\"ai_shots_suppressed\":"<<s.ai_shots_suppressed<<",\"weapon_release_time\":"<<s.weapon_release_time<<",\"weapon_reload_remaining\":"<<s.weapon_reload_remaining<<",\"shots_queued\":"<<s.shots_queued<<",\"shots_spawned\":"<<s.shots_spawned<<",\"shots_blocked\":"<<s.shots_blocked<<",\"shots_canceled\":"<<s.shots_canceled<<",\"spread_removed\":"<<s.spread_removed<<",\"direct_fire\":"<<s.direct_fire<<",\"launch_delta\":"<<s.launch_delta<<",\"shot_origin\":["<<s.shot_origin[0]<<','<<s.shot_origin[1]<<','<<s.shot_origin[2]<<']'<<",\"shot_velocity\":["<<s.shot_velocity[0]<<','<<s.shot_velocity[1]<<','<<s.shot_velocity[2]<<']'<<",\"shot_view_direction\":["<<s.shot_view_direction[0]<<','<<s.shot_view_direction[1]<<','<<s.shot_view_direction[2]<<']'<<",\"shot_error\":"<<s.shot_error<<",\"fire_ticket\":"<<s.fire_ticket<<",\"shot_packet_size\":"<<s.shot_packet_size<<",\"shot_thread\":"<<s.shot_thread<<",\"ammo_before\":"<<s.ammo_before<<",\"ammo_after\":"<<s.ammo_after<<",\"shot_target\":["<<s.shot_target[0]<<','<<s.shot_target[1]<<','<<s.shot_target[2]<<"],\"error\":"<<s.error<<"}\n";log.flush();
 }
+static void mouse_look101(int dx,int dy,unsigned input,float elapsed){
+    melee60::Request committed;
+    if(!dead_view()&&std::abs(dx)<500&&std::abs(dy)<500){
+        float turn=float(bool(input&TURN_RIGHT))-float(bool(input&TURN_LEFT));
+        if(possession_lease.identity.mount)turn=0; // Mounted keyboard steering does not rotate mouse look.
+        float sensitivity=0.0025f*(1.0f-state->aim_blend*0.55f);
+        LONG heading=InterlockedCompareExchange(&mounted_heading85,0,0);
+        if(!melee_request(committed))state->yaw=mountedlook85::mouse_yaw(state->yaw,float(dx)*sensitivity+turn*1.256637f*elapsed,
+            possession_lease.identity.mount!=0&&heading>=0,unsigned(heading));
+        state->pitch=look96::mouse_pitch(state->pitch,dy,sensitivity);
+        if(dx||dy)++state->mouse_events;
+    }
+}
+
 static DWORD WINAPI worker(void*) {
     std::ofstream log;
     try {
@@ -865,8 +880,8 @@ static DWORD WINAPI worker(void*) {
             was_focus=focus;InterlockedExchange(&state->input,dead_view()?0:LONG(input));
             uint64_t now=GetTickCount64();float elapsed=std::min(float(now-last_mouse)*0.001f,0.05f);last_mouse=now;
             bool command_resume100=InterlockedExchange(&command_recenter100,0)!=0;
-            if(command_placing100||command_resume100){mouse_captured=false;InterlockedExchange(&raw_mouse_x,0);InterlockedExchange(&raw_mouse_y,0);}
-            if(focus&&state->mode==POSSESSED&&!state->release&&!state->stop&&!command_placing100){
+            if(command_resume100){mouse_captured=false;InterlockedExchange(&raw_mouse_x,0);InterlockedExchange(&raw_mouse_y,0);}
+            if(focus&&state->mode==POSSESSED&&!state->release&&!state->stop){
                 HWND window=GetForegroundWindow();RECT client{};POINT center{},cursor{};
                 if(GetClientRect(window,&client)&&client.right>200&&client.bottom>200){
                     center={client.right/2,client.bottom/2};
@@ -875,17 +890,7 @@ static DWORD WINAPI worker(void*) {
                         int dy=command_resume100?0:raw_mouse_active?int(InterlockedExchange(&raw_mouse_y,0)):(mouse_captured?cursor.y-center.y:0);
                         // In-game input capture is active only for this possessed game window.
                         if(SetCursorPos(center.x,center.y))mouse_captured=true;
-                        melee60::Request committed;
-                        if(!dead_view()&&std::abs(dx)<500&&std::abs(dy)<500){
-                            float turn=float(bool(input&TURN_RIGHT))-float(bool(input&TURN_LEFT));
-                            if(possession_lease.identity.mount)turn=0; // Mounted keyboard steering does not rotate mouse look.
-                            float sensitivity=0.0025f*(1.0f-state->aim_blend*0.55f);
-                            LONG heading=InterlockedCompareExchange(&mounted_heading85,0,0);
-                            if(!melee_request(committed))state->yaw=mountedlook85::mouse_yaw(state->yaw,float(dx)*sensitivity+turn*1.256637f*elapsed,
-                                possession_lease.identity.mount!=0&&heading>=0,unsigned(heading));
-                            state->pitch=look96::mouse_pitch(state->pitch,dy,sensitivity);
-                            if(dx||dy)++state->mouse_events;
-                        }
+                        mouse_look101(dx,dy,input,elapsed);
                     }
                 }
             }else mouse_captured=false;

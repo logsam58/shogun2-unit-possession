@@ -14,3 +14,7 @@ Offline validation uses original native constructor/serializer, mouse decoder, c
 
 
 [Offline validation receipt](Test100-validation.json): 52 adapter executables plus final native modifier follow-up; two HUD and two loader checks; final-payload installer upgrades/rollback checks passed. Corrected HUD previews contain no mod-drawn formation geometry. The source branch is unpublished and formal live gameplay remains pending.
+
+## Live result
+
+Test100 was loaded by a fresh user Steam process (PID17336), with exact backing hashes and actual automatic debugger/input/native-memory/resource/GPU capture verified. The user rejected Q placement and Follow Me, then supplied photographs showing rifle/arm clipping looking up and level. No other feature was accepted from this run. Test101 is the correction candidate. Offline passing results above remain historical evidence, not live acceptance.

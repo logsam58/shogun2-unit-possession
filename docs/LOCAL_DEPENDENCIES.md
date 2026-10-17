@@ -8,7 +8,7 @@ A source clone contains mod code and fixtures, not a complete game/resource dist
 | MSVC x86 and Windows SDK | Native DLLs, HUD, loader and setup | Visual Studio / Build Tools; configure vcvars32.bat or automatic discovery |
 | Supported Empire.Retail.dll | Exact native fixture execution and installation compatibility | Licensed local SHOGUN 2 installation; fingerprint in README |
 | 24 UI input files | Styled QTE/HUD resources | Separately prepared resource tree matching tools/local-assets.json |
-| Prior loader/marker/runtime files | Full installer upgrade/rollback regression suite | Separately retained historical fixture inputs; 55 files including the immediate predecessor pair |
+| Prior loader/marker/runtime files | Full installer upgrade/rollback regression suite | Separately retained historical fixture inputs; the immediate predecessor pair and later development predecessors |
 | Indexed native decoding | Research of native functions and structures | Optional read-only local database/exports; not required for ordinary compilation |
 | Diagnostic runtime/configuration | Automatic crash capture | Separate local setup of recorder source and x86 debugger |
 

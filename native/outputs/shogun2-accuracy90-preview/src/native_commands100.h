@@ -18,6 +18,7 @@ static command100::Feedback command_feedback100=command100::Feedback::None;
 static uint64_t command_feedback_until100;
 static unsigned command_generation100,command_error100;
 static command100::FollowTarget command_follow100;
+static volatile LONG follow_updates101;
 static SRWLOCK command_mapping_lock100=SRWLOCK_INIT;
 static void command_reset_volley100();
 static HANDLE command_mapping100;static command100::Status* command_shared100;
@@ -294,6 +295,9 @@ static void command_log100(std::ofstream& log){
        <<",\"placing\":"<<sample.placing<<",\"volley\":"<<sample.volley
        <<",\"peer_releases\":"<<command_peer_releases100<<",\"peer_blocks\":"<<command_peer_blocks100<<",\"error\":"<<sample.error
        <<",\"native_q_presses\":"<<command_native_presses100<<",\"native_q_moves\":"<<command_native_moves100<<",\"native_q_releases\":"<<command_native_releases100<<",\"native_q_cancels\":"<<command_native_cancels100
+       <<",\"commands101\":1,\"q_aim_center101\":1,\"q_mouse_look101\":1,\"follow_translation101\":1,\"follow_updates101\":"<<follow_updates101
+       <<",\"clip101\":1,\"native_near101\":"<<interface_clip101.native<<",\"presented_near101\":"<<interface_clip101.presented
+       <<",\"infantry_eye_updates101\":"<<infantry_eye_updates101<<",\"infantry_eye_rejects101\":"<<infantry_eye_rejects101
        <<",\"self_visibility_updates\":"<<self_visibility_updates100<<",\"self_visibility_rejects\":"<<self_visibility_rejects100<<",\"self_visibility_restores\":"<<self_visibility_restores100<<"}\n";
 }
 static void process_orders(uintptr_t camera){
@@ -344,10 +348,13 @@ static void process_orders(uintptr_t camera){
         if(state->follow&&!busy&&!command_placing100){
             // A normal native formation centered on the leader forms beside and
             // around them, rather than chasing a point six metres behind.
-            float heading=field<unsigned short>(possessed,0x64)*command100::tau/65536.f;
-            if(command_follow100.changed(frame.position,heading,frame.tick)){
+            float initial=field<unsigned short>(possessed,0x64)*command100::tau/65536.f;
+            if(command_follow100.changed(frame.position,frame.tick)){
+                float heading=command_follow100.heading(frame.position,initial);
                 MovePoint100 destination{};
-                if(command_actor_point100(frame.position,destination)&&command_serialize100(&destination,command100::bearing(heading),0))command_follow100.accepted(frame.position,heading,frame.tick);
+                if(command_actor_point100(frame.position,destination)&&command_serialize100(&destination,command100::bearing(heading),0)){
+                    command_follow100.accepted(frame.position,heading,frame.tick);InterlockedIncrement(&follow_updates101);
+                }
             }
         }
         command100::Status status{};

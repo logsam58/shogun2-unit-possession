@@ -12,7 +12,9 @@ inline bool hide(float* visible,const float* native,unsigned n,const int32_t* pa
         for(unsigned k=0;k<n;++k){int32_t parent=parents[cursor];if(parent<0){terminated=true;break;}cursor=unsigned(parent);}
         if(!terminated)return false;
     }
-    unsigned root=bone_descends(head,neck,parents,n)?neck:head;
+    // A hierarchy alone does not prove exclusive skin weights. Keep the neck
+    // and collar full-sized so mixed neck/shoulder vertices do not stretch.
+    unsigned root=head;
     auto protected_branch=[&](unsigned candidate){
         if(bone_descends(left,candidate,parents,n)||bone_descends(right,candidate,parents,n))return true;
         for(unsigned i=0;i<3;++i)if(weapons[i]<n&&bone_descends(weapons[i],candidate,parents,n))return true;

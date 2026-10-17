@@ -75,6 +75,7 @@ int main(){void* image=nullptr;try{
     for(unsigned projectile:{3u,60u})for(unsigned clip:{130u,133u})for(float pitch:{-1.1f,0.f,.8f})for(unsigned phase96:{unsigned(WEAPON_IDLE),unsigned(WEAPON_RELOAD)}){
       field<unsigned>(ptr(record),0)=projectile;field<unsigned>(ptr(record),0x60)=projectile==3?150:100;field<float>(ptr(record),0x6c)=projectile==3?50.f:200.f;
       field<unsigned>(a,0x1d4)=clip;state->pitch=pitch;state->weapon_phase=phase96;memcpy(palette,native_palette,sizeof palette);
+      capture_aim_frame(ptr(cam));ViewRay eye101{};require(read_aim_frame(eye101,true),"Current foot presentation eye not published by native camera boundary");
       apply_soldier_pose(ptr(holder),ptr(skin));float expected=weapon_pose_pitch(projectile,clip,pitch);
       require(!state->pose_error&&std::abs(palette[2*12+6]-std::sin(expected))<.00001f,"Released RMB/reload lost arm pitch");
       require(!memcmp(palette,native_palette,12*sizeof(float))&&!memcmp(palette+12,native_palette+12,12*sizeof(float)),"Infantry pelvis/neck changed");

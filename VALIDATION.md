@@ -4,7 +4,7 @@
 
 | Suite | Coverage |
 | --- | --- |
-| Adapter: 52 executables (development) | Native forwarding, strict identity/lifetime, movement, camera return, weapons/accuracy, equipment, siege path/speed/crest/landing and cleanup |
+| Adapter: 53 executables (development) | Native forwarding, strict identity/lifetime, movement, camera return, weapons/accuracy, equipment, siege path/speed/crest/landing and cleanup |
 | Styled QTE: 32 executables | Combat preparation, clocks/cycles, input/deadlines, interruption feedback, registry churn, pacing and actual reusable styled surface |
 | HUD: 2 executables | Consistent contextual state, visibility and presentation policy |
 | Loader: 2 executables | Bootstrap, embedded payload integrity and integration |
@@ -31,3 +31,5 @@ Before a source push, run `py tools/audit_repository.py`. It checks staged blob 
 
 
 [Test100 development validation](docs/development/Test100-validation.json) records 52 adapter executables, a final native input/modifier follow-up, both HUD and loader checks, and final-payload installer regression. Four corrected HUD images were rendered and two inspected; formation rendering remains in the game. The unchanged published QTE binary and its earlier 32-case receipt are retained. No live acceptance or crash fix is claimed.
+
+[Test101 correction validation](docs/development/Test101-validation.json) records the final 53 adapter executables, exact native projection/camera-cache and stationary-follow/Q regressions, loader integrity and Test100 transactional upgrade/rollback. HUD/QTE sources and binaries are retained rather than claimed as newly rendered or retested. Test100 was live rejected for Q/Follow Me and rifle/arm clipping; Test101 still needs live acceptance.

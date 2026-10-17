@@ -2,7 +2,7 @@ from pathlib import Path
 import argparse,hashlib,json,struct,re
 here=Path(__file__).resolve().parent
 root=here.parents[1]
-parser=argparse.ArgumentParser();parser.add_argument('--candidate',type=int,default=100);args=parser.parse_args()
+parser=argparse.ArgumentParser();parser.add_argument('--candidate',type=int,default=101);args=parser.parse_args()
 if args.candidate is not None:assert args.candidate>=100, 'Candidate must be 100 or later'
 version=(root.parent/'VERSION').read_text().strip()
 title='Shogun 2 Possession v'+version+((' development Test'+str(args.candidate)) if args.candidate else '')

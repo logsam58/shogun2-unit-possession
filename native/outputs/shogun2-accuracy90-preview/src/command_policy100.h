@@ -57,15 +57,16 @@ struct Edges {
         unsigned pressed=accepted&~held;held=accepted;return pressed;
     }
 };
-// Follow only republishes when the leader changes destination or facing. A
-// stationary native formation order continues to completion without restarting
-// paths and weapon tasks every frame.
+// Follow tracks the leader's translation, never mouse-look/body facing. The
+// first order uses the captured heading; later headings come from travel. A
+// stationary order finishes without continual rotation/path/task restarts.
 struct FollowTarget {
     bool valid{};Point position{};float yaw{};std::uint64_t next{};
     void reset(){*this={};}
-    bool changed(Point p,float angle,std::uint64_t now)const{
-        return now>=next&&(!valid||std::hypot(p.x-position.x,p.z-position.z)>=.75f||std::abs(std::remainder(angle-yaw,tau))>=.12f);
+    bool changed(Point p,std::uint64_t now)const{
+        return finite(p)&&now>=next&&(!valid||std::hypot(p.x-position.x,p.z-position.z)>=.75f);
     }
+    float heading(Point p,float initial)const{return valid?std::atan2(p.x-position.x,p.z-position.z):initial;}
     void accepted(Point p,float angle,std::uint64_t now){valid=true;position=p;yaw=angle;next=now+250;}
 };
 }

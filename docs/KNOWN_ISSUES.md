@@ -10,8 +10,8 @@ When reporting a crash, include the version, unit/map, actions before the exit, 
 
 ## Gameplay limitations
 
-- **Self clipping:** own-model clipping is a reported v0.15 issue. Test100 corrects head/neck visibility on more valid living poses and preserves the raw native head cache; live weapon, traversal and camera-angle coverage remains pending.
-- **Development unit controls:** Test100 uses stock right-button placement via Q. The full game window/input, world renderer and castle-specific placement lifecycle still require live checks; fixtures do not certify every map or native context action.
+- **Self clipping:** Test100 was rejected with visible cuts through a rifle stock and arms, looking up and level. Test101 reduces only the current living first-person camera's near plane, rotates infantry weapon-look around the current eye, and preserves the neck/collar. Native death clipping and exact exit restoration are retained. These corrections still require live visual acceptance across weapons, fighting and traversal; geometry fixtures do not prove every mesh is clear.
+- **Development unit controls:** Test100 Q and Follow Me were live rejected. Test101 keeps Q at the crosshair while mouse-look remains active and prevents stationary mouse-facing from restarting Follow Me. Native game-window placement/rendering, unit path completion and castle contexts still require live checks; offline fixtures are not gameplay acceptance.
 - **Mounted bows:** targeting and presentation have separate paths. Rider weapon/camera presentation remains problematic; complete mounted-bow support is not claimed.
 - **Ranged roster:** the native catalog includes many personal projectile families, but specialty animation/ammo combinations and every unit's firing lifecycle are not fully verified. Report both the possessed soldier's shot and the rest of the unit's volley behavior.
 - **Crowded melee:** valid native deferred pair preparation is supported, but death, lost ownership and native combat changes can still cancel an event. INTERRUPTED explains an admitted event that was canceled; it is not itself a diagnosis.
