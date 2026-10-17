@@ -29,6 +29,11 @@ def main():
    original=legacy/relative
    if not original.is_file():raise SystemExit('Missing historical runtime fixture: '+str(original))
    dest=ROOT/'native'/relative;dest.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(original,dest);fixtures+=1
+  for name in ['dinput8.dll','marker.pack']:
+   original=legacy/'work/autoload99-preview'/name
+   expected={'dinput8.dll':'d18e70424a90eca1545b4bd157e90443d51a3308c57eca5aadb69cf8ad1ecf30','marker.pack':'5086260202764f77752a578319e8748bed1d8057f2afd9e3415f9e0213ec9ec5'}[name]
+   if not original.is_file() or sha(original)!=expected:raise SystemExit('Different installed Test99 predecessor fixture: '+str(original))
+   dest=ROOT/'native/work/autoload-test99-baseline'/name;dest.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(original,dest);fixtures+=1
   settings['legacy_fixture_source']=str(legacy.resolve())
  config.write_text(json.dumps(settings,indent=2)+'\n');print(json.dumps({'local_UI_inputs':copied,'local_legacy_fixture_files':fixtures,'configuration':str(config),'game_changed':False}))
 if __name__=='__main__':main()

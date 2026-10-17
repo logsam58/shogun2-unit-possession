@@ -1,39 +1,55 @@
-# Build and offline checks
+# Build and test
 
 ## Requirements
 
-- Windows with Visual Studio 2022 / Build Tools C++ x86 tools and a Windows SDK.
-- Python 3.10 or later. No Rust, game SDK or whole-engine rebuild is used.
-- The retail SHOGUN 2 installation for exact native fixtures. Expected Empire.Retail.dll SHA256: `022fae2e2da92b59b8b1b8ee52887003c624e3c8eca060b209f5d792a7f874f5`.
-- The local UI resource closure for styled QTE/HUD. Game artwork/fonts are omitted from Git; the 24 required files and hashes are recorded in tools/local-assets.json.
-- Historical loader/marker files only when running the full installer upgrade/rollback fixture. These remain ignored local test inputs.
+- Windows, Python 3.10+ and Visual Studio 2022 / Build Tools with MSVC x86 C++ tools and the Windows SDK.
+- The supported retail SHOGUN 2 engine for exact-native fixtures. Empire.Retail.dll SHA256: `022fae2e2da92b59b8b1b8ee52887003c624e3c8eca060b209f5d792a7f874f5`.
+- For styled QTE/HUD: 24 separately prepared UI inputs matching tools/local-assets.json. They are not bundled with source.
+- For the full installer upgrade/rollback suite: separately retained exact predecessor loader/marker/runtime fixture files.
 
-The production source and original fixture algorithms are unchanged. Exact native fixture C++ files currently use the standard Steam path `C:\Program Files (x86)\Steam\steamapps\common\Total War SHOGUN 2\Empire.Retail.dll`; another installation location requires updating those fixture paths. Build scripts discover a registered Visual Studio installation or accept SHOGUN2_VCVARS / ignored tools/local.json. This does not make the shared decoding library portable or bundle game resources.
+A game SDK is not required. The adapter can compile without the UI closure. A fresh clone cannot build the complete styled runtime until those local resources are supplied; the repository does not currently include a standalone extraction pipeline. See [local dependencies](docs/LOCAL_DEPENDENCIES.md).
 
-## Configure local inputs
+The build wrapper discovers a registered Visual Studio installation using vswhere. Alternatively set SHOGUN2_VCVARS to vcvars32.bat or configure it below. Native fixtures currently contain the standard Steam engine path `C:\Program Files (x86)\Steam\steamapps\common\Total War SHOGUN 2\Empire.Retail.dll`; using another location requires adjusting those fixture paths. Setting a game path in local configuration does not rewrite C++ fixture literals.
 
-From the repository root, point the helper at an existing local preserved native-mod source tree containing the matching resource closure, such as the original FP99 candidate. The asset manifest verifies hashes before copying. It does not extract from arbitrary game packs or download assets.
+## Configure inputs
+
+Run from the repository root:
 
 ```powershell
-py tools/configure.py --vcvars 'C:\path\to\VC\Auxiliary\Build\vcvars32.bat' --asset-source 'C:\path\to\preserved-native-mod'
-py tools/configure.py --legacy-fixtures 'C:\path\to\preserved-native-mod'
+py tools/configure.py --vcvars 'C:\path\to\VC\Auxiliary\Build\vcvars32.bat'
+py tools/configure.py --asset-source 'C:\path\to\prepared-resource-tree'
+py tools/configure.py --legacy-fixtures 'C:\path\to\historical-fixture-tree'
 ```
 
-Settings are saved to ignored tools/local.json. Local source snapshots and installed recorder remain separate from Git. Configure only copies UI or historical test dependencies into ignored locations; it does not install or launch the game.
+The UI and fixture source roots must match the relative input structure checked by configure.py. UI hashes are published in tools/local-assets.json. Historical fixture files are used only by installer regression. Settings go into ignored tools/local.json; inputs are copied into ignored locations. Configuration does not install or launch the game.
 
-## Commands
+## Build commands
 
 ```powershell
 py tools/build.py adapter --tests
 py tools/build.py qte --tests
 py tools/build.py hud --tests
+py tools/build.py loader --tests
+py tools/build.py installer --tests
+# Or build all components in dependency order:
 py tools/build.py all --tests
 py -m unittest discover -s tests -v
-py tools/audit_repository.py
 ```
 
-The all target builds adapter, styled QTE, HUD, integrated DInput loader and setup wizard. With --tests it also runs their original offline fixtures. Installer fixtures operate in temporary workspace game/user directories and an isolated HKCU fixture key. Historical loader inputs are required for upgrade and seven-stage rollback cases. The built setup wizard and install_cli are compiled but never invoked by the build tool. No normal game process is attached or started.
+Adapter, QTE and HUD must exist in artifacts/bin before building the loader. Build the loader before the installer. Omitting `--tests` compiles the selected component without its offline fixture suite. `all` builds each component in order. The x86 release build uses MSVC C++17, optimization and the static C runtime.
 
-Build outputs, compiler logs and fresh receipts are in artifacts/. The adapter suite includes50 executables. Styled QTE fixtures include the actual hidden-window renderer and reusable-surface checks. See VALIDATION.md for the import's actual results rather than assuming all checks ran.
+Outputs and compiler logs go to artifacts/bin, artifacts/obj, artifacts/tests and artifacts/logs. artifacts/build-results.json records checks actually executed. Read [VALIDATION.md](VALIDATION.md) for suite coverage and retained release evidence. The setup wizard and maintenance CLI are compiled but never installed by build.py. Installer fixtures operate in temporary workspace directories and an isolated HKCU test key.
 
-Do not run a freshly built installer as an offline test. Freshly rebuilt hashes/cache IDs differ from the installed candidate, even with unchanged source. Installation needs a separate closed-game step, an exact rollback, then a fresh user Steam launch/READY and loaded-hash/capture checks. The persistent crash watcher continues independently.
+## Installation and live checks
+
+Do not run setup as an offline fixture. For a gameplay change, preserve an exact rollback, close SHOGUN 2, install the candidate and start a fresh normal Steam process. Verify loaded paths/hashes, engine compatibility and capture before asking for formal play. A newly compiled file can have different hashes even with unchanged source; backing-file equality and runtime-patch state are different facts.
+
+Existing automatic recording must continue between sessions and start on launch without waiting for pause, READY, battle or mod availability. Recorder installation/configuration is separate; see tools/diagnostics/README.md. The build tools neither launch the game nor attach a recorder.
+
+## Release process
+
+VERSION defines the release. Prepare complete player release notes and a validation receipt under docs/releases/. Build/test gameplay components as needed, then build/test the release loader and installer. Keep component hashes and whether checks were freshly run or retained explicit.
+
+Review/stage source and run `py tools/audit_repository.py`, then commit it. `py tools/package_release.py` packages the clean pinned v0.15 source/build, verifies versions, embedded resources and receipts, and emits installer/ZIP/manifest/checksums under ignored artifacts/releases/v0.15. Its target check uses the maintenance CLI's read-only `--check-only` operation.
+
+Create an annotated v0.15 tag on the reviewed commit and push commit/tag. When publication is explicitly requested, `py tools/github_release.py --publish` verifies authentication/repository/tag, uploads a draft, downloads and hashes each asset, and publishes the regular release. The tool is currently scoped to v0.15 and this repository; future versions require a deliberate update. Credentials stay in memory. Repository visibility and installed game files are not changed. Published versions are not overwritten.

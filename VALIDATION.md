@@ -1,15 +1,30 @@
-# Validation
+# Validation and evidence
 
-## Preserved pre-import evidence
+## What the suites check
 
-Test99 previously passed50 adapter executables, including72 native crest-cleanup lifecycles,1440 untouched-actor/native-camera forwards,81 exact flag combinations and six siege-hook restorations. QTE31 and HUD97 receipts were retained without claiming fresh Test99 QTE/HUD reruns. Integrated predecessor upgrades and seven-stage rollback fixtures passed in the original isolated candidate.
+| Suite | Coverage |
+| --- | --- |
+| Adapter: 50 executables | Native forwarding, strict identity/lifetime, movement, camera return, weapons/accuracy, equipment, siege path/speed/crest/landing and cleanup |
+| Styled QTE: 32 executables | Combat preparation, clocks/cycles, input/deadlines, interruption feedback, registry churn, pacing and actual reusable styled surface |
+| HUD policy | Consistent contextual state, visibility and presentation policy |
+| Loader: 2 executables | Bootstrap, embedded payload integrity and integration |
+| Installer fixture | Supported predecessor upgrades, seven interruption stages, rollback, reinstall, collisions, cache retention and isolated HKCU handling |
+| Dump reader: 7 Python cases | Embedded, MemoryList and Memory64 stack layouts, exception-context preference and explicit missing-stack handling |
 
-Those are historical receipts. They do not establish this checkout's new build hashes or universal gameplay acceptance. The live siege session received positive feedback and then crashed; see docs/STATUS.md.
+Some fixtures execute bounded original native functions from the supported retail engine with synthetic records and substituted external providers. They are stronger than a pure policy mock, but do not reproduce the full game's collision, AI, asset and casualty lifecycles. Exact fixture limits belong alongside the tested function. No count here proves every unit or siege map is supported.
 
-## Repository import validation
+## Recorded results
 
-Current build and import checks are recorded in docs/import-validation.json after the fresh checkout build completes. The first import preserves production C/C++/header bytes against docs/source-import.json. Its new wrapper places generated binaries/logs/resources in ignored local paths, hashes required local UI inputs and never invokes the game or setup wizard.
+[docs/import-validation.json](docs/import-validation.json) records a complete source-checkout build: 50 adapter and 32 styled QTE executables, HUD policy, two loader fixtures, full installer regression and seven dump-reader format cases passed. It includes initial dependency/CWD failures and subsequent successful stages. [docs/source-import.json](docs/source-import.json) pins the 310 original imported source files for provenance; intentional later changes need not match that historical manifest.
 
-The staged-file audit checks allowed roots, compiled/binary/resource/evidence exclusions, oversized files and recognized credential patterns before publication. Diagnostic parser format tests use synthetic in-memory dump fixtures; real private dumps remain local. Read the receipt for actual component/test counts and limitations.
+[The v0.15 receipt](docs/releases/v0.15-validation.json) identifies exact retained adapter/QTE/HUD component hashes and freshly run release loader/installer checks. Release packaging verifies PE version/resources, payload hashes, marker metadata and source commit. Retaining an already verified gameplay binary is not reported as a new gameplay test run.
 
-Fresh import checks passed:50 adapter executables,32 styled QTE executables, HUD state policy, two loader fixtures, the full installer fixture and seven synthetic dump-reader cases. The installer fixture exercised predecessor upgrades/seven-stage rollbacks, cache retention, integrity, collisions and isolated HKCU cleanup. Initial local-dependency/CWD failures are documented in the receipt; successful earlier stages were retained, not falsely claimed as rerun. All310 imported files still match their source hashes. Installed loader/marker/stock-engine hashes remain unchanged, and the existing recorder remained armed without restart.
+## Offline and live evidence
+
+Builds/tests write ignored artifacts/ and do not install or launch the game. Installer fixtures use temporary game/user directories and an isolated registry fixture. The maintenance CLI's `--check-only` mode validates a target and embedded payload without writing the installation.
+
+A live check requires a closed-game update, fresh launch, exact loaded backing paths/hashes and appropriate capture. Test movement, weapon shots and peer volleys, QTE timing/interruption, camera return, death, mounted behavior and siege entry/crest/landing for the affected scenario. Record map, unit, ammunition, battle speed and actual results. A stable short run does not establish long-run stability.
+
+An extended siege session completed climbing/crest/landing but later crashed in native effects processing. The failure remains unresolved, including possible mod involvement. [Known issues](docs/KNOWN_ISSUES.md) records what the dump establishes and what it does not.
+
+Before a source push, run `py tools/audit_repository.py`. It checks staged blob contents for excluded binaries/assets/evidence, oversized files and recognized credential patterns. Binary release assets are distributed separately with checksums; private real dumps are never part of that package.

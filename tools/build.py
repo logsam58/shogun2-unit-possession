@@ -70,12 +70,12 @@ def loader(tests):
   a=BIN/'verify_bootstrap.exe';b=BIN/'verify_integrated.exe';run('loader-tests',[compile_cpp(AUTO/'verify_bootstrap.cpp',a,(),['dinput8.lib']),[a],compile_cpp(AUTO/'verify_integrated.cpp',b,[resources],['bcrypt.lib','shell32.lib']),[b]])
 def installer(tests):
  if not (AUTO/'setup_hashes.h').exists():raise SystemExit('Build loader first')
- baseline=NATIVE/'work/installer-siege98/cache_catalog.h';text=baseline.read_text();assert text.rstrip().endswith('};');hashes=(AUTO/'embedded_hashes.h').read_text();import re
+ baseline=INSTALL/'previous_cache_catalog.h';text=baseline.read_text();assert text.rstrip().endswith('};');hashes=(AUTO/'embedded_hashes.h').read_text();import re
  cache=re.search(r'EMBEDDED_BUILD=L"([a-f0-9]+)"',hashes).group(1);entry='{L"'+cache+'",{'+','.join('{L"'+n+'","'+sha(BIN/n)+'"}' for n in ['possession-v46.dll','possession-hud.exe','qte-playable-v79.dll'])+'}},\n';(INSTALL/'cache_catalog.h').write_text(text.rstrip()[:-2]+entry+'};\n')
  resources=rc(INSTALL/'setup.rc','installer');wizard=BIN/'Shogun2-Possession-Setup.exe';cli=BIN/'install_cli.exe'
  run('installer',[compile_cpp(INSTALL/'wizard.cpp',wizard,[resources],['/MANIFEST:EMBED','/SUBSYSTEM:WINDOWS',"/MANIFESTUAC:level='requireAdministrator' uiAccess='false'",*SETUP_LIBS]),compile_cpp(INSTALL/'install_cli.cpp',cli,[resources],['/SUBSYSTEM:CONSOLE','/ENTRY:wmainCRTStartup','/MANIFEST:EMBED',"/MANIFESTUAC:level='asInvoker' uiAccess='false'",*SETUP_LIBS])])
  if tests:
-  required=['work/autoload87-preview/dinput8.dll','outputs/shogun2-melee-meter78-preview/possession-v46.dll','outputs/shogun2-melee-meter78-preview/qte-playable-v78.dll','outputs/shogun2-possession-hud-v12/possession-hud.exe']
+  required=['work/autoload-test99-baseline/dinput8.dll','work/autoload-test99-baseline/marker.pack','work/autoload87-preview/dinput8.dll','outputs/shogun2-melee-meter78-preview/possession-v46.dll','outputs/shogun2-melee-meter78-preview/qte-playable-v78.dll','outputs/shogun2-possession-hud-v12/possession-hud.exe']
   if any(not (NATIVE/p).exists() for p in required):raise SystemExit('Installer upgrade tests require local historical fixtures: tools/configure.py --legacy-fixtures <preserved root>')
   target=INSTALL/'verify.exe';run('installer-tests',[compile_cpp(INSTALL/'verify.cpp',target,[resources],['/MANIFEST:EMBED',"/MANIFESTUAC:level='asInvoker' uiAccess='false'",*SETUP_LIBS]),[target]],cwd=INSTALL)
 def find_vcvars():

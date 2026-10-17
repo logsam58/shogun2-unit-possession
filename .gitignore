@@ -54,3 +54,6 @@
 *.key
 
 **/verification-result.txt
+
+!/VERSION
+!/CHANGELOG.md

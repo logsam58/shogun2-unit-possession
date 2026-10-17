@@ -1,13 +1,22 @@
-# Development and acceptance status
+# Support and development status
 
-Recorded17 October2026.
+Current product version: **0.15**. The release contains the native possession, weapon, melee QTE, HUD, unit-order, camera-return and siege systems described in the [README](../README.md).
 
-- Accepted release: v0.14 checkpoint79, retained as an immutable local release. This repository's first commit imports Test99 and must not be labeled checkpoint79.
-- Test87: targeting accepted, mounted-bow presentation rejected. Test88/89 do not gain acceptance through this source import.
-- Installed candidate: Test99. User-launched PID23208 passed exact loaded-hash/cache/HUD/QTE/Climb97 and actual capture verification. The user confirmed climbing/crest/landing worked during extended play, then the process crashed. This is scoped positive siege feedback, not universal map/unit or crash-free release acceptance.
-- Current game session: exited. Both first-fault and unhandled full dumps were preserved locally. The persistent recorder remains installed and armed, independent of any READY/pause/battle/mod-readiness gate.
-- Current crash: C0000005 reading2C at Empire.Retail.dll RVA14A4011 in the native effects-table path. The inconsistency is established; its originating lifecycle/write and mod involvement remain unresolved. No speculative native crash patch is included.
-- Test99 source retains Test90 native effective-accuracy conical spread and saved RTS camera, duration/minimum-cycle QTE, native crowd preparation, larger input prompts/INTERRUPTED feedback, timestamped submitted-frame judgement, registry/service performance correction, scoped ranged barriers, vertical look and native wall/crest/landing ownership.
-- The automatic recorder's post-exit dump reader was corrected for Memory64 stacks with ThreadList RVA0. Seven synthetic cases and both actual full dumps passed. Original historical reports/dumps were retained. Watcher/debugger/gameplay code was not restarted or changed for that parser repair.
+| Area | Implemented behavior | Coverage / limitation |
+| --- | --- | --- |
+| Foot soldiers | Native movement, camera, equipment and personal combat | Exact engine build required; roster-wide validation incomplete |
+| Ranged weapons | Recognized bow, firearm and thrown/projectile records; native reload/ammo; accuracy cone | Specialty animations/ammo and every unit firing path need further testing |
+| Independent AI | Other soldiers continue normal orders, weapon tasks and combat | Report stalled volleys with the exact unit and ammunition |
+| Melee QTE | Native pair preparation, timed input, full-cycle minimum, interruption feedback | Native combat/ownership changes can interrupt; crowds need continued coverage |
+| Cavalry | Rider/horse possession, steering and bounded free-look | Mounted-bow presentation remains problematic |
+| Sieges | F entry, W/S/hold climbing, native speed, crest and landing camera continuity | Traversal exercised in live play; every castle/layout/lifecycle not verified |
+| Camera / death | Saved RTS view restored; native model-following death sequence | Battle/camera identity changes intentionally invalidate stale saved state |
+| HUD | Native-style unit, personal weapon/ammo, reticle and action prompts | Check alternate display sizes/scaling and nonstandard unit resources |
+| Base game / expansions | Native content catalog includes SHOGUN 2, Rise and Fall weapon records | Catalog coverage is broader than confirmed live roster coverage |
+| Naval / artillery | Stock artillery first-person behavior retained | Naval possession, ship commands and crew possession not implemented |
+| Multiplayer / overhauls | No compatibility certification | Require separate investigation and testing |
+| Stability | Crash capture and diagnostic tools available | Extended-play native effects crash unresolved |
 
-The Git import does not change installed files, start a live test or resolve the outstanding crash. New builds have fresh backing hashes and require separate installation/readiness validation before play.
+Offline fixtures cover important native forwarding, identity, cleanup, geometry, timing and installation cases. They do not simulate every battle. [VALIDATION.md](../VALIDATION.md) and the release receipt distinguish freshly run checks from retained component evidence.
+
+Current development priorities are the unresolved effects crash, mounted-bow presentation, broader ranged-unit/animation coverage, crowded-combat interruptions and siege-map lifecycle testing. Known limitations and reporting guidance are in [KNOWN_ISSUES.md](KNOWN_ISSUES.md) and [CONTRIBUTING.md](../CONTRIBUTING.md).

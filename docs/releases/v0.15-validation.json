@@ -1,0 +1,199 @@
+{
+  "version": "0.15",
+  "date": "2026-10-17",
+  "passed": true,
+  "gameplay": {
+    "source_files": 272,
+    "source_unchanged_since_import": true,
+    "components": [
+      {
+        "name": "possession-v46.dll",
+        "sha256": "1bc080bbc18490544be8a5d3a92492a093726cfea0a4cd96d0c33a0367bae4fb"
+      },
+      {
+        "name": "possession-hud.exe",
+        "sha256": "b5764f33c24dc34ec217e1d49a3a2aa7603d82ddd768f4473c62f91714a26f12"
+      },
+      {
+        "name": "qte-playable-v79.dll",
+        "sha256": "acc3e6dba3a6ad58088a5e240f9eae5ca2e47debd10d6db9a5aace879df7bd5b"
+      }
+    ],
+    "validation_receipt": "docs/import-validation.json",
+    "checks_reused": true,
+    "adapter_executables": 50,
+    "styled_qte_executables": 32,
+    "hud_policy_executables": 1,
+    "diagnostic_format_tests": 7
+  },
+  "fresh_checks": [
+    {
+      "name": "loader",
+      "passed": true,
+      "seconds": 3.873,
+      "log_sha256": "336b023a25405f667730122dec3fe3f7b5016f9ef9aa3c70d5503ba48ca378aa"
+    },
+    {
+      "name": "loader-tests",
+      "passed": true,
+      "seconds": 6.012,
+      "log_sha256": "c915aa440aa4a051d8cfd5614cc901a0f7df7cac1521d31d40397735aa0c3aeb"
+    },
+    {
+      "name": "installer",
+      "passed": true,
+      "seconds": 7.539,
+      "log_sha256": "8267be106920bb7a4a725c43f2187afc6b7554336c755ec7b261c041a5b19a24"
+    },
+    {
+      "name": "installer-tests",
+      "passed": true,
+      "seconds": 112.2,
+      "log_sha256": "c27f28a8f55453c66faf1dcd31bfa1a18a3bddc49c1507476e321031eb44de70"
+    }
+  ],
+  "installer_coverage": [
+    "exact immediate predecessor Test99 upgrade",
+    "seven interrupted stages per supported predecessor",
+    "exact loader and marker backup bytes retained across reinstall",
+    "payload integrity and unrelated-file collision guards",
+    "recognized cache retention and isolated HKCU behavior"
+  ],
+  "cache_id": "79fca1e1bfdc41a6",
+  "build_inputs": [
+    {
+      "file": "VERSION",
+      "sha256": "802df62c37807f006468946b9b92af83b3406193a5e81d489575e55429f63c9a"
+    },
+    {
+      "file": "native/work/autoload99-preview/bootstrap.cpp",
+      "sha256": "b2b778144be530ed41aae35914806f578d68c7f3e607008be3beb74330875b21"
+    },
+    {
+      "file": "native/work/autoload99-preview/dinput8.def",
+      "sha256": "9a9cdbef9af0be84d849247c144c27e54211c33fc479db538f92526df530cf6d"
+    },
+    {
+      "file": "native/work/autoload99-preview/integrated.h",
+      "sha256": "1e3e3ae34e82aa5960ed8933622dbd0b5912489dd63b5d43cacb9068b6edd6ec"
+    },
+    {
+      "file": "native/work/autoload99-preview/payload.rc",
+      "sha256": "c58ed8afc14e510669d54d7a73874a6d424f71171e258b8e9faa27fd6a901fbf"
+    },
+    {
+      "file": "native/work/autoload99-preview/prepare_embedded.py",
+      "sha256": "ae292461d0933575fdc41864a37f53bdf9734d649b38f02ed950b7cd725136f2"
+    },
+    {
+      "file": "native/work/autoload99-preview/setup.cpp",
+      "sha256": "410141cb3de6ce15577dab1277a0baef551c82681211209a41627bf147520c36"
+    },
+    {
+      "file": "native/work/autoload99-preview/verify_bootstrap.cpp",
+      "sha256": "a27cbef6852b1c3393ed74723d921d78604bc8ac8d650993117a6f605b94f428"
+    },
+    {
+      "file": "native/work/autoload99-preview/verify_integrated.cpp",
+      "sha256": "e4e5907370a34c174dbc91601baf2bcc198faff5d904257b24fa91be4226b1ed"
+    },
+    {
+      "file": "native/work/installer-siege98/cache_catalog.h",
+      "sha256": "e80fd2fec40e7319cfa3b7f1d041812d87dd53b8fc3e79a68c741f96aeca73cd"
+    },
+    {
+      "file": "native/work/installer-siege99/flash_startup86.h",
+      "sha256": "1278ebf8544d00e735e340c5dad7c2ba46867748ba55719e89c36432226a2797"
+    },
+    {
+      "file": "native/work/installer-siege99/install.h",
+      "sha256": "b80538e9d4127c9c119ef49a8081987a8924ea3cc90350cd05c9e458cf275188"
+    },
+    {
+      "file": "native/work/installer-siege99/install_cli.cpp",
+      "sha256": "18b0282a3d2b853f02815933810ccbaadea6fa29bb843c96fc47ef16be08f41b"
+    },
+    {
+      "file": "native/work/installer-siege99/installer_retention.h",
+      "sha256": "26ef9f8d75e931b368c1bad5d1edef348ccc649d84b2de03d2b2946ee9c99d09"
+    },
+    {
+      "file": "native/work/installer-siege99/previous_cache_catalog.h",
+      "sha256": "21f2b539e10eb818633099ca484db8b37833d350292ec6753a996d22eae035de"
+    },
+    {
+      "file": "native/work/installer-siege99/setup.rc",
+      "sha256": "d95f353c62cc3f39e311eadf87919a9e900df8592cc25f14408a04e8b8dd9cb1"
+    },
+    {
+      "file": "native/work/installer-siege99/verify.cpp",
+      "sha256": "1195df9f62d8bdc95f0842df785da940c4b6672018397fb2d8e3fc9fee3d5d9b"
+    },
+    {
+      "file": "native/work/installer-siege99/wizard.cpp",
+      "sha256": "9f07768513ed4547603f29273467e95d3e9769854f90618520e1f7932c04e8eb"
+    },
+    {
+      "file": "tools/build.py",
+      "sha256": "ef16c56d971ec8268cb06af8b0a7c7eb4ebb75819386e6fb23d05e193d1334df"
+    },
+    {
+      "file": "tools/configure.py",
+      "sha256": "aef1d7b4601ebf144dd270e382597f742b83e80aaee4deedd26400039d856595"
+    },
+    {
+      "file": "tools/github_release.py",
+      "sha256": "2c2618100517a51145fffa8c770b84188d0d0982a1bbe51fc5ddcc8e67df48d3"
+    },
+    {
+      "file": "tools/package_release.py",
+      "sha256": "705e11fd772abbb0f94a4c70dd7ae77dca18ade3d635c26c957e38be40f9033f"
+    }
+  ],
+  "release_binaries": [
+    {
+      "name": "possession-v46.dll",
+      "bytes": 467456,
+      "sha256": "1bc080bbc18490544be8a5d3a92492a093726cfea0a4cd96d0c33a0367bae4fb"
+    },
+    {
+      "name": "possession-hud.exe",
+      "bytes": 25304064,
+      "sha256": "b5764f33c24dc34ec217e1d49a3a2aa7603d82ddd768f4473c62f91714a26f12"
+    },
+    {
+      "name": "qte-playable-v79.dll",
+      "bytes": 8436736,
+      "sha256": "acc3e6dba3a6ad58088a5e240f9eae5ca2e47debd10d6db9a5aace879df7bd5b"
+    },
+    {
+      "name": "dinput8.dll",
+      "bytes": 34516480,
+      "sha256": "b5a88d2a5f094fe475335d727080acd37c51d5142893ca76dbde9d6295951798"
+    },
+    {
+      "name": "marker.pack",
+      "bytes": 608,
+      "sha256": "7df2821e37621d47eb30033f67d1ea61b95594f2f2e9d3939c99097cbef4b52c"
+    },
+    {
+      "name": "install_cli.exe",
+      "bytes": 34917376,
+      "sha256": "c1b7e536b0b2067b52ce83aa11edb834284ad88d2a5e3993c55ae92b6783ecfd"
+    },
+    {
+      "name": "Shogun2-Possession-Setup.exe",
+      "bytes": 34936832,
+      "sha256": "f07df253f30802856447a44e4d70ef5bdbd76e11ce0caa34eb113de1e7d5ad96"
+    }
+  ],
+  "game_installed_or_launched": false,
+  "live_release_binary_test_performed": false,
+  "limitations": [
+    "Offline fixtures do not certify all native game lifecycles, rosters or siege maps.",
+    "The gameplay build is retained from the earlier complete checkout validation; it was not recompiled or rerun for metadata-only release preparation.",
+    "Extended-play effects crash remains unresolved; mod involvement undetermined.",
+    "Mounted-bow presentation remains problematic.",
+    "FullMemory dump parser also validated against two private real dumps; those dumps are excluded from source and release assets."
+  ]
+}

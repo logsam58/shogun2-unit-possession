@@ -188,8 +188,8 @@ int wmain(){try{
     require(hash_file(dll)==SETUP_BOOTSTRAP_SHA&&hash_file(pack)==EMBEDDED_PACK_SHA,"Test87 upgrade failed");
     auto previous87_backup=read_bytes(dll+L".possession-previous");
     install_all(game,data,{},-1,local);
-    require(read_bytes(dll+L".possession-previous")==previous87_backup,"Test99 reinstall rotated backup");
-    std::cout<<"PASS: Test87 to Test99 upgrade, seven interrupted stages, native setup flag preservation and repeated-install idempotency. Workspace/HKCU fixtures only.\n";
+    require(read_bytes(dll+L".possession-previous")==previous87_backup,"v0.15 reinstall rotated backup");
+    std::cout<<"PASS: Test87 to v0.15 upgrade, seven interrupted stages, native setup flag preservation and repeated-install idempotency. Workspace/HKCU fixtures only.\n";
 
     auto previous89_loader=read_bytes(L"..\\autoload89-preview\\dinput8.dll"),previous89_pack=read_bytes(L"..\\autoload89-preview\\marker.pack");
     require(!previous89_loader.empty()&&!previous89_pack.empty(),"Test89 predecessor fixtures missing");
@@ -201,7 +201,7 @@ int wmain(){try{
         failed=false;try{install_all(game,data,{},interruption,local);}catch(...){failed=true;}
         require(failed&&read_bytes(dll)==previous89_loader&&read_bytes(pack)==previous89_pack&&read_bytes(selection)==saved_selection&&read_bytes(cache)==saved_cache,"Interrupted Test89 upgrade failed rollback");
     }
-    install_all(game,data,{},-1,local);require(hash_file(dll)==SETUP_BOOTSTRAP_SHA&&hash_file(pack)==EMBEDDED_PACK_SHA,"Test89 to Test99 upgrade failed");
+    install_all(game,data,{},-1,local);require(hash_file(dll)==SETUP_BOOTSTRAP_SHA&&hash_file(pack)==EMBEDDED_PACK_SHA,"Test89 to v0.15 upgrade failed");
     std::cout<<"PASS: verified Test89 predecessor upgrade and all seven rollback stages; unrelated DLL collision guards retained.\n";
     auto previous90_loader=read_bytes(L"..\\autoload90-preview\\dinput8.dll"),previous90_pack=read_bytes(L"..\\autoload90-preview\\marker.pack");
     require(!previous90_loader.empty()&&!previous90_pack.empty(),"Test90 predecessor fixtures missing");
@@ -213,7 +213,7 @@ int wmain(){try{
         failed=false;try{install_all(game,data,{},interruption,local);}catch(...){failed=true;}
         require(failed&&read_bytes(dll)==previous90_loader&&read_bytes(pack)==previous90_pack&&read_bytes(selection)==saved_selection&&read_bytes(cache)==saved_cache,"Interrupted Test90 upgrade failed rollback");
     }
-    install_all(game,data,{},-1,local);require(hash_file(dll)==SETUP_BOOTSTRAP_SHA&&hash_file(pack)==EMBEDDED_PACK_SHA,"Test90 to Test99 upgrade failed");
+    install_all(game,data,{},-1,local);require(hash_file(dll)==SETUP_BOOTSTRAP_SHA&&hash_file(pack)==EMBEDDED_PACK_SHA,"Test90 to v0.15 upgrade failed");
     std::cout<<"PASS: verified Test90 predecessor upgrade and all seven rollback stages; unrelated DLL collision guards retained.\n";
     auto previous91_loader=read_bytes(L"..\\autoload91-preview\\dinput8.dll"),previous91_pack=read_bytes(L"..\\autoload91-preview\\marker.pack");
     require(!previous91_loader.empty()&&!previous91_pack.empty(),"Test91 predecessor fixtures missing");
@@ -225,7 +225,7 @@ int wmain(){try{
         failed=false;try{install_all(game,data,{},interruption,local);}catch(...){failed=true;}
         require(failed&&read_bytes(dll)==previous91_loader&&read_bytes(pack)==previous91_pack&&read_bytes(selection)==saved_selection&&read_bytes(cache)==saved_cache,"Interrupted Test91 upgrade failed rollback");
     }
-    install_all(game,data,{},-1,local);require(hash_file(dll)==SETUP_BOOTSTRAP_SHA&&hash_file(pack)==EMBEDDED_PACK_SHA,"Test91 to Test99 upgrade failed");
+    install_all(game,data,{},-1,local);require(hash_file(dll)==SETUP_BOOTSTRAP_SHA&&hash_file(pack)==EMBEDDED_PACK_SHA,"Test91 to v0.15 upgrade failed");
     std::cout<<"PASS: verified Test91 predecessor upgrade and all seven rollback stages; unrelated DLL collision guards retained.\n";
     auto previous92_loader=read_bytes(L"..\\autoload92-preview\\dinput8.dll"),previous92_pack=read_bytes(L"..\\autoload92-preview\\marker.pack");
     require(!previous92_loader.empty()&&!previous92_pack.empty(),"Test92 predecessor fixtures missing");
@@ -237,7 +237,7 @@ int wmain(){try{
         failed=false;try{install_all(game,data,{},interruption,local);}catch(...){failed=true;}
         require(failed&&read_bytes(dll)==previous92_loader&&read_bytes(pack)==previous92_pack&&read_bytes(selection)==saved_selection&&read_bytes(cache)==saved_cache,"Interrupted Test92 upgrade failed rollback");
     }
-    install_all(game,data,{},-1,local);require(hash_file(dll)==SETUP_BOOTSTRAP_SHA&&hash_file(pack)==EMBEDDED_PACK_SHA,"Test92 to Test99 upgrade failed");
+    install_all(game,data,{},-1,local);require(hash_file(dll)==SETUP_BOOTSTRAP_SHA&&hash_file(pack)==EMBEDDED_PACK_SHA,"Test92 to v0.15 upgrade failed");
     std::cout<<"PASS: verified Test92 predecessor upgrade and all seven rollback stages; unrelated DLL collision guards retained.\n";
     auto previous93_loader=read_bytes(L"..\\autoload93-preview\\dinput8.dll"),previous93_pack=read_bytes(L"..\\autoload93-preview\\marker.pack");
     require(!previous93_loader.empty()&&!previous93_pack.empty(),"Test93 predecessor fixtures missing");
@@ -249,7 +249,7 @@ int wmain(){try{
         failed=false;try{install_all(game,data,{},interruption,local);}catch(...){failed=true;}
         require(failed&&read_bytes(dll)==previous93_loader&&read_bytes(pack)==previous93_pack&&read_bytes(selection)==saved_selection&&read_bytes(cache)==saved_cache,"Interrupted Test93 upgrade failed rollback");
     }
-    install_all(game,data,{},-1,local);require(hash_file(dll)==SETUP_BOOTSTRAP_SHA&&hash_file(pack)==EMBEDDED_PACK_SHA,"Test93 to Test99 upgrade failed");
+    install_all(game,data,{},-1,local);require(hash_file(dll)==SETUP_BOOTSTRAP_SHA&&hash_file(pack)==EMBEDDED_PACK_SHA,"Test93 to v0.15 upgrade failed");
     std::cout<<"PASS: verified Test93 predecessor upgrade and all seven rollback stages; unrelated DLL collision guards retained.\n";
     auto previous94_loader=read_bytes(L"..\\autoload94-preview\\dinput8.dll"),previous94_pack=read_bytes(L"..\\autoload94-preview\\marker.pack");
     require(!previous94_loader.empty()&&!previous94_pack.empty(),"Test94 predecessor fixtures missing");
@@ -261,7 +261,7 @@ int wmain(){try{
         failed=false;try{install_all(game,data,{},interruption,local);}catch(...){failed=true;}
         require(failed&&read_bytes(dll)==previous94_loader&&read_bytes(pack)==previous94_pack&&read_bytes(selection)==saved_selection&&read_bytes(cache)==saved_cache,"Interrupted Test94 upgrade failed rollback");
     }
-    install_all(game,data,{},-1,local);require(hash_file(dll)==SETUP_BOOTSTRAP_SHA&&hash_file(pack)==EMBEDDED_PACK_SHA,"Test94 to Test99 upgrade failed");
+    install_all(game,data,{},-1,local);require(hash_file(dll)==SETUP_BOOTSTRAP_SHA&&hash_file(pack)==EMBEDDED_PACK_SHA,"Test94 to v0.15 upgrade failed");
     std::cout<<"PASS: verified Test94 predecessor upgrade and all seven rollback stages; unrelated DLL collision guards retained.\n";
     auto previous95_loader=read_bytes(L"..\\autoload95-preview\\dinput8.dll"),previous95_pack=read_bytes(L"..\\autoload95-preview\\marker.pack");
     require(!previous95_loader.empty()&&!previous95_pack.empty(),"Test95 predecessor fixtures missing");
@@ -273,7 +273,7 @@ int wmain(){try{
         failed=false;try{install_all(game,data,{},interruption,local);}catch(...){failed=true;}
         require(failed&&read_bytes(dll)==previous95_loader&&read_bytes(pack)==previous95_pack&&read_bytes(selection)==saved_selection&&read_bytes(cache)==saved_cache,"Interrupted Test95 upgrade failed rollback");
     }
-    install_all(game,data,{},-1,local);require(hash_file(dll)==SETUP_BOOTSTRAP_SHA&&hash_file(pack)==EMBEDDED_PACK_SHA,"Test95 to Test99 upgrade failed");
+    install_all(game,data,{},-1,local);require(hash_file(dll)==SETUP_BOOTSTRAP_SHA&&hash_file(pack)==EMBEDDED_PACK_SHA,"Test95 to v0.15 upgrade failed");
     std::cout<<"PASS: verified Test95 predecessor upgrade and all seven rollback stages; unrelated DLL collision guards retained.\n";
     auto previous96_loader=read_bytes(L"..\\autoload96-preview\\dinput8.dll"),previous96_pack=read_bytes(L"..\\autoload96-preview\\marker.pack");
     require(!previous96_loader.empty()&&!previous96_pack.empty(),"Test96 predecessor fixtures missing");
@@ -285,7 +285,7 @@ int wmain(){try{
         failed=false;try{install_all(game,data,{},interruption,local);}catch(...){failed=true;}
         require(failed&&read_bytes(dll)==previous96_loader&&read_bytes(pack)==previous96_pack&&read_bytes(selection)==saved_selection&&read_bytes(cache)==saved_cache,"Interrupted Test96 upgrade failed rollback");
     }
-    install_all(game,data,{},-1,local);require(hash_file(dll)==SETUP_BOOTSTRAP_SHA&&hash_file(pack)==EMBEDDED_PACK_SHA,"Test96 to Test99 upgrade failed");
+    install_all(game,data,{},-1,local);require(hash_file(dll)==SETUP_BOOTSTRAP_SHA&&hash_file(pack)==EMBEDDED_PACK_SHA,"Test96 to v0.15 upgrade failed");
     std::cout<<"PASS: verified Test96 predecessor upgrade and all seven rollback stages; unrelated DLL collision guards retained.\n";
     auto previous97_loader=read_bytes(L"..\\autoload97-preview\\dinput8.dll"),previous97_pack=read_bytes(L"..\\autoload97-preview\\marker.pack");
     require(!previous97_loader.empty()&&!previous97_pack.empty(),"Test97 predecessor fixtures missing");
@@ -297,7 +297,7 @@ int wmain(){try{
         failed=false;try{install_all(game,data,{},interruption,local);}catch(...){failed=true;}
         require(failed&&read_bytes(dll)==previous97_loader&&read_bytes(pack)==previous97_pack&&read_bytes(selection)==saved_selection&&read_bytes(cache)==saved_cache,"Interrupted Test97 upgrade failed rollback");
     }
-    install_all(game,data,{},-1,local);require(hash_file(dll)==SETUP_BOOTSTRAP_SHA&&hash_file(pack)==EMBEDDED_PACK_SHA,"Test97 to Test99 upgrade failed");
+    install_all(game,data,{},-1,local);require(hash_file(dll)==SETUP_BOOTSTRAP_SHA&&hash_file(pack)==EMBEDDED_PACK_SHA,"Test97 to v0.15 upgrade failed");
     std::cout<<"PASS: verified Test97 predecessor upgrade and all seven rollback stages; unrelated DLL collision guards retained.\n";
     auto previous98_loader=read_bytes(L"..\\autoload98-preview\\dinput8.dll"),previous98_pack=read_bytes(L"..\\autoload98-preview\\marker.pack");
     require(!previous98_loader.empty()&&!previous98_pack.empty(),"Test98 predecessor fixtures missing");
@@ -309,8 +309,27 @@ int wmain(){try{
         failed=false;try{install_all(game,data,{},interruption,local);}catch(...){failed=true;}
         require(failed&&read_bytes(dll)==previous98_loader&&read_bytes(pack)==previous98_pack&&read_bytes(selection)==saved_selection&&read_bytes(cache)==saved_cache,"Interrupted Test98 upgrade failed rollback");
     }
-    install_all(game,data,{},-1,local);require(hash_file(dll)==SETUP_BOOTSTRAP_SHA&&hash_file(pack)==EMBEDDED_PACK_SHA,"Test98 to Test99 upgrade failed");
+    install_all(game,data,{},-1,local);require(hash_file(dll)==SETUP_BOOTSTRAP_SHA&&hash_file(pack)==EMBEDDED_PACK_SHA,"Test98 to v0.15 upgrade failed");
     std::cout<<"PASS: verified Test98 predecessor upgrade and all seven rollback stages; unrelated DLL collision guards retained.\n";
+    auto previous99_loader=read_bytes(L"..\\autoload-test99-baseline\\dinput8.dll"),previous99_pack=read_bytes(L"..\\autoload-test99-baseline\\marker.pack");
+    require(!previous99_loader.empty()&&!previous99_pack.empty(),"Test99 predecessor fixtures missing");
+    for(int interruption=0;interruption<7;++interruption){
+        {flashstartup86::Key key;require(RegOpenKeyExW(flashstartup86::hive,flashstartup86::key_path.c_str(),0,KEY_SET_VALUE|KEY_WOW64_32KEY,&key.value)==ERROR_SUCCESS,"Test99 fixture flag reset");DWORD zero=0;
+         for(auto name:flashstartup86::names)require(RegSetValueExW(key.value,name,0,REG_DWORD,reinterpret_cast<BYTE*>(&zero),4)==ERROR_SUCCESS,"Test99 fixture flag write");}
+        atomic_bytes(dll,previous99_loader);atomic_bytes(pack,previous99_pack);
+        auto saved_selection=read_bytes(selection),saved_cache=read_bytes(cache);
+        failed=false;try{install_all(game,data,{},interruption,local);}catch(...){failed=true;}
+        require(failed&&read_bytes(dll)==previous99_loader&&read_bytes(pack)==previous99_pack&&read_bytes(selection)==saved_selection&&read_bytes(cache)==saved_cache,"Interrupted Test99 upgrade failed rollback");
+    }
+    install_all(game,data,{},-1,local);require(hash_file(dll)==SETUP_BOOTSTRAP_SHA&&hash_file(pack)==EMBEDDED_PACK_SHA,"Test99 to v0.15 upgrade failed");
+    std::cout<<"PASS: verified Test99 predecessor upgrade and all seven rollback stages; unrelated DLL collision guards retained.\n";
+
+    auto previous99_backup=read_bytes(dll+L".possession-previous");
+    auto previous99_pack_backup=read_bytes(pack+L".possession-previous");
+    require(previous99_backup==previous99_loader&&previous99_pack_backup==previous99_pack,"v0.15 exact Test99 backup missing");
+    install_all(game,data,{},-1,local);
+    require(read_bytes(dll+L".possession-previous")==previous99_backup&&read_bytes(pack+L".possession-previous")==previous99_pack_backup,"v0.15 repeated install rotated Test99 backup");
+    std::cout<<"PASS: v0.15 repeated install retains the exact Test99 rollback backup.\n";
 
     failed=false;try{launcher_selection("{\"unknown\":true}",game);}catch(...){failed=true;}require(failed,"Unknown cache accepted");
     std::string result="PASS: embedded payload hashes, transaction rollback, install/update/idempotency, actual checkpoint45 upgrade and interrupted-upgrade rollback, launcher activation and unrelated-entry preservation, DLL collision refusal, UTF8/UTF16 selection preservation, unknown-cache refusal. Fixture: "+utf8(root)+"\n";

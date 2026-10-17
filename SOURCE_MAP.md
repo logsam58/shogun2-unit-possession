@@ -1,24 +1,29 @@
-# Maintained source map
+# Source map
 
-Legacy directory names identify component origins, not the latest product version. All paths below contain the active Test99 source closure unless described otherwise.
+The mod is native C++ with Python build and diagnostic tools. VERSION is the product version. Numeric suffixes in paths and filenames are stable component/interface identifiers; use the active paths below when changing code.
 
-| Component | Repository path |
-| --- | --- |
-| Possession adapter, movement, accuracy, RTS return, ranged/look, siege/landing and50 fixtures | native/outputs/shogun2-accuracy90-preview/src |
-| Active styled QTE runtime and its fixtures | native/outputs/shogun2-authentic-hud80-preview/qte-src |
-| Active QTE renderer and resource definitions | native/outputs/shogun2-authentic-hud80-preview/src |
-| Active HUD and state policy fixture | native/outputs/shogun2-ammunition83-preview/hud-src |
-| Equipment/ammunition protocol headers | native/outputs/shogun2-ammunition83-preview/src |
-| Shared identity/status and MinHook | native/outputs/shogun2-possession-cleanup-v46 |
-| Adapter's retained MinHook closure | native/outputs/shogun2-accuracy90-preview/vendor |
-| Legacy protocol dependencies and HUD core | native/outputs/shogun2-possession-qte55-preview, shogun2-melee-qte63-preview, shogun2-melee-meter79-preview |
-| Integrated loader/startup and payload/hash preparation | native/work/autoload99-preview |
-| Wizard, reversible install/rollback, retention and HKCU fixtures | native/work/installer-siege99 |
-| Predecessor cache catalog used to generate current build catalog | native/work/installer-siege98/cache_catalog.h |
-| Automatic crash recorder and corrected full-memory dump reader | tools/diagnostics/source |
-| Portable x86 build wrapper / local dependency importer | tools/build.py, tools/configure.py |
-| Byte-preserved import provenance | docs/source-import.json |
+| Component | Active path | Responsibilities |
+| --- | --- | --- |
+| Possession adapter | native/outputs/shogun2-accuracy90-preview/src | Actor ownership, camera, movement, weapons, accuracy, equipment, unit orders, siege traversal and 50 fixture executables |
+| Adapter hooks | native/outputs/shogun2-accuracy90-preview/vendor | MinHook and x86 trampoline/disassembler support |
+| Melee QTE runtime | native/outputs/shogun2-authentic-hud80-preview/qte-src | Native pair preparation, combat state, response clock, input queue, interruption and renderer fixtures |
+| Styled QTE renderer | native/outputs/shogun2-authentic-hud80-preview/src | Shared native-style surface, fonts, artwork/resource definitions |
+| Contextual HUD | native/outputs/shogun2-ammunition83-preview/hud-src | Out-of-process HUD, state policy, reticles and equipment/ammo/climb display |
+| Equipment/ammunition interfaces | native/outputs/shogun2-ammunition83-preview/src | Numeric publication layouts and state definitions |
+| Identity/status interfaces | native/outputs/shogun2-possession-cleanup-v46 | Shared identity/status definitions and vendor closure |
+| Shared QTE/HUD headers | native/outputs/shogun2-possession-qte55-preview; shogun2-melee-qte63-preview; shogun2-melee-meter79-preview under native/outputs | Retained header dependencies; not additional production adapter targets |
+| DInput loader | native/work/autoload99-preview | Bootstrap, embedded payload preparation, fingerprints and cache startup |
+| Installer | native/work/installer-siege99 | Wizard/CLI, exact predecessor recognition, transactional rollback, cache retention and isolated fixtures |
+| Prior cache identities | native/work/installer-siege99/previous_cache_catalog.h | Fingerprints distinguishing known caches from unrelated files |
+| Build/configuration | tools/build.py; tools/configure.py; tools/local-assets.json | x86 builds, local resource import and hash manifest |
+| Release tooling | tools/package_release.py; tools/github_release.py | Verified package creation and explicitly requested publication |
+| Diagnostics | tools/diagnostics/source | Launch watcher, debugger, telemetry and minidump inspection |
+| Diagnostic format tests | tests/test_minidump.py | Synthetic dump-layout cases |
 
-The redundant historical adapter mirror under melee-meter79 was not imported as a build target. Its one HUD core dependency is retained. This avoids presenting that incomplete historical mirror as the maintained adapter. The active adapter is the accuracy90-preview directory above.
+## Starting points
 
-Game UI pixels/fonts, game binaries, complete shared decoding/decompilation and raw evidence remain external. Machine-specific pointers are in ignored tools/local.json or the local project state. docs/LOCAL_DEPENDENCIES.md explains the original machine's retained locations without copying their contents into Git.
+Read adapter.cpp for hook setup, input service and lifecycle coordination. Follow native_bow.h and manual_dispersion.h for projectile launch/accuracy, the equipment headers for weapon selection/ammunition/crouch, and the siege/climb headers for wall state and ownership. Fixture names identify the corresponding behavior under test.
+
+For QTE work, start with playable_runtime.cpp, qte_core.h, qte_timeline.h and qte_presentation93.h. Native pair preparation and observation are separate from the visual response clock. For the HUD, start with hud.cpp and its state policy; preserve the shared numeric layouts when changing either producer or consumer.
+
+Read [architecture](docs/ARCHITECTURE.md) for component data flow and [local dependencies](docs/LOCAL_DEPENDENCIES.md) for assets, exact engine fixtures and optional indexed native research. docs/source-import.json and docs/import-validation.json record initial provenance and validation; they are engineering receipts rather than the player feature guide.

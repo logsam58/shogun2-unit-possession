@@ -1,14 +1,19 @@
-# Local dependencies retained outside Git
+# Local build dependencies
 
-The original development machine retains these logical dependencies:
+A source clone contains mod code and fixtures, not a complete game/resource distribution.
 
-- FP99-20261017: the preserved Test99 source/resource closure and exact installed-payload build references.
-- FP98 and earlier candidates, plus the accepted v0.14 checkpoint79 release: immutable rollback/evidence inputs, not a history to regenerate or relabel.
-- The previous native-mod workspace: current installation/rollback manifests, work/check_live99.py, current-state.json, validation receipts and raw automatic recordings/dumps.
-- Shogun2Diagnostics: the existing installed persistent watcher/private Python runtime/debugger. It is not replaced by importing its source into tools/diagnostics/source.
-- The original shared research workspace: the indexed understanding SQLite database and full native C/ASM exports. Use these preserved read-only dependencies; do not rebuild or upload the full decoding.
-- Installed retail SHOGUN 2 and its native UI resources; MSVC/Windows SDK and a Python runtime.
+| Dependency | Needed for | How it is supplied |
+| --- | --- | --- |
+| Python 3.10+ | Build/configuration, diagnostics and format tests | Local Python installation |
+| MSVC x86 and Windows SDK | Native DLLs, HUD, loader and setup | Visual Studio / Build Tools; configure vcvars32.bat or automatic discovery |
+| Supported Empire.Retail.dll | Exact native fixture execution and installation compatibility | Licensed local SHOGUN 2 installation; fingerprint in README |
+| 24 UI input files | Styled QTE/HUD resources | Separately prepared resource tree matching tools/local-assets.json |
+| Prior loader/marker/runtime files | Full installer upgrade/rollback regression suite | Separately retained historical fixture inputs; 55 files including the immediate predecessor pair |
+| Indexed native decoding | Research of native functions and structures | Optional read-only local database/exports; not required for ordinary compilation |
+| Diagnostic runtime/configuration | Automatic crash capture | Separate local setup of recorder source and x86 debugger |
 
-Absolute paths and machine-local input configuration belong in ignored tools/local.json. That file is created by tools/configure.py and is not a portable dependency bundle. Local UI input hashes are in tools/local-assets.json. A new clone without those UI inputs can still inspect the source and build the adapter; styled HUD/QTE builds require the matching local resource closure. Historical full installer upgrade tests also need the ignored predecessor loader/marker inputs.
+`tools/configure.py` writes ignored tools/local.json and verifies resource hashes before copying inputs into ignored native paths. The asset source must have the relative structure described by `source_relative` in tools/local-assets.json. It is a prepared UI resource closure, not the plain Steam game folder. The helper does not extract arbitrary packs or download proprietary assets. A fresh contributor currently needs that prepared input closure to build the full UI; a standalone extraction pipeline is not included.
 
-Future source edits belong in this Git repository. Original candidate roots remain historical build/evidence baselines; installed payload/readiness checks must continue pinning their actual hashes until a separately validated candidate is installed.
+The adapter target can be built without the UI inputs. Exact-native fixtures still need the supported engine. The full installer suite additionally needs historical fixture binaries; normal source browsing and building the adapter do not require those archived installer inputs.
+
+Keep absolute paths and machine settings in ignored tools/local.json. Do not commit game binaries, fonts/artwork, complete research exports, local runtimes, raw recordings or dumps. See [BUILD_AND_TEST.md](../BUILD_AND_TEST.md) for commands and current path assumptions.

@@ -1,23 +1,18 @@
-# Your Git workflow
+# Source-control workflow
 
-The online repository belongs to **logsam58**: https://github.com/logsam58/shogun2-first-person . It starts private.
-
-- A **commit** is a named saved checkpoint of source changes.
-- A **push** uploads those commits to GitHub.
-- A **pull** downloads changes made elsewhere.
-- A **branch** lets an experiment develop without replacing the main branch immediately.
-
-GitHub Desktop is optional. To use it, sign in to your account, choose File > Add local repository and select the clean checkout folder. You can review Changes, write a short summary, Commit to main (or your branch), then Push origin. Once pushed, your source checkpoint is backed up on GitHub.
-
-Terminal equivalents, from this repository:
+Clone the repository, create a branch from main, configure local dependencies and make a focused change. GitHub Desktop and the command line both operate on the same Git history; either can review changes, commit, pull and push.
 
 ```powershell
+git switch -c describe-your-change
 git status
 git diff
-git add native tools docs README.md BUILD_AND_TEST.md SOURCE_MAP.md VALIDATION.md
+# Stage reviewed source/doc files using GitHub Desktop or git add.
+py tools/audit_repository.py
 git diff --cached --stat
-git commit -m "Describe the completed change"
-git push origin main
+git commit -m "Describe the resulting behavior"
+git push -u origin describe-your-change
 ```
 
-Git keeps source history, not the running game installation. Rolling back a source commit does not replace a loaded game DLL. Build, closed-game installation and a fresh user launch/readiness check remain separate operations. The accepted checkpoint79 release stays preserved locally; this repository begins from the newer Test99 development source.
+Open a pull request with the behavior change and checks actually run. See [CONTRIBUTING.md](../CONTRIBUTING.md) for project-specific expectations. Generated outputs and local resources are ignored. Never force-add game files, recordings, dumps or credentials.
+
+Git tracks source; changing a commit does not replace a game's loaded DLLs. Builds, closed-game installation and a fresh live session are separate steps. Product releases use reviewed tags, attached installers and checksum manifests; development commits are not automatically installed or published.
