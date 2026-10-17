@@ -22,6 +22,7 @@
 #include "native_font.h"
 #include "hud_state89.h"
 #include "accuracy_geometry90.h"
+#include "../../shogun2-accuracy90-preview/src/command_protocol100.h"
 #include "../src/ammunition_protocol83.h"
 namespace hud80 {
 using namespace Gdiplus;
@@ -39,6 +40,7 @@ struct View {
     float ammo{},reload{},speed{};
     bool accuracy_known{};float cone_half_angle{},projection_y{};
     unsigned climb_mode{};
+    bool commands_known{};command100::Status commands{};
 };
 class Assets {
     std::vector<IStream*> streams;
@@ -274,12 +276,22 @@ inline void render(Graphics& g,const Assets& a,float width,float height,const Vi
         text(g,L"Respond to the highlighted button",middle-143,bottom-(ammo_panel?32.f:48.f),286,22,14,muted());
     }
     float right=width-350;panel(g,a,RectF(right,bottom-160,324,160));
-    text(g,L"UNIT COMMANDS",right+28,bottom-141,268,24,17,ink(),true);
-    key_image(g,L"F5",RectF(right+28,bottom-108,36,24));text(g,L"Hold position",right+76,bottom-108,185,24,16);
-    a.image(g,L"ui/buttons/data__button_halt_active.png",RectF(right+269,bottom-110,27,27));
-    key_image(g,L"F6",RectF(right+28,bottom-77,36,24));text(g,L"Advance",right+72,bottom-77,87,24,14);
-    key_image(g,L"F7",RectF(right+165,bottom-77,36,24));text(g,v.following?L"Following":L"Follow",right+209,bottom-77,87,24,14);
-    key_image(g,L"F10",RectF(right+28,bottom-45,44,24));text(g,L"Return to RTS mode",right+84,bottom-45,212,24,14,red(),true);
+    const wchar_t* command_title=L"UNIT COMMANDS";
+    if(v.commands_known&&v.commands.placing)command_title=L"NATIVE UNIT PLACEMENT";
+    else if(v.commands_known&&GetTickCount64()<v.commands.feedback_until){
+        const wchar_t* titles[]={L"UNIT COMMANDS",L"ADVANCE ORDERED",L"FORMATION ORDERED",L"UNIT STOPPED",L"HOLDING HERE",L"FOLLOWING YOU",L"FOLLOW ENDED",L"HOLD FIRE",L"FIRE AT WILL",L"FIRE WHEN YOU FIRE",L"NO GROUND TARGET",L"COMMAND UNAVAILABLE",L"COMMAND UNAVAILABLE"};
+        if(v.commands.feedback<sizeof titles/sizeof *titles)command_title=titles[v.commands.feedback];
+    }
+    text(g,command_title,right+28,bottom-141,268,24,15,ink(),true);
+    const bool placing=v.commands_known&&v.commands.placing;
+    key_image(g,L"Q",RectF(right+28,bottom-116,25,23));text(g,L"Advance / drag",right+63,bottom-115,132,23,14);
+    key_image(g,L"E",RectF(right+207,bottom-116,25,23));text(g,L"Stop",right+242,bottom-115,55,23,14);
+    key_image(g,L"Z",RectF(right+28,bottom-88,25,23));text(g,L"Hold here",right+63,bottom-87,119,23,14,v.commands_known&&v.commands.move_mode==3?red():ink());
+    key_image(g,L"C",RectF(right+170,bottom-88,25,23));text(g,L"Follow me",right+205,bottom-87,91,23,14,v.following?red():ink());
+    key_image(g,L"R",RectF(right+28,bottom-60,25,23));
+    const wchar_t* fire_mode=!v.commands_known?L"Fire mode unavailable":v.commands.fire_mode==0?L"Hold fire":v.commands.fire_mode==1?L"Fire at will":L"Fire on command";
+    text(g,fire_mode,right+63,bottom-59,234,23,14,v.commands_known?red():muted(),true);
+    key_image(g,L"F10",RectF(right+28,bottom-32,42,23));text(g,L"Return to RTS",right+83,bottom-31,211,23,13,muted());
     if(v.climb_mode){
         float cy=height*.65f;
         panel(g,a,RectF(middle-206,cy,412,88));
@@ -290,8 +302,8 @@ inline void render(Graphics& g,const Assets& a,float width,float height,const Vi
             text(g,L"Release W / S to hold",middle-174,cy+52,348,24,15,muted());}
     }
     auto reticle=weapon_state89(v);
-    if(!v.climb_mode&&!(qte&&qte->active)&&reticle.reticle==hudstate89::Reticle::Drop)drop_reticle89(g,width*.5f,height*.5f,reticle.fire_prompt);
-    if(!v.climb_mode&&!(qte&&qte->active)&&reticle.reticle==hudstate89::Reticle::Firearm&&v.accuracy_known){float radius=0;
+    if(!placing&&!v.climb_mode&&!(qte&&qte->active)&&reticle.reticle==hudstate89::Reticle::Drop)drop_reticle89(g,width*.5f,height*.5f,reticle.fire_prompt);
+    if(!placing&&!v.climb_mode&&!(qte&&qte->active)&&reticle.reticle==hudstate89::Reticle::Firearm&&v.accuracy_known){float radius=0;
         if(accuracy90::projected_radius(v.cone_half_angle,v.projection_y,physical_height,radius))firearm_reticle90(g,width*.5f,height*.5f,radius/scale,reticle.fire_prompt);}
     (void)offline;
     if(qte&&qte->active)qte_meter(g,a,middle,bottom-210-extra,*qte);

@@ -237,11 +237,13 @@ static void __fastcall weapon_draw_hook(void* task,void*){
     if(ranged_subject_owned(field<uintptr_t>(reinterpret_cast<uintptr_t>(task),4))){
         acknowledge_skipped_ranged_draw(task);++state->ai_shots_suppressed;return;
     }
+    command_draw_started100(task);
     observe_peer_fire95(field<uintptr_t>(reinterpret_cast<uintptr_t>(task),4),false);
     original_draw(task);
 }
 static void __fastcall weapon_release_hook(void* task,void*){
     if(ranged_subject_owned(field<uintptr_t>(reinterpret_cast<uintptr_t>(task),4))){acknowledge_skipped_ranged_release(task);return;}
+    if(command_release_managed100(task))return;
     observe_peer_fire95(field<uintptr_t>(reinterpret_cast<uintptr_t>(task),4),true);
     original_native_release(task);
 }
@@ -252,6 +254,7 @@ static bool __fastcall weapon_ready_gate(void* task,void*){
     return ranged_task_nonblocking(ranged_subject_owned(field<uintptr_t>(reinterpret_cast<uintptr_t>(task),4)),task,original_ready_gate);
 }
 static bool __fastcall weapon_draw_gate(void* task,void*){
+    if(!command_draw_permitted100(task))return false;
     return ranged_task_nonblocking(ranged_subject_owned(field<uintptr_t>(reinterpret_cast<uintptr_t>(task),4)),task,original_draw_gate);
 }
 static bool __fastcall weapon_task_reload_gate(void* task,void*){
@@ -460,6 +463,7 @@ static void weapon_tick(uintptr_t actor){
                 InterlockedExchange(&state->weapon_phase,WEAPON_FIRED);
                 unsigned previous_shots=state->shots_spawned;
                 manual_bow_apply(weapon_payload,weapon_context);
+                if(state->shots_spawned==previous_shots+1)command_on_shot100();
                 InterlockedExchange(&manual_arrow_released,is_bow_projectile(bow_record(unit))&&state->shots_spawned==previous_shots+1);
             }
         }else if(state->weapon_phase==WEAPON_FIRED&&!anim){

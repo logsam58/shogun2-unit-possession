@@ -90,28 +90,3 @@ static void observe_formation(uintptr_t camera) {
     }
     state->formation_count=n;if(n){state->formation_x=float(x/n);state->formation_z=float(z/n);}
 }
-static void process_orders(uintptr_t camera) {
-    state->camera_thread=GetCurrentThreadId();
-    if(!enabled||state->stop||state->release||state->mode!=POSSESSED||state->order_error>=60||!camera_owned(camera))return;
-    if(state->camera_thread!=state->window_thread){if(state->pending_order)state->order_error=46;return;}
-    if(InterlockedCompareExchange(&order_busy,1,0))return;
-    __try {
-        observe_formation(camera);
-        unsigned command=unsigned(InterlockedExchange(&state->pending_order,ORDER_NONE));
-        if(command==ORDER_HOLD||command==ORDER_ADVANCE){InterlockedExchange(&state->follow,0);follow_target=false;}
-        if(command==ORDER_FOLLOW){InterlockedExchange(&state->follow,!state->follow);follow_target=false;}
-        float x=field<float>(possessed,0x48),z=field<float>(possessed,0x50),yaw=state->yaw;
-        if(command==ORDER_HOLD)issue_native_order(command,x,z);
-        else if(command==ORDER_ADVANCE)issue_native_order(command,x+std::sin(yaw)*25,z+std::cos(yaw)*25);
-        // Follow is a rate-limited stream of ordinary walk orders. The unit's own
-        // AI retains formation, terrain/pathfinding, morale, and casualty control.
-        if(state->follow&&state->order_error<60&&GetTickCount64()>=next_follow){
-            next_follow=GetTickCount64()+1000;
-            float tx=x-std::sin(yaw)*6,tz=z-std::cos(yaw)*6;
-            if(!follow_target||std::hypot(tx-follow_x,tz-follow_z)>=3){
-                if(issue_native_order(ORDER_FOLLOW,tx,tz)){follow_x=tx;follow_z=tz;follow_target=true;}
-            }
-        }
-    }__except(EXCEPTION_EXECUTE_HANDLER){state->order_error=60;InterlockedExchange(&state->follow,0);}
-    InterlockedExchange(&order_busy,0);
-}

@@ -25,6 +25,12 @@ static void manual_bow_apply(const uint32_t*,uintptr_t){}
 #include "equipment_policy81.h"
 static LONG equipment_slot81=equipment81::Ranged;
 static bool equipment_crouched81(){return false;}
+// This isolated fixture covers ordinary native firing. Full command-mode
+// behavior is exercised with actual adapter ownership in verify_native_commands100.
+static bool command_draw_permitted100(void*){return true;}
+static void command_draw_started100(void*){}
+static bool command_release_managed100(void*){return false;}
+static void command_on_shot100(){}
 #include "weapon_animation.h"
 
 static unsigned stops,clocks;

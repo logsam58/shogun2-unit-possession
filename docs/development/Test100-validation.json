@@ -1,0 +1,66 @@
+{
+  "candidate": 100,
+  "date": "2026-10-17",
+  "offline_passed": true,
+  "published": false,
+  "live_accepted": false,
+  "engine_sha256": "022fae2e2da92b59b8b1b8ee52887003c624e3c8eca060b209f5d792a7f874f5",
+  "components": {
+    "adapter": {
+      "file": "possession-v46.dll",
+      "sha256": "5b14c7fa5b7910beb552163918ef2f3b80abdd57a7e9ebd1526cb26bc1c3d330",
+      "bytes": 485888
+    },
+    "hud": {
+      "file": "possession-hud.exe",
+      "sha256": "ff5963e3f5f923897732c15d3282c24f5f284eb85be471005ec1aab93224d8d1",
+      "bytes": 25308672
+    },
+    "qte": {
+      "file": "qte-playable-v79.dll",
+      "sha256": "acc3e6dba3a6ad58088a5e240f9eae5ca2e47debd10d6db9a5aace879df7bd5b",
+      "bytes": 8436736
+    },
+    "loader": {
+      "file": "dinput8.dll",
+      "sha256": "d17e5ed9cadd103a090eed231afcd7ce19217d7434b341c75304634a73a90c03",
+      "bytes": 34539520
+    },
+    "marker": {
+      "file": "marker.pack",
+      "sha256": "b9c16f61b0250e92cb501e46330c9741f421aa2bf81c977a571c24a74d9c76de",
+      "bytes": 775
+    },
+    "setup": {
+      "file": "Shogun2-Possession-Setup.exe",
+      "sha256": "5417207e99acca72b35af5885dfc973c874f070e9b40028df2dadfe00ca4b803",
+      "bytes": 34960896
+    },
+    "maintenance_cli": {
+      "file": "install_cli.exe",
+      "sha256": "b38cdfa573489bd86efe4d33f4c654ee66135650f2e327db56680290a2e34158",
+      "bytes": 34941440
+    }
+  },
+  "cache_id": "03ad478553c92335",
+  "adapter_full_suite_executables": 52,
+  "adapter_final_followup": "Actual native Command100 fixture rerun after preserving Shift/Ctrl in Q mouse messages; final adapter rebuilt.",
+  "hud_executables": 2,
+  "loader_executables": 2,
+  "installer_full_suite": "Fresh final payload: historical upgrades, Test99 and exact published v0.15 predecessor; seven late-predecessor interruption stages, rollback, repeat install, collision and retention guards.",
+  "qte": "Retained exact published v0.15 QTE binary and prior 32-executable receipt; no QTE source change or fresh QTE rerun claimed.",
+  "production_hud_previews_rendered": 4,
+  "production_hud_previews_visually_inspected": 2,
+  "new_native_hooks": 0,
+  "existing_numeric_layouts_changed": false,
+  "optional_command100_bytes": 80,
+  "q_formation": "Stock right-button message path; original targeting, formation calculation and native rendering; no custom frontage overlay. Actual in-game native window/world rendering awaits live validation.",
+  "limits": "Original bounded methods execute with synthetic ownership objects and substituted window/world/allocator/release providers. Full native AI, collision, animation, unit and map coverage requires recorded live play. Extended-play effects crash and mounted-bow limitations remain.",
+  "resolved_validation_issues": [
+    "Standalone fixture header dependencies and explicit inactive-command stubs.",
+    "Capture physical wall keys before masking command keys.",
+    "GDI resource-counter type and C++ predecessor path escaping.",
+    "Published loader/marker hashes added to both exact installer allowlists."
+  ],
+  "published_v015_assets_preserved": true
+}

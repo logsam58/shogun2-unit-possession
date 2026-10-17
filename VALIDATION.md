@@ -4,9 +4,9 @@
 
 | Suite | Coverage |
 | --- | --- |
-| Adapter: 50 executables | Native forwarding, strict identity/lifetime, movement, camera return, weapons/accuracy, equipment, siege path/speed/crest/landing and cleanup |
+| Adapter: 52 executables (development) | Native forwarding, strict identity/lifetime, movement, camera return, weapons/accuracy, equipment, siege path/speed/crest/landing and cleanup |
 | Styled QTE: 32 executables | Combat preparation, clocks/cycles, input/deadlines, interruption feedback, registry churn, pacing and actual reusable styled surface |
-| HUD policy | Consistent contextual state, visibility and presentation policy |
+| HUD: 2 executables | Consistent contextual state, visibility and presentation policy |
 | Loader: 2 executables | Bootstrap, embedded payload integrity and integration |
 | Installer fixture | Supported predecessor upgrades, seven interruption stages, rollback, reinstall, collisions, cache retention and isolated HKCU handling |
 | Dump reader: 7 Python cases | Embedded, MemoryList and Memory64 stack layouts, exception-context preference and explicit missing-stack handling |
@@ -28,3 +28,6 @@ A live check requires a closed-game update, fresh launch, exact loaded backing p
 An extended siege session completed climbing/crest/landing but later crashed in native effects processing. The failure remains unresolved, including possible mod involvement. [Known issues](docs/KNOWN_ISSUES.md) records what the dump establishes and what it does not.
 
 Before a source push, run `py tools/audit_repository.py`. It checks staged blob contents for excluded binaries/assets/evidence, oversized files and recognized credential patterns. Binary release assets are distributed separately with checksums; private real dumps are never part of that package.
+
+
+[Test100 development validation](docs/development/Test100-validation.json) records 52 adapter executables, a final native input/modifier follow-up, both HUD and loader checks, and final-payload installer regression. Four corrected HUD images were rendered and two inspected; formation rendering remains in the game. The unchanged published QTE binary and its earlier 32-case receipt are retained. No live acceptance or crash fix is claimed.

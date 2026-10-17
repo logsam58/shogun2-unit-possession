@@ -1,9 +1,11 @@
 #pragma once
 #include "keyboard_policy84.h"
+#include "command_policy100.h"
 using KeyboardPoll84=bool(__cdecl*)();
 static KeyboardPoll84 original_keyboard_poll84;
 static void* keyboard_poll_target84;
 static keyboard84::Filter keyboard_filter84;
+static command100::KeyFilter command_keyboard_filter100;
 static bool climb_key_held97;
 static volatile LONG keyboard_wall98;static unsigned keyboard_wall_held98;
 static volatile LONG keyboard_held84,keyboard_polls84,keyboard_blocked84,keyboard_last_mask84,keyboard_failures84;
@@ -23,6 +25,7 @@ static bool __cdecl keyboard_poll84(){
         keyboard_wall_held98=keyboard_fps84()&&keyboard_wall98?physical98:keyboard_wall_held98&physical98;
         for(unsigned i=0;i<8;++i)if(masked98&(1u<<i))current[scans98[i]]=previous[scans98[i]]=0;
     }
+    command_keyboard_filter100.apply(current,previous,keyboard_fps84(),valid);
     InterlockedExchange(&keyboard_held84,LONG(keyboard_filter84.held));
     InterlockedExchange(&keyboard_last_mask84,LONG(blocked));
     InterlockedIncrement(&keyboard_polls84);
@@ -31,6 +34,7 @@ static bool __cdecl keyboard_poll84(){
     return valid;
 }
 static bool keyboard_window_owned84(unsigned key){
+    if(command100::key_bit(key)&&(keyboard_fps84()||(command_keyboard_filter100.held&command100::key_bit(key))))return true;
     return keyboard84::window_bit(key)&&(keyboard_fps84()||(unsigned(keyboard_held84)&keyboard84::window_bit(key)));
 }
 static void create_keyboard_hook84(){

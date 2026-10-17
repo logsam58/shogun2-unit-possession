@@ -53,3 +53,8 @@ VERSION defines the release. Prepare complete player release notes and a validat
 Review/stage source and run `py tools/audit_repository.py`, then commit it. `py tools/package_release.py` packages the clean pinned v0.15 source/build, verifies versions, embedded resources and receipts, and emits installer/ZIP/manifest/checksums under ignored artifacts/releases/v0.15. Its target check uses the maintenance CLI's read-only `--check-only` operation.
 
 Create an annotated v0.15 tag on the reviewed commit and push commit/tag. When publication is explicitly requested, `py tools/github_release.py --publish` verifies authentication/repository/tag, uploads a draft, downloads and hashes each asset, and publishes the regular release. The tool is currently scoped to v0.15 and this repository; future versions require a deliberate update. Credentials stay in memory. Repository visibility and installed game files are not changed. Published versions are not overwritten.
+
+
+## Unpublished development candidate
+
+Build adapter/HUD and their fixtures normally. To produce a distinct development loader, run `py tools/build.py loader --candidate 100 --tests`, then `py tools/build.py installer --candidate 100 --tests`. The marker identifies Test100 and generates a different cache identity. VERSION remains the latest public product version; this does not publish, install or replace v0.15 assets. Installer regression additionally requires exact published-v0.15 loader/marker fixtures in ignored `native/work/autoload-v015-baseline/`, extracted as data from verified release setup resources 201 and 202. Never execute the old installer to obtain those fixtures.

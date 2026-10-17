@@ -1,5 +1,6 @@
 #pragma once
 #include "pose_geometry.h"
+#include "self_visibility100.h"
 #include "seated_weapon_geometry.h"
 #include "arrow_render_geometry.h"
 #include "mounted_hold_geometry.h"
@@ -22,6 +23,7 @@ static uintptr_t pose_holder,pose_result,pose_array;
 static unsigned pose_count;
 static float pose_before[256*12],pose_after[256*12];
 static bool pose_saved;
+static uintptr_t pose_binding100,pose_asset100;
 // Bounded numeric snapshots only. The logger never dereferences game objects.
 struct MountedPoseAudit87 {uint64_t tick;unsigned lease,draw,frame,phase,held,bones[7],sim_tick88,acquired88,blend_ready88,settle_matches88,layout89,rejections89;float native[84],visible[84],world[12];};
 static MountedPoseAudit87 mounted_pose_audit87[32];
@@ -82,7 +84,7 @@ static void capture_model_eye(uintptr_t holder,uintptr_t result){
         if(!array||!bone||!n||n>256||n!=field<unsigned>(asset,0x3c))return;
         auto index=field<unsigned>(bone,4);if(index>=n)return;
         const float* matrices=reinterpret_cast<float*>(array);
-        if(pose_saved&&holder==pose_holder&&result==pose_result&&array==pose_array&&n==pose_count&&memcmp(matrices,pose_after,n*48)==0)matrices=pose_before;
+        if(pose_saved&&holder==pose_holder&&result==pose_result&&array==pose_array&&n==pose_count&&(!pose_binding100||(binding==pose_binding100&&asset==pose_asset100))&&memcmp(matrices,pose_after,n*48)==0)matrices=pose_before;
         deathpose::Frame head;if(!deathpose::frame(reinterpret_cast<float*>(holder+0x24),matrices+index*12,head))return;
         // Calibrate the face from the untouched native eye, before free mouse
         // look replaces its direction. Death must not retain a backward glance.
@@ -104,6 +106,7 @@ static void restore_soldier_pose(){
         if(pose_saved&&root&&field<uintptr_t>(root,0x110)==pose_environment&&pose_holder&&field<uintptr_t>(pose_holder,8)==pose_actor&&
            field<unsigned>(pose_actor,0x1c8)==pose_actor_id&&field<uintptr_t>(pose_actor,0x214)==pose_unit&&
            field<unsigned>(pose_unit,4)==pose_unit_id&&field<uintptr_t>(pose_actor,0x20c)==pose_config&&
+           (!pose_binding100||(field<uintptr_t>(pose_holder,0x1e4)==pose_binding100&&field<uintptr_t>(pose_binding100,0x1c)==pose_asset100))&&
            field<uintptr_t>(field<uintptr_t>(pose_holder,0x14),0x14)==pose_result&&
            field<uintptr_t>(pose_result,8)==pose_array&&field<unsigned>(pose_result,4)==pose_count&&
            memcmp(reinterpret_cast<void*>(pose_array),pose_after,pose_count*48)==0){
@@ -125,6 +128,7 @@ static void apply_soldier_pose(uintptr_t holder,uintptr_t result){
         unsigned n=field<unsigned>(result,4);uintptr_t array=field<uintptr_t>(result,8);
         if(!n||n>256||n!=field<unsigned>(asset,0x3c)||!array)return;
         if(pose_saved&&holder==pose_holder&&result==pose_result&&array==pose_array&&n==pose_count&&
+            (!pose_binding100||(binding==pose_binding100&&asset==pose_asset100))&&
             memcmp(reinterpret_cast<void*>(array),pose_after,n*48)==0)memcpy(reinterpret_cast<void*>(array),pose_before,n*48);
         int32_t parents[256];uintptr_t hierarchy=field<uintptr_t>(asset,0x40);
         for(unsigned i=0;i<n;++i)parents[i]=field<int32_t>(hierarchy,i*20+16);
@@ -258,7 +262,7 @@ static void apply_soldier_pose(uintptr_t holder,uintptr_t result){
            hide_display_arrow(reinterpret_cast<float*>(array),n,indices[6])){
             ++state->arrow_visual_updates;state->arrow_visual_hidden=1;state->arrow_visual_bone=indices[6];
         }
-        pose_holder=holder;pose_result=result;pose_array=array;pose_count=n;
+        pose_holder=holder;pose_result=result;pose_array=array;pose_count=n;pose_binding100=binding;pose_asset100=asset;
         memcpy(pose_after,reinterpret_cast<void*>(array),n*48);pose_saved=true;
         if(mounted&&is_bow_projectile(projectile)&&GetTickCount64()-mounted_pose_audit_tick87>=50){
             mounted_pose_audit_tick87=GetTickCount64();auto& sample=mounted_pose_audit87[mounted_pose_sequence87++%32];
@@ -278,12 +282,77 @@ static void apply_soldier_pose(uintptr_t holder,uintptr_t result){
         state->pose_weapon_record=record_id;state->pose_native_clip=native_clip;state->pose_native_bias=state->pitch-pitch;
     }__except(EXCEPTION_EXECUTE_HANDLER){state->pose_error=1;}
 }
+static volatile LONG self_visibility_updates100,self_visibility_rejects100,self_visibility_restores100;
+struct SelfSkin100 {
+    uintptr_t holder{},result{},array{},binding{},asset{};unsigned lease{},count{},head{},neck{},left{},right{},weapons[3]{};
+    int32_t parents[256]{};float native[256*12]{};
+};
+static bool prepare_self_skin100(uintptr_t holder,uintptr_t result,SelfSkin100& skin){
+    __try{
+        // Retire only our exact previous presentation, including when native
+        // animation evaluation reuses its palette. Never undo a fresh or foreign
+        // palette, a new actor serial, a new binding or a changed model count.
+        auto root=field<uintptr_t>(base,0x1bc8180);
+        if(pose_saved&&holder==pose_holder&&result==pose_result&&root&&field<uintptr_t>(root,0x110)==pose_environment&&
+           field<uintptr_t>(holder,8)==pose_actor&&field<unsigned>(pose_actor,0x1c8)==pose_actor_id&&field<uintptr_t>(pose_actor,0x214)==pose_unit&&
+           field<unsigned>(pose_unit,4)==pose_unit_id&&field<uintptr_t>(pose_actor,0x20c)==pose_config&&
+           (!pose_binding100||(field<uintptr_t>(pose_holder,0x1e4)==pose_binding100&&field<uintptr_t>(pose_binding100,0x1c)==pose_asset100))&&field<unsigned>(result,4)==pose_count&&
+           field<uintptr_t>(result,8)==pose_array&&pose_count>0&&pose_count<=256&&memcmp(reinterpret_cast<void*>(pose_array),pose_after,pose_count*48)==0){
+            memcpy(reinterpret_cast<void*>(pose_array),pose_before,pose_count*48);pose_saved=false;InterlockedIncrement(&self_visibility_restores100);
+        }
+        if(!enabled||!state||state->stop||state->release||state->mode!=POSSESSED||!possession_lease.active||!possessed||
+           holder!=possession_lease.identity.holder||field<uintptr_t>(holder,8)!=possessed||!followed(possessed,false))return false;
+        if(field<unsigned char>(possessed,0xf0)!=1)return false; // Native death rig remains unchanged.
+        skin.lease=possession_lease.generation;skin.holder=holder;skin.result=result;skin.binding=field<uintptr_t>(holder,0x1e4);if(!skin.binding)return false;
+        skin.asset=field<uintptr_t>(skin.binding,0x1c);skin.count=field<unsigned>(result,4);skin.array=field<uintptr_t>(result,8);
+        if(!skin.asset||!skin.array||!skin.count||skin.count>256||skin.count!=field<unsigned>(skin.asset,0x3c))return false;
+        auto hierarchy=field<uintptr_t>(skin.asset,0x40);if(!hierarchy)return false;
+        const unsigned offsets[7]={0x9c,0xa0,0xa8,0xa4,0x90,0x94,0x98};unsigned indices[7]{};
+        for(unsigned i=0;i<7;++i){auto bone=field<uintptr_t>(skin.binding,offsets[i]);if(!bone)return false;indices[i]=field<unsigned>(bone,4);if(indices[i]>=skin.count)return false;}
+        skin.head=indices[0];skin.neck=indices[1];skin.left=indices[2];skin.right=indices[3];memcpy(skin.weapons,indices+4,sizeof skin.weapons);
+        for(unsigned i=0;i<skin.count;++i)skin.parents[i]=field<int32_t>(hierarchy,i*20+16);
+        memcpy(skin.native,reinterpret_cast<void*>(skin.array),skin.count*48);
+        return true;
+    }__except(EXCEPTION_EXECUTE_HANDLER){return false;}
+}
+static bool current_self_skin100(const SelfSkin100& skin){
+    __try{return enabled&&state&&!state->stop&&!state->release&&state->mode==POSSESSED&&possession_lease.active&&skin.lease==possession_lease.generation&&
+        skin.holder==possession_lease.identity.holder&&field<uintptr_t>(skin.holder,8)==possessed&&field<uintptr_t>(skin.holder,0x1e4)==skin.binding&&
+        field<uintptr_t>(skin.binding,0x1c)==skin.asset&&field<uintptr_t>(skin.result,8)==skin.array&&field<unsigned>(skin.result,4)==skin.count&&
+        !dead_view()&&field<unsigned char>(possessed,0xf0)==1&&followed(possessed,false);}
+    __except(EXCEPTION_EXECUTE_HANDLER){return false;}
+}
+static void finish_self_skin100(const SelfSkin100& skin){
+    __try{
+        if(!current_self_skin100(skin))return;
+        if(!visibility100::hide(reinterpret_cast<float*>(skin.array),skin.native,skin.count,skin.parents,skin.head,skin.neck,skin.left,skin.right,skin.weapons)){
+            InterlockedIncrement(&self_visibility_rejects100);return;
+        }
+        // One restoration record covers weapon corrections and self visibility.
+        // Existing muzzle/arrow snapshots stay independent of the hidden head.
+        pose_holder=skin.holder;pose_result=skin.result;pose_array=skin.array;pose_count=skin.count;pose_binding100=skin.binding;pose_asset100=skin.asset;
+        memcpy(pose_before,skin.native,skin.count*48);memcpy(pose_after,reinterpret_cast<void*>(skin.array),skin.count*48);pose_saved=true;
+        pose_actor=possessed;pose_environment=environment;pose_actor_id=possession_lease.identity.actor_id;
+        pose_unit=unit;pose_unit_id=possession_lease.identity.unit_id;pose_config=possession_lease.identity.config;pose_tick=GetTickCount64();
+        InterlockedIncrement(&self_visibility_updates100);
+    }__except(EXCEPTION_EXECUTE_HANDLER){InterlockedIncrement(&self_visibility_rejects100);}
+}
 static void __fastcall skin_ready_hook(void* holder,void*,void* result){
     AcquireSRWLockExclusive(&pose_lock);
     __try{
+        SelfSkin100 skin{};bool owned=prepare_self_skin100(reinterpret_cast<uintptr_t>(holder),reinterpret_cast<uintptr_t>(result),skin);
+        if(owned){pose_arrow_valid=false;pose_carbine_valid=false;pose_muzzle_transform_valid=false;}
         capture_model_eye(reinterpret_cast<uintptr_t>(holder),reinterpret_cast<uintptr_t>(result));
         apply_soldier_pose(reinterpret_cast<uintptr_t>(holder),reinterpret_cast<uintptr_t>(result));
-        original_skin_ready(holder,result);
+        if(owned&&current_self_skin100(skin)){
+            float presented_head[3]{};auto head=reinterpret_cast<float*>(skin.array)+skin.head*12;
+            for(unsigned i=0;i<3;++i){presented_head[i]=head[i*4+3];head[i*4+3]=skin.native[skin.head*12+i*4+3];}
+            // Native4c56d0 retains the palette and caches the head position.
+            // Let it cache the real head before collapsing self-only geometry.
+            __try{original_skin_ready(holder,result);}
+            __finally{for(unsigned i=0;i<3;++i)head[i*4+3]=presented_head[i];}
+            finish_self_skin100(skin);
+        }else original_skin_ready(holder,result);
     }__finally{ReleaseSRWLockExclusive(&pose_lock);}
 }
 static void pose_manual_origin(float* origin){

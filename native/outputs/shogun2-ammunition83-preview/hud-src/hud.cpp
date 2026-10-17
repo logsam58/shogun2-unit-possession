@@ -2,6 +2,7 @@
 #include "../../shogun2-possession-cleanup-v46/src/identity.h"
 #include "../../shogun2-possession-cleanup-v46/src/protocol.h"
 #include "hud_renderer.h"
+#include "hud_surface100.h"
 #include "accuracy_protocol90.h"
 #include "../../shogun2-accuracy90-preview/src/climb_protocol97.h"
 #include "../src/equipment_protocol81.h"
@@ -11,6 +12,8 @@ static EquipmentStatus81* equipment_shared;
 static ammo83::Status* ammunition_shared83;
 static accuracy90::Status* accuracy_shared90;
 static climb97::Status* climb_shared97;
+static command100::Status* commands_shared100;static HANDLE commands_map100;static uint64_t commands_retry100;
+static HudSurface100 hud_surface100;
 static HWND game,overlay;static bool visible;static hud80::View display;static hud80::Assets assets;
 template<class T>T read(uintptr_t address){T v{};SIZE_T n=0;
     require(ReadProcessMemory(process,reinterpret_cast<void*>(address),&v,sizeof v,&n)&&n==sizeof v,"Native HUD read failed");return v;}
@@ -61,6 +64,17 @@ static bool measure(){
     if(d.owner){d.faction=d.owner->name;d.mon=d.owner->mon;d.boshin=d.owner->boshin;}
     d.ranged=read<unsigned>(unit+0xf7c)!=0;d.bow=s.pose_weapon_record==3;
     d.aim_pose=s.aim_pose;d.weapon_phase=s.weapon_phase;d.aiming=s.aiming!=0;d.following=s.follow!=0;
+    if(!commands_shared100&&now>=commands_retry100){
+        commands_retry100=now+1000;wchar_t name[120];swprintf_s(name,L"Local\\Shogun2PossessionUnitCommands100-%lu",pid);
+        commands_map100=OpenFileMappingW(FILE_MAP_READ,FALSE,name);
+        if(commands_map100)commands_shared100=static_cast<command100::Status*>(MapViewOfFile(commands_map100,FILE_MAP_READ,0,0,sizeof(command100::Status)));
+        if(commands_map100&&!commands_shared100){CloseHandle(commands_map100);commands_map100=nullptr;}
+    }
+    if(commands_shared100)for(unsigned retry=0;retry<4;++retry){
+        LONG seq=commands_shared100->sequence;if(seq&1)continue;command100::Status commands{};MemoryBarrier();memcpy(&commands,commands_shared100,sizeof commands);MemoryBarrier();
+        if(seq!=commands_shared100->sequence)continue;
+        if(command100::valid(commands,pid,s.lease_generation,s.actor_id,s.unit_id,now)){d.commands_known=true;d.commands=commands;}break;
+    }
     if(equipment_shared){for(unsigned retry=0;retry<4;++retry){LONG seq=equipment_shared->sequence;if(seq&1)continue;
         EquipmentStatus81 e{};MemoryBarrier();memcpy(&e,equipment_shared,sizeof e);MemoryBarrier();if(seq!=equipment_shared->sequence)continue;
         if(e.magic==EQUIPMENT_MAGIC81&&e.version==81&&e.size==sizeof e&&e.pid==pid&&e.lease==s.lease_generation&&
@@ -96,16 +110,11 @@ static BOOL CALLBACK choose_window(HWND w,LPARAM){DWORD p=0;GetWindowThreadProce
 static bool paint(){
     RECT client{};POINT pos{};GetClientRect(game,&client);ClientToScreen(game,&pos);int width=client.right,height=client.bottom;
     if(width<640||height<360)return false;
-    HDC screen=GetDC(nullptr),dc=CreateCompatibleDC(screen);BITMAPINFO info{};
-    info.bmiHeader.biSize=sizeof(BITMAPINFOHEADER);info.bmiHeader.biWidth=width;info.bmiHeader.biHeight=-height;
-    info.bmiHeader.biPlanes=1;info.bmiHeader.biBitCount=32;info.bmiHeader.biCompression=BI_RGB;void* pixels=nullptr;
-    HBITMAP bitmap=CreateDIBSection(screen,&info,DIB_RGB_COLORS,&pixels,nullptr,0);
-    if(!screen||!dc||!bitmap||!pixels){if(bitmap)DeleteObject(bitmap);if(dc)DeleteDC(dc);if(screen)ReleaseDC(nullptr,screen);return false;}
-    auto old=SelectObject(dc,bitmap);memset(pixels,0,size_t(width)*height*4);
+    if(!hud_surface100.ensure(width,height))return false;
+    auto screen=hud_surface100.screen(),dc=hud_surface100.memory();auto pixels=hud_surface100.pixels();memset(pixels,0,size_t(width)*height*4);
     {Gdiplus::Bitmap surface(width,height,width*4,PixelFormat32bppPARGB,static_cast<BYTE*>(pixels));Gdiplus::Graphics g(&surface);hud80::render(g,assets,float(width),float(height),display);}
     POINT origin{};SIZE size{width,height};BLENDFUNCTION alpha{AC_SRC_OVER,0,255,AC_SRC_ALPHA};
     bool ok=UpdateLayeredWindow(overlay,screen,&pos,&size,dc,&origin,0,&alpha,ULW_ALPHA)!=0;
-    SelectObject(dc,old);DeleteObject(bitmap);DeleteDC(dc);ReleaseDC(nullptr,screen);
     if(ok)SetWindowPos(overlay,HWND_TOPMOST,0,0,0,0,SWP_NOMOVE|SWP_NOSIZE|SWP_NOACTIVATE|SWP_SHOWWINDOW);return ok;
 }
 static void update(){bool ok=false;try{ok=measure();}catch(...){ok=false;}DWORD fg=0;GetWindowThreadProcessId(GetForegroundWindow(),&fg);
@@ -122,8 +131,9 @@ static int preview(int argc,wchar_t** argv){
     bool reload=wcscmp(argv[3],L"reload")==0,lowered=wcscmp(argv[3],L"lowered")==0,drawing=wcscmp(argv[3],L"drawing")==0,
         mortar=wcscmp(argv[3],L"mortar")==0,rocket=wcscmp(argv[3],L"rocket")==0,fots=wcscmp(argv[3],L"fots")==0,unknown=wcscmp(argv[3],L"unknown")==0;
     bool ranged=wcscmp(argv[3],L"ranged")==0||bomb||gun||single||pending||empty||reload||lowered||drawing||mortar||rocket||fots||unknown||wcscmp(argv[3],L"ammo-qte")==0,combat=wcscmp(argv[3],L"combat")==0,qte_active=wcscmp(argv[3],L"qte")==0||wcscmp(argv[3],L"ammo-qte")==0;
+    bool command_preset=wcsncmp(argv[3],L"command-",8)==0;
     bool climb_preset=wcsncmp(argv[3],L"climb-",6)==0;
-    require(climb_preset||ranged||combat||qte_active||wcscmp(argv[3],L"clean")==0,"Unknown preview preset");
+    require(command_preset||climb_preset||ranged||combat||qte_active||wcscmp(argv[3],L"clean")==0,"Unknown preview preset");
     hud80::View v;v.fixture=true;v.unit=hud80::unit_art(ranged?L"Inf_Missile_Bow_Ashigaru":L"Inf_Sword_Katana_Samurai");require(v.unit!=nullptr,"Fixture catalog entry missing");
     v.faction=L"Oda";v.mon=L"ui/clan_mons/data__oda.png";v.men=combat?73:118;v.initial=120;v.morale=combat?5:2;v.fatigue=combat?4:1;v.veterancy=3;
     v.equipment_known=true;v.has_ranged=ranged;v.slot=ranged?2:1;v.styles=ranged?3:0;v.ammunition=L"Fire arrows";
@@ -138,6 +148,11 @@ static int preview(int argc,wchar_t** argv){
     if(ranged){v.ammunition_known=true;auto& a=v.ammunition_state;a.count=single||mortar||rocket?1:gun||bomb||fots?2:3;a.current=single||pending||empty?0:1;a.pending=pending;
         for(unsigned i=0;i<a.count;++i){auto& item=a.items[i];item.icon=mortar?ammo83::Mortar:rocket?ammo83::Rocket:(gun||fots)?(i?ammo83::Suppression:ammo83::Bullet):bomb?(i?ammo83::BlindBomb:ammo83::Bomb):i==0?ammo83::Arrow:i==1?ammo83::FireArrow:ammo83::WhistleArrow;
             item.flags=(i==a.current?ammo83::Selected:0)|(i==0?ammo83::Normal:0)|(!empty&&!(gun&&i==1)?ammo83::Available:0);wcscpy_s(item.label,ammo83::label(ammo83::Icon(item.icon)));}}
+    if(command_preset){auto& c=v.commands;v.commands_known=true;c.tick=GetTickCount64();c.feedback_until=c.tick+1800;
+        c.move_mode=wcscmp(argv[3],L"command-hold")==0?3:4;c.fire_mode=wcscmp(argv[3],L"command-fire")==0?2:wcscmp(argv[3],L"command-hold")==0?0:1;
+        c.placing=wcscmp(argv[3],L"command-drag")==0||wcscmp(argv[3],L"command-point")==0||wcscmp(argv[3],L"command-invalid")==0;
+
+    }
     qte::Snapshot s;s.active=qte_active;s.serial=1;s.action=qte::Action::Defend;s.result=qte::Result::Pending;s.duration=1.4f;s.elapsed=.84f;s.response_elapsed=.84;s.placement=.65f;s.zone_width=.17f;
     Bitmap bitmap(width,height,PixelFormat32bppARGB);{Graphics g(&bitmap);LinearGradientBrush backdrop(Point(0,0),Point(width,height),Color(255,75,83,70),Color(255,26,31,25));g.FillRectangle(&backdrop,0,0,width,height);
         hud80::render(g,assets,float(width),float(height),v,qte_active?&s:nullptr,true);}
@@ -168,9 +183,10 @@ int wmain(int argc,wchar_t** argv){Gdiplus::GdiplusStartupInput input;ULONG_PTR 
                 else{EnumWindows(choose_window,0);require(game!=nullptr,"No game window");SetProcessDPIAware();WNDCLASSW cls{};cls.lpfnWndProc=proc;cls.hInstance=GetModuleHandleW(nullptr);cls.lpszClassName=L"ShogunAuthenticHUD80";require(RegisterClassW(&cls)!=0,"HUD class failed");
                     overlay=CreateWindowExW(WS_EX_LAYERED|WS_EX_TRANSPARENT|WS_EX_NOACTIVATE|WS_EX_TOOLWINDOW|WS_EX_TOPMOST,cls.lpszClassName,L"Shogun FPS HUD",WS_POPUP,0,0,0,0,nullptr,nullptr,cls.hInstance,nullptr);require(overlay!=nullptr,"HUD window failed");
                     SetTimer(overlay,1,150,nullptr);MSG msg{};while(GetMessageW(&msg,nullptr,0,0)>0){TranslateMessage(&msg);DispatchMessageW(&msg);}result=0;}}
+            if(commands_shared100)UnmapViewOfFile(commands_shared100);if(commands_map100)CloseHandle(commands_map100);
             if(climb_shared97)UnmapViewOfFile(climb_shared97);if(accuracy_shared90)UnmapViewOfFile(accuracy_shared90);if(ammunition_shared83)UnmapViewOfFile(ammunition_shared83);if(equipment_shared)UnmapViewOfFile(equipment_shared);UnmapViewOfFile(shared);
         }
     }catch(const std::exception& e){std::cerr<<e.what()<<'\n';}
-    assets.clear();Gdiplus::GdiplusShutdown(token);
+    assets.clear();hud_surface100.reset();Gdiplus::GdiplusShutdown(token);
     return result;
 }

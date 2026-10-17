@@ -1,6 +1,6 @@
 # Support and development status
 
-Current product version: **0.15**. The release contains the native possession, weapon, melee QTE, HUD, unit-order, camera-return and siege systems described in the [README](../README.md).
+Latest published product version: **0.15**. The release contains the native possession, weapon, melee QTE, HUD, unit-order, camera-return and siege systems described in the [README](../README.md).
 
 | Area | Implemented behavior | Coverage / limitation |
 | --- | --- | --- |
@@ -20,3 +20,6 @@ Current product version: **0.15**. The release contains the native possession, w
 Offline fixtures cover important native forwarding, identity, cleanup, geometry, timing and installation cases. They do not simulate every battle. [VALIDATION.md](../VALIDATION.md) and the release receipt distinguish freshly run checks from retained component evidence.
 
 Current development priorities are the unresolved effects crash, mounted-bow presentation, broader ranged-unit/animation coverage, crowded-combat interruptions and siege-map lifecycle testing. Known limitations and reporting guidance are in [KNOWN_ISSUES.md](KNOWN_ISSUES.md) and [CONTRIBUTING.md](../CONTRIBUTING.md).
+
+
+The `unit-commands-and-first-person-visibility` development branch contains **Test100**, an unpublished candidate. Q feeds the stock right-button press/move/release path; its preview and geometry remain native. E stops, Z captures Hold Here, C follows in native formation, and R cycles firing policy including successful-shot command volleys. Self head/neck visibility is applied independently of weapon-pose eligibility while preserving native cached head position and exact palette restoration. See [Test100 development notes](development/Test100.md) for validation and limits.

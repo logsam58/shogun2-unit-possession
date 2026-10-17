@@ -93,7 +93,7 @@ static void __fastcall crosshair_update_hook(void* controller,void*,float dt){
 static HCURSOR WINAPI set_cursor_hook(HCURSOR cursor){
     if(enabled&&state&&!state->stop&&!state->release&&state->mode==POSSESSED){
         DWORD pid=0;GetWindowThreadProcessId(GetForegroundWindow(),&pid);
-        if(pid==GetCurrentProcessId()){++state->cursor_suppressed;return original_set_cursor(nullptr);}
+        if(pid==GetCurrentProcessId()&&!command_placing100){++state->cursor_suppressed;return original_set_cursor(nullptr);}
     }
     return original_set_cursor(cursor);
 }

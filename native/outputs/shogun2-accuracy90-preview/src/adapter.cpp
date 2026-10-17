@@ -5,6 +5,7 @@
 #include "possession_lease.h"
 #include "control_metrics.h"
 #include "camera_entry_gate.h"
+#include "command_input100.h"
 #include "legacy_v34.h"
 #include "../vendor/include/MinHook.h"
 #include <intrin.h>
@@ -33,6 +34,13 @@ static constexpr UINT ENTER_SOLDIER_MESSAGE=WM_APP+0x53a;
 static __declspec(thread) LONG camera_callback_depth;
 static volatile LONG motion_callback_depth,entry_pending,entry_attempted;
 static volatile LONG climb_action97;
+static void command_reset100();
+static void command_native_cancel100();
+static bool command_native_signatures100(uintptr_t);
+static bool command_draw_permitted100(void*);
+static void command_draw_started100(void*);
+static bool command_release_managed100(void*);
+static void command_on_shot100();
 using CameraInput=uintptr_t(__thiscall*)(void*,uintptr_t,uintptr_t);
 static CameraInput original_camera_input;
 static void* camera_input_target;
@@ -48,31 +56,33 @@ static void request_possession(){
     InterlockedExchange(&state->acquire,1);InterlockedExchange(&state->mode,ARMED);
 }
 static LRESULT CALLBACK weapon_window_proc(HWND window,UINT message,WPARAM w,LPARAM l){
-    if((message==WM_KEYDOWN||message==WM_KEYUP||message==WM_SYSKEYDOWN||message==WM_SYSKEYUP||message==WM_CHAR||message==WM_SYSCHAR)&&keyboard_window_owned84(unsigned(w)))return 0;
+    if(command_window100(window,message,w,l))return 0;
+    if((message==WM_KEYDOWN||message==WM_KEYUP||message==WM_SYSKEYDOWN||message==WM_SYSKEYUP||message==WM_CHAR||message==WM_SYSCHAR)&&keyboard_window_owned84(unsigned((message==WM_CHAR||message==WM_SYSCHAR)&&w>='a'&&w<='z'?w-32:w)))return 0;
     if(message==RETURN_RTS_MESSAGE90){restore_rts_on_window90(uint32_t(w));return 0;}
-    if(message==RESTORE_INTERFACE_MESSAGE){interface_restore();if(death_return_pending)end_death_on_window();return 0;}
+    if(message==RESTORE_INTERFACE_MESSAGE){command_native_cancel100();interface_restore();if(death_return_pending)end_death_on_window();return 0;}
     if(message==ENTER_SOLDIER_MESSAGE){
         if(InterlockedExchange(&entry_pending,0)){InterlockedExchange(&entry_attempted,1);enter_selected_soldier();}
         return 0;
     }
     if(message==WM_KEYDOWN&&w==VK_F9&&!(l&(1L<<30))){request_possession();return 0;}
     if(state&&message==WM_KEYDOWN&&(w==VK_F10||w==VK_ESCAPE||w==VK_INSERT||w==VK_F12)){
-        InterlockedExchange(&state->release,1);interface_restore();
+        command_native_cancel100();InterlockedExchange(&state->release,1);interface_restore();
     }
     if(state&&(message==WM_KILLFOCUS||(message==WM_ACTIVATEAPP&&!w))){
-        InterlockedExchange(&state->release,1);interface_restore();
+        command_native_cancel100();InterlockedExchange(&state->release,1);interface_restore();
     }
     if(enabled&&state&&!state->stop&&!state->release&&state->mode==POSSESSED){
         if(message==WM_KEYDOWN&&w=='F'&&!(l&(1L<<30)))InterlockedExchange(&climb_action97,1);
         // Consume owned movement/order keys so they do not also become Total War
         // camera or unit commands. Release/menu keys continue to the native window.
         if(message==WM_KEYDOWN||message==WM_KEYUP||message==WM_SYSKEYDOWN||message==WM_SYSKEYUP){
-            switch(w){case 'W':case 'A':case 'S':case 'D':case 'Q':case 'E':case 'F':
+            switch(w){case 'W':case 'A':case 'S':case 'D':case 'Q':case 'E':case 'Z':case 'C':case 'R':case 'F':
                 case VK_SHIFT:case VK_CONTROL:case VK_LCONTROL:case VK_RCONTROL:case VK_TAB:
                 case '0':case '1':case '2':case '3':case '4':case '5':case '6':case '7':case '8':case '9':case VK_F5:case VK_F6:case VK_F7:case VK_F9:return 0;}
         }
         if(message==WM_INPUT&&raw_mouse_active&&read_raw_mouse(l))return DefWindowProcW(window,message,w,l);
-        if(message==WM_SETCURSOR){SetCursor(nullptr);++state->cursor_suppressed;return TRUE;}
+        if(message==WM_SETCURSOR&&!command_placing100){SetCursor(nullptr);++state->cursor_suppressed;return TRUE;}
+        if(command_placing100&&(message==WM_RBUTTONDOWN||message==WM_LBUTTONDOWN||message==WM_LBUTTONUP||message==WM_RBUTTONUP))return 0;
         if(message==WM_RBUTTONDOWN||message==WM_RBUTTONUP||message==WM_RBUTTONDBLCLK){
             melee60::Request active;if(dead_view()||melee_request(active))return 0;
             InterlockedExchange(&state->aiming,message==WM_RBUTTONUP?0:1);return 0;
@@ -492,6 +502,7 @@ static void equipment_render_reset81(){
 }
 #include "first_person_interface.h"
 #include "rts_camera_native90.h"
+#include "native_commands100.h"
 static void __fastcall camera_cancel(void* camera,void*) {
     uintptr_t caller=reinterpret_cast<uintptr_t>(_ReturnAddress());
     InterlockedIncrement(reinterpret_cast<volatile LONG*>(&state->camera_cancels));
@@ -586,15 +597,16 @@ static void __fastcall camera_matrix(void* camera,void*,const void* matrix) {
         original_matrix(camera,matrix);if(possessed&&!dead_view())climb_observe98(possessed);remember_native_eye78(reinterpret_cast<uintptr_t>(camera));adjust_eye(reinterpret_cast<uintptr_t>(camera));interface_update(reinterpret_cast<uintptr_t>(camera));
         if(!dead_view()){
             capture_aim_frame(reinterpret_cast<uintptr_t>(camera));
+            process_orders(reinterpret_cast<uintptr_t>(camera));
             if(!possessed||(!wall_subject97(possessed)&&!native_airborne_subject99(possessed))){
             process_equipment_commands81(reinterpret_cast<uintptr_t>(camera));
-            melee60::Request commitment;if(!melee_request(commitment))process_orders(reinterpret_cast<uintptr_t>(camera));
+
             process_bow(reinterpret_cast<uintptr_t>(camera));
             }
         }
     }__finally {--camera_callback_depth;}
 }
-static void relinquish(){climb_reset97();request_rts_restore90();next_accuracy90=0;publish_accuracy90(nullptr,0,0);InterlockedExchange(&mounted_heading85,-1);equipment_reset81();reset_death_view();InterlockedExchange(&manual_arrow_released,0);state->arrow_visual_hidden=0;possession_lease.release();InterlockedExchange(&state->input,0);InterlockedExchange(&state->aiming,0);state->aim_pose=0;InterlockedExchange(&state->weapon_phase,WEAPON_IDLE);possessed=0;environment=0;unit=0;InterlockedExchange(&state->follow,0);InterlockedExchange(&state->pending_order,0);follow_target=false;InterlockedExchange(&state->fire_request,0);InterlockedExchange(&state->mode,IDLE);}
+static void relinquish(){command_reset100();climb_reset97();request_rts_restore90();next_accuracy90=0;publish_accuracy90(nullptr,0,0);InterlockedExchange(&mounted_heading85,-1);equipment_reset81();reset_death_view();InterlockedExchange(&manual_arrow_released,0);state->arrow_visual_hidden=0;possession_lease.release();InterlockedExchange(&state->input,0);InterlockedExchange(&state->aiming,0);state->aim_pose=0;InterlockedExchange(&state->weapon_phase,WEAPON_IDLE);possessed=0;environment=0;unit=0;InterlockedExchange(&state->follow,0);InterlockedExchange(&state->pending_order,0);follow_target=false;InterlockedExchange(&state->fire_request,0);InterlockedExchange(&state->mode,IDLE);}
 static void end_death_on_window(){
     if(!InterlockedExchange(&death_return_pending,0))return;
     __try{uintptr_t manager=possession_lease.identity.manager;uintptr_t env=environment;
@@ -704,6 +716,7 @@ static void __fastcall detour(void* actor,void*) {
 }
 static bool down(int vk){return (GetAsyncKeyState(vk)&0x8000)!=0;}
 static void snapshot_log(std::ofstream& log) {
+    command_log100(log);
     {static LONG prior=-1,failed=-1;LONG blocked=keyboard_blocked84,errors=keyboard_failures84;
      if(blocked!=prior||errors!=failed){prior=blocked;failed=errors;
       log<<"{\"event\":\"native_keyboard84\",\"tick_ms\":"<<GetTickCount64()
@@ -765,6 +778,7 @@ static DWORD WINAPI worker(void*) {
         require(native_speed_modifier_signatures(base),"Native surface/fatigue/speed-step signatures differ");
         require(native_terrain_signatures(base),"Native terrain signatures or constants differ");
         require(equipment_signatures81(base),"Native equipment signatures differ");
+        require(command_native_signatures100(base),"Native command100 signatures differ");
         require(native_order_signatures(base),"Native order signatures or serializer tables differ");
         target=reinterpret_cast<void*>(base+0x367600);
         require(memcmp(target,signature,sizeof(signature))==0,"Motion signature changed");
@@ -817,7 +831,7 @@ static DWORD WINAPI worker(void*) {
         state->heartbeat=GetTickCount64();InterlockedExchange(&enabled,1);
         require(MH_EnableHook(MH_ALL_HOOKS)==MH_OK,"Hook enable failed");InterlockedExchange(&state->ready,1);
         log<<"{\"event\":\"hook_ready\",\"pid\":"<<GetCurrentProcessId()<<",\"sha256\":\""<<EXPECTED_HASH<<"\",\"motion_rva\":\"0x367600\"}\n";log.flush();
-        bool f9=false,f10=false,f12=false,f5=false,f6=false,f7=false,was_focus=false,mouse_captured=false,left_mouse=false;uint64_t next=0,last_mouse=GetTickCount64();
+        bool f9=false,f10=false,f12=false,was_focus=false,mouse_captured=false,left_mouse=false;uint64_t next=0,last_mouse=GetTickCount64();
         // Release builds remain available until explicit disable or game exit.
         while(!state->stop) {
             DWORD foreground_pid=0;DWORD foreground_thread=GetWindowThreadProcessId(GetForegroundWindow(),&foreground_pid);bool focus=foreground_pid==GetCurrentProcessId();
@@ -827,43 +841,38 @@ static DWORD WINAPI worker(void*) {
                 capture_weapon_mouse(GetForegroundWindow());
                 bool click=down(VK_LBUTTON);
                 melee60::Request active_melee;bool melee_locked=melee_request(active_melee);
-                if(click&&!left_mouse&&state->mode==POSSESSED&&!dead_view()&&!melee_locked&&down(VK_RBUTTON))InterlockedExchange(&state->fire_request,1);
+                if(click&&!left_mouse&&state->mode==POSSESSED&&!dead_view()&&!melee_locked&&!command_placing100&&down(VK_RBUTTON))InterlockedExchange(&state->fire_request,1);
                 left_mouse=click;
-                InterlockedExchange(&state->aiming,state->mode==POSSESSED&&!dead_view()&&!melee_locked&&down(VK_RBUTTON)?1:0);
+                InterlockedExchange(&state->aiming,state->mode==POSSESSED&&!dead_view()&&!melee_locked&&!command_placing100&&down(VK_RBUTTON)?1:0);
                 state->window_thread=foreground_thread;
                 if(down('W'))input|=FORWARD;if(down('S'))input|=BACKWARD;if(down('A'))input|=LEFT;if(down('D'))input|=RIGHT;
-                if(down('Q'))input|=TURN_LEFT;if(down('E'))input|=TURN_RIGHT;if(down(VK_SHIFT))input|=RUN;
+                if(down(VK_SHIFT))input|=RUN;
                 bool a=down(VK_F9),b=down(VK_F10),c=down(VK_F12);
                 if(a&&!f9)request_possession();
                 if(b&&!f10)InterlockedExchange(&state->release,1);
                 if(c&&!f12)InterlockedExchange(&state->stop,1);
                 if(down(VK_ESCAPE))InterlockedExchange(&state->release,1);
-                bool h=down(VK_F5),m=down(VK_F6),f=down(VK_F7);
-                melee60::Request motion_commitment;
-                if(state->mode==POSSESSED&&!dead_view()&&!melee_request(motion_commitment)){
-                    if(h&&!f5)InterlockedExchange(&state->pending_order,ORDER_HOLD);
-                    if(m&&!f6)InterlockedExchange(&state->pending_order,ORDER_ADVANCE);
-                    if(f&&!f7)InterlockedExchange(&state->pending_order,ORDER_FOLLOW);
-                }
-                f5=h;f6=m;f7=f;f9=a;f10=b;f12=c;
+                f9=a;f10=b;f12=c;
                 if(state->acquire&&state->mode==ARMED&&!entry_attempted&&input_window&&
                     camera_entry_owner(foreground_thread,state->camera_callback_thread,state->camera_input_thread)&&
                     !InterlockedCompareExchange(&entry_pending,1,0)){
                     if(PostMessageW(input_window,ENTER_SOLDIER_MESSAGE,0,0))++state->acquisition_posts;
                     else {InterlockedExchange(&entry_pending,0);entry_failed(14);}
                 }
-            }else {if(was_focus)InterlockedExchange(&state->release,1);f9=f10=f12=f5=f6=f7=false;}
+            }else {if(was_focus)InterlockedExchange(&state->release,1);f9=f10=f12=false;}
             if(!focus){left_mouse=false;InterlockedExchange(&state->aiming,0);}
             if((state->mode!=POSSESSED||state->stop||state->release||!focus)&&interface_active)restore_interface_on_window();
             was_focus=focus;InterlockedExchange(&state->input,dead_view()?0:LONG(input));
             uint64_t now=GetTickCount64();float elapsed=std::min(float(now-last_mouse)*0.001f,0.05f);last_mouse=now;
-            if(focus&&state->mode==POSSESSED&&!state->release&&!state->stop){
+            bool command_resume100=InterlockedExchange(&command_recenter100,0)!=0;
+            if(command_placing100||command_resume100){mouse_captured=false;InterlockedExchange(&raw_mouse_x,0);InterlockedExchange(&raw_mouse_y,0);}
+            if(focus&&state->mode==POSSESSED&&!state->release&&!state->stop&&!command_placing100){
                 HWND window=GetForegroundWindow();RECT client{};POINT center{},cursor{};
                 if(GetClientRect(window,&client)&&client.right>200&&client.bottom>200){
                     center={client.right/2,client.bottom/2};
                     if(ClientToScreen(window,&center)&&GetCursorPos(&cursor)){
-                        int dx=raw_mouse_active?int(InterlockedExchange(&raw_mouse_x,0)):(mouse_captured?cursor.x-center.x:0);
-                        int dy=raw_mouse_active?int(InterlockedExchange(&raw_mouse_y,0)):(mouse_captured?cursor.y-center.y:0);
+                        int dx=command_resume100?0:raw_mouse_active?int(InterlockedExchange(&raw_mouse_x,0)):(mouse_captured?cursor.x-center.x:0);
+                        int dy=command_resume100?0:raw_mouse_active?int(InterlockedExchange(&raw_mouse_y,0)):(mouse_captured?cursor.y-center.y:0);
                         // In-game input capture is active only for this possessed game window.
                         if(SetCursorPos(center.x,center.y))mouse_captured=true;
                         melee60::Request committed;
