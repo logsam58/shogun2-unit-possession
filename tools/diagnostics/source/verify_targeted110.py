@@ -15,14 +15,15 @@ def load(path):
     except (OSError,ValueError):return {}
 
 def main():
-    a=argparse.ArgumentParser();a.add_argument('--build-dir',type=Path,required=True);a.add_argument('--output-dir',type=Path,required=True);a.add_argument('--repeat-normal',type=int,default=0);o=a.parse_args()
+    a=argparse.ArgumentParser();a.add_argument('--build-dir',type=Path,required=True);a.add_argument('--output-dir',type=Path,required=True);a.add_argument('--repeat-normal',type=int,default=0);a.add_argument('--recorder',type=Path);o=a.parse_args()
+    recorder=o.recorder or o.build_dir/'crash-recorder.exe'
     o.output_dir.mkdir(parents=True,exist_ok=True);results=[]
     for number,mode in enumerate(['normal','handled','crash','detach','foreign-step','budget']+['normal']*o.repeat_normal):
         folder=o.output_dir/(mode if number<6 else f'{mode}-{number}');folder.mkdir(exist_ok=False)
         with (folder/'console.log').open('w') as output:
             target=subprocess.Popen([str(o.build_dir/'trace-fixture110.exe'),str(folder),mode],stdout=output,stderr=subprocess.STDOUT,creationflags=0x08000000)
             wait_until(lambda:(folder/'targeted110-fixture.txt').exists())
-            debug=subprocess.Popen([str(o.build_dir/'crash-recorder.exe'),'--fixture',str(target.pid),'0',str(folder)],stdout=output,stderr=subprocess.STDOUT,creationflags=0x08000000)
+            debug=subprocess.Popen([str(recorder),'--fixture',str(target.pid),'0',str(folder)],stdout=output,stderr=subprocess.STDOUT,creationflags=0x08000000)
             wait_until(lambda:load(folder/'targeted110-health.json').get('armed_threads',0)>0)
             (folder/'trace-go').touch();wait_until(lambda:(folder/'actions.done').exists())
             if mode=='detach':

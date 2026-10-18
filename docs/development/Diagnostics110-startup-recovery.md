@@ -1,5 +1,7 @@
 # Diagnostics110 startup recovery
 
+Subsequent user launch and menu/battle checks confirmed this recovery. Installed capture-only110 remains unchanged. [Diagnostics111](Diagnostics111.md) adds offline build separation, ownership correction and a stricter PE deployment gate; its new binaries are uninstalled. Earlier statements below about pending startup and the prior-only deployment gate describe the original recovery snapshot.
+
 Two normal user launches after Diagnostics110 deployment failed during audio startup. Both captured first-chance and unhandled exception0x80000004 at AUDIOSES.DLL+0x61268. This is a new diagnostic regression, separate from the earlier native effects read, Miles sample-loop read and DirectSound invalid call.
 
 Both traces show DR6 bit3 set and actual DR3 still pointing to the initially observed audio interface. The debugger's stored programmed DR3 was already zero after the wrapper pointer was cleared. The handler rejected that trap as unowned and forwarded it; the application did not handle it. The evidence establishes lost ownership of a diagnostic hardware trap. The exact kernel event/context reprogramming order that produced the disagreement is not yet established. Synthetic concurrency passes did not cover this real transition.

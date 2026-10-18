@@ -1,10 +1,11 @@
 #pragma once
 #include <map>
 #include <chrono>
+#include "trace_ownership111.h"
 // Hardware debug registers only: no code patches, injected DLLs or game-data writes.
 // Debug events stop all target threads; ownership changes are applied before continue.
 class TargetedTrace110 {
-    struct Saved {HANDLE handle{};CONTEXT original{},programmed{};unsigned kind[4]{};uintptr_t owner[4]{};bool owned{};};
+    struct Saved {HANDLE handle{};CONTEXT original{},programmed{};unsigned kind[4]{};uintptr_t owner[4]{};bool owned{},dirty{};TraceOwnership111 history;};
     HANDLE process{};DWORD pid{};bool fixture{},disabled{},finished{};std::wstring folder;
     std::map<DWORD,Saved> threads;
     std::ofstream log;
@@ -64,13 +65,20 @@ class TargetedTrace110 {
         for(auto& pair:threads){auto& saved=pair.second;
             DWORD desired[]={DWORD(disabled?0:destructor),DWORD(disabled?0:(audio_wrapper?effects_word:audio_entry)),
                 DWORD(disabled||!audio_wrapper?0:audio_wrapper+0x18),DWORD(disabled?0:audio_object)};
-            if(saved.owned&&saved.programmed.Dr0==desired[0]&&saved.programmed.Dr1==desired[1]&&
+            if(saved.owned&&!saved.dirty&&saved.programmed.Dr0==desired[0]&&saved.programmed.Dr1==desired[1]&&
                saved.programmed.Dr2==desired[2]&&saved.programmed.Dr3==desired[3])continue;
             CONTEXT c{};c.ContextFlags=CONTEXT_DEBUG_REGISTERS;
             if(!GetThreadContext(saved.handle,&c))continue;
             // Another thread may already have a queued hardware exception. Keep
             // its old bindings intact until that exact event is handled.
             if(c.Dr6&15)continue;
+            unsigned kinds[]={1u,audio_wrapper?3u:2u,4u,5u};
+            uintptr_t owners[]={0,effects_word,audio_wrapper,audio_object};
+            for(unsigned i=0;i<4;++i)if(desired[i]&&!saved.history.can_remember(i,{desired[i],kinds[i],DWORD(owners[i])})){
+                // Never evict ownership that a saved context may restore later.
+                disabled=true;budget_exhausted=true;event("ownership_history_full","\"hardware_observations_disabled\":true");
+                for(auto& d:desired)d=0;break;
+            }
             c.Dr0=disabled?0:destructor;
             c.Dr1=disabled?0:(audio_wrapper?effects_word:audio_entry);
             c.Dr2=disabled||!audio_wrapper?0:audio_wrapper+0x18;
@@ -80,8 +88,10 @@ class TargetedTrace110 {
             for(unsigned i=0;i<4;++i)if(values[i]){c.Dr7|=1u<<(2*i);bool data=i>=2||(i==1&&audio_wrapper);if(data)c.Dr7|=13u<<(16+4*i);}
             if(SetThreadContext(saved.handle,&c)){
                 saved.owned=true;saved.programmed=c;
+                saved.dirty=false;
                 saved.kind[0]=1;saved.kind[1]=audio_wrapper?3:2;saved.kind[2]=4;saved.kind[3]=5;
                 saved.owner[1]=effects_word;saved.owner[2]=audio_wrapper;saved.owner[3]=audio_object;
+                for(unsigned i=0;i<4;++i)if(values[i])require(saved.history.remember(i,{values[i],saved.kind[i],DWORD(saved.owner[i])}),"Ownership history admission failed");
             }
             else event("thread_arm_failed","\"thread\":"+std::to_string(pair.first)+",\"winerror\":"+std::to_string(GetLastError()));
         }
@@ -143,17 +153,23 @@ inline bool TargetedTrace110::exception(DWORD tid,DWORD code){
     CONTEXT c{};c.ContextFlags=CONTEXT_FULL|CONTEXT_DEBUG_REGISTERS;
     if(!GetThreadContext(p->second.handle,&c)){event("single_step_context_failed","\"thread\":"+std::to_string(tid));return false;}
     unsigned hit=unsigned(c.Dr6)&15,owned=0;
-    const auto previous=p->second;
+    auto previous=p->second;
     DWORD actual[]={c.Dr0,c.Dr1,c.Dr2,c.Dr3};
     DWORD programmed[]={previous.programmed.Dr0,previous.programmed.Dr1,previous.programmed.Dr2,previous.programmed.Dr3};
-    for(unsigned i=0;i<4;++i)if((hit&(1u<<i))&&actual[i]&&actual[i]==programmed[i]&&
-        ((previous.kind[i]!=1&&previous.kind[i]!=2)||c.Eip==actual[i]))owned|=1u<<i;
+    bool restored_context=false;
+    for(unsigned i=0;i<4;++i)if(hit&(1u<<i)){
+        if(const auto* known_binding=previous.history.match(i,actual[i],c.Dr7,c.Eip)){
+            owned|=1u<<i;previous.kind[i]=known_binding->kind;previous.owner[i]=known_binding->owner;
+            if(actual[i]!=programmed[i])restored_context=true;
+        }
+    }
     if(!owned){
         event("unowned_single_step","\"thread\":"+std::to_string(tid)+",\"dr6\":"+address(c.Dr6)+",\"dr7\":"+address(c.Dr7)+",\"dr0\":"+address(c.Dr0)+",\"dr1\":"+address(c.Dr1)+",\"dr2\":"+address(c.Dr2)+",\"dr3\":"+address(c.Dr3)+",\"programmed3\":"+address(previous.programmed.Dr3)+","+evidence(c));
         return false;
     }
     // Do not swallow an unrelated trap-flag single step or an unowned data trap.
-    if((c.Dr6&(1u<<14))||(hit&~owned)){event("mixed_single_step_not_consumed","\"thread\":"+std::to_string(tid)+",\"dr6\":"+address(c.Dr6));return false;}
+    if((c.Dr6&(7u<<13))||(hit&~owned)){event("mixed_single_step_not_consumed","\"thread\":"+std::to_string(tid)+",\"dr6\":"+address(c.Dr6));return false;}
+    if(restored_context)event("retired_binding_restored","\"thread\":"+std::to_string(tid)+",\"actual_dr3\":"+address(c.Dr3)+",\"desired_dr3\":"+address(programmed[3])+",\"reprogram_current_event_thread\":true");
     auto began=std::chrono::steady_clock::now();auto now=GetTickCount64();
     if(now-epoch>=1000){epoch=now;epoch_hits=0;pause_us=0;}
     ++traps;++epoch_hits;
@@ -198,7 +214,10 @@ inline bool TargetedTrace110::exception(DWORD tid,DWORD code){
     c.ContextFlags=CONTEXT_CONTROL|CONTEXT_DEBUG_REGISTERS;c.Dr6=0;
     if(execute)c.EFlags|=0x10000;
     if(!SetThreadContext(p->second.handle,&c))throw std::runtime_error("Cannot continue owned processor trap");
-    (void)change;arm_all();
+    // SEH/APC continuation may restore old registers after another thread's
+    // event. Force this event thread to the current binding; cache equality
+    // alone cannot prove its actual resumed register state.
+    p->second.dirty=true;(void)change;arm_all();
     return true;
 }
 

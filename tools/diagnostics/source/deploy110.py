@@ -9,15 +9,16 @@ SOURCE=Path(__file__).resolve().parent
 sys.path.insert(0,str(SOURCE))
 from process_probe import processes,modules
 from session import creation
+from binary_policy111 import require_capture_only111
 
 def sha(p):
     with p.open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('--installed-root',type=Path,required=True);p.add_argument('--built-recorder',type=Path,required=True);p.add_argument('--evidence',type=Path,required=True);o=p.parse_args()
-    # Hardware tracing caused real startup failures despite synthetic passes.
-    # This deployment path may restore only the exact prior exception-only build.
-    assert sha(o.built_recorder)=='a2e987c99326acaa60b769228119ee9e48ea2fc20025853fd3e2f8370083e274', 'Diagnostics110 hardware deployment withdrawn after real startup failures; use the verified prior exception-only debugger.'
+    # Run before any evidence-directory or installation mutation. Runtime flags
+    # cannot make an experimental executable suitable for automatic deployment.
+    require_capture_only111(o.built_recorder)
     root=o.installed_root.resolve();o.evidence.mkdir(parents=True,exist_ok=True)
     health=json.loads((root/'watcher-health.json').read_text())
     assert health['state']=='armed' and not health['active_sessions'] and time.time()-health['unix']<10

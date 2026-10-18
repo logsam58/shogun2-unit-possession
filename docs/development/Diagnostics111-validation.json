@@ -1,0 +1,29 @@
+{
+  "revision": 111,
+  "status": "offline_only_uninstalled",
+  "default_capture_debugger_sha256": "653ea5ea1e94063e8200dc24c746dbddd12667ba0a1553e43664120be98785d5",
+  "experimental_toy_debugger_sha256": "0ac2fea83357d58d76e0ac786dec5ed8dcc5f212793987247a5b51d48ec802a6",
+  "installed_capture_only110_sha256": "4b92e66f588ebe739fbb99f0d7aa9f75136255427d8a2af6bfafa75cea682193",
+  "default_hardware_compiled": false,
+  "real_game_hardware_enabled": false,
+  "fresh_check_groups": 47,
+  "ownership_assertions": 84,
+  "hardware_cases": 31,
+  "core_cases": 15,
+  "experimental_target_rejections": 4,
+  "binary_policy_and_deployment_checks": 3,
+  "baseline_defect_reproduced": true,
+  "final_checks": "PASS",
+  "initial_failed_attempts_retained": [
+    "Missing C++ string include",
+    "History-limit toy hit unchanged handler-work budget first; toy writes paced in final fixture"
+  ],
+  "user_startup_recovery_confirmed": true,
+  "menu_and_battle_capture_checked": true,
+  "new_binaries_installed": false,
+  "gameplay_changed": false,
+  "watcher_restarted": false,
+  "game_launched_or_terminated_by_agent": false,
+  "published": false,
+  "limits": "Native exception continuation reproduces the ownership defect; exact audio callback path in the game remains untraced. Finite offline checks do not prove all unknown failures impossible. Installed read-only lifecycle sampler reports partial-read transitions; hardware lifetime tracing remains withdrawn."
+}

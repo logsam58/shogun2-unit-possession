@@ -8,6 +8,22 @@ struct Wrapper {DWORD pad[6];volatile DWORD object;};
 static Owner owner{};static DWORD entries[9]{};static DWORD globals[2]{};
 static Audio a{},b{};static Wrapper wrapper{};static DWORD table1[7]{},table2[7]{};
 static volatile DWORD sink{};
+static HANDLE go111{},filter111{},retired111{};static std::wstring root111;
+static LONG continuation111(EXCEPTION_POINTERS*p){
+    if(p->ExceptionRecord->ExceptionCode!=0xe0421111)return EXCEPTION_CONTINUE_SEARCH;
+    {std::ofstream f(root111+L"\\saved-context111.txt");f<<std::hex<<p->ContextRecord->Dr3<<' '<<p->ContextRecord->Dr7;}
+    SetEvent(filter111);WaitForSingleObject(retired111,10000);return EXCEPTION_CONTINUE_EXECUTION;
+}
+static DWORD WINAPI context_writer111(void*){
+    WaitForSingleObject(go111,10000);
+    __try{RaiseException(0xe0421111,0,0,nullptr);}__except(continuation111(GetExceptionInformation())){}
+    a.vt=DWORD(reinterpret_cast<uintptr_t>(table2));return 0;
+}
+static volatile LONG ready111{};
+static DWORD WINAPI race_writer111(void*p){
+    InterlockedIncrement(&ready111);WaitForSingleObject(go111,10000);
+    if(p)a.vt=DWORD(reinterpret_cast<uintptr_t>(table2));else wrapper.object=0;return 0;
+}
 __declspec(noinline) DWORD __fastcall scout(Wrapper* w){return w->object;}
 __declspec(noinline) void __fastcall destroy_owner(Owner* o){o->count=0;o->table=0;o->vt=0x22222222;}
 static DWORD WINAPI writer(void*){b.vt=DWORD(reinterpret_cast<uintptr_t>(table2));return 0;}
@@ -24,6 +40,27 @@ int wmain(int argc,wchar_t**argv){
     {std::ofstream f(root+L"\\targeted110-fixture.txt");f<<std::hex<<address(&destroy_owner)<<' '<<address(&scout)<<' '<<address(globals);}
     uint64_t end=GetTickCount64()+20000;
     while(!exists(root+L"\\trace-go")){if(GetTickCount64()>end)return 3;Sleep(10);}
+    if(mode==L"context-restore"){
+        root111=root;go111=CreateEventW(nullptr,TRUE,FALSE,nullptr);filter111=CreateEventW(nullptr,TRUE,FALSE,nullptr);retired111=CreateEventW(nullptr,TRUE,FALSE,nullptr);
+        HANDLE thread=CreateThread(nullptr,0,context_writer111,nullptr,0,nullptr);
+        sink=scout(&wrapper);SetEvent(go111);if(WaitForSingleObject(filter111,10000)!=WAIT_OBJECT_0)return 5;
+        wrapper.object=0;SetEvent(retired111);if(WaitForSingleObject(thread,10000)!=WAIT_OBJECT_0)return 6;CloseHandle(thread);
+        CloseHandle(go111);CloseHandle(filter111);CloseHandle(retired111);
+        {std::ofstream f(root+L"\\actions.done");f<<"done";}Sleep(200);return 0;
+    }
+    if(mode==L"retirement-race"){
+        go111=CreateEventW(nullptr,TRUE,FALSE,nullptr);HANDLE threads[16]{};
+        for(unsigned i=0;i<16;++i)threads[i]=CreateThread(nullptr,0,race_writer111,reinterpret_cast<void*>(i),0,nullptr);
+        while(ready111!=16)Sleep(1);sink=scout(&wrapper);SetEvent(go111);
+        if(WaitForMultipleObjects(16,threads,TRUE,10000)!=WAIT_OBJECT_0)return 7;
+        for(auto h:threads)CloseHandle(h);CloseHandle(go111);
+        {std::ofstream f(root+L"\\actions.done");f<<"done";}Sleep(200);return 0;
+    }
+    if(mode==L"history-limit"){
+        static Audio many[96]{};for(auto& object:many)object.vt=address(table1);
+        sink=scout(&wrapper);for(auto& object:many){wrapper.object=address(&object);Sleep(50);}
+        {std::ofstream f(root+L"\\actions.done");f<<"done";}Sleep(200);return 0;
+    }
     sink=scout(&wrapper);destroy_owner(&owner);
     wrapper.object=address(&b);
     HANDLE writers[4]{};for(auto& h:writers)h=CreateThread(nullptr,0,writer,nullptr,0,nullptr);

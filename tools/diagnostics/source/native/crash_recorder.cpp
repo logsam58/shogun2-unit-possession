@@ -1,7 +1,14 @@
 // External x86 exception recorder. Game exceptions retain normal SEH handling.
 #include "identity.h"
 #include <dbghelp.h>
+#ifdef SHOGUN2_EXPERIMENTAL_TRACE_FIXTURES
 #include "targeted_trace110.h"
+#include "fixture_identity111.h"
+using SessionTrace=TargetedTrace110;
+#else
+#include "capture_only111.h"
+using SessionTrace=CaptureOnly111;
+#endif
 static std::string utf8(const std::wstring&w){if(w.empty())return {};int n=WideCharToMultiByte(CP_UTF8,0,w.data(),int(w.size()),nullptr,0,nullptr,nullptr);std::string s(n,' ');WideCharToMultiByte(CP_UTF8,0,w.data(),int(w.size()),s.data(),n,nullptr,nullptr);return s;}
 static std::string quote(const std::string&s){std::ostringstream o;o<<'"';for(unsigned char c:s){if(c=='"'||c=='\\')o<<'\\'<<c;else if(c<32)o<<"\\u"<<std::hex<<std::setw(4)<<std::setfill('0')<<unsigned(c);else o<<c;}o<<'"';return o.str();}
 static std::wstring file_name(HANDLE h){wchar_t b[32768];DWORD n=h?GetFinalPathNameByHandleW(h,b,32768,0):0;return n&&n<32768?std::wstring(b,n):L"";}
@@ -16,14 +23,17 @@ static void dump(HANDLE process,DWORD pid,DWORD tid,const EXCEPTION_RECORD*recor
 static DWORD watch_pid;static HWND watch_window;
 static BOOL CALLBACK window_for_pid(HWND w,LPARAM){DWORD pid{};GetWindowThreadProcessId(w,&pid);if(pid==watch_pid&&IsWindowVisible(w)&&!GetWindow(w,GW_OWNER)){watch_window=w;return FALSE;}return TRUE;}
 static bool exists(const std::wstring&p){return GetFileAttributesW(p.c_str())!=INVALID_FILE_ATTRIBUTES;}
-int wmain(int argc,wchar_t**argv){DWORD pid=0;bool attached=false;std::unique_ptr<TargetedTrace110> trace;try{
+int wmain(int argc,wchar_t**argv){DWORD pid=0;bool attached=false;std::unique_ptr<SessionTrace> trace;try{
  require(argc==5,"Use --watch-auto PID seconds directory or --fixture PID seconds directory; seconds=0 until exit");pid=DWORD(_wtoi(argv[2]));require(pid!=0,"PID required");bool fixture=std::wstring(argv[1])==L"--fixture";require(fixture||std::wstring(argv[1])==L"--watch-auto","Invalid mode");if(!fixture)require(find_process(pid)==pid,"Game identity differs");
  std::wstring folder=argv[4],stop=folder+L"\\crash.stop",request=folder+L"\\snapshot.request";require(exists(folder)&&!exists(stop),"Directory unavailable or stop requested");
  Handle process(OpenProcess(PROCESS_QUERY_INFORMATION|PROCESS_VM_READ|SYNCHRONIZE,FALSE,pid));require(process.h!=nullptr,"Process open failed");
+#ifdef SHOGUN2_EXPERIMENTAL_TRACE_FIXTURES
+ require(fixture,"Experimental debugger refuses real-game mode");require_trace_fixture111(process.h,folder);
+#endif
  require(DebugActiveProcess(pid)!=FALSE,"Debugger attachment failed");attached=true;require(DebugSetProcessKillOnExit(FALSE)!=FALSE,"Non-terminating detach failed");SetConsoleCtrlHandler(stop_handler,TRUE);
  std::ofstream log(folder+L"\\exceptions-"+std::to_wstring(pid)+L".jsonl",std::ios::app);require(bool(log),"Exception log unavailable");
  unsigned exceptions=0,first_dumps=0;bool initial_break=false,hang_dumped=false;uint64_t started=GetTickCount64(),seconds=_wtoi(argv[3]),end=seconds?started+seconds*1000:UINT64_MAX,next_status=0,hung_since=0;
- trace=std::make_unique<TargetedTrace110>(process.h,pid,folder,fixture);trace->fixture_init();
+ trace=std::make_unique<SessionTrace>(process.h,pid,folder,fixture);trace->fixture_init();
  watch_pid=pid;log<<"{\"event\":\"attached\",\"tick_ms\":"<<started<<",\"pid\":"<<pid<<",\"fixture\":"<<fixture<<"}\n";log.flush();
  while(GetTickCount64()<end&&!stopped&&!exists(stop)){
   uint64_t now=GetTickCount64();trace->heartbeat();if(now>=next_status){
