@@ -12,7 +12,7 @@ Promotes the accepted Test104 gameplay into a versioned release package.
 - Horizontal and vertical head-look continue through QTE and native kill-animation handoff.
 - The exact accepted adapter, HUD and QTE binaries are retained. Release metadata is 0.17; loader/installer integrity and exact Test104 upgrade/rollback checks are freshly run.
 
-The user accepted Test104 after verified loaded hashes and automatic crash/input/memory/hardware capture. This does not certify all maps/units or fix the unresolved effects crash and mounted-bow presentation. [Release notes](docs/releases/v0.17.md) and [validation](docs/releases/v0.17-validation.json). GitHub publication is separate.
+The user accepted Test104 after verified loaded hashes and automatic crash/input/memory/hardware capture. This does not certify all maps/units or fix the unresolved effects crash and mounted-bow presentation. [Release notes](docs/releases/v0.17.md) and [validation](docs/releases/v0.17-validation.json). The GitHub release includes the installer, Windows package, source archive and checksums.
 
 ## v0.16 - unpublished development series, 17 October 2026
 

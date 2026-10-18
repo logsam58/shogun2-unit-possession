@@ -1,7 +1,10 @@
-"""Publish verified v0.15 assets to this project's GitHub release. Credentials stay in memory."""
-import argparse,hashlib,json,os,subprocess,sys,urllib.error,urllib.parse,urllib.request
+"""Publish the verified VERSION release to this repository. Credentials stay in memory."""
+import argparse,hashlib,json,os,re,subprocess,sys,urllib.error,urllib.parse,urllib.request,zipfile
 from pathlib import Path
-ROOT=Path(__file__).resolve().parents[1];REPOSITORY='logsam58/shogun2-first-person';API='https://api.github.com/repos/'+REPOSITORY;TAG='v0.15'
+ROOT=Path(__file__).resolve().parents[1];REPOSITORY='logsam58/shogun2-first-person';API='https://api.github.com/repos/'+REPOSITORY
+VERSION=(ROOT/'VERSION').read_text().strip()
+if not re.fullmatch(r'[0-9]+\.[0-9]+(?:\.[0-9]+)?',VERSION):raise RuntimeError('Invalid product version')
+TAG='v'+VERSION
 class NoRedirect(urllib.request.HTTPRedirectHandler):
  def redirect_request(self,*args,**kwargs):return None
 opener=urllib.request.build_opener(NoRedirect)
@@ -56,24 +59,40 @@ def main():
  if profile['login']!='logsam58' or not repo.get('permissions',{}).get('push'):raise RuntimeError('GitHub account/repository permission differs from the authorized owner')
  existing=api.request('GET',API+'/releases?per_page=100');release=next((x for x in existing if x['tag_name']==TAG),None)
  if args.check:
-  print(json.dumps({'authenticated_user':profile['login'],'repository':repo['full_name'],'visibility':repo['visibility'],'push_permission':True,'existing_v015_release':None if release is None else {'id':release['id'],'draft':release['draft'],'url':release['html_url']}},indent=2));return
+  print(json.dumps({'authenticated_user':profile['login'],'repository':repo['full_name'],'visibility':repo['visibility'],'push_permission':True,'tag':TAG,'existing_release':None if release is None else {'id':release['id'],'draft':release['draft'],'url':release['html_url']}},indent=2));return
  if git('status','--porcelain'):raise RuntimeError('Commit and review the source tree before publishing')
  head=git('rev-parse','HEAD')
  if git('rev-parse',TAG+'^{}')!=head:raise RuntimeError('Release tag does not point to the reviewed current commit')
  remote=git('ls-remote','--tags','origin','refs/tags/'+TAG+'^{}').split()
  if not remote or remote[0]!=head:raise RuntimeError('The annotated release tag must be pushed and verified first')
- folder=ROOT/'artifacts/releases'/TAG;manifest=json.loads((folder/'upload-manifest.json').read_text());assert manifest['source_commit']==head and manifest['version']=='0.15'
- files=manifest['assets'];allowed={'Shogun2-First-Person-v0.15-Setup.exe','Shogun2-First-Person-v0.15-Windows.zip','SHA256SUMS.txt','release-manifest.json'}
+ folder=ROOT/'artifacts/releases'/TAG;manifest=json.loads((folder/'upload-manifest.json').read_text());assert manifest['source_commit']==head and manifest['version']==VERSION
+ files=manifest['assets'];allowed={'Shogun2-First-Person-'+TAG+'-Setup.exe','Shogun2-First-Person-'+TAG+'-Windows.zip','SHA256SUMS.txt','release-manifest.json'}
+ if VERSION!='0.15':allowed.update({'Shogun2-First-Person-'+TAG+'-Source.zip','SOURCE_SHA256SUMS.txt'})
  if {x['name'] for x in files}!=allowed:raise RuntimeError('Release asset list differs from the reviewed package')
  for item in files:
   p=folder/item['name']
   if not p.is_file() or p.stat().st_size!=item['bytes'] or hashlib.sha256(p.read_bytes()).hexdigest()!=item['sha256']:raise RuntimeError('Local release asset differs: '+item['name'])
- notes=(ROOT/'docs/releases/v0.15.md').read_text()
- if release and not release['draft']:raise RuntimeError('v0.15 is already published; refusing to replace or overwrite it')
+ if VERSION!='0.15':
+  source='Shogun2-First-Person-'+TAG+'-Source.zip';blobs={}
+  for line in subprocess.check_output(['git','ls-tree','-r','-z','HEAD'],cwd=ROOT).split(b'\0'):
+   if not line:continue
+   meta,name=line.split(b'\t',1);mode,kind,blob=meta.split()
+   if kind!=b'blob':raise RuntimeError('Source archive contains an unsupported Git entry')
+   blobs[name.decode()]=blob.decode()
+  with zipfile.ZipFile(folder/source) as bundle:
+   if bundle.testzip() is not None or {n for n in bundle.namelist() if not n.endswith('/')}!=set(blobs):raise RuntimeError('Source archive inventory differs from the release commit')
+   for name,expected in blobs.items():
+    data=bundle.read(name)
+    if hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()!=expected:raise RuntimeError('Source archive blob differs: '+name)
+  expected_sum=hashlib.sha256((folder/source).read_bytes()).hexdigest()+'  '+source+'\n'
+  if (folder/'SOURCE_SHA256SUMS.txt').read_text()!=expected_sum:raise RuntimeError('Source archive checksum differs')
+ from package_release import web_links
+ notes=web_links((ROOT/'docs/releases'/(TAG+'.md')).read_text(encoding='utf-8'),Path('docs/releases')/(TAG+'.md'))
+ if release and not release['draft']:raise RuntimeError(TAG+' is already published; refusing to replace or overwrite it')
  if release:
-  if release['target_commitish']!=head or release['body']!=notes:raise RuntimeError('Existing v0.15 draft differs; refusing to overwrite it')
+  if release['target_commitish']!=head or release['body']!=notes:raise RuntimeError('Existing '+TAG+' draft differs; refusing to overwrite it')
  else:
-  release=api.request('POST',API+'/releases',{'tag_name':TAG,'target_commitish':head,'name':'v0.15 - Shogun 2 First-Person Possession','body':notes,'draft':True,'prerelease':False,'generate_release_notes':False})
+  release=api.request('POST',API+'/releases',{'tag_name':TAG,'target_commitish':head,'name':TAG+' - Shogun 2 First-Person Possession','body':notes,'draft':True,'prerelease':False,'generate_release_notes':False})
  receipt={'tag':TAG,'source_commit':head,'release_id':release['id'],'draft':True,'url':release['html_url'],'assets':[]};receipt_path=folder/'publication-receipt.json';receipt_path.write_text(json.dumps(receipt,indent=2)+'\n')
  assets=api.request('GET',release['assets_url']);known={x['name']:x for x in assets}
  if set(known)-allowed:raise RuntimeError('Existing draft contains unexpected assets; no deletion attempted')
@@ -88,8 +107,8 @@ def main():
   receipt['assets'].append({'name':item['name'],'id':asset['id'],'bytes':size,'sha256':actual,'download_verified':True,'url':asset['browser_download_url']});receipt_path.write_text(json.dumps(receipt,indent=2)+'\n');print('Verified uploaded asset: '+item['name'],flush=True)
  api.request('PATCH',API+'/releases/'+str(release['id']),{'draft':False,'prerelease':False,'make_latest':'true'})
  published=api.request('GET',API+'/releases/tags/'+TAG)
- if published['draft'] or published['prerelease'] or len(published['assets'])!=len(files):raise RuntimeError('Published release state differs')
- receipt.update(draft=False,prerelease=False,published_at=published['published_at'],url=published['html_url'],visibility=repo['visibility']);receipt_path.write_text(json.dumps(receipt,indent=2)+'\n');print(json.dumps({'published':True,'url':receipt['url'],'tag':TAG,'commit':head,'assets_verified':len(receipt['assets']),'visibility':repo['visibility']},indent=2))
+ if published['draft'] or published['prerelease'] or {x['name'] for x in published['assets']}!=allowed or published['body']!=notes:raise RuntimeError('Published release state differs')
+ receipt.update(draft=False,prerelease=False,published_at=published['published_at'],url=published['html_url'],visibility=repo['visibility'],body_sha256=hashlib.sha256(notes.encode()).hexdigest());receipt_path.write_text(json.dumps(receipt,indent=2)+'\n');print(json.dumps({'published':True,'url':receipt['url'],'tag':TAG,'commit':head,'assets_verified':len(receipt['assets']),'visibility':repo['visibility']},indent=2))
 if __name__=='__main__':
  try:main()
  except (RuntimeError,ValueError,KeyError,OSError,AssertionError) as error:raise SystemExit(str(error)) from None

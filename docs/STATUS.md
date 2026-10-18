@@ -1,6 +1,6 @@
 # Support and development status
 
-Current source product version: **0.17**, promoting accepted Test104 gameplay. Latest published product version: **0.15**. The v0.17 packages are prepared locally and do not replace the installed Test104 loader or existing GitHub downloads. The release contains the native possession, weapon, melee QTE, HUD, unit-order, camera-return and siege systems described in the [README](../README.md).
+Current source product version: **0.17**, promoting accepted Test104 gameplay. Latest published product version: **0.17**. [Download the release](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.17), including the integrated installer, Windows package, source archive and checksums. Local installation is separate from publication. The release contains the native possession, weapon, melee QTE, HUD, unit-order, camera-return and siege systems described in the [README](../README.md).
 
 | Area | Implemented behavior | Coverage / limitation |
 | --- | --- | --- |

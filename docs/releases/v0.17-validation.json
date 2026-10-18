@@ -1378,7 +1378,7 @@
     },
     {
       "file": "tools/github_release.py",
-      "sha256": "2c2618100517a51145fffa8c770b84188d0d0982a1bbe51fc5ddcc8e67df48d3"
+      "sha256": "f647caf92c34b18014703d96089eaadf77bd14e94305957b4ffdc3eae9f4d171"
     },
     {
       "file": "tools/local-assets.json",
@@ -1465,7 +1465,8 @@
     "Product/PE/marker version0.17 with release label and implementation revision104",
     "Explicit release build mode; no native gameplay change",
     "Exact accepted Test104 installer predecessor/cache recognition and upgrade/rollback fixture",
-    "Updated complete player release notes, changelog, contributor instructions and status"
+    "Updated complete player release notes, changelog, contributor instructions and status",
+    "VERSION-based publication with exact tagged source ZIP checks; unit controls in release/repository descriptions"
   ],
   "new_native_hooks": 0,
   "numeric_protocols_changed": false,
@@ -1497,5 +1498,11 @@
   "installed_files_and_recorder_baseline_unchanged": true,
   "agent_game_launch": false,
   "watcher_restarted": false,
-  "duplicate_recorder_started": false
+  "duplicate_recorder_started": false,
+  "publication_preparation": {
+    "user_requested": true,
+    "native_build_inputs_changed": false,
+    "publisher_source_updated": true,
+    "build_receipt_is_prepublication_snapshot": true
+  }
 }
