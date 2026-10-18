@@ -57,8 +57,10 @@ When publication is requested, create an annotated tag matching VERSION on the r
 
 ## Unpublished development candidate
 
-Build adapter/HUD and their fixtures normally. To produce a distinct development loader, run `py tools/build.py loader --candidate 103 --tests`, then `py tools/build.py installer --candidate 103 --tests`. The marker identifies Test103 and generates a different cache identity. VERSION is 0.16 for this local build; it does not publish, install or replace v0.15 assets. Installer regression additionally requires exact published-v0.15 loader/marker fixtures in ignored `native/work/autoload-v015-baseline/`, extracted as data from verified release setup resources 201 and 202. Never execute the old installer to obtain those fixtures.
+Build adapter/HUD and their fixtures normally. To produce a distinct development loader, run `py tools/build.py loader --candidate 104 --tests`, then `py tools/build.py installer --candidate 104 --tests`. The marker identifies Test104 and generates a different cache identity. VERSION is 0.16 for this local build; it does not publish, install or replace v0.15 assets. Installer regression additionally requires exact published-v0.15 loader/marker fixtures in ignored `native/work/autoload-v015-baseline/`, extracted as data from verified release setup resources 201 and 202. Never execute the old installer to obtain those fixtures.
 
 Test102 installer regression also needs the exact installed-Test101 loader/marker in ignored `native/work/autoload-test101-baseline/`. Preserve those before rebuilding reused loader output paths. The suite covers its upgrade, all seven interruption stages and repeat-install rollback retention.
 
 Test103 additionally requires exact installed-Test102 loader/marker fixtures in ignored `native/work/autoload-test102-baseline/`. `py tools/package_release.py --development-package` keeps a numbered local candidate under its own version/Test directory, preserving earlier local version packages. It does not publish.
+
+Test104 additionally requires exact installed-Test103 loader/marker fixtures in ignored `native/work/autoload-test103-baseline/`. The final installer suite exercises that exact upgrade, seven interrupted rollback stages and repeat-install retention.

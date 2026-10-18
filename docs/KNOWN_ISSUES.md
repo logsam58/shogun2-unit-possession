@@ -21,6 +21,9 @@ When reporting a crash, include the version, unit/map, actions before the exit, 
 - **Input timing:** QTE input matches recent software-submitted geometry and simulation time. Physical scanout, mouse hardware and end-to-end latency are not measured by this implementation.
 - **Coverage:** multiplayer, overhaul-mod compatibility, every campaign lifecycle, naval/ship control and crew possession are not certified. Artillery retains stock first-person behavior.
 
+- **Formation recovery / RTS drops:** Test103 play reported rigid casualty/displacement reformation and returns to RTS under pressure or wavering. Test104 confines roster overrides to native FPS camera work and protects a reproduced UI followed-actor overwrite path. The two captured living drops do not establish their writer or morale cause. Native reformation/path completion and remaining exits require recorded play; no universal fix is claimed. Z still uses native guard, without a replacement reformation loop.
+- **Committed animation head-look:** Test104 adds horizontal mouse-look up to 100 degrees either side of the animated head while retaining vertical control and native eye translation/roll. Authored kill/recovery assets and clipping across the roster remain pending live coverage.
+
 ## Installation and startup
 
 **Setup rejects the engine:** verify the installed game build and compare Empire.Retail.dll with the supported SHA256 in the README. Do not bypass fingerprint checks; hook addresses are build-specific.

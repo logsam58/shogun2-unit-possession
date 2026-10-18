@@ -91,17 +91,20 @@ int main(){unsigned char* mapped=nullptr;try{
  climb_last_direction97=1;
  for(unsigned i=0;i<10000;++i){state->input=0;field<float>(a,0x20)=.2f;require(pipe_mode_hook97(reinterpret_cast<void*>(a),nullptr,pipe)==68,"Stable native up/hold mode and ABI");}
  // Actual MinHook/trampoline ABI and exact restoration, in this fixture only.
- const unsigned hook_rvas[]={0x2d6210,0x340d30,0x3945c0,0x3cf280,0x2fcb10,0x341560};unsigned char before[6][16];for(unsigned i=0;i<6;++i)memcpy(before[i],mapped+hook_rvas[i],16);
+ const unsigned hook_rvas[]={0x2d6210,0x340d30,0x3945c0,0x3cf280,0x2fcb10,0x341560,0x325ca0,0x321d70};unsigned char before[8][16];for(unsigned i=0;i<8;++i)memcpy(before[i],mapped+hook_rvas[i],16);
  require(MH_Initialize()==MH_OK,"Fixture hook initialize");create_siege_hooks97();require(MH_EnableHook(MH_ALL_HOOKS)==MH_OK,"Fixture hook enable");
  state->heartbeat=GetTickCount64();field<float>(a,0x20)=.2f;state->input=1;
+ require(reinterpret_cast<ViewIndex97>(base+0x2d6210)(reinterpret_cast<void*>(v))==0,"Ordinary native first-holder index was changed by possession");
+ ++camera_scope104;
  require(reinterpret_cast<ViewIndex97>(base+0x2d6210)(reinterpret_cast<void*>(v))==17,"Actual native view trampoline scoped index");
  require(reinterpret_cast<ViewActor97>(base+0x340d30)(reinterpret_cast<void*>(v),17)==a,"Actual native view trampoline actor ABI");
+ --camera_scope104;
  for(unsigned input:{0u,1u,2u,3u})for(unsigned i=0;i<1000;++i){
    state->input=input;float position[4]{};point(reinterpret_cast<void*>(def),position,.2f);for(unsigned k=0;k<3;++k){field<float>(a,0x48+k*4)=position[k];field<float>(a,0xd8+k*4)=0;}
    ++field<unsigned>(ptr(common),0x50);reinterpret_cast<PipeAdvance97>(base+0x3945c0)(reinterpret_cast<void*>(a+0x14),pipe,.01f);
    require(std::abs(field<float>(a,0x20)-(.2f+(input==1?.6f/60/length:input==2?-1.f/60/length:0)))<.00001f,"Actual traversal trampoline RET8");
  }
- require(MH_DisableHook(MH_ALL_HOOKS)==MH_OK,"Fixture hook disable");for(unsigned i=0;i<6;++i)require(!memcmp(before[i],mapped+hook_rvas[i],16),"All six siege hook bytes restored");require(MH_Uninitialize()==MH_OK,"Fixture hook teardown");
+ require(MH_DisableHook(MH_ALL_HOOKS)==MH_OK,"Fixture hook disable");for(unsigned i=0;i<8;++i)require(!memcmp(before[i],mapped+hook_rvas[i],16),"All eight roster/traversal hook bytes restored");require(MH_Uninitialize()==MH_OK,"Fixture hook teardown");
  if(climb_shared97)UnmapViewOfFile(climb_shared97);if(climb_mapping97)CloseHandle(climb_mapping97);climb_shared97=nullptr;climb_mapping97=nullptr;
  VirtualFree(mapped,0,MEM_RELEASE);mapped=nullptr;std::cout<<"PASS: siege98 production immediate F9 adoption, eligible logical-index choice, strict wall/crest lease, original native geometry/stride/projection, "<<cases<<" W/S/hold endpoint cases, four native crests, 10000 mode calls, 4000 actual hooked traversal ABI calls, "<<rate_cases98<<" native parameter/segment/dt cases with "<<(rate_cases98*10)<<" duplicate callbacks, six exact hook restorations, stale/resource/phase/death guards. Synthetic world; no game initialization.\n";return 0;
 }catch(const std::exception& e){if(mapped)VirtualFree(mapped,0,MEM_RELEASE);std::cerr<<e.what()<<'\n';return 1;}}

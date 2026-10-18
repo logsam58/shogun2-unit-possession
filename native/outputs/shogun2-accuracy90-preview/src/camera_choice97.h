@@ -1,6 +1,11 @@
 #pragma once
 struct Choice97 {uintptr_t environment{},phase{},manager{},view{},unit{},holder{},actor{};unsigned serial{},index{};};
 static __declspec(thread) Choice97 choice97;
+// Roster substitutions belong only to an explicit native FPS update/constructor.
+// Other users of this view (including unit/formation work) keep native semantics.
+static __declspec(thread) unsigned camera_scope104;
+static volatile LONG camera_updates104,holder_resolutions104,roster_forwards104;
+static bool camera_owned(uintptr_t);
 using ViewIndex97=unsigned(__thiscall*)(void*);
 using ViewActor97=uintptr_t(__thiscall*)(void*,unsigned);
 static ViewIndex97 original_view_index97;static ViewActor97 original_view_actor97;
@@ -15,11 +20,38 @@ static bool choice_valid97(uintptr_t view,const Choice97& c){
     unsigned n=field<unsigned>(view,0x18);auto array=field<uintptr_t>(view,0x1c);if(!array||!n||n>1000)return false;
     bool found=false;for(unsigned i=0;i<n;++i)if(field<uintptr_t>(array,i*4)==c.holder){found=true;break;}
     if(!found||field<uintptr_t>(c.actor,0x28)!=c.environment||field<uintptr_t>(c.holder,8)!=c.actor||field<unsigned>(c.actor,0x1c8)!=c.serial||field<unsigned>(c.actor,0x218)!=c.index)return false;
-    NativeSubject motion;return native_subject(c.actor,c.unit,view,false,motion)&&!native_routing(c.unit);
+    bool committed=false;
+    if(possession_lease.active&&c.actor==possessed&&c.holder==possession_lease.identity.holder){
+        if(!followed(possessed,false,false))return false;
+        melee60::Request request{};committed=melee_request(request)||melee_handoff78.matches(locomotion_actor(),possession_lease.generation,
+            possession_lease.identity.mount?possession_lease.identity.mount_id:possession_lease.identity.actor_id,possession_lease.identity.unit_id);
+    }
+    NativeSubject motion;return native_subject(c.actor,c.unit,view,committed,motion)&&!native_routing(c.unit);
 }
 static Choice97 owned_choice97(uintptr_t view){
-    if(!possessed||!possession_lease.active||view!=possession_lease.identity.view||!followed(possessed,false,false)||dead_view())return {};
+    if(!camera_scope104||!possessed||!possession_lease.active||view!=possession_lease.identity.view||!followed(possessed,false,false)||dead_view())return {};
     const auto& i=possession_lease.identity;return {i.environment,i.phase,i.manager,i.view,i.unit,i.holder,i.actor,i.actor_id,field<unsigned>(i.actor,0x218)};
+}
+
+using CameraUpdate104=bool(__thiscall*)(void*,float,float);
+using ViewHolder104=uintptr_t(__thiscall*)(void*,unsigned);
+static CameraUpdate104 original_camera_update104;
+static ViewHolder104 original_view_holder104;
+static bool __fastcall camera_update104(void* camera,void*,float time,float interpolation){
+    bool owned=false;
+    __try{owned=state&&state->mode==POSSESSED&&!dead_view()&&camera_owned(reinterpret_cast<uintptr_t>(camera));}__except(EXCEPTION_EXECUTE_HANDLER){}
+    if(!owned)return original_camera_update104(camera,time,interpolation);
+    ++camera_scope104;InterlockedIncrement(&camera_updates104);
+    __try{return original_camera_update104(camera,time,interpolation);}
+    __finally{--camera_scope104;}
+}
+static uintptr_t __fastcall view_holder104(void* object,void*,unsigned index){
+    __try{auto view=reinterpret_cast<uintptr_t>(object);auto c=choice97.actor?choice97:owned_choice97(view);
+        // Resolve by the current exact holder, not the first equal logical index.
+        // Casualty/roster transitions may expose another holder with that index.
+        if(index==c.index&&choice_valid97(view,c)){InterlockedIncrement(&holder_resolutions104);return c.holder;}
+    }__except(EXCEPTION_EXECUTE_HANDLER){}
+    InterlockedIncrement(&roster_forwards104);return original_view_holder104(object,index);
 }
 static unsigned __fastcall view_index_hook97(void* object,void*){
     __try{auto v=reinterpret_cast<uintptr_t>(object);auto c=choice97.actor?choice97:owned_choice97(v);if(choice_valid97(v,c))return c.index;}__except(EXCEPTION_EXECUTE_HANDLER){}

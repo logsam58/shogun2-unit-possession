@@ -4,6 +4,22 @@ using CursorFilter103=void(__thiscall*)(void*,void*,unsigned);
 static CameraCycle103 original_camera_cycle103;
 static CursorFilter103 original_cursor_filter103;
 static volatile LONG camera_cycle_blocks103,cursor_self_hits103,cursor_queries103,cursor_errors103;
+using HoverIdentity104=unsigned(__thiscall*)(void*);
+static HoverIdentity104 original_hover_identity104;
+static volatile LONG selection_follow_blocks104;
+static unsigned __fastcall hover_identity104(void* object,void*){
+    auto caller=reinterpret_cast<uintptr_t>(_ReturnAddress());unsigned identity=original_hover_identity104(object);
+    __try{
+        // Only the identity comparison immediately before UI1221ae0 writes
+        // manager+8fc. Preserve the accessor for every other native caller.
+        if(caller==base+0x1221b9d&&state&&state->mode==POSSESSED&&!dead_view()&&
+           GetCurrentThreadId()==state->window_thread&&identity==possession_lease.identity.unit_id&&identity!=0xffffffffu&&
+           camera_owned(possession_lease.identity.camera)){
+            InterlockedIncrement(&selection_follow_blocks104);return 0xffffffffu;
+        }
+    }__except(EXCEPTION_EXECUTE_HANDLER){}
+    return identity;
+}
 static void __fastcall camera_cycle103(void* object,void*,uintptr_t first,float delta){
     auto camera=reinterpret_cast<uintptr_t>(object);
     if(state&&state->mode==POSSESSED&&!dead_view()&&camera_owned(camera)){InterlockedIncrement(&camera_cycle_blocks103);return;}
@@ -40,4 +56,7 @@ static void create_context_hooks103(){
     require(!memcmp(reinterpret_cast<void*>(base+0x2f79a0),cycle,8)&&!memcmp(reinterpret_cast<void*>(base+0x10ee5b0),filter,8),"Native context103 signatures differ");
     require(MH_CreateHook(reinterpret_cast<void*>(base+0x2f79a0),reinterpret_cast<void*>(&camera_cycle103),reinterpret_cast<void**>(&original_camera_cycle103))==MH_OK,"Native camera cycle103 hook failed");
     require(MH_CreateHook(reinterpret_cast<void*>(base+0x10ee5b0),reinterpret_cast<void*>(&cursor_filter103),reinterpret_cast<void**>(&original_cursor_filter103))==MH_OK,"Native cursor filter103 hook failed");
+    const unsigned char identity104[]={0x8b,0x81,0x1c,0x02,0,0,0xc3},comparison104[]={0x39,0x46,0x08,0x75,0x15};
+    require(!memcmp(reinterpret_cast<void*>(base+0x3e5170),identity104,7)&&!memcmp(reinterpret_cast<void*>(base+0x1221b9d),comparison104,5),"Native selection identity104 signature differs");
+    require(MH_CreateHook(reinterpret_cast<void*>(base+0x3e5170),reinterpret_cast<void*>(&hover_identity104),reinterpret_cast<void**>(&original_hover_identity104))==MH_OK,"Native selection follow104 hook failed");
 }

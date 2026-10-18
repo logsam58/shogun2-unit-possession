@@ -38,8 +38,23 @@ int main(){void* image=nullptr;try{
     deathpose::Eye actual_eye;memcpy(actual_eye.view,reinterpret_cast<void*>(ptr(cam)+8),sizeof actual_eye.view);memcpy(actual_eye.up,reinterpret_cast<void*>(ptr(cam)+0x58),sizeof actual_eye.up);
     float actual_yaw,actual_pitch;
     require(animation_view_active78&&memcmp(actual_eye.view,eye.view,3*sizeof(float))==0&&animationview::angles(actual_eye,actual_yaw,actual_pitch),"QTE eye translation or basis invalid");
-    require(std::abs(actual_yaw+1.570796327f)<.0001f&&std::abs(actual_pitch+.9f)<.0001f&&state->pitch==-.9f,"QTE lost requested elevation");
+    require(std::abs(actual_yaw-2.9670597f)<.0001f&&std::abs(actual_pitch+.9f)<.0001f&&state->pitch==-.9f,"QTE lost requested head yaw/elevation or native-head limit");
+    auto body_before104=actor,horse_before104=horse;float yaw_before104=state->yaw;
+    mouse_look101(120,40,0,.008f);
+    require(std::abs(std::remainder(state->yaw-yaw_before104-.3f,6.283185307f))<.00001f&&std::abs(state->pitch+1.f)<.00001f,"Committed production mouse input rejected horizontal/vertical look");
+    // The native camera supplies a fresh animated eye each frame; never rotate
+    // the already-presented result again or mutate the paired actors.
+    memcpy(reinterpret_cast<void*>(ptr(cam)+8),eye.view,sizeof eye.view);memcpy(reinterpret_cast<void*>(ptr(cam)+0x58),eye.up,sizeof eye.up);
+    adjust_eye(ptr(cam));memcpy(actual_eye.view,reinterpret_cast<void*>(ptr(cam)+8),sizeof actual_eye.view);memcpy(actual_eye.up,reinterpret_cast<void*>(ptr(cam)+0x58),sizeof actual_eye.up);
+    require(animationview::angles(actual_eye,actual_yaw,actual_pitch)&&std::abs(std::remainder(actual_yaw-yaw_before104-.3f,6.283185307f))<.0001f&&std::abs(actual_pitch+1.f)<.0001f,"Committed camera did not apply production mouse head-look");
+    require(body_before104==actor&&horse_before104==horse,"Head-look changed native combat body/horse state");
     melee60::Request off;PossessionMeleeCommitment63(&off);
+    // The authored kill/get-away motion continues after the prompt is gone.
+    melee_handoff78.observe(h,possession_lease.generation,32,7,1,true);
+    float handoff_yaw104=state->yaw;mouse_look101(40,0,0,.008f);
+    memcpy(reinterpret_cast<void*>(ptr(cam)+8),eye.view,sizeof eye.view);memcpy(reinterpret_cast<void*>(ptr(cam)+0x58),eye.up,sizeof eye.up);adjust_eye(ptr(cam));
+    require(animation_view_active78&&std::abs(std::remainder(state->yaw-handoff_yaw104-.1f,6.283185307f))<.0001f&&body_before104==actor&&horse_before104==horse,"Post-QTE native animation handoff lost head freedom or changed combat actors");
+    melee_handoff78.reset();
     
     field<unsigned short>(h,0x64)=65000;state->yaw=mountedlook85::heading(65000)+2.5f;state->pitch=.2f;
     adjust_eye(ptr(cam));

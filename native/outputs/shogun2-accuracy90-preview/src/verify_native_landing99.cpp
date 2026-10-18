@@ -61,7 +61,7 @@ int main(){unsigned char* mapped=nullptr;try{
  require(pose(reinterpret_cast<void*>(v),result,17,.5f)==result&&!memcmp(result,cache98,64),"Original cached pose reads aggregate rather than current holder");
  require(!update(reinterpret_cast<void*>(ptr(cam)),.1f,.5f)&&submits98==0,"Exact native FPS update rejects cached empty aggregate before Test98");
  require(adopt_possession97(a),"Full native identity adoption for current live holder");
- const unsigned hooks[]={0x2d6210,0x340d30,0x3945c0,0x3cf280,0x2fcb10,0x341560};unsigned char before[6][16];for(unsigned i=0;i<6;++i)memcpy(before[i],mapped+hooks[i],16);
+ const unsigned hooks[]={0x2d6210,0x340d30,0x3945c0,0x3cf280,0x2fcb10,0x341560,0x325ca0,0x321d70};unsigned char before[8][16];for(unsigned i=0;i<8;++i)memcpy(before[i],mapped+hooks[i],16);
  require(MH_Initialize()==MH_OK,"Camera regression hooks initialize");create_siege_hooks97();require(MH_EnableHook(MH_ALL_HOOKS)==MH_OK,"Camera regression hooks enable");
 
  // Only world/root-event providers are substituted. Exact native frame-end,
@@ -86,7 +86,7 @@ int main(){unsigned char* mapped=nullptr;try{
   for(unsigned tick=0;tick<20;++tick){state->heartbeat=GetTickCount64();state->input=127;state->aiming=state->fire_request=1;
    require(!prepare(a)&&actor==original_bytes99,"Production motion boundary forwards original physics without any actor write or player stride");
    require(native_air_active99==1&&keyboard_wall98&&!state->aiming&&!state->fire_request&&!weapon_owned(a),"Native airborne phase suppresses player weapon/ground intent");
-   require(count(reinterpret_cast<void*>(v))==2&&update(reinterpret_cast<void*>(ptr(cam)),.1f,.5f),"Original native FPS update survives empty cached roster throughout airborne handoff");++air_updates99;
+   require(count(reinterpret_cast<void*>(v))==0&&update(reinterpret_cast<void*>(ptr(cam)),.1f,.5f),"Original native FPS update survives empty cached roster throughout airborne handoff");++air_updates99;
   }
   contact99(reinterpret_cast<void*>(a));require(field<unsigned char>(a,0xa1)==1&&!field<unsigned char>(a,0xa2)&&root_motion_subject(a,false)&&followed(a,false,false),"Exact native contact flag publication returns same lease to normal ground eligibility");
   climb_observe98(a);require(!native_air_active99,"Landing stops native-air handoff immediately");++cycles99;
@@ -108,7 +108,7 @@ int main(){unsigned char* mapped=nullptr;try{
  state->stop=1;require(count(reinterpret_cast<void*>(v))==0,"Stop forwards native cached policy");state->stop=0;
  field<unsigned>(ph,0x14)=9;require(!followed(a,false,false)&&count(reinterpret_cast<void*>(v))==0,"Battle end never retains airborne lease");field<unsigned>(ph,0x14)=6;
  field<unsigned char>(a,0xa3)=1;require(!followed(a,false,false)&&count(reinterpret_cast<void*>(v))==0,"Other physical motion class never gains airborne bypass");field<unsigned char>(a,0xa3)=0;
- require(MH_DisableHook(MH_ALL_HOOKS)==MH_OK,"Landing fixture hook disable");for(unsigned i=0;i<6;++i)require(!memcmp(before[i],mapped+hooks[i],16),"All six existing hook bytes restore; no new99 hooks");require(MH_Uninitialize()==MH_OK,"Landing fixture teardown");
+ require(MH_DisableHook(MH_ALL_HOOKS)==MH_OK,"Landing fixture hook disable");for(unsigned i=0;i<8;++i)require(!memcmp(before[i],mapped+hooks[i],16),"All eight roster/traversal hook bytes restore");require(MH_Uninitialize()==MH_OK,"Landing fixture teardown");
  if(climb_shared97)UnmapViewOfFile(climb_shared97);if(climb_mapping97)CloseHandle(climb_mapping97);climb_shared97=nullptr;climb_mapping97=nullptr;
- VirtualFree(mapped,0,MEM_RELEASE);mapped=nullptr;std::cout<<"PASS: native landing99 72 original frame-end/crest-cleanup/human-air-state lifecycles, 1440 untouched actor/physics-forwarding and native FPS calls, exact native contact flag publication, 81 native flag combinations, strict death/pipe/mount/config/serial/holder/release/stop/phase guards; six existing hooks restored. World/root-event providers synthetic; contact tail substituted; no game initialization.\n";return 0;
+ VirtualFree(mapped,0,MEM_RELEASE);mapped=nullptr;std::cout<<"PASS: native landing99 72 original frame-end/crest-cleanup/human-air-state lifecycles, 1440 untouched actor/physics-forwarding and native FPS calls, exact native contact flag publication, 81 native flag combinations, strict death/pipe/mount/config/serial/holder/release/stop/phase guards; eight roster/traversal hooks restored. World/root-event providers synthetic; contact tail substituted; no game initialization.\n";return 0;
  }catch(const std::exception& e){if(mapped)VirtualFree(mapped,0,MEM_RELEASE);std::cerr<<e.what()<<'\n';return 1;}}

@@ -6,7 +6,7 @@ The battle continues around you. The game still runs the armies, formations, pat
 
 **[Download v0.15](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.15)** | [Known issues](docs/KNOWN_ISSUES.md) | [Build instructions](BUILD_AND_TEST.md) | [Contributing](CONTRIBUTING.md)
 
-**Development version: v0.16 (Test103).** Adds Q/E/Z/C/R unit commands, native contextual move/attack orders, formation dragging, pace-matched following with catch-up, and closer first-person model presentation. Test103 adds recovery movement lock, contextual targeting and input-ownership corrections after Test102 feedback. This build is being validated locally; the linked v0.15 download keeps its original controls. See [v0.16 notes](docs/releases/v0.16.md).
+**Development version: v0.16 (Test104).** Adds Q/E/Z/C/R unit commands, native contextual move/attack orders, formation dragging, pace-matched following with catch-up, and closer first-person model presentation. Test104 confines FPS roster overrides to camera work, guards a native UI followed-actor overwrite path, and adds horizontal head-look during committed combat. Test103 targeting and knockdown recovery corrections are retained. This build is being validated locally; the linked v0.15 download keeps its original controls. See [v0.16 notes](docs/releases/v0.16.md).
 
 ## What the mod does
 
@@ -38,7 +38,7 @@ Close combat uses the game's paired combat preparation and animations, with **qu
 
 An unanswered prompt allows **at least three active-simulation seconds and one complete outward-and-return indicator cycle**. Actual pause freezes its response clock; battle-speed changes follow simulation timing. A completed answer or a genuine interruption can end a prompt earlier. Large mouse-button graphics identify the required input. **INTERRUPTED** appears when an admitted event is canceled so a lost opportunity is visible.
 
-Crowded engagements can defer native pair preparation, and a prompt cannot outlive its valid participants or ownership. Death, lost identity, projectiles and other native lifecycle changes can still interrupt combat. Timestamped clicks are matched to recent submitted visual geometry; this is software timing alignment, not a measurement of monitor scanout or total hardware latency.
+Crowded engagements can defer native pair preparation, and a prompt cannot outlive its valid participants or ownership. Death, lost identity, projectiles and other native lifecycle changes can still interrupt combat. Timestamped clicks are matched to recent submitted visual geometry; this is software timing alignment, not a measurement of monitor scanout or total hardware latency. During QTEs and the continuing native combat animation, the mouse controls vertical and horizontal head-look, limited to 100 degrees either side of the animated head. Native body motion and the combat outcome continue.
 
 ### Siege wall climbing
 

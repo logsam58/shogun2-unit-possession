@@ -2,6 +2,7 @@
 #include "steering.h"
 #include "mounted_look85.h"
 #include "look_pitch96.h"
+#include "animation_look104.h"
 #include "possession_lease.h"
 #include "control_metrics.h"
 #include "camera_entry_gate.h"
@@ -128,6 +129,7 @@ template<class T>static T& field(uintptr_t p,unsigned off){return *reinterpret_c
 #include "native_subject.h"
 #include "native_recovery103.h"
 static volatile LONG recovery_blocks103,recovery_active103;
+static volatile LONG animation_look_active104,animation_look_updates104;
 static bool recovery_prepare103(uintptr_t actor){
     bool blocked=native_recovery103(actor);InterlockedExchange(&recovery_active103,blocked?1:0);
     if(!blocked)return false;
@@ -158,13 +160,15 @@ static __declspec(thread) unsigned follow_failure93;
 static volatile LONG release_stage93,release_confirmed93,release_recovered93,release_flags93;
 static __declspec(align(8)) volatile LONG64 release_tick93;
 static bool reject_follow93(unsigned stage){follow_failure93=stage;return false;}
-struct Release103 {unsigned sequence,stage,lease,actor,unit,serial,mode,clip,count,capacity;uintptr_t expected,cam_actor,manager_actor,selected,owner,group_vt,members,first;uint64_t tick;};
+struct Release103 {unsigned sequence,stage,lease,actor,unit,serial,mode,clip,count,capacity,morale,routing,guard,index,cam_index,view_count;uintptr_t expected,cam_actor,manager_actor,selected,owner,group_vt,members,first;uint64_t tick;};
 static SRWLOCK release_lock103=SRWLOCK_INIT;
 static Release103 releases103[8];static unsigned release_sequence103;
 static void release_snapshot103(){
     Release103 x{};x.stage=follow_failure93;x.lease=possession_lease.generation;x.actor=state->actor_id;x.unit=state->unit_id;x.tick=GetTickCount64();x.expected=possessed;
     __try{const auto& i=possession_lease.identity;x.cam_actor=field<uintptr_t>(i.camera,0x188);x.manager_actor=field<uintptr_t>(i.manager,0x8fc);
         x.serial=field<unsigned>(possessed,0x1c8);x.mode=field<unsigned>(possessed,0x1f0);x.clip=field<unsigned>(possessed,0x1d4);
+        x.morale=field<unsigned>(i.unit,0xce8);x.routing=field<unsigned>(i.unit,0xcec);x.guard=field<unsigned char>(i.unit,0xeb1);
+        x.index=field<unsigned>(possessed,0x218);x.view_count=field<unsigned>(i.view,0x18);if(x.cam_actor)x.cam_index=field<unsigned>(x.cam_actor,0x218);
         x.selected=field<uintptr_t>(i.environment,0x2826c);if(x.selected)x.owner=field<uintptr_t>(x.selected,0x4a8);
         if(x.owner){auto g=x.owner+0xb0;x.group_vt=field<uintptr_t>(g,0);x.count=field<unsigned>(g,0x14);x.capacity=field<unsigned>(g,0x10);x.members=field<uintptr_t>(g,0x18);if(x.members&&x.count&&x.capacity)x.first=field<uintptr_t>(x.members,0);}
     }__except(EXCEPTION_EXECUTE_HANDLER){}
@@ -175,7 +179,8 @@ static void release_log103(std::ostream& log){
     AcquireSRWLockShared(&release_lock103);end=release_sequence103;memcpy(copy,releases103,sizeof copy);ReleaseSRWLockShared(&release_lock103);
     for(unsigned n=end>8&&last<end-8?end-8:last;n<end;++n){const auto& x=copy[n%8];
         log<<"{\"event\":\"identity_release103\",\"sequence\":"<<x.sequence<<",\"tick_ms\":"<<x.tick<<",\"stage\":"<<x.stage<<",\"lease\":"<<x.lease<<",\"actor\":"<<x.actor<<",\"unit\":"<<x.unit<<",\"serial\":"<<x.serial<<",\"mode\":"<<x.mode<<",\"clip\":"<<x.clip
-           <<",\"expected_actor\":"<<x.expected<<",\"camera_actor\":"<<x.cam_actor<<",\"manager_actor\":"<<x.manager_actor<<",\"selected\":"<<x.selected<<",\"owner\":"<<x.owner<<",\"group_vtable\":"<<x.group_vt<<",\"count\":"<<x.count<<",\"capacity\":"<<x.capacity<<",\"members\":"<<x.members<<",\"first_unit\":"<<x.first<<"}\n";
+           <<",\"expected_actor\":"<<x.expected<<",\"camera_actor\":"<<x.cam_actor<<",\"manager_actor\":"<<x.manager_actor<<",\"selected\":"<<x.selected<<",\"owner\":"<<x.owner<<",\"group_vtable\":"<<x.group_vt<<",\"count\":"<<x.count<<",\"capacity\":"<<x.capacity<<",\"members\":"<<x.members<<",\"first_unit\":"<<x.first
+           <<",\"roster104\":1,\"morale104\":"<<x.morale<<",\"routing_state104\":"<<x.routing<<",\"native_guard104\":"<<x.guard<<",\"logical_index104\":"<<x.index<<",\"camera_index104\":"<<x.cam_index<<",\"roster_count104\":"<<x.view_count<<"}\n";
     }last=end;
 }
 static void note_follow_release93(){
@@ -596,8 +601,9 @@ static void adjust_eye(uintptr_t camera) {
             memcpy(native_eye.up,reinterpret_cast<void*>(camera+0x58),sizeof native_eye.up);
             if(!animationview::angles(native_eye,yaw,pitch))return;
             deathpose::Eye free_eye;
-            if(!look96::pitched_eye(native_eye,state->pitch,free_eye))return;
-            state->yaw=yaw;animation_view_active78=true;
+            if(!look104::free_eye(native_eye,state->yaw,state->pitch,free_eye))return;
+            if(!animationview::angles(free_eye,yaw,pitch))return;
+            state->yaw=yaw;animation_view_active78=true;InterlockedExchange(&animation_look_active104,1);InterlockedIncrement(&animation_look_updates104);
             memcpy(reinterpret_cast<void*>(camera+8),free_eye.view,sizeof free_eye.view);
             memcpy(reinterpret_cast<void*>(camera+0x58),free_eye.up,sizeof free_eye.up);
             native_eye=free_eye;
@@ -607,6 +613,7 @@ static void adjust_eye(uintptr_t camera) {
             state->native_eye_y=state->raised_eye_y=field<float>(camera,0xc);
             remember_owned_eye(camera);InterlockedIncrement(&animation_view_updates78);return;
         }
+        InterlockedExchange(&animation_look_active104,0);
         if(!std::isfinite(yaw)||!std::isfinite(pitch))return;
         if(possession_lease.identity.mount){
             unsigned bearing=field<unsigned short>(possession_lease.identity.mount,0x64);
@@ -645,7 +652,7 @@ static void __fastcall camera_matrix(void* camera,void*,const void* matrix) {
         }
     }__finally {--camera_callback_depth;}
 }
-static void relinquish(){command_reset100();climb_reset97();request_rts_restore90();next_accuracy90=0;publish_accuracy90(nullptr,0,0);InterlockedExchange(&mounted_heading85,-1);equipment_reset81();reset_death_view();InterlockedExchange(&manual_arrow_released,0);state->arrow_visual_hidden=0;possession_lease.release();InterlockedExchange(&state->input,0);InterlockedExchange(&state->aiming,0);state->aim_pose=0;InterlockedExchange(&state->weapon_phase,WEAPON_IDLE);possessed=0;environment=0;unit=0;InterlockedExchange(&state->follow,0);InterlockedExchange(&state->pending_order,0);follow_target=false;InterlockedExchange(&state->fire_request,0);InterlockedExchange(&state->mode,IDLE);}
+static void relinquish(){InterlockedExchange(&animation_look_active104,0);command_reset100();climb_reset97();request_rts_restore90();next_accuracy90=0;publish_accuracy90(nullptr,0,0);InterlockedExchange(&mounted_heading85,-1);equipment_reset81();reset_death_view();InterlockedExchange(&manual_arrow_released,0);state->arrow_visual_hidden=0;possession_lease.release();InterlockedExchange(&state->input,0);InterlockedExchange(&state->aiming,0);state->aim_pose=0;InterlockedExchange(&state->weapon_phase,WEAPON_IDLE);possessed=0;environment=0;unit=0;InterlockedExchange(&state->follow,0);InterlockedExchange(&state->pending_order,0);follow_target=false;InterlockedExchange(&state->fire_request,0);InterlockedExchange(&state->mode,IDLE);}
 static void end_death_on_window(){
     if(!InterlockedExchange(&death_return_pending,0))return;
     __try{uintptr_t manager=possession_lease.identity.manager;uintptr_t env=environment;
@@ -806,7 +813,8 @@ static void mouse_look101(int dx,int dy,unsigned input,float elapsed){
         if(possession_lease.identity.mount)turn=0; // Mounted keyboard steering does not rotate mouse look.
         float sensitivity=0.0025f*(1.0f-state->aim_blend*0.55f);
         LONG heading=InterlockedCompareExchange(&mounted_heading85,0,0);
-        if(!melee_request(committed))state->yaw=mountedlook85::mouse_yaw(state->yaw,float(dx)*sensitivity+turn*1.256637f*elapsed,
+        if(melee_request(committed)||InterlockedCompareExchange(&animation_look_active104,0,0))state->yaw=look104::mouse_yaw(state->yaw,float(dx)*sensitivity);
+        else state->yaw=mountedlook85::mouse_yaw(state->yaw,float(dx)*sensitivity+turn*1.256637f*elapsed,
             possession_lease.identity.mount!=0&&heading>=0,unsigned(heading));
         state->pitch=look96::mouse_pitch(state->pitch,dy,sensitivity);
         if(dx||dy)++state->mouse_events;
@@ -953,7 +961,7 @@ static DWORD WINAPI worker(void*) {
         bool guarded=state->fire_ticket!=0;
         MH_STATUS result=MH_OK;
         if(MH_DisableHook(keyboard_poll_target84)!=MH_OK)result=MH_UNKNOWN;
-        for(unsigned rva:{0x2f79a0u,0x10ee5b0u})if(MH_DisableHook(reinterpret_cast<void*>(base+rva))!=MH_OK)result=MH_UNKNOWN;
+        for(unsigned rva:{0x2f79a0u,0x10ee5b0u,0x325ca0u,0x321d70u,0x3e5170u})if(MH_DisableHook(reinterpret_cast<void*>(base+rva))!=MH_OK)result=MH_UNKNOWN;
         for(void* p:{reinterpret_cast<void*>(base+0xf9c360),reinterpret_cast<void*>(base+0xf9bf20),reinterpret_cast<void*>(base+0x122f740),cursor_target})if(MH_DisableHook(p)!=MH_OK)result=MH_UNKNOWN;
         for(void* p:{reinterpret_cast<void*>(base+0x2fcb10),reinterpret_cast<void*>(base+0x341560),reinterpret_cast<void*>(base+0x2d6210),reinterpret_cast<void*>(base+0x340d30),reinterpret_cast<void*>(base+0x3945c0),reinterpret_cast<void*>(base+0x3cf280),target,cancel_target,toggle_target,matrix_target,camera_input_target,projectile_camera_target,reinterpret_cast<void*>(base+0x3ca920),reinterpret_cast<void*>(base+0x3e8b50),reinterpret_cast<void*>(base+0x3f0370),reinterpret_cast<void*>(base+0x3f03d0),reinterpret_cast<void*>(base+0x3e3f50),reinterpret_cast<void*>(base+0x3d3630),reinterpret_cast<void*>(base+0x3d4320),reinterpret_cast<void*>(base+0x3e1a20),reinterpret_cast<void*>(base+0x4272e0),reinterpret_cast<void*>(base+0x4c56d0)})if(MH_DisableHook(p)!=MH_OK)result=MH_UNKNOWN;
         if(!guarded){if(MH_DisableHook(reinterpret_cast<void*>(base+0x2ac0b0))!=MH_OK)result=MH_UNKNOWN;}

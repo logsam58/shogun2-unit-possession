@@ -164,6 +164,11 @@ static void create_siege_hooks97(){
     require(MH_CreateHook(reinterpret_cast<void*>(base+0x341560),reinterpret_cast<void*>(&view_pose_hook98),reinterpret_cast<void**>(&original_view_pose98))==MH_OK,"Siege view pose hook failed");
     require(MH_CreateHook(reinterpret_cast<void*>(base+0x2d6210),reinterpret_cast<void*>(&view_index_hook97),reinterpret_cast<void**>(&original_view_index97))==MH_OK,"Siege view index hook failed");
     require(MH_CreateHook(reinterpret_cast<void*>(base+0x340d30),reinterpret_cast<void*>(&view_actor_hook97),reinterpret_cast<void**>(&original_view_actor97))==MH_OK,"Siege view actor hook failed");
+    const unsigned char update104[]={0x83,0xec,0x78,0xf3,0x0f,0x10,0x05},holder104[]={0x53,0x56,0x8b,0x71,0x18,0x33,0xd2,0x57};
+    require(!memcmp(reinterpret_cast<void*>(base+0x325ca0),update104,sizeof update104)&&
+        field<uintptr_t>(base+0x325ca0,7)==base+0x1931f64&&!memcmp(reinterpret_cast<void*>(base+0x321d70),holder104,8),"Native camera roster104 signatures differ");
+    require(MH_CreateHook(reinterpret_cast<void*>(base+0x325ca0),reinterpret_cast<void*>(&camera_update104),reinterpret_cast<void**>(&original_camera_update104))==MH_OK,"Native camera scope104 hook failed");
+    require(MH_CreateHook(reinterpret_cast<void*>(base+0x321d70),reinterpret_cast<void*>(&view_holder104),reinterpret_cast<void**>(&original_view_holder104))==MH_OK,"Native camera holder104 hook failed");
     require(MH_CreateHook(reinterpret_cast<void*>(base+0x3945c0),reinterpret_cast<void*>(&pipe_advance_hook97),reinterpret_cast<void**>(&original_pipe_advance97))==MH_OK,"Siege traversal hook failed");
     require(MH_CreateHook(reinterpret_cast<void*>(base+0x3cf280),reinterpret_cast<void*>(&pipe_mode_hook97),reinterpret_cast<void**>(&original_pipe_mode97))==MH_OK,"Siege mode hook failed");
     wchar_t name[96];climb97::mapping_name(name,GetCurrentProcessId());climb_mapping97=CreateFileMappingW(INVALID_HANDLE_VALUE,nullptr,PAGE_READWRITE,0,sizeof(climb97::Status),name);

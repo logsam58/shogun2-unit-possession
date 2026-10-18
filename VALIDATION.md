@@ -4,7 +4,7 @@
 
 | Suite | Coverage |
 | --- | --- |
-| Adapter: 54 executables (development) | Native forwarding, strict identity/lifetime, movement, camera return, weapons/accuracy, equipment, siege path/speed/crest/landing and cleanup |
+| Adapter: 56 executables (development) | Native forwarding, strict identity/lifetime, movement, camera return, weapons/accuracy, equipment, siege path/speed/crest/landing and cleanup |
 | Styled QTE: 32 executables | Combat preparation, clocks/cycles, input/deadlines, interruption feedback, registry churn, pacing and actual reusable styled surface |
 | HUD: 2 executables | Consistent contextual state, visibility and presentation policy |
 | Loader: 2 executables | Bootstrap, embedded payload integrity and integration |
@@ -37,3 +37,5 @@ Before a source push, run `py tools/audit_repository.py`. It checks staged blob 
 [Test102 / v0.16 validation](docs/development/Test102-validation.json) pins the final adapter, native gait/tap regressions, loader integrity and full Test101 upgrade/interruption/rollback payload. The release-build receipt additionally pins the tracked native/tool source closure in [v0.16-validation.json](docs/releases/v0.16-validation.json). HUD/QTE binaries are retained; their suites and visuals are not reported as freshly rerun. New catch-up, native contextual attack/targeting and formation gait still require recorded live play.
 
 [Test103 correction validation](docs/development/Test103-validation.json) records native contextual targeting, current input/camera ownership and full active-animation recovery-lock cases. Test102 user feedback is mixed; remaining release causes and actual attack/recovery behavior require recorded live validation. Exact Test102 upgrade and interruption rollback are included in the new installer payload checks.
+
+[Test104 validation](docs/development/Test104-validation.json) covers original native selected/wavering followed-actor writes, scoped camera/holder lookup across roster compaction/duplicate indices, ordinary native query preservation, production head-look and post-QTE handoff. Formation AI/path recovery, real morale transitions and authored combat visuals still need recorded user validation; reproducing an overwrite path is not attribution of every live exit.

@@ -1,6 +1,6 @@
 # Contributor and automation instructions
 
-Current local development work is v0.16 / Test103. Read docs/development/Test103.md and its validation receipt for the latest targeting, ownership-input and knockdown-recovery changes. Test102 mixed live feedback and unresolved release causes are documented there; a built candidate is not automatically installed or live accepted.
+Current local development work is v0.16 / Test104. Read docs/development/Test104.md and its validation receipt for native roster scope, the selected/wavering UI followed-actor write guard and committed-animation head-look. Test103 remains the installed baseline until a local installation receipt explicitly supersedes it. A built candidate is not installed or live accepted.
 
 Read README.md, BUILD_AND_TEST.md, SOURCE_MAP.md, VALIDATION.md, docs/STATUS.md and docs/KNOWN_ISSUES.md before changing the project. Work in this maintained source checkout. VERSION defines the product release; directory suffixes and protocol versions are compatibility identifiers.
 

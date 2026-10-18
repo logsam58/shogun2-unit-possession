@@ -23,6 +23,7 @@ static volatile LONG follow_updates101;
 static command100::FollowPace102 command_pace102;
 static float command_gap102;
 static volatile LONG command_follow_run102,command_hold_runs102,command_hold_walks102;
+static volatile LONG command_morale104,command_routing104,command_guard104;
 static SRWLOCK command_mapping_lock100=SRWLOCK_INIT;
 static void command_reset_volley100();
 static HANDLE command_mapping100;static command100::Status* command_shared100;
@@ -329,6 +330,9 @@ static void command_log100(std::ofstream& log){
        <<",\"commands101\":1,\"q_aim_center101\":1,\"q_mouse_look101\":1,\"follow_translation101\":1,\"follow_updates101\":"<<follow_updates101
        <<",\"commands102\":1,\"follow_catchup102\":"<<(command_pace102.catchup?1:0)<<",\"follow_gap102\":"<<command_gap102<<",\"follow_run102\":"<<command_follow_run102
        <<",\"hold_walks102\":"<<command_hold_walks102<<",\"hold_runs102\":"<<command_hold_runs102<<",\"q_doubles102\":"<<command_native_doubles102
+       <<",\"formation104\":1,\"camera_scope104\":1,\"camera_updates104\":"<<camera_updates104<<",\"holder_resolutions104\":"<<holder_resolutions104<<",\"roster_forwards104\":"<<roster_forwards104<<",\"selection_follow_blocks104\":"<<selection_follow_blocks104
+       <<",\"native_guard104\":"<<command_guard104<<",\"morale104\":"<<command_morale104<<",\"routing_state104\":"<<command_routing104
+       <<",\"animation_look104\":1,\"animation_look_updates104\":"<<animation_look_updates104<<",\"animation_look_active104\":"<<animation_look_active104
        <<",\"clip101\":1,\"native_near101\":"<<interface_clip101.native<<",\"presented_near101\":"<<interface_clip101.presented
        <<",\"infantry_eye_updates101\":"<<infantry_eye_updates101<<",\"infantry_eye_rejects101\":"<<infantry_eye_rejects101
        <<",\"self_visibility_updates\":"<<self_visibility_updates100<<",\"self_visibility_rejects\":"<<self_visibility_rejects100<<",\"self_visibility_restores\":"<<self_visibility_restores100<<"}\n";
@@ -337,6 +341,7 @@ static void process_orders(uintptr_t camera){
     if(!enabled||!state||state->stop||state->release||state->mode!=POSSESSED||dead_view()||!camera_owned(camera))return;
     if(GetCurrentThreadId()!=state->window_thread||InterlockedCompareExchange(&order_busy,1,0))return;
     __try{
+        InterlockedExchange(&command_morale104,LONG(field<unsigned>(unit,0xce8)));InterlockedExchange(&command_routing104,LONG(field<unsigned>(unit,0xcec)));InterlockedExchange(&command_guard104,LONG(field<unsigned char>(unit,0xeb1)));
         if(command_generation100!=possession_lease.generation){
             command_reset100();command_generation100=possession_lease.generation;
             InterlockedExchange(&command_fire_mode100,field<unsigned char>(unit,0xeb0)?LONG(command100::FireMode::AtWill):LONG(command100::FireMode::Hold));

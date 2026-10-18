@@ -1,10 +1,12 @@
 #include "adapter.cpp"
+#include <thread>
 // Original native count/pose/FPS-update control flow, with synthetic cache,
 // holder skin pose and renderer providers in a private relocated PE only.
 static unsigned char policy98[0x300],cache98[32*80];
 static float native_pose98[16],submitted98[16];static unsigned submits98;
+static unsigned cached_count104;
 static void* __fastcall snapshot98(void*,void*,void* out,float){memset(out,0,0x80);field<uintptr_t>(reinterpret_cast<uintptr_t>(out),0x24)=reinterpret_cast<uintptr_t>(policy98);return out;}
-static void* __fastcall vector98(void*,void*,void* out){auto p=reinterpret_cast<uintptr_t>(out);field<unsigned>(p,0)=32;field<unsigned>(p,4)=0;field<uintptr_t>(p,8)=reinterpret_cast<uintptr_t>(cache98);return out;}
+static void* __fastcall vector98(void*,void*,void* out){auto p=reinterpret_cast<uintptr_t>(out);field<unsigned>(p,0)=32;field<unsigned>(p,4)=cached_count104;field<uintptr_t>(p,8)=reinterpret_cast<uintptr_t>(cache98);return out;}
 static void __fastcall cleanup98(void*,void*){}
 static void __fastcall string98(void*,void*,const void*){}
 static void* __fastcall input98(void*,void*,void* out,void*){memset(out,0,16);field<uintptr_t>(reinterpret_cast<uintptr_t>(out),12)=base+0x17c7c4c;return out;}
@@ -43,6 +45,8 @@ int main(){unsigned char* mapped=nullptr;try{
  field<unsigned>(def,0x10)=field<unsigned>(def,0x14)=4;field<uintptr_t>(def,0x18)=reinterpret_cast<uintptr_t>(nodes);
 
  field<uintptr_t>(v,0)=base+0x15d3540;
+ // Reproduce a casualty roster exposing a different holder with the same index.
+ field<unsigned>(ptr(dead_actor),0x218)=17;holders={ptr(other_holder),ptr(holder)};
  uintptr_t holder_vt98[2]={0,reinterpret_cast<uintptr_t>(&holder_pose98)};field<uintptr_t>(ptr(holder),0)=reinterpret_cast<uintptr_t>(holder_vt98);
  for(unsigned i=0;i<16;++i)native_pose98[i]=float(i+1)*.125f;
  native_pose98[15]=1;field<float>(base+0x192e380,0x5c)=0;
@@ -57,19 +61,34 @@ int main(){unsigned char* mapped=nullptr;try{
  require(pose(reinterpret_cast<void*>(v),result,17,.5f)==result&&!memcmp(result,cache98,64),"Original cached pose reads aggregate rather than current holder");
  require(!update(reinterpret_cast<void*>(ptr(cam)),.1f,.5f)&&submits98==0,"Exact native FPS update rejects cached empty aggregate before Test98");
  require(adopt_possession97(a),"Full native identity adoption for current live holder");
- const unsigned hooks[]={0x2d6210,0x340d30,0x3945c0,0x3cf280,0x2fcb10,0x341560};unsigned char before[6][16];for(unsigned i=0;i<6;++i)memcpy(before[i],mapped+hooks[i],16);
+ const unsigned hooks[]={0x2d6210,0x340d30,0x3945c0,0x3cf280,0x2fcb10,0x341560,0x325ca0,0x321d70};unsigned char before[8][16];for(unsigned i=0;i<8;++i)memcpy(before[i],mapped+hooks[i],16);
  require(MH_Initialize()==MH_OK,"Camera regression hooks initialize");create_siege_hooks97();require(MH_EnableHook(MH_ALL_HOOKS)==MH_OK,"Camera regression hooks enable");
- for(unsigned i=0;i<10000;++i){state->heartbeat=GetTickCount64();require(count(reinterpret_cast<void*>(v))==2,"Current validated holder count bypasses cached zero only while owned");
-   require(pose(reinterpret_cast<void*>(v),result,17,.5f)==result&&!memcmp(result,native_pose98,64),"Native raw pose resolves current exact holder");
+ for(unsigned i=0;i<10000;++i){state->heartbeat=GetTickCount64();cached_count104=i&1;
+   // Current roster compaction and the cached native count vary independently.
+   if(i%4<2){holders={ptr(other_holder),ptr(holder)};field<unsigned>(v,0x18)=2;}
+   else {holders={ptr(holder),ptr(other_holder)};field<unsigned>(v,0x18)=1;}
+   require(count(reinterpret_cast<void*>(v))==cached_count104,"Non-camera roster count must remain native during possession");
+   require(pose(reinterpret_cast<void*>(v),result,17,.5f)==result&&!memcmp(result,cache98,64),"Non-camera pose must remain native during possession");
    require(update(reinterpret_cast<void*>(ptr(cam)),.1f,.5f)&&field<uintptr_t>(ptr(cam),0x188)==a&&field<unsigned>(ptr(cam),0x1a4)==17,"Exact native FPS update retains selected soldier and AL success");
-   require(!memcmp(submitted98,native_pose98,64),"Native FPS renderer receives current soldier pose");
+   require(!memcmp(submitted98,native_pose98,64)&&camera_scope104==0,"Native FPS renderer gets exact current holder pose and leaves no scope");
  }
- require(view_count_bypasses98==20000&&view_zero_count98==20000&&view_native_count98==0&&view_pose_bypasses98==20000&&submits98==10000,"Private scope diagnostics count actual native zero-cache/update paths");
+ require(view_count_bypasses98==10000&&view_zero_count98==5000&&view_native_count98==1&&view_pose_bypasses98==10000&&submits98==10000,"Private scope diagnostics count actual native zero/nonzero-cache update paths");
+ cached_count104=0;holders={ptr(other_holder),ptr(holder)};field<unsigned>(v,0x18)=2;
  // Foreign index, released lease, dead actor, serial reuse, changed selection,
  // camera, heartbeat, phase and battle identity all retain original policy.
  require(pose(reinterpret_cast<void*>(v),result,18,.5f)==result&&!memcmp(result,cache98,64),"Foreign logical index keeps original cached pose");
+ auto raw_actor=reinterpret_cast<ViewActor97>(base+0x340cf0);
+ require(raw_actor(reinterpret_cast<void*>(v),17)==ptr(dead_actor),"Non-camera duplicate-index lookup lost native ordering");
+ ++camera_scope104;require(raw_actor(reinterpret_cast<void*>(v),17)==a,"Scoped native lookup did not resolve exact current holder");
+ unsigned other_thread=99;std::thread outsider([&]{other_thread=count(reinterpret_cast<void*>(v));});outsider.join();
+ require(other_thread==0,"Camera roster scope leaked to another native thread");--camera_scope104;
+ melee60::Request pair104{};pair104.pid=GetCurrentProcessId();pair104.phase=melee60::NativeCombat;pair104.lease=possession_lease.generation;
+ pair104.player=1203;pair104.player_unit=11;pair104.opponent=9;pair104.opponent_unit=12;pair104.serial=1;pair104.heartbeat=GetTickCount64();
+ require(PossessionMeleeCommitment63(&pair104)==63,"Camera pair fixture publish");field<unsigned char>(a,0xa2)=1;state->heartbeat=GetTickCount64();
+ require(followed(a,false)&&update(reinterpret_cast<void*>(ptr(cam)),.1f,.5f)&&field<uintptr_t>(ptr(cam),0x188)==a,"Current committed actor lost its camera during non-ground paired motion");
+ melee60::Request off104{};PossessionMeleeCommitment63(&off104);field<unsigned char>(a,0xa2)=0;
  unsigned guards=0;
- auto denied=[&](){require(count(reinterpret_cast<void*>(v))==0,"Invalid ownership keeps original count policy");require(pose(reinterpret_cast<void*>(v),result,17,.5f)==result&&!memcmp(result,cache98,64),"Invalid ownership keeps original cached pose policy");++guards;};
+ auto denied=[&](){++camera_scope104;require(count(reinterpret_cast<void*>(v))==0,"Invalid ownership keeps original count policy");require(pose(reinterpret_cast<void*>(v),result,17,.5f)==result&&!memcmp(result,cache98,64),"Invalid ownership keeps original cached pose policy");--camera_scope104;++guards;};
  state->release=1;denied();state->release=0;
  state->stop=1;denied();state->stop=0;
  enabled=0;denied();enabled=1;
@@ -83,7 +102,7 @@ int main(){unsigned char* mapped=nullptr;try{
  state->mode=ARMED;possessed=0;possession_lease={};denied();
  Choice97 c{en,ph,ptr(manager),v,u,ptr(holder),a,1203,17};choice97=c;
  require(count(reinterpret_cast<void*>(v))==2,"Fully validated TLS acquisition scope works before FPS adoption");choice97={};denied();
- require(MH_DisableHook(MH_ALL_HOOKS)==MH_OK,"Camera regression disable");for(unsigned i=0;i<6;++i)require(!memcmp(before[i],mapped+hooks[i],16),"All six camera regression hooks restore exact bytes");require(MH_Uninitialize()==MH_OK,"Camera regression teardown");
+ require(MH_DisableHook(MH_ALL_HOOKS)==MH_OK,"Camera regression disable");for(unsigned i=0;i<8;++i)require(!memcmp(before[i],mapped+hooks[i],16),"All six camera regression hooks restore exact bytes");require(MH_Uninitialize()==MH_OK,"Camera regression teardown");
  if(climb_shared97)UnmapViewOfFile(climb_shared97);if(climb_mapping97)CloseHandle(climb_mapping97);climb_shared97=nullptr;climb_mapping97=nullptr;
- VirtualFree(mapped,0,MEM_RELEASE);mapped=nullptr;std::cout<<"PASS: native camera98 original cached-count/pose and FPS325ca0 reproduction, 10000 original FPS updates/20000 scoped count and pose calls, "<<guards<<" strict ownership guards, six exact hook restorations. Synthetic cache/skin/input/render providers; no game initialization.\n";return 0;
+ VirtualFree(mapped,0,MEM_RELEASE);mapped=nullptr;std::cout<<"PASS: native camera98 original cached-count/pose and FPS325ca0 reproduction, 10000 original FPS updates/current-holder pose calls; duplicate casualty index and non-camera/thread native preservation, "<<guards<<" strict ownership guards, eight exact hook restorations. Synthetic cache/skin/input/render providers; no game initialization.\n";return 0;
  }catch(const std::exception& e){if(mapped)VirtualFree(mapped,0,MEM_RELEASE);std::cerr<<e.what()<<'\n';return 1;}}
