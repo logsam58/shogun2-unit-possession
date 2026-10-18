@@ -1,6 +1,7 @@
 #include "qte_service94.h"
 #include "../../shogun2-possession-cleanup-v46/src/identity.h"
 #include "../../shogun2-possession-cleanup-v46/src/game_window105.h"
+#include "../../shogun2-possession-cleanup-v46/src/overlay_surface106.h"
 #include "playable_protocol.h"
 #include "native_observer.h"
 #include "possession_observation.h"
@@ -556,10 +557,19 @@ struct Surface93 {
         old=SelectObject(dc,bitmap);if(!old||old==HGDI_ERROR){clear();return false;}size=n;return true;}
 };
 static Surface93 surface93;
-static bool draw(const Snapshot& prompt){
+static overlay106::Publisher pixels106;
+struct Image106 {uint64_t number{};Snapshot prompt{};};static Image106 images106[32];
+static Snapshot drawn_prompt106;static double drawn_wall106;
+static bool acknowledged_image106(const overlay106::Ack& ack,overlay106::Key key,uint64_t serial){
+    const auto& image=images106[ack.number%32];
+    if(!ack.number||image.number!=ack.number||!overlay106::same(ack.key,key)||image.prompt.serial!=serial||
+       !std::isfinite(ack.submitted)||ack.submitted<=0||ack.submitted>wall()+.001)return false;
+    drawn_prompt106=image.prompt;drawn_wall106=ack.submitted;return true;
+}
+static bool draw(const Snapshot& prompt,uint64_t lease){
     game=gamewindow105::refresh(game,GetCurrentProcessId());
     if(InterlockedExchange(&display_reset105,0))surface93.clear();
-    if(!prompt.active||!focused()||!IsWindow(game)||IsIconic(game)){ShowWindow(overlay,SW_HIDE);return false;}
+    if(!prompt.active||!focused()||!IsWindow(game)||IsIconic(game)){pixels106.hide();ShowWindow(overlay,SW_HIDE);return false;}
     RECT client{};POINT corner{};if(!gamewindow105::client(game,client,corner)){ShowWindow(overlay,SW_HIDE);return false;}
     float scale=std::min(float(client.right)/1920.f,float(client.bottom)/1080.f);
     if(client.right>=1280&&client.bottom>=720)scale=std::max(.85f,scale);scale*=.85f;
@@ -568,10 +578,20 @@ static bool draw(const Snapshot& prompt){
     {Gdiplus::Bitmap image(size,size,size*4,PixelFormat32bppPARGB,static_cast<BYTE*>(surface93.pixels));
      Gdiplus::Graphics graphics(&image);graphics.ScaleTransform(scale,scale);render(graphics,160,160,prompt);}
     POINT pos={corner.x+client.right/2-size/2,corner.y+client.bottom-int(std::lround(236.f*scale))-size/2},origin{};SIZE extent={size,size};
+    if(pixels106.open(GetCurrentProcessId(),overlay106::QTE)&&possession){
+        observation::PossessionPrefix p{};bool stable=false;
+        for(unsigned attempt=0;attempt<3;++attempt){auto s=possession->sequence;if(s&1)continue;MemoryBarrier();memcpy(&p,possession,sizeof p);MemoryBarrier();if(s==possession->sequence){stable=true;break;}}
+        if(!stable||p.lease_generation!=lease){pixels106.hide();ShowWindow(overlay,SW_HIDE);return false;}
+        overlay106::Frame f{};f.key={unsigned(lease),p.actor_id,p.unit_id};f.width=f.height=size;f.view_width=client.right;f.view_height=client.bottom;f.rect_count=1;
+        f.active=prompt.result==Result::Pending?1:2;f.rect[0]={pos.x-corner.x,pos.y-corner.y,size,size};
+        auto number=pixels106.publish(f,surface93.pixels);if(number){images106[number%32]={number,prompt};overlay106::Ack ack;
+            if(pixels106.ack(ack)){ShowWindow(overlay,SW_HIDE);return acknowledged_image106(ack,f.key,prompt.serial);}
+        }
+    }
     BLENDFUNCTION alpha={AC_SRC_OVER,0,255,AC_SRC_ALPHA};
     bool painted=!renderer_failed&&UpdateLayeredWindow(overlay,surface93.screen,&pos,&extent,surface93.dc,&origin,0,&alpha,ULW_ALPHA);
     bool positioned=SetWindowPos(overlay,HWND_TOPMOST,0,0,0,0,SWP_ASYNCWINDOWPOS|SWP_NOMOVE|SWP_NOSIZE|SWP_NOACTIVATE|SWP_SHOWWINDOW);
-    return painted&&positioned;
+    if(painted&&positioned){drawn_prompt106=prompt;drawn_wall106=wall();return true;}return false;
 }
 static void log_variant(const char* name,const observation::AnimationSnapshot& s){
     log_file<<",\""<<name<<"\":{\"valid\":"<<s.valid<<",\"outcome\":"<<s.outcome<<",\"matched\":"<<s.matched<<",\"fallback\":"<<s.fallback<<",\"requests\":[";
@@ -600,7 +620,7 @@ static DWORD WINAPI render_worker(void*){
             bool show=transport::read(publication,data)&&transport::presentation(data,now,shown);
             if(!show){transport::Payload done;
                 if(transport::read(completion_publication,done)&&done.prompt.serial>=data.prompt.serial&&
-                   now-done.published_wall<(done.prompt.result==Result::Canceled?1.1:.45))show=transport::presentation(done,now,shown);
+                   now-done.published_wall<(done.prompt.result==Result::Canceled?1.1:.45)){show=transport::presentation(done,now,shown);if(show)data=done;}
             }
             bool click_freeze105=false;
             if(show&&shown.result==Result::Pending&&!shown.paused){transport::Payload frozen;
@@ -608,29 +628,29 @@ static DWORD WINAPI render_worker(void*){
                    frozen.lease==data.lease&&frozen.anchor.battle==data.anchor.battle&&now>=frozen.published_wall&&now-frozen.published_wall<.12){shown=frozen.prompt;click_freeze105=true;}
             }
             render_stage=2;
-            if(!state->stop&&show&&draw(shown)){
-                const double submitted=wall();
-                AcquireSRWLockExclusive(&frame_lock93);frame93={shown,data.anchor.battle,data.lease,submitted};ReleaseSRWLockExclusive(&frame_lock93);
+            if(!state->stop&&show&&draw(shown,data.lease)){
+                const double submitted=drawn_wall106;const auto& presented=drawn_prompt106;
+                AcquireSRWLockExclusive(&frame_lock93);frame93={presented,data.anchor.battle,data.lease,submitted};ReleaseSRWLockExclusive(&frame_lock93);
                 InterlockedIncrement(&frames93);LONG64 us=last_frame93>0?LONG64((submitted-last_frame93)*1e6):0;last_frame93=submitted;
                 InterlockedExchange64(&last_frame_us93,us);if(us>max_frame_us93)InterlockedExchange64(&max_frame_us93,us);
-                InterlockedExchange64(&presented_tick,LONG64(GetTickCount64()));InterlockedExchange64(&presented_serial,LONG64(shown.serial));
-                if(shown.result==Result::Pending&&!shown.paused&&!click_freeze105){
-                    if(marker_serial105!=shown.serial||std::abs(marker_elapsed105-shown.response_elapsed)>1e-6){
+                InterlockedExchange64(&presented_tick,LONG64(GetTickCount64()));InterlockedExchange64(&presented_serial,LONG64(presented.serial));
+                if(presented.result==Result::Pending&&!presented.paused&&!click_freeze105){
+                    if(marker_serial105!=presented.serial||std::abs(marker_elapsed105-presented.response_elapsed)>1e-6){
                         InterlockedIncrement(&moving_frames105);marker_changed105=submitted;
                     }else{
                         InterlockedIncrement(&repeated_frames105);LONG64 held=LONG64((submitted-marker_changed105)*1e6);
                         if(held>max_marker_hold_us105)InterlockedExchange64(&max_marker_hold_us105,held);
                     }
-                    marker_serial105=shown.serial;marker_elapsed105=shown.response_elapsed;
+                    marker_serial105=presented.serial;marker_elapsed105=presented.response_elapsed;
                 }else marker_serial105=0;
-            }else {last_frame93=0;marker_serial105=0;InterlockedExchange64(&presented_tick,0);ShowWindowAsync(overlay,SW_HIDE);}
+            }else {if(!show||state->stop)pixels106.hide();last_frame93=0;marker_serial105=0;InterlockedExchange64(&presented_tick,0);ShowWindowAsync(overlay,SW_HIDE);}
             render_stage=3;
             if(now>=next_refresh93){MONITORINFOEXW mi{};mi.cbSize=sizeof(mi);DEVMODEW dm{};dm.dmSize=sizeof(dm);
                 if(GetMonitorInfoW(MonitorFromWindow(game,MONITOR_DEFAULTTONEAREST),reinterpret_cast<MONITORINFO*>(&mi))&&EnumDisplaySettingsW(mi.szDevice,ENUM_CURRENT_SETTINGS,&dm)&&dm.dmDisplayFrequency>=30&&dm.dmDisplayFrequency<=360)refresh_hz93=LONG(dm.dmDisplayFrequency);
                 next_refresh93=now+1.;}
             pace93.seconds(std::max(.0005,1./double(refresh_hz93)-(wall()-now)));
         }
-        DestroyWindow(overlay);overlay=nullptr;surface93.clear();release_renderer();Gdiplus::GdiplusShutdown(gdiplus);render_ready=0;
+        pixels106.hide();DestroyWindow(overlay);overlay=nullptr;surface93.clear();release_renderer();Gdiplus::GdiplusShutdown(gdiplus);render_ready=0;
     }catch(const std::exception&){render_error=1;render_ready=0;SetEvent(render_initialized);}
     return 0;
 }

@@ -12,6 +12,7 @@ static melee60::Channel melee_channel;
 static __declspec(align(8)) volatile LONG64 death_started;
 static volatile LONG death_return_pending;
 static HWND eyelid_top,eyelid_bottom;
+static overlay106::Publisher death_pixels106;
 static float death_eye[6];static bool death_eye_valid;
 static float last_owned_eye[6];static bool last_owned_eye_valid;
 static float death_up[3]={0,1,0};static bool death_model_valid;
@@ -82,6 +83,7 @@ static LRESULT CALLBACK eyelid_proc(HWND window,UINT message,WPARAM w,LPARAM l){
 }
 static void update_eyelids(bool focused){
     if(!dead_view()||!focused||!input_window||IsIconic(input_window)||state->release||state->stop){
+        death_pixels106.hide();
         if(eyelid_top)ShowWindow(eyelid_top,SW_HIDE);if(eyelid_bottom)ShowWindow(eyelid_bottom,SW_HIDE);return;
     }
     if(!eyelid_top){WNDCLASSW cls{};cls.hInstance=self_module;cls.lpfnWndProc=eyelid_proc;cls.lpszClassName=L"ShogunPossessionDeathEyes60";
@@ -98,7 +100,12 @@ static void update_eyelids(bool focused){
     MSG paint;for(HWND lid:{eyelid_top,eyelid_bottom})while(PeekMessageW(&paint,lid,0,0,PM_REMOVE)){TranslateMessage(&paint);DispatchMessageW(&paint);}
     RECT client{};POINT origin{};if(!GetClientRect(input_window,&client)||!ClientToScreen(input_window,&origin))return;
     int height=int(std::ceil(float(client.bottom)*.5f*animationview::eyelid_fraction(death_elapsed())));
-    if(!height){ShowWindow(eyelid_top,SW_HIDE);ShowWindow(eyelid_bottom,SW_HIDE);return;}
+    if(!height){death_pixels106.hide();ShowWindow(eyelid_top,SW_HIDE);ShowWindow(eyelid_bottom,SW_HIDE);return;}
+    if(death_pixels106.open(GetCurrentProcessId(),overlay106::Death)){
+        overlay106::Frame f{};f.key={state->lease_generation,state->actor_id,state->unit_id};f.width=f.height=1;f.view_width=client.right;f.view_height=client.bottom;
+        f.rect_count=2;f.rect[0]={0,0,client.right,height};f.rect[1]={0,client.bottom-height,client.right,height};unsigned black=0xff000000;
+        if(death_pixels106.publish(f,&black)){overlay106::Ack ack;if(death_pixels106.ack(ack)){ShowWindow(eyelid_top,SW_HIDE);ShowWindow(eyelid_bottom,SW_HIDE);return;}}
+    }
     SetWindowPos(eyelid_top,HWND_TOPMOST,origin.x,origin.y,client.right,height,SWP_ASYNCWINDOWPOS|SWP_NOACTIVATE|SWP_SHOWWINDOW);
     SetWindowPos(eyelid_bottom,HWND_TOPMOST,origin.x,origin.y+client.bottom-height,client.right,height,SWP_ASYNCWINDOWPOS|SWP_NOACTIVATE|SWP_SHOWWINDOW);
     InvalidateRect(eyelid_top,nullptr,FALSE);UpdateWindow(eyelid_top);InvalidateRect(eyelid_bottom,nullptr,FALSE);UpdateWindow(eyelid_bottom);

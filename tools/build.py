@@ -3,7 +3,7 @@ import argparse,hashlib,json,os,shutil,subprocess,sys,time
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1];NATIVE=ROOT/'native';OUT=ROOT/'artifacts';BIN=OUT/'bin';OBJ=OUT/'obj';TEST=OUT/'tests';LOG=OUT/'logs'
 ADAPTER=NATIVE/'outputs/shogun2-accuracy90-preview';QTE=NATIVE/'outputs/shogun2-authentic-hud80-preview';HUD=NATIVE/'outputs/shogun2-ammunition83-preview';AUTO=NATIVE/'work/autoload99-preview';INSTALL=NATIVE/'work/installer-siege99'
-COMMON=['/nologo','/std:c++17','/EHsc','/O2','/MT','/W4'];BASE_LIBS=['bcrypt.lib','user32.lib','gdi32.lib'];QTE_LIBS=BASE_LIBS+['gdiplus.lib','ole32.lib'];SETUP_LIBS=['bcrypt.lib','shell32.lib','advapi32.lib','comdlg32.lib','user32.lib','gdi32.lib']
+COMMON=['/nologo','/std:c++17','/EHsc','/O2','/MT','/W4'];BASE_LIBS=['bcrypt.lib','user32.lib','gdi32.lib'];ADAPTER_LIBS=BASE_LIBS+['d3d11.lib','d3d9.lib','dxgi.lib','d3dcompiler.lib'];QTE_LIBS=BASE_LIBS+['gdiplus.lib','ole32.lib'];SETUP_LIBS=['bcrypt.lib','shell32.lib','advapi32.lib','comdlg32.lib','user32.lib','gdi32.lib']
 receipts=[];hooks=[];CANDIDATE=None;RELEASE=False
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 def quote(command):
@@ -37,11 +37,11 @@ def rc(source,name):
  if r.returncode:print(log.read_text(errors='replace'));raise SystemExit(r.returncode)
  return target
 def adapter(tests):
- minhook();run('adapter',[compile_cpp(ADAPTER/'src/adapter.cpp',BIN/'possession-v46.dll',hooks,BASE_LIBS,['/LD']),compile_cpp(ADAPTER/'src/launcher.cpp',BIN/'possession.exe',(),BASE_LIBS)])
+ minhook();run('adapter',[compile_cpp(ADAPTER/'src/adapter.cpp',BIN/'possession-v46.dll',hooks,ADAPTER_LIBS,['/LD']),compile_cpp(ADAPTER/'src/launcher.cpp',BIN/'possession.exe',(),BASE_LIBS)])
  if tests:
   commands=[];sources=[ADAPTER/'src/verify.cpp',*sorted((ADAPTER/'src').glob('verify_*.cpp'))]
   for source in sources:
-   target=TEST/(source.stem+'.exe');commands.extend([compile_cpp(source,target,hooks,BASE_LIBS),[target]])
+    target=TEST/(source.stem+'.exe');commands.extend([compile_cpp(source,target,hooks,ADAPTER_LIBS),[target]])
   run('adapter-tests',commands);receipts[-1]['executables']=len(sources)
 def qte(tests):
  minhook()

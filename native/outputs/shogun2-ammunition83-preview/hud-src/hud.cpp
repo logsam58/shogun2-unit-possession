@@ -2,6 +2,7 @@
 #include "../../shogun2-possession-cleanup-v46/src/identity.h"
 #include "../../shogun2-possession-cleanup-v46/src/protocol.h"
 #include "../../shogun2-possession-cleanup-v46/src/game_window105.h"
+#include "../../shogun2-possession-cleanup-v46/src/overlay_surface106.h"
 #include "hud_renderer.h"
 #include "hud_surface100.h"
 #include "accuracy_protocol90.h"
@@ -16,6 +17,7 @@ static climb97::Status* climb_shared97;
 static command100::Status* commands_shared100;static HANDLE commands_map100;static uint64_t commands_retry100;
 static HudSurface100 hud_surface100;
 static HWND game,overlay;static bool visible;static hud80::View display;static hud80::Assets assets;
+static overlay106::Publisher pixels106;static overlay106::Key display_key106;
 template<class T>T read(uintptr_t address){T v{};SIZE_T n=0;
     require(ReadProcessMemory(process,reinterpret_cast<void*>(address),&v,sizeof v,&n)&&n==sizeof v,"Native HUD read failed");return v;}
 static bool snapshot(Status& s){for(int i=0;i<4;++i){LONG seq=shared->sequence;if(seq&1)continue;
@@ -104,25 +106,29 @@ static bool measure(){
     if(read<uintptr_t>(manager+0x8e0)!=camera||read<uintptr_t>(camera+0x188)!=actor||read<unsigned>(actor+0x1c8)!=s.actor_id||
         read<uintptr_t>(actor+0x214)!=unit||read<uintptr_t>(unit+0x1c)!=definition||read<uintptr_t>(unit+0x2a4)!=army||read<unsigned>(unit+4)!=s.unit_id)return false;
     Status final{};if(!snapshot(final)||final.lease_generation!=s.lease_generation||final.actor_id!=s.actor_id||final.unit_id!=s.unit_id||final.mode!=POSSESSED)return false;
-    display=d;return true;
+    display=d;display_key106={s.lease_generation,s.actor_id,s.unit_id};return true;
 }
 static bool paint(){
     RECT client{};POINT pos{};if(!gamewindow105::client(game,client,pos))return false;int width=client.right,height=client.bottom;
     if(!hud_surface100.ensure(width,height))return false;
     auto screen=hud_surface100.screen(),dc=hud_surface100.memory();auto pixels=hud_surface100.pixels();memset(pixels,0,size_t(width)*height*4);
     {Gdiplus::Bitmap surface(width,height,width*4,PixelFormat32bppPARGB,static_cast<BYTE*>(pixels));Gdiplus::Graphics g(&surface);hud80::render(g,assets,float(width),float(height),display);}
+    if(pixels106.open(pid,overlay106::HUD)){
+        overlay106::Frame f{};f.key=display_key106;f.width=f.view_width=width;f.height=f.view_height=height;f.rect_count=1;f.rect[0]={0,0,width,height};
+        if(pixels106.publish(f,pixels)){overlay106::Ack ack;if(pixels106.ack(ack)){ShowWindow(overlay,SW_HIDE);return ack.number&&overlay106::same(ack.key,display_key106);}}
+    }
     POINT origin{};SIZE size{width,height};BLENDFUNCTION alpha{AC_SRC_OVER,0,255,AC_SRC_ALPHA};
     bool ok=UpdateLayeredWindow(overlay,screen,&pos,&size,dc,&origin,0,&alpha,ULW_ALPHA)!=0;
     if(ok)SetWindowPos(overlay,HWND_TOPMOST,0,0,0,0,SWP_NOMOVE|SWP_NOSIZE|SWP_NOACTIVATE|SWP_SHOWWINDOW);return ok;
 }
 static void update(){game=gamewindow105::refresh(game,pid);bool ok=false;try{ok=measure();}catch(...){ok=false;}DWORD fg=0;GetWindowThreadProcessId(GetForegroundWindow(),&fg);
-    if(!ok||!IsWindow(game)||IsIconic(game)||!IsWindowVisible(game)||fg!=pid){if(visible)ShowWindow(overlay,SW_HIDE);visible=false;return;}
+    if(!ok||!IsWindow(game)||IsIconic(game)||!IsWindowVisible(game)||fg!=pid){pixels106.hide();if(visible)ShowWindow(overlay,SW_HIDE);visible=false;return;}
     visible=paint();if(!visible)ShowWindow(overlay,SW_HIDE);}
 static LRESULT CALLBACK proc(HWND w,UINT msg,WPARAM wp,LPARAM lp){
     if(msg==WM_NCHITTEST)return HTTRANSPARENT;if(msg==WM_MOUSEACTIVATE)return MA_NOACTIVATE;if(msg==WM_ERASEBKGND)return 1;
     if(msg==WM_DISPLAYCHANGE||msg==WM_DPICHANGED){hud_surface100.reset();return 0;}
     if(msg==WM_TIMER){if(WaitForSingleObject(process,0)==WAIT_OBJECT_0){DestroyWindow(w);return 0;}update();return 0;}
-    if(msg==WM_DESTROY){PostQuitMessage(0);return 0;}return DefWindowProcW(w,msg,wp,lp);}
+    if(msg==WM_DESTROY){pixels106.hide();PostQuitMessage(0);return 0;}return DefWindowProcW(w,msg,wp,lp);}
 static int preview(int argc,wchar_t** argv){
     using namespace Gdiplus;require(argc>=4,"Use --render output.png clean|combat|qte|ranged [width height]");
     int width=argc>=6?_wtoi(argv[4]):1920,height=argc>=6?_wtoi(argv[5]):1080;require(width>=640&&width<=3840&&height>=360&&height<=2160,"Invalid preview size");

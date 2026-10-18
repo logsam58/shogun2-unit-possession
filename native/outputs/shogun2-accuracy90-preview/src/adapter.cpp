@@ -9,6 +9,7 @@
 #include "command_input100.h"
 #include "legacy_v34.h"
 #include "../vendor/include/MinHook.h"
+#include "native_overlay106.h"
 #include <intrin.h>
 static_assert(sizeof(void*)==4,"Build this adapter for x86");
 static HMODULE self_module;
@@ -18,6 +19,19 @@ static HANDLE mapping;
 static volatile LONG enabled;
 static uintptr_t possessed,environment,unit;
 static PossessionLease possession_lease;
+static bool overlay_key106(const overlay106::Frame& frame,unsigned layer){
+    auto key=frame.key;
+    // Retained cancellation/result feedback is immutable numeric UI, never an
+    // ownership permission. It may survive the matching possession's release.
+    if(layer==overlay106::QTE&&frame.active==2&&state&&enabled&&state->ready&&!state->stop&&
+       key.lease==state->lease_generation&&key.actor==state->actor_id&&key.unit==state->unit_id)return true;
+    if(!state||!enabled||!state->ready||state->stop||state->release||state->mode!=POSSESSED||
+       GetTickCount64()-state->heartbeat>500||!possession_lease.active)return false;
+    auto identity=possession_lease.identity;unsigned generation=possession_lease.generation;
+    return key.lease==generation&&key.actor==identity.actor_id&&key.unit==identity.unit_id&&
+        key.lease==state->lease_generation&&key.actor==state->actor_id&&key.unit==state->unit_id&&
+        possession_lease.active&&generation==possession_lease.generation&&state->mode==POSSESSED;
+}
 // Numeric heading published only at validated native boundaries. The mouse
 // worker never dereferences a horse pointer, including during battle changes.
 static volatile LONG mounted_heading85=-1;
@@ -763,6 +777,7 @@ static void __fastcall detour(void* actor,void*) {
 }
 static bool down(int vk){return (GetAsyncKeyState(vk)&0x8000)!=0;}
 static void snapshot_log(std::ofstream& log) {
+    nativeoverlay106::log(log);
     command_log100(log);
     {static LONG prior=-1,failed=-1;LONG blocked=keyboard_blocked84,errors=keyboard_failures84;
      if(blocked!=prior||errors!=failed){prior=blocked;failed=errors;
@@ -874,6 +889,7 @@ static DWORD WINAPI worker(void*) {
         create_interface_hooks();
         create_pose_hook();
         create_fatigue_hooks();
+        nativeoverlay106::install(&overlay_key106);
         // When replacing the exact stopped revision in this same process, retain
         // its observed native camera thread ID. No native object pointers or
         // ownership transfer; entry still requires the current window owner and
@@ -952,6 +968,7 @@ static DWORD WINAPI worker(void*) {
         }
         InterlockedExchange(&state->release,1);restore_interface_on_window();
         InterlockedExchange(&enabled,0);InterlockedExchange(&state->input,0);
+        nativeoverlay106::stop();
         if(eyelid_top)DestroyWindow(eyelid_top);if(eyelid_bottom)DestroyWindow(eyelid_bottom);
         if(input_window&&reinterpret_cast<WNDPROC>(GetWindowLongPtrW(input_window,GWLP_WNDPROC))==&weapon_window_proc)
             SetWindowLongPtrW(input_window,GWLP_WNDPROC,reinterpret_cast<LONG_PTR>(native_window_proc));
@@ -977,7 +994,7 @@ static DWORD WINAPI worker(void*) {
         if(!native_fatigue_signatures(base))state->error=31;
         log<<"{\"event\":\"disabled\",\"reason\":\"explicit_stop\",\"tick_ms\":"<<GetTickCount64()<<",\"bytes_restored\":"<<(restored?"true":"false")<<",\"camera_bytes_restored\":"<<(camera_restored?"true":"false")<<",\"hook_status\":"<<int(result)<<"}\n";log.flush();
         // Keep DLL, mapping, and trampoline resident until process exit: no unload race.
-    }catch(const std::exception& ex){if(state){state->error=1;state->ready=0;}if(log){log<<"{\"event\":\"initialization_failed\",\"reason\":\""<<ex.what()<<"\"}\n";log.flush();}}
+    }catch(const std::exception& ex){nativeoverlay106::stop();if(state){state->error=1;state->ready=0;}if(log){log<<"{\"event\":\"initialization_failed\",\"reason\":\""<<ex.what()<<"\"}\n";log.flush();}}
     return 0;
 }
 BOOL WINAPI DllMain(HINSTANCE instance,DWORD reason,LPVOID) {
