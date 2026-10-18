@@ -20,6 +20,7 @@
 #include "../../shogun2-melee-meter79-preview/src/qte_core.h"
 #endif
 #include "native_font.h"
+#include "../../shogun2-possession-cleanup-v46/src/hud_layout108.h"
 namespace hud80 {
 using namespace Gdiplus;
 struct View {
@@ -55,16 +56,8 @@ public:
     }
     void clear(){tiles.clear();atlases.clear();for(auto stream:streams)stream->Release();streams.clear();native_fonts.clear();}
     ~Assets(){clear();}
-    void image(Graphics& g,const wchar_t* key,RectF target)const{
-        const Sprite* s=sprite(key);if(!s)return;
-        float sx=target.Width/s->logical_w,sy=target.Height/s->logical_h;
-        RectF bounds(target.X+s->offset_x*sx,target.Y+s->offset_y*sy,s->w*sx,s->h*sy);
-        g.DrawImage(atlases[s->atlas].get(),bounds,float(s->x),float(s->y),float(s->w),float(s->h),UnitPixel);
-    }
-    void tile(Graphics& g,const wchar_t* key,RectF bounds,float scale=1.f)const{
-        const Sprite* s=sprite(key);if(!s)return;
-        // Render a logical tile once, then repeat with TextureBrush. Individual
-        // scaled DrawImage tiles leave transparent sampling seams at 720p.
+    Bitmap* logical_tile(const wchar_t* key)const{
+        const Sprite* s=sprite(key);if(!s)return nullptr;
         auto found=tiles.find(key);
         if(found==tiles.end()){
             auto bitmap=std::make_unique<Bitmap>(s->logical_w,s->logical_h,PixelFormat32bppPARGB);
@@ -73,8 +66,25 @@ public:
                 tile_graphics.DrawImage(atlases[s->atlas].get(),Rect(s->offset_x,s->offset_y,s->w,s->h),s->x,s->y,s->w,s->h,UnitPixel);}
             found=tiles.emplace(key,std::move(bitmap)).first;
         }
-        TextureBrush texture(found->second.get(),WrapModeTile);texture.ScaleTransform(scale,scale);texture.TranslateTransform(bounds.X,bounds.Y,MatrixOrderAppend);g.FillRectangle(&texture,bounds);
+        return found->second.get();
     }
+    void image(Graphics& g,const wchar_t* key,RectF target,float opacity=1.f,bool isolated=false)const{
+        const Sprite* s=sprite(key);if(!s)return;
+        float sx=target.Width/s->logical_w,sy=target.Height/s->logical_h;
+        RectF bounds(target.X+s->offset_x*sx,target.Y+s->offset_y*sy,s->w*sx,s->h*sy);
+        ImageAttributes attributes;ColorMatrix alpha={1,0,0,0,0, 0,1,0,0,0, 0,0,1,0,0, 0,0,0,std::clamp(opacity,0.f,1.f),0, 0,0,0,0,1};
+        attributes.SetColorMatrix(&alpha);
+        if(isolated){auto bitmap=logical_tile(key);if(!bitmap)return;
+            attributes.SetWrapMode(WrapModeTileFlipXY);
+            g.DrawImage(bitmap,target,0.f,0.f,float(s->logical_w),float(s->logical_h),UnitPixel,&attributes);
+        }else g.DrawImage(atlases[s->atlas].get(),bounds,float(s->x),float(s->y),float(s->w),float(s->h),UnitPixel,&attributes);
+    }
+    void tile(Graphics& g,const wchar_t* key,RectF bounds,float scale=1.f,WrapMode wrap=WrapModeTile)const{
+        auto bitmap=logical_tile(key);if(!bitmap)return;
+        TextureBrush texture(bitmap,wrap);texture.ScaleTransform(scale,scale);
+        texture.TranslateTransform(bounds.X,bounds.Y,MatrixOrderAppend);g.FillRectangle(&texture,bounds);
+    }
+
 };
 inline Color ink(){return Color(255,38,31,24);}
 inline Color red(){return Color(255,135,36,29);}
@@ -101,59 +111,39 @@ inline void mouse_image(Graphics& g,RectF r,bool left,bool active=true){
     SolidBrush wheel(Color(255,220,209,170));g.FillRectangle(&wheel,r.X+r.Width*.5f-1.5f,r.Y+r.Height*.14f,3.f,r.Height*.18f);
 }
 inline void panel(Graphics& g,const Assets& a,RectF r){
-    // Keep the paper behind the inner wood. Filling the whole outer rectangle
-    // leaks through the native frame's transparent/cutaway corner regions.
-    RectF inside(r.X+8,r.Y+8,r.Width-16,r.Height-16);
+    // Keep every nine-slice join on one device-pixel grid. Corner and edge
+    // thickness must share the same scale instead of rounding independently.
+    Matrix transform;g.GetTransform(&transform);float elements[6];transform.GetElements(elements);
+    float device=std::hypot(elements[0],elements[1]);if(!std::isfinite(device)||device<=0)return;
+    auto snap=[&](float value){return std::round(value*device)/device;};
+    float right=snap(r.GetRight()),bottom=snap(r.GetBottom());r.X=snap(r.X);r.Y=snap(r.Y);
+    r.Width=right-r.X;r.Height=bottom-r.Y;
+    const float c=snap(18.f),edge_scale=c/36.f,inset=snap(8.f);
+    RectF inside(r.X+inset,r.Y+inset,r.Width-2*inset,r.Height-2*inset);
     SolidBrush paper(Color(248,225,219,195));g.FillRectangle(&paper,inside);
     a.tile(g,L"ui/frames/data__subpanel_paper_fill.png",inside);
-    constexpr float c=18;
-    a.tile(g,L"ui/frames/data__big_panel_top.png",RectF(r.X+c,r.Y,r.Width-2*c,c),.5f);
-    a.tile(g,L"ui/frames/data__big_panel_bottom.png",RectF(r.X+c,r.GetBottom()-c,r.Width-2*c,c),.5f);
-    a.tile(g,L"ui/frames/data__big_panel_left.png",RectF(r.X,r.Y+c,c,r.Height-2*c),.5f);
-    a.tile(g,L"ui/frames/data__big_panel_right.png",RectF(r.GetRight()-c,r.Y+c,c,r.Height-2*c),.5f);
-    a.image(g,L"ui/frames/data__big_panel_tl.png",RectF(r.X,r.Y,c,c));
-    a.image(g,L"ui/frames/data__big_panel_tr.png",RectF(r.GetRight()-c,r.Y,c,c));
-    a.image(g,L"ui/frames/data__big_panel_bl.png",RectF(r.X,r.GetBottom()-c,c,c));
-    a.image(g,L"ui/frames/data__big_panel_br.png",RectF(r.GetRight()-c,r.GetBottom()-c,c,c));
+    // Mirror only across the narrow axis: transparent outer padding must not
+    // wrap back into the opaque inner edge and produce a detached hairline.
+    a.tile(g,L"ui/frames/data__big_panel_top.png",RectF(r.X+c,r.Y,r.Width-2*c,c),edge_scale,WrapModeTileFlipY);
+    a.tile(g,L"ui/frames/data__big_panel_bottom.png",RectF(r.X+c,r.GetBottom()-c,r.Width-2*c,c),edge_scale,WrapModeTileFlipY);
+    a.tile(g,L"ui/frames/data__big_panel_left.png",RectF(r.X,r.Y+c,c,r.Height-2*c),edge_scale,WrapModeTileFlipX);
+    a.tile(g,L"ui/frames/data__big_panel_right.png",RectF(r.GetRight()-c,r.Y+c,c,r.Height-2*c),edge_scale,WrapModeTileFlipX);
+    // Isolate native logical sprites before bicubic scaling; atlas neighbours
+    // cannot bleed through corner cutaways. Original offsets are preserved.
+    a.image(g,L"ui/frames/data__big_panel_tl.png",RectF(r.X,r.Y,c,c),1.f,true);
+    a.image(g,L"ui/frames/data__big_panel_tr.png",RectF(r.GetRight()-c,r.Y,c,c),1.f,true);
+    a.image(g,L"ui/frames/data__big_panel_bl.png",RectF(r.X,r.GetBottom()-c,c,c),1.f,true);
+    a.image(g,L"ui/frames/data__big_panel_br.png",RectF(r.GetRight()-c,r.GetBottom()-c,c,c),1.f,true);
 }
+
 inline const wchar_t* morale_name(unsigned n){static const wchar_t* names[]={L"Impetuous",L"Eager",L"Confident",L"Steady",L"Shaken",L"Wavering",L"Broken",L"Shattered"};return n<8?names[n]:L"Unavailable";}
 inline const wchar_t* fatigue_name(unsigned n){static const wchar_t* names[]={L"Fresh",L"Active",L"Winded",L"Tired",L"Very tired",L"Exhausted"};return n<6?names[n]:L"Unavailable";}
 inline std::wstring class_name(const UnitArt* u){
     if(!u)return L"Unknown unit type";std::wstring s=u->kind;
     std::replace(s.begin(),s.end(),L'_',L' ');if(!s.empty())s[0]=wchar_t(towupper(s[0]));return s;
 }
-inline void qte_meter(Graphics& g,const Assets& a,float x,float y,const qte::Snapshot& s){
-    if(!s.active)return;
-    panel(g,a,RectF(x-150,y-80,300,156));
-    text(g,s.result==qte::Result::Pending?(s.action==qte::Action::Charge?L"CHARGE":qte::attacking(s.action)?L"ATTACK":L"DEFEND"):
-        s.result==qte::Result::Success?L"WELL TIMED":s.result==qte::Result::Canceled?L"ENCOUNTER LOST":L"MISSED",x-122,y-68,185,22,17,ink(),true);
-    text(g,qte::attacking(s.action)?L"LEFT CLICK":L"RIGHT CLICK",x-122,y-42,185,30,23,ink(),true);
-    mouse_image(g,RectF(x+78,y-65,39,55),qte::attacking(s.action),s.result==qte::Result::Pending);
-    constexpr float span=244,height=20;float left=x-span*.5f,top=y-5;
-    GraphicsPath track;round_rect(track,RectF(left,top,span,height),2.5f);
-    SolidBrush failure(Color(255,151,48,37)),success(Color(255,139,153,56));
-    g.FillPath(&failure,&track);
-    GraphicsState state=g.Save();
-    g.SetClip(&track,CombineModeIntersect);
-    g.FillRectangle(&success,RectF(left+qte::zone_left(s)*span,top,s.zone_width*span,height));g.Restore(state);
-    Pen track_rim(Color(255,85,67,40),1.2f),track_light(Color(255,221,208,163),1.f);
-    g.DrawPath(&track_rim,&track);g.DrawLine(&track_light,left+3,top+1, left+span-3,top+1);
-    float marker=left+qte::reticle_position(s)*span;
-    Pen shadow(Color(255,40,31,20),5),pointer(Color(255,255,248,224),2);
-    g.DrawLine(&shadow,marker,top-5,marker,top+height+5);g.DrawLine(&pointer,marker,top-5,marker,top+height+5);
-    SolidBrush time_track(Color(255,127,111,82)),remaining(Color(255,71,59,40));
-    g.FillRectangle(&time_track,left,top+30,span,3.f);
-    g.FillRectangle(&remaining,left,top+30,span*std::clamp(qte::response_remaining(s)/float(qte::response_deadline(s)),0.f,1.f),3.f);
-    const wchar_t* status=s.paused?L"Paused":s.result==qte::Result::Success?L"Good timing":s.result==qte::Result::Timeout?L"Time ran out":
-        s.result==qte::Result::Canceled?L"Action interrupted":s.result==qte::Result::WrongButton?L"Wrong button":s.result!=qte::Result::Pending?L"Outside green":L"Stop in green";
-    text(g,status,left,y+36,span,20,13,muted());
-    if(s.result==qte::Result::Canceled){
-        RectF banner(x-135,y-13,270,38);GraphicsPath shape;round_rect(shape,banner,3);
-        SolidBrush backing(Color(248,48,37,25));Pen trim(Color(255,193,164,108),1.5f);
-        g.FillPath(&backing,&shape);g.DrawPath(&trim,&shape);
-        text(g,L"INTERRUPTED",banner.X+9,banner.Y+2,banner.Width-18,34,25,Color(255,255,241,201),true);
-    }
-}
+#include "../../shogun2-possession-cleanup-v46/src/qte_meter108.h"
+
 inline void render(Graphics& g,const Assets& a,float width,float height,const View& v,const qte::Snapshot* qte=nullptr,bool offline=false){
     native_fonts.boshin=v.boshin;
     g.SetSmoothingMode(SmoothingModeAntiAlias);g.SetInterpolationMode(InterpolationModeHighQualityBicubic);

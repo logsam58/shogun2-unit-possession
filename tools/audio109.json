@@ -1,0 +1,19 @@
+{
+  "pack": "local_en.pack",
+  "entry": "advisor/adc/adc_own_unit_routed.mp3",
+  "source_sha256": "6b672c729f8f8b5e7667a4cfddbaecabcf1a7e620b24dd06ad4d77a9afe29836",
+  "source_bytes": 57992,
+  "trim_seconds": [
+    3.25,
+    4.8
+  ],
+  "sample_rate": 44100,
+  "channels": 1,
+  "sample_width": 2,
+  "wave_path": "native/outputs/shogun2-ammunition83-preview/hud-src/private/shameful-display109.wav",
+  "wave_sha256": "b11e637701714d311b51529522a8a818127591b7ce214bdce12f03c6158014ce",
+  "wave_bytes": 136754,
+  "phrase": "SHAMEFUL DISPLAY!",
+  "lead_in_excluded": true,
+  "extraction": "Original licensed local game pack; no internet clip or synthetic voice"
+}

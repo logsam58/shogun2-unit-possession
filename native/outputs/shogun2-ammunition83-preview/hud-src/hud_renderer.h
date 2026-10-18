@@ -20,6 +20,7 @@
 #include "../../shogun2-melee-meter79-preview/src/qte_core.h"
 #endif
 #include "native_font.h"
+#include "../../shogun2-possession-cleanup-v46/src/hud_layout108.h"
 #include "hud_state89.h"
 #include "accuracy_geometry90.h"
 #include "../../shogun2-accuracy90-preview/src/command_protocol100.h"
@@ -151,49 +152,8 @@ inline std::wstring class_name(const UnitArt* u){
     if(!u)return L"Unknown unit type";std::wstring s=u->kind;
     std::replace(s.begin(),s.end(),L'_',L' ');if(!s.empty())s[0]=wchar_t(towupper(s[0]));return s;
 }
-inline void qte_meter(Graphics& g,const Assets& a,float x,float y,const qte::Snapshot& s){
-    if(!s.active)return;
-    panel(g,a,RectF(x-150,y-80,300,156));
-    text(g,s.result==qte::Result::Pending?(s.action==qte::Action::Charge?L"CHARGE":qte::attacking(s.action)?L"ATTACK":L"DEFEND"):
-        s.result==qte::Result::Success?L"WELL TIMED":L"MISSED",x-122,y-66,244,24,17,ink(),true);
-    mouse_image(g,RectF(x+94,y-65,25,38),qte::attacking(s.action));
-    constexpr float span=244,height=20;float left=x-span*.5f,top=y-5;
-    GraphicsPath track;round_rect(track,RectF(left,top,span,height),2.5f);
-    SolidBrush failure(Color(255,151,48,37)),success(Color(255,139,153,56));
-    g.FillPath(&failure,&track);
-    GraphicsState state=g.Save();
-    g.SetClip(&track,CombineModeIntersect);
-    g.FillRectangle(&success,RectF(left+qte::zone_left(s)*span,top,s.zone_width*span,height));g.Restore(state);
-    Pen track_rim(Color(255,85,67,40),1.2f),track_light(Color(255,221,208,163),1.f);
-    g.DrawPath(&track_rim,&track);g.DrawLine(&track_light,left+3,top+1, left+span-3,top+1);
-    float marker=left+qte::reticle_position(s)*span;
-    Pen shadow(Color(255,40,31,20),5),pointer(Color(255,255,248,224),2);
-    g.DrawLine(&shadow,marker,top-5,marker,top+height+5);g.DrawLine(&pointer,marker,top-5,marker,top+height+5);
-    SolidBrush time_track(Color(255,127,111,82)),remaining(Color(255,71,59,40));
-    g.FillRectangle(&time_track,left,top+30,span,3.f);
-    g.FillRectangle(&remaining,left,top+30,span*std::clamp(qte::response_remaining(s)/float(qte::response_deadline(s)),0.f,1.f),3.f);
-    const wchar_t* status=s.paused?L"Paused":s.result==qte::Result::Success?L"Good timing":s.result==qte::Result::Timeout?L"Time ran out":
-        s.result==qte::Result::WrongButton?L"Wrong button":s.result!=qte::Result::Pending?L"Outside green":L"Stop in green";
-    text(g,status,left,y+36,span,20,13,muted());
-}
-inline void ammunition_indicator83(Graphics& g,const Assets& a,float middle,float bottom,const View& v){
-    const auto& s=v.ammunition_state;
-    if(!v.ammunition_known||!s.count){text(g,L"Ammo unavailable",middle-168,bottom-91,336,24,16,muted());return;}
-    const auto& current=s.items[s.current];
-    a.image(g,ammo83::image(ammo83::Icon(current.icon)),RectF(middle-168,bottom-88,22,22));
-    text(g,current.label,middle-136,bottom-89,205,26,17,ink(),true);
-    key_image(g,L"Tab",RectF(middle-168,bottom-63,44,23));
-    unsigned first=s.current>=6?s.current-5:0,last=std::min(s.count,first+7);
-    for(unsigned i=first;i<last;++i){const auto& item=s.items[i];float x=middle-108+(i-first)*31.f;
-        bool selected=i==s.current,available=(item.flags&ammo83::Available)!=0;
-        RectF box(x-3,bottom-65,27,27);
-        if(selected){SolidBrush fill(Color(255,218,205,163));g.FillRectangle(&fill,box);Pen rim(red(),1.5f);g.DrawRectangle(&rim,box);}
-        a.image(g,ammo83::image(ammo83::Icon(item.icon)),RectF(x,bottom-62,21,21),selected||available?1.f:.30f);
-        if(!selected&&!available){Pen line(Color(220,116,108,90),1.f);g.DrawLine(&line,x,bottom-42,x+20,bottom-61);}
-    }
-    if(s.count==1)text(g,L"Single type",middle-72,bottom-62,190,22,13,muted());
-    else {std::wstring position=std::to_wstring(s.current+1)+L" / "+std::to_wstring(s.count);text(g,position,middle+115,bottom-62,55,22,12,muted());}
-}
+#include "../../shogun2-possession-cleanup-v46/src/qte_meter108.h"
+
 inline const wchar_t* weapon_name89(const View& v){
  if(v.kind==1)return L"Bow";
  if(v.kind==3&&v.ammunition_known&&v.ammunition_state.count){auto icon=v.ammunition_state.items[v.ammunition_state.current].icon;
@@ -225,9 +185,8 @@ inline void render(Graphics& g,const Assets& a,float width,float height,const Vi
     g.SetSmoothingMode(SmoothingModeAntiAlias);g.SetInterpolationMode(InterpolationModeHighQualityBicubic);
     g.SetPixelOffsetMode(PixelOffsetModeHalf);g.SetTextRenderingHint(TextRenderingHintAntiAliasGridFit);
     float physical_height=height;
-    float scale=std::min(width/1920.f,height/1080.f);
-    if(width>=1280&&height>=720)scale=std::max(.85f,scale);
-    scale*=.85f; // User-approved compact HUD:15% smaller, same anchored layout.
+    const hudlayout108::Layout layout(width,height);
+    const float scale=layout.zoom;
     GraphicsState all=g.Save();g.ScaleTransform(scale,scale);width/=scale;height/=scale;
     const float bottom=height-26,x=26,y=bottom-302;
     panel(g,a,RectF(x,y,466,302));
@@ -252,61 +211,57 @@ inline void render(Graphics& g,const Assets& a,float width,float height,const Vi
     const wchar_t* icon=v.routing?L"ui/icons/data__status_routing.png":v.ranged&&v.aiming?L"ui/restored/status_firing-hd-v1.png":qte&&qte->active?L"ui/restored/status_melee-hd-v1.png":v.speed>.1f?L"ui/icons/data__status_walk.png":nullptr;
     if(icon)a.image(g,icon,RectF(x+193,y+239,32,32));
     text(g,qte&&qte->active?L"In melee":status,x+235,y+242,190,24,15,muted());
-    float middle=width*.5f;bool ammo_panel=v.ranged||(v.equipment_known&&v.has_ranged);
-    float extra=0.f;
-    float center_height=ammo_panel||v.equipment_known?136.f:100.f;
-    panel(g,a,RectF(middle-(ammo_panel?195.f:173.f),bottom-center_height,ammo_panel?390.f:346.f,center_height));
-    if(v.equipment_known){
-        key_image(g,L"1",RectF(middle-143,bottom-117-extra,23,23));text(g,L"Melee",middle-113,bottom-115-extra,57,23,14,v.slot==1?red():muted());
-        if(v.has_ranged){key_image(g,L"2",RectF(middle-49,bottom-117-extra,23,23));text(g,weapon_name89(v),middle-19,bottom-115-extra,65,23,14,v.slot==2?red():muted());}
-        if(v.crouch_supported){key_image(g,L"Ctrl",RectF(middle+49,bottom-117-extra,42,23));text(g,L"Kneel",middle+98,bottom-115-extra,49,23,14,v.crouched?red():muted());}
+    const float middle=width*.5f;
+    const auto& context=layout.context;
+    const bool contextual=hudlayout108::context_visible({v.equipment_known,v.ranged,v.aiming,v.pending||v.ammunition_state.pending!=0,
+        v.crouched,v.weapon_phase,v.climb_mode,v.equipment_error|v.ammunition_state.error,v.ammo,v.reload});
+    if(contextual&&!(qte&&qte->active)){
+        const float cx=context.x,cy=context.y;
+        panel(g,a,RectF(cx,cy,context.w,context.h));
+        if(v.climb_mode){
+            if(v.climb_mode<=2){key_image(g,L"F",RectF(cx+27,cy+24,32,30));text(g,v.climb_mode==2?L"Climb down wall":L"Climb wall",cx+73,cy+26,286,28,19,ink(),true);}
+            else if(v.climb_mode==4)text(g,L"Climbing over",cx+30,cy+27,330,28,19,ink(),true);
+            else {key_image(g,L"W",RectF(cx+27,cy+17,28,25));text(g,L"Ascend",cx+65,cy+18,107,25,16);
+                key_image(g,L"S",RectF(cx+197,cy+17,28,25));text(g,L"Descend",cx+235,cy+18,126,25,16);
+                text(g,L"Release to hold",cx+30,cy+48,330,23,14,muted());}
+        }else if(v.ranged){
+            bool known=v.ammunition_known&&v.ammunition_state.count&&v.ammunition_state.current<v.ammunition_state.count;
+            if(known){const auto& current=v.ammunition_state.items[v.ammunition_state.current];
+                a.image(g,ammo83::image(ammo83::Icon(current.icon)),RectF(cx+27,cy+18,22,22));
+                text(g,current.label,cx+58,cy+17,190,25,16,ink(),true);
+            }else text(g,L"Ammo unavailable",cx+29,cy+17,217,25,16,muted());
+            wchar_t amount[64];swprintf_s(amount,L"Unit ammo: %.0f",v.ammo);text(g,amount,cx+251,cy+18,114,24,14,muted());
+            auto personal=weapon_state89(v);std::wstring state=personal.label;
+            if(v.reload>.05f){wchar_t reload[64];swprintf_s(reload,L"Reloading %.1fs",v.reload);state=reload;}
+            text(g,state,cx+29,cy+46,181,23,14,personal.fire_prompt?ink():muted());
+            if(known&&v.ammunition_state.count>1){key_image(g,L"Tab",RectF(cx+214,cy+44,40,24));text(g,L"Change ammo",cx+265,cy+47,100,23,13,muted());}
+        }else text(g,v.pending?L"Switching weapon...":v.crouched?L"Kneeling":L"Melee",cx+29,cy+26,332,28,18,muted());
     }
-    if(v.ranged){
-        auto personal=weapon_state89(v);
-        text(g,personal.label,middle+78,bottom-87,90,23,12,personal.fire_prompt?ink():muted());
-        ammunition_indicator83(g,a,middle,bottom,v);
-        wchar_t ammo[100];if(v.reload>.05f){swprintf_s(ammo,L"Unit ammo: %.0f    Reload: %.1fs",v.ammo,v.reload);text(g,ammo,middle-168,bottom-32,336,22,14,muted());}
-        else{swprintf_s(ammo,L"Unit ammo: %.0f",v.ammo);text(g,ammo,middle-168,bottom-32,140,22,14,muted());
-            mouse_image(g,RectF(middle-6,bottom-35,14,22),false);text(g,v.bow?L"Draw":L"Aim",middle+14,bottom-32,43,22,14,muted());
-            mouse_image(g,RectF(middle+76,bottom-35,14,22),true);text(g,v.kind==1?L"Release":v.kind==3&&v.ammunition_known&&v.ammunition_state.count&&
-                (v.ammunition_state.items[v.ammunition_state.current].icon==ammo83::Bomb||v.ammunition_state.items[v.ammunition_state.current].icon==ammo83::BlindBomb)?L"Throw":L"Fire",middle+97,bottom-32,65,22,14,personal.fire_prompt?ink():Color(145,108,98,78));}
-    }else{
-        if(ammo_panel){ammunition_indicator83(g,a,middle,bottom,v);text(g,L"Melee",middle+78,bottom-87,90,23,12,muted());}
-        else text(g,L"Melee combat",middle-143,bottom-79-extra,286,23,18,ink(),true);
-        text(g,L"Respond to the highlighted button",middle-143,bottom-(ammo_panel?32.f:48.f),286,22,14,muted());
-    }
-    float right=width-350;panel(g,a,RectF(right,bottom-160,324,160));
-    const wchar_t* command_title=L"UNIT COMMANDS";
-    if(v.commands_known&&v.commands.placing)command_title=L"NATIVE UNIT PLACEMENT";
+    const auto& command=layout.commands;const float right=command.x,top=command.y;
+    panel(g,a,RectF(right,top,command.w,command.h));
+    const wchar_t* command_title=L"COMMANDS";
+    if(v.commands_known&&v.commands.placing)command_title=L"UNIT PLACEMENT";
     else if(v.commands_known&&GetTickCount64()<v.commands.feedback_until){
-        const wchar_t* titles[]={L"UNIT COMMANDS",L"ADVANCE ORDERED",L"FORMATION ORDERED",L"UNIT STOPPED",L"HOLDING HERE",L"FOLLOWING YOU",L"FOLLOW ENDED",L"HOLD FIRE",L"FIRE AT WILL",L"FIRE WHEN YOU FIRE",L"NO GROUND TARGET",L"COMMAND UNAVAILABLE",L"COMMAND UNAVAILABLE"};
+        const wchar_t* titles[]={L"COMMANDS",L"ADVANCE ORDERED",L"FORMATION ORDERED",L"UNIT STOPPED",L"HOLDING HERE",L"FOLLOWING YOU",L"FOLLOW ENDED",L"HOLD FIRE",L"FIRE AT WILL",L"FIRE ON COMMAND",L"NO GROUND TARGET",L"COMMAND UNAVAILABLE",L"COMMAND UNAVAILABLE"};
         if(v.commands.feedback<sizeof titles/sizeof *titles)command_title=titles[v.commands.feedback];
     }
-    text(g,command_title,right+28,bottom-141,268,24,15,ink(),true);
+    text(g,command_title,right+23,top+20,178,26,13,ink(),true);
     const bool placing=v.commands_known&&v.commands.placing;
-    key_image(g,L"Q",RectF(right+28,bottom-116,25,23));text(g,L"Advance / drag",right+63,bottom-115,132,23,14);
-    key_image(g,L"E",RectF(right+207,bottom-116,25,23));text(g,L"Stop",right+242,bottom-115,55,23,14);
-    key_image(g,L"Z",RectF(right+28,bottom-88,25,23));text(g,L"Hold here",right+63,bottom-87,119,23,14,v.commands_known&&v.commands.move_mode==3?red():ink());
-    key_image(g,L"C",RectF(right+170,bottom-88,25,23));text(g,L"Follow me",right+205,bottom-87,91,23,14,v.following?red():ink());
-    key_image(g,L"R",RectF(right+28,bottom-60,25,23));
-    const wchar_t* fire_mode=!v.commands_known?L"Fire mode unavailable":v.commands.fire_mode==0?L"Hold fire":v.commands.fire_mode==1?L"Fire at will":L"Fire on command";
-    text(g,fire_mode,right+63,bottom-59,234,23,14,v.commands_known?red():muted(),true);
-    key_image(g,L"F10",RectF(right+28,bottom-32,42,23));text(g,L"Return to RTS",right+83,bottom-31,211,23,13,muted());
-    if(v.climb_mode){
-        float cy=height*.65f;
-        panel(g,a,RectF(middle-206,cy,412,88));
-        if(v.climb_mode<=2){key_image(g,L"F",RectF(middle-176,cy+24,42,36));text(g,v.climb_mode==2?L"Climb down wall":L"Climb wall",middle-119,cy+26,289,32,21,ink(),true);}
-        else if(v.climb_mode==4)text(g,L"Climbing over",middle-174,cy+28,348,32,21,ink(),true);
-        else {key_image(g,L"W",RectF(middle-175,cy+15,36,29));text(g,L"Ascend",middle-127,cy+17,118,27,18,ink(),true);
-            key_image(g,L"S",RectF(middle+8,cy+15,36,29));text(g,L"Descend",middle+56,cy+17,126,27,18,ink(),true);
-            text(g,L"Release W / S to hold",middle-174,cy+52,348,24,15,muted());}
+    const wchar_t* fire_mode=!v.commands_known?L"Fire mode unknown":v.commands.fire_mode==0?L"Hold fire":v.commands.fire_mode==1?L"Fire at will":L"Fire on command";
+    const wchar_t* keys[]={L"Q",L"E",L"Z",L"C",L"R"};
+    const wchar_t* labels[]={L"Move / attack",L"Stop",L"Hold here",L"Follow me",fire_mode};
+    for(unsigned i=0;i<5;++i){float row=top+49+i*36.f;
+        key_image(g,keys[i],RectF(right+24,row,28,26));
+        bool active=i==2?v.commands_known&&v.commands.move_mode==3:i==3?v.following:i==4&&v.commands_known;
+        text(g,labels[i],right+65,row+2,137,25,14,active?red():ink());
     }
+    key_image(g,L"F10",RectF(right+24,top+235,42,23));text(g,L"RTS view",right+78,top+237,124,23,13,muted());
     auto reticle=weapon_state89(v);
     if(!placing&&!v.climb_mode&&!(qte&&qte->active)&&reticle.reticle==hudstate89::Reticle::Drop)drop_reticle89(g,width*.5f,height*.5f,reticle.fire_prompt);
     if(!placing&&!v.climb_mode&&!(qte&&qte->active)&&reticle.reticle==hudstate89::Reticle::Firearm&&v.accuracy_known){float radius=0;
         if(accuracy90::projected_radius(v.cone_half_angle,v.projection_y,physical_height,radius))firearm_reticle90(g,width*.5f,height*.5f,radius/scale,reticle.fire_prompt);}
     (void)offline;
-    if(qte&&qte->active)qte_meter(g,a,middle,bottom-210-extra,*qte);
+    if(qte&&qte->active)qte_meter(g,a,middle,hudlayout108::qte_anchor_y(height),*qte);
     if(offline)text(g,L"OFFLINE HUD PREVIEW | fixture data",30,22,700,30,18,Color(255,239,232,211));
     g.Restore(all);
 }

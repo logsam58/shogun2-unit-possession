@@ -545,6 +545,7 @@ static void enter_selected_soldier(){
             original_toggle(reinterpret_cast<void*>(manager),0);
     }__except(EXCEPTION_EXECUTE_HANDLER){entry_failed(13);}
 }
+#include "friendly_fire109.h"
 #include "native_bow.h"
 static void pose_manual_origin(float* origin);
 static bool posed_arrow_origin(float* origin);
@@ -777,6 +778,7 @@ static void __fastcall detour(void* actor,void*) {
 }
 static bool down(int vk){return (GetAsyncKeyState(vk)&0x8000)!=0;}
 static void snapshot_log(std::ofstream& log) {
+    log<<"{\"event\":\"friendly_fire109\",\"tick_ms\":"<<GetTickCount64()<<",\"hits\":"<<friendly_hits109<<",\"errors\":"<<friendly_errors109<<"}\n";
     nativeoverlay106::log(log);
     command_log100(log);
     {static LONG prior=-1,failed=-1;LONG blocked=keyboard_blocked84,errors=keyboard_failures84;
@@ -847,7 +849,7 @@ static DWORD WINAPI worker(void*) {
         wchar_t dll_path[MAX_PATH];require(GetModuleFileNameW(self_module,dll_path,MAX_PATH)>0,"DLL path failed");
         std::wstring path=dll_path;path=path.substr(0,path.find_last_of(L"\\/")+1)+L"session-v46-"+std::to_wstring(GetCurrentProcessId())+L".jsonl";
         log.open(path,std::ios::app);require(bool(log),"Session log failed");
-        equipment_initialize_mapping81();accuracy_initialize90();
+        equipment_initialize_mapping81();accuracy_initialize90();friendly_initialize109();
         Module engine=find_module(GetCurrentProcessId());base=engine.base;
         require(engine.size==0x1d88000 && hash_file(engine.path)==EXPECTED_HASH,"Unsupported engine build");
         require(accuracy_signatures90(),"Native accuracy/projection/camera signatures differ");
@@ -885,7 +887,7 @@ static DWORD WINAPI worker(void*) {
         require(MH_CreateHook(projectile_camera_target,reinterpret_cast<void*>(&projectile_camera),reinterpret_cast<void**>(&original_projectile_camera))==MH_OK,"Projectile camera hook failed");
         create_weapon_hooks();create_mounted_render_hooks70();create_siege_hooks97();create_context_hooks103();
 
-        create_dispersion_hook();
+        create_dispersion_hook();create_friendly_hook109();
         create_interface_hooks();
         create_pose_hook();
         create_fatigue_hooks();
@@ -980,7 +982,7 @@ static DWORD WINAPI worker(void*) {
         if(MH_DisableHook(keyboard_poll_target84)!=MH_OK)result=MH_UNKNOWN;
         for(unsigned rva:{0x2f79a0u,0x10ee5b0u,0x325ca0u,0x321d70u,0x3e5170u})if(MH_DisableHook(reinterpret_cast<void*>(base+rva))!=MH_OK)result=MH_UNKNOWN;
         for(void* p:{reinterpret_cast<void*>(base+0xf9c360),reinterpret_cast<void*>(base+0xf9bf20),reinterpret_cast<void*>(base+0x122f740),cursor_target})if(MH_DisableHook(p)!=MH_OK)result=MH_UNKNOWN;
-        for(void* p:{reinterpret_cast<void*>(base+0x2fcb10),reinterpret_cast<void*>(base+0x341560),reinterpret_cast<void*>(base+0x2d6210),reinterpret_cast<void*>(base+0x340d30),reinterpret_cast<void*>(base+0x3945c0),reinterpret_cast<void*>(base+0x3cf280),target,cancel_target,toggle_target,matrix_target,camera_input_target,projectile_camera_target,reinterpret_cast<void*>(base+0x3ca920),reinterpret_cast<void*>(base+0x3e8b50),reinterpret_cast<void*>(base+0x3f0370),reinterpret_cast<void*>(base+0x3f03d0),reinterpret_cast<void*>(base+0x3e3f50),reinterpret_cast<void*>(base+0x3d3630),reinterpret_cast<void*>(base+0x3d4320),reinterpret_cast<void*>(base+0x3e1a20),reinterpret_cast<void*>(base+0x4272e0),reinterpret_cast<void*>(base+0x4c56d0)})if(MH_DisableHook(p)!=MH_OK)result=MH_UNKNOWN;
+        for(void* p:{reinterpret_cast<void*>(base+0x2fcb10),reinterpret_cast<void*>(base+0x341560),reinterpret_cast<void*>(base+0x2d6210),reinterpret_cast<void*>(base+0x340d30),reinterpret_cast<void*>(base+0x3945c0),reinterpret_cast<void*>(base+0x3cf280),reinterpret_cast<void*>(base+0x473f80),target,cancel_target,toggle_target,matrix_target,camera_input_target,projectile_camera_target,reinterpret_cast<void*>(base+0x3ca920),reinterpret_cast<void*>(base+0x3e8b50),reinterpret_cast<void*>(base+0x3f0370),reinterpret_cast<void*>(base+0x3f03d0),reinterpret_cast<void*>(base+0x3e3f50),reinterpret_cast<void*>(base+0x3d3630),reinterpret_cast<void*>(base+0x3d4320),reinterpret_cast<void*>(base+0x3e1a20),reinterpret_cast<void*>(base+0x4272e0),reinterpret_cast<void*>(base+0x4c56d0)})if(MH_DisableHook(p)!=MH_OK)result=MH_UNKNOWN;
         if(!guarded){if(MH_DisableHook(reinterpret_cast<void*>(base+0x2ac0b0))!=MH_OK)result=MH_UNKNOWN;}
         for(void* p:{reinterpret_cast<void*>(base+0x3f06e0),reinterpret_cast<void*>(base+0x3c73e0)})if(MH_DisableHook(p)!=MH_OK)result=MH_UNKNOWN;
         for(void* p:{reinterpret_cast<void*>(base+0x3d3ce0),reinterpret_cast<void*>(base+0x3d33f0),reinterpret_cast<void*>(base+0x3d3d40),reinterpret_cast<void*>(base+0x3d3de0),reinterpret_cast<void*>(base+0x3d3e90),reinterpret_cast<void*>(base+0x3d3e60),reinterpret_cast<void*>(base+0x3d3fc0)})if(MH_DisableHook(p)!=MH_OK)result=MH_UNKNOWN;

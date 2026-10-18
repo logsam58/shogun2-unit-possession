@@ -2,7 +2,7 @@
 
 Current source product version: **0.18**, promoting accepted Test107 gameplay. [Download v0.18](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.18), including the integrated installer, Windows package, source archive and checksums. Publication and local installation are separate. The release contains the native possession, weapon, melee QTE, HUD, unit-order, camera-return and siege systems described in the [README](../README.md).
 
-v0.18 adds native DirectX presentation for the existing HUD/QTE/death artwork, current-clock QTE publication and the shared infantry firing-animation correction. The user reported Test107 worked great after verified loaded components and actual recording in 1920×1080 fullscreen DirectX11. This is scoped acceptance, without a universal roster/device or effects-crash claim. See [v0.18 notes](releases/v0.18.md) and [validation](releases/v0.18-validation.json).
+v0.18 adds native DirectX presentation for the existing HUD/QTE/death artwork, current-clock QTE publication and the shared infantry firing-animation correction. The user reported Test107 worked great after verified loaded components and actual recording in 1920Ã—1080 fullscreen DirectX11. This is scoped acceptance, without a universal roster/device or effects-crash claim. See [v0.18 notes](releases/v0.18.md) and [validation](releases/v0.18-validation.json).
 
 | Area | Implemented behavior | Coverage / limitation |
 | --- | --- | --- |
@@ -22,6 +22,10 @@ v0.18 adds native DirectX presentation for the existing HUD/QTE/death artwork, c
 Offline fixtures cover important native forwarding, identity, cleanup, geometry, timing and installation cases. They do not simulate every battle. [VALIDATION.md](../VALIDATION.md) and the release receipt distinguish freshly run checks from retained component evidence.
 
 Current development priorities are the unresolved effects crash, mounted-bow presentation, broader ranged-unit/animation coverage, crowded-combat interruptions and siege-map lifecycle testing. Known limitations and reporting guidance are in [KNOWN_ISSUES.md](KNOWN_ISSUES.md) and [CONTRIBUTING.md](../CONTRIBUTING.md).
+
+## Current unpublished candidate
+
+[Test109](development/Test109.md) includes the simplified Test108 HUD and a short original-game SHAMEFUL DISPLAY notification for a verified personal projectile hitting an ally. The routing lead-in is cropped out. The passive impact observer preserves native damage and existing gameplay; asynchronous playback runs in the HUD process. See its validation receipt for the actual installation state and offline/live limits. Published v0.18 remains unchanged.
 
 ## Development history
 

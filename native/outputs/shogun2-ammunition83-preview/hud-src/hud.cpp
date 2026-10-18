@@ -5,6 +5,7 @@
 #include "../../shogun2-possession-cleanup-v46/src/overlay_surface106.h"
 #include "hud_renderer.h"
 #include "hud_surface100.h"
+#include "audio_feedback109.h"
 #include "accuracy_protocol90.h"
 #include "../../shogun2-accuracy90-preview/src/climb_protocol97.h"
 #include "../src/equipment_protocol81.h"
@@ -16,6 +17,7 @@ static accuracy90::Status* accuracy_shared90;
 static climb97::Status* climb_shared97;
 static command100::Status* commands_shared100;static HANDLE commands_map100;static uint64_t commands_retry100;
 static HudSurface100 hud_surface100;
+static AudioFeedback109 audio_feedback109;
 static HWND game,overlay;static bool visible;static hud80::View display;static hud80::Assets assets;
 static overlay106::Publisher pixels106;static overlay106::Key display_key106;
 template<class T>T read(uintptr_t address){T v{};SIZE_T n=0;
@@ -122,7 +124,9 @@ static bool paint(){
     if(ok)SetWindowPos(overlay,HWND_TOPMOST,0,0,0,0,SWP_NOMOVE|SWP_NOSIZE|SWP_NOACTIVATE|SWP_SHOWWINDOW);return ok;
 }
 static void update(){game=gamewindow105::refresh(game,pid);bool ok=false;try{ok=measure();}catch(...){ok=false;}DWORD fg=0;GetWindowThreadProcessId(GetForegroundWindow(),&fg);
-    if(!ok||!IsWindow(game)||IsIconic(game)||!IsWindowVisible(game)||fg!=pid){pixels106.hide();if(visible)ShowWindow(overlay,SW_HIDE);visible=false;return;}
+    bool active=ok&&IsWindow(game)&&!IsIconic(game)&&IsWindowVisible(game)&&fg==pid;
+    audio_feedback109.poll(pid,display_key106.lease,display_key106.actor,display_key106.unit,active);
+    if(!active){pixels106.hide();if(visible)ShowWindow(overlay,SW_HIDE);visible=false;return;}
     visible=paint();if(!visible)ShowWindow(overlay,SW_HIDE);}
 static LRESULT CALLBACK proc(HWND w,UINT msg,WPARAM wp,LPARAM lp){
     if(msg==WM_NCHITTEST)return HTTRANSPARENT;if(msg==WM_MOUSEACTIVATE)return MA_NOACTIVATE;if(msg==WM_ERASEBKGND)return 1;
@@ -135,13 +139,13 @@ static int preview(int argc,wchar_t** argv){
     bool bomb=wcscmp(argv[3],L"bomb")==0,gun=wcscmp(argv[3],L"gun")==0||wcscmp(argv[3],L"gun-accurate")==0||wcscmp(argv[3],L"gun-inaccurate")==0,single=wcscmp(argv[3],L"single")==0,pending=wcscmp(argv[3],L"pending")==0,empty=wcscmp(argv[3],L"empty")==0;
     bool reload=wcscmp(argv[3],L"reload")==0,lowered=wcscmp(argv[3],L"lowered")==0,drawing=wcscmp(argv[3],L"drawing")==0,
         mortar=wcscmp(argv[3],L"mortar")==0,rocket=wcscmp(argv[3],L"rocket")==0,fots=wcscmp(argv[3],L"fots")==0,unknown=wcscmp(argv[3],L"unknown")==0;
-    bool ranged=wcscmp(argv[3],L"ranged")==0||bomb||gun||single||pending||empty||reload||lowered||drawing||mortar||rocket||fots||unknown||wcscmp(argv[3],L"ammo-qte")==0,combat=wcscmp(argv[3],L"combat")==0,qte_active=wcscmp(argv[3],L"qte")==0||wcscmp(argv[3],L"ammo-qte")==0;
+    bool ranged=wcscmp(argv[3],L"ranged")==0||bomb||gun||single||pending||empty||reload||lowered||drawing||mortar||rocket||fots||unknown||wcscmp(argv[3],L"ammo-qte")==0,combat=wcscmp(argv[3],L"combat")==0,qte_active=wcscmp(argv[3],L"qte")==0||wcsncmp(argv[3],L"qte-",4)==0||wcscmp(argv[3],L"ammo-qte")==0;
     bool command_preset=wcsncmp(argv[3],L"command-",8)==0;
     bool climb_preset=wcsncmp(argv[3],L"climb-",6)==0;
     require(command_preset||climb_preset||ranged||combat||qte_active||wcscmp(argv[3],L"clean")==0,"Unknown preview preset");
     hud80::View v;v.fixture=true;v.unit=hud80::unit_art(ranged?L"Inf_Missile_Bow_Ashigaru":L"Inf_Sword_Katana_Samurai");require(v.unit!=nullptr,"Fixture catalog entry missing");
     v.faction=L"Oda";v.mon=L"ui/clan_mons/data__oda.png";v.men=combat?73:118;v.initial=120;v.morale=combat?5:2;v.fatigue=combat?4:1;v.veterancy=3;
-    v.equipment_known=true;v.has_ranged=ranged;v.slot=ranged?2:1;v.styles=ranged?3:0;v.ammunition=L"Fire arrows";
+    v.commands_known=true;v.commands.fire_mode=1;v.equipment_known=true;v.has_ranged=ranged;v.slot=ranged?2:1;v.styles=ranged?3:0;v.ammunition=L"Fire arrows";
     v.climb_mode=wcscmp(argv[3],L"climb-near")==0?1:wcscmp(argv[3],L"climb-top")==0?2:wcscmp(argv[3],L"climb-active")==0?3:wcscmp(argv[3],L"climb-crest")==0?4:0;
     v.ranged=ranged;v.bow=ranged&&!gun&&!bomb&&!mortar&&!rocket&&!fots;v.kind=v.bow?1:gun||fots?2:3;
     v.aiming=ranged&&!lowered;v.aim_pose=drawing?2:lowered?0:1;v.ammo=empty?0:19;v.pending=pending;
@@ -158,7 +162,7 @@ static int preview(int argc,wchar_t** argv){
         c.placing=wcscmp(argv[3],L"command-drag")==0||wcscmp(argv[3],L"command-point")==0||wcscmp(argv[3],L"command-invalid")==0;
 
     }
-    qte::Snapshot s;s.active=qte_active;s.serial=1;s.action=qte::Action::Defend;s.result=qte::Result::Pending;s.duration=1.4f;s.elapsed=.84f;s.response_elapsed=.84;s.placement=.65f;s.zone_width=.17f;
+    qte::Snapshot s;s.active=qte_active;s.serial=1;s.action=wcscmp(argv[3],L"qte-left")==0?qte::Action::Attack:qte::Action::Defend;s.result=wcscmp(argv[3],L"qte-interrupted")==0?qte::Result::Canceled:qte::Result::Pending;s.duration=1.4f;s.elapsed=.84f;s.response_elapsed=.84;s.placement=.65f;s.zone_width=.17f;
     Bitmap bitmap(width,height,PixelFormat32bppARGB);{Graphics g(&bitmap);LinearGradientBrush backdrop(Point(0,0),Point(width,height),Color(255,75,83,70),Color(255,26,31,25));g.FillRectangle(&backdrop,0,0,width,height);
         hud80::render(g,assets,float(width),float(height),v,qte_active?&s:nullptr,true);}
     UINT count=0,bytes=0;require(GetImageEncodersSize(&count,&bytes)==Ok,"PNG encoder unavailable");std::vector<BYTE> buffer(bytes);auto enc=reinterpret_cast<ImageCodecInfo*>(buffer.data());require(GetImageEncoders(count,bytes,enc)==Ok,"Encoder read failed");

@@ -54,11 +54,13 @@ def qte(tests):
    target=TEST/('qte-'+source.stem+'.exe');commands.extend([compile_cpp(source,target,[resources,*hooks],QTE_LIBS),[target]])
   run('qte-tests',commands);receipts[-1]['executables']=len(sources)
 def hud(tests):
- resources=rc(HUD/'hud-src/hud-assets.rc','hud');run('hud',[compile_cpp(HUD/'hud-src/hud.cpp',BIN/'possession-hud.exe',[resources],QTE_LIBS)])
+ spec=json.loads((ROOT/'tools/audio109.json').read_text());voice=ROOT/spec['wave_path']
+ if not voice.is_file() or sha(voice)!=spec['wave_sha256']:raise SystemExit('Missing/corrupt local voice dependency: run tools/prepare_audio109.py --game <game> --ffmpeg <ffmpeg.exe>')
+ resources=rc(HUD/'hud-src/hud-assets.rc','hud');run('hud',[compile_cpp(HUD/'hud-src/hud.cpp',BIN/'possession-hud.exe',[resources],QTE_LIBS+['winmm.lib'])])
  if tests:
   commands=[];sources=sorted((HUD/'hud-src').glob('verify_hud_*.cpp'))
   for source in sources:
-   target=TEST/(source.stem+'.exe');commands.extend([compile_cpp(source,target,(),BASE_LIBS),[target]])
+   target=TEST/(source.stem+'.exe');audio=source.stem=='verify_hud_audio109';commands.extend([compile_cpp(source,target,[resources] if audio else (),BASE_LIBS),[target]])
   run('hud-tests',commands);receipts[-1]['executables']=len(sources)
 def loader(tests):
  payload=NATIVE/'outputs/shogun2-siege99-preview';payload.mkdir(parents=True,exist_ok=True)

@@ -153,7 +153,7 @@ static void manual_bow_apply(const uint32_t* payload,uintptr_t context){
             state->shot_origin[i]=origin[i];state->shot_velocity[i]=field<float>(reinterpret_cast<uintptr_t>(launch),0x50+i*4);
             state->launch_delta=std::max(state->launch_delta,std::abs(state->shot_velocity[i]-solved_velocity[i]));
         }
-        reinterpret_cast<Register>(base+0x41c760)(reinterpret_cast<void*>(field<uintptr_t>(context,0xe8)),launch);
+        friendly_register109(field<uintptr_t>(context,0xe8),launch);
         // Match the ordinary ranged task: native unit/weapon modifiers determine reload.
         using ReloadDuration=float(__thiscall*)(void*,void*);
         using ReloadSchedule=void(__thiscall*)(void*,float,unsigned);

@@ -2,3 +2,4 @@
 102 RCDATA "../../shogun2-authentic-hud80-preview/assets/processed/atlases/game-atlas-1.png"
 103 RCDATA "../../shogun2-authentic-hud80-preview/assets/processed/atlases/game-atlas-2.png"
 #include "native-fonts.rc"
+301 WAVE "private/shameful-display109.wav"

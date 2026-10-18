@@ -586,13 +586,12 @@ static bool draw(const Snapshot& prompt,uint64_t lease){
     if(InterlockedExchange(&display_reset105,0))surface93.clear();
     if(!prompt.active||!focused()||!IsWindow(game)||IsIconic(game)){pixels106.hide();ShowWindow(overlay,SW_HIDE);return false;}
     RECT client{};POINT corner{};if(!gamewindow105::client(game,client,corner)){ShowWindow(overlay,SW_HIDE);return false;}
-    float scale=std::min(float(client.right)/1920.f,float(client.bottom)/1080.f);
-    if(client.right>=1280&&client.bottom>=720)scale=std::max(.85f,scale);scale*=.85f;
+    const float scale=hudlayout108::scale(float(client.right),float(client.bottom));
     const int size=int(std::ceil(320.f*scale));if(!surface93.ensure(size))return false;
     memset(surface93.pixels,0,size_t(size)*size*4);
     {Gdiplus::Bitmap image(size,size,size*4,PixelFormat32bppPARGB,static_cast<BYTE*>(surface93.pixels));
      Gdiplus::Graphics graphics(&image);graphics.ScaleTransform(scale,scale);render(graphics,160,160,prompt);}
-    POINT pos={corner.x+client.right/2-size/2,corner.y+client.bottom-int(std::lround(236.f*scale))-size/2},origin{};SIZE extent={size,size};
+    POINT pos={corner.x+client.right/2-size/2,corner.y+int(std::lround(hudlayout108::qte_anchor_y(float(client.bottom))))-size/2},origin{};SIZE extent={size,size};
     if(pixels106.open(GetCurrentProcessId(),overlay106::QTE)&&possession){
         observation::PossessionPrefix p{};bool stable=false;
         for(unsigned attempt=0;attempt<3;++attempt){auto s=possession->sequence;if(s&1)continue;MemoryBarrier();memcpy(&p,possession,sizeof p);MemoryBarrier();if(s==possession->sequence){stable=true;break;}}

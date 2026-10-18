@@ -90,3 +90,8 @@ Retain the exact accepted Test107 adapter, HUD and QTE, and their gameplay sourc
 The complete installer suite additionally requires exact Test107 loader/marker fixtures in ignored `native/work/autoload-test107-baseline/` and the published v0.17 loader/marker in `native/work/autoload-v017-baseline/`. Extract old setup resources201/202 as data only; do not execute an old installer. The suite verifies both exact upgrades, seven interrupted stages each and repeat-install retention. Keep the historical fixture closure as well. A failed fixture remains recorded; diagnose and rerun the full final payload before pinning a passing receipt.
 
 After review/audit and a clean commit, `py tools/package_release.py` produces `artifacts/releases/v0.18/`. Add a source ZIP whose every member matches the committed Git blob, its `SOURCE_SHA256SUMS.txt`, and both records to the six-file upload manifest. Explicitly requested publication uses the annotated v0.18 tag on that reviewed commit and downloads/hashes every uploaded asset before making it public to repository readers. Existing release assets and repository visibility remain unchanged.
+
+
+## Test109 HUD and friendly-fire development
+
+Run `tools/prepare_audio109.py --game <local game> --ffmpeg <ffmpeg.exe>` to prepare the separately verified private voice input. Build/test adapter and HUD using explicit `--candidate 109`; retain the exact Test108 QTE and source inputs. Then build/test loader and installer with candidate109. The current default107 is historical. Test109 adds a passive native impact observer and out-of-process Windows audio playback, with native-ABI and notification/PCM fixtures. Use its own development receipt/package; published v0.18 remains immutable.

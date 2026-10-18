@@ -17,3 +17,6 @@ A source clone contains mod code and fixtures, not a complete game/resource dist
 The adapter target can be built without the UI inputs. Exact-native fixtures still need the supported engine. The full installer suite additionally needs historical fixture binaries; normal source browsing and building the adapter do not require those archived installer inputs.
 
 Keep absolute paths and machine settings in ignored tools/local.json. Do not commit game binaries, fonts/artwork, complete research exports, local runtimes, raw recordings or dumps. See [BUILD_AND_TEST.md](../BUILD_AND_TEST.md) for commands and current path assumptions.
+
+
+Test109 HUD audio also needs the original English advisor entry in local_en.pack and FFmpeg at build time. `tools/prepare_audio109.py` verifies and crops that one entry using `tools/audio109.json`. The resulting WAV stays in the ignored HUD private directory and is embedded by the HUD resource compiler. Game installation and users do not need FFmpeg.

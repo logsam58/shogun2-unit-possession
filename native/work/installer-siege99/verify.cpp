@@ -366,8 +366,12 @@ int wmain(){try{
         {flashstartup86::Key key;require(RegOpenKeyExW(flashstartup86::hive,flashstartup86::key_path.c_str(),0,KEY_SET_VALUE|KEY_WOW64_32KEY,&key.value)==ERROR_SUCCESS,"Test101 fixture flag reset");DWORD zero=0;
          for(auto name:flashstartup86::names)require(RegSetValueExW(key.value,name,0,REG_DWORD,reinterpret_cast<BYTE*>(&zero),4)==ERROR_SUCCESS,"Test101 fixture flag write");}
         atomic_bytes(dll,previous101_loader);atomic_bytes(pack,previous101_pack);auto saved_selection=read_bytes(selection),saved_cache=read_bytes(cache);
-        failed=false;try{install_all(game,data,{},interruption,local);}catch(...){failed=true;}
-        require(failed&&read_bytes(dll)==previous101_loader&&read_bytes(pack)==previous101_pack&&read_bytes(selection)==saved_selection&&read_bytes(cache)==saved_cache,"Test101 interruption failed rollback");
+        std::string failure101;
+        failed=false;try{install_all(game,data,{},interruption,local);}catch(const std::exception& e){failed=true;failure101=e.what();}catch(...){failed=true;failure101="nonstandard exception";}
+        auto actual_dll101=read_bytes(dll),actual_pack101=read_bytes(pack),actual_selection101=read_bytes(selection),actual_cache101=read_bytes(cache);
+        bool dll101=actual_dll101==previous101_loader,pack101=actual_pack101==previous101_pack,selection101=actual_selection101==saved_selection,cache101=actual_cache101==saved_cache;
+        if(!(failed&&dll101&&pack101&&selection101&&cache101))std::cerr<<"Test101 rollback detail: stage="<<interruption<<" threw="<<failed<<" reason="<<failure101<<" dll="<<dll101<<" pack="<<pack101<<" selection="<<selection101<<" cache="<<cache101<<" actual_dll_bytes="<<actual_dll101.size()<<" expected_dll_bytes="<<previous101_loader.size()<<'\n';
+        require(failed&&dll101&&pack101&&selection101&&cache101,"Test101 interruption failed rollback");
     }
     install_all(game,data,{},-1,local);require(hash_file(dll)==SETUP_BOOTSTRAP_SHA&&hash_file(pack)==EMBEDDED_PACK_SHA,"Test101 predecessor upgrade failed");
     require(read_bytes(dll+L".possession-previous")==previous101_loader&&read_bytes(pack+L".possession-previous")==previous101_pack,"Test101 rollback backup differs");

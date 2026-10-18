@@ -46,3 +46,6 @@ Test106 presentation is in `native/outputs/shogun2-accuracy90-preview/src/native
 
 
 Test107 timing correction is in QTE `qte_session.h` publication and paused-time accounting. Private distinct-submission counters are in `playable_runtime.cpp`; `verify_publication107.cpp` exercises the production coordinator/transport boundary, and `verify_cadence107.cpp` verifies the production counter's unique-frame semantics. Test106 adapter/HUD source and binaries remain exact.
+
+
+Test108 presentation helpers are `hud_layout108.h` and `qte_meter108.h` in the shared possession-cleanup-v46/src directory. Test109 personal projectile tagging/passive contact observation is in adapter `friendly_fire109.h`, with the optional numeric `friendly_fire_protocol109.h` in that shared directory. HUD `audio_feedback109.h` consumes notifications and plays the private cropped resource. `tools/prepare_audio109.py` and `tools/audio109.json` define the repeatable local audio input; no game voice bytes are tracked.
