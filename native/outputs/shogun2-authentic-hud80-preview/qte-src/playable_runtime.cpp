@@ -8,6 +8,7 @@
 #include "native_battle_clock.h"
 #include "qte_session.h"
 #include "qte_presentation93.h"
+#include "qte_presented113.h"
 #include "encounter_admission.h"
 #include "melee_commitment.h"
 #include "native_retarget.h"
@@ -558,7 +559,7 @@ struct Surface93 {
 };
 static Surface93 surface93;
 static overlay106::Publisher pixels106;
-struct Image106 {uint64_t number{};Snapshot prompt{};};static Image106 images106[32];
+static PresentedImages113 images113;
 static Snapshot drawn_prompt106;static double drawn_wall106;
 static volatile LONG unique_frames107,moving_frames107,repeated_frames107;
 static __declspec(align(8)) volatile LONG64 max_marker_hold_us107;
@@ -575,13 +576,11 @@ static void record_presented107(const Snapshot& shown,double submitted,bool clic
     }
     marker_serial107=shown.serial;marker_elapsed107=shown.response_elapsed;
 }
-static bool acknowledged_image106(const overlay106::Ack& ack,overlay106::Key key,uint64_t serial){
-    const auto& image=images106[ack.number%32];
-    if(!ack.number||image.number!=ack.number||!overlay106::same(ack.key,key)||image.prompt.serial!=serial||
-       !std::isfinite(ack.submitted)||ack.submitted<=0||ack.submitted>wall()+.001)return false;
-    drawn_prompt106=image.prompt;drawn_wall106=ack.submitted;return true;
+static bool acknowledged_image106(const overlay106::Ack& ack,overlay106::Key key,uint64_t serial,uint64_t battle){
+    Frame93 image;if(!images113.read(ack,key,battle,serial,wall(),image))return false;
+    drawn_prompt106=image.shown;drawn_wall106=image.submitted;return true;
 }
-static bool draw(const Snapshot& prompt,uint64_t lease){
+static bool draw(const Snapshot& prompt,uint64_t lease,uint64_t battle){
     game=gamewindow105::refresh(game,GetCurrentProcessId());
     if(InterlockedExchange(&display_reset105,0))surface93.clear();
     if(!prompt.active||!focused()||!IsWindow(game)||IsIconic(game)){pixels106.hide();ShowWindow(overlay,SW_HIDE);return false;}
@@ -598,8 +597,8 @@ static bool draw(const Snapshot& prompt,uint64_t lease){
         if(!stable||p.lease_generation!=lease){pixels106.hide();ShowWindow(overlay,SW_HIDE);return false;}
         overlay106::Frame f{};f.key={unsigned(lease),p.actor_id,p.unit_id};f.width=f.height=size;f.view_width=client.right;f.view_height=client.bottom;f.rect_count=1;
         f.active=prompt.result==Result::Pending?1:2;f.rect[0]={pos.x-corner.x,pos.y-corner.y,size,size};
-        auto number=pixels106.publish(f,surface93.pixels);if(number){images106[number%32]={number,prompt};overlay106::Ack ack;
-            if(pixels106.ack(ack)){ShowWindow(overlay,SW_HIDE);return acknowledged_image106(ack,f.key,prompt.serial);}
+        auto number=pixels106.publish(f,surface93.pixels);if(number){images113.remember(number,f.key,battle,prompt);overlay106::Ack ack;
+            if(pixels106.ack(ack)){ShowWindow(overlay,SW_HIDE);return acknowledged_image106(ack,f.key,prompt.serial,battle);}
         }
     }
     BLENDFUNCTION alpha={AC_SRC_OVER,0,255,AC_SRC_ALPHA};
@@ -642,7 +641,7 @@ static DWORD WINAPI render_worker(void*){
                    frozen.lease==data.lease&&frozen.anchor.battle==data.anchor.battle&&now>=frozen.published_wall&&now-frozen.published_wall<.12){shown=frozen.prompt;click_freeze105=true;}
             }
             render_stage=2;
-            if(!state->stop&&show&&draw(shown,data.lease)){
+            if(!state->stop&&show&&draw(shown,data.lease,data.anchor.battle)){
                 const double submitted=drawn_wall106;const auto& presented=drawn_prompt106;
                 record_presented107(presented,submitted,click_freeze105);
                 AcquireSRWLockExclusive(&frame_lock93);frame93={presented,data.anchor.battle,data.lease,submitted};ReleaseSRWLockExclusive(&frame_lock93);
@@ -728,6 +727,7 @@ static DWORD WINAPI worker(void*){void* targets[10]{};bool hooked=false;HANDLE r
         uint32_t recorded_phase=melee60::Off,logged_phase=melee60::Off;
         PreciseWait93 input_wait93;precise_input93=input_wait93.precise();double previous_poll93=wall();
         ServiceCadence94 cadence94;uint64_t input_polls94=0,service_runs94=0;
+        overlay106::Reader input_surface113;
         while(true){const double poll93=wall();LONG64 poll_us93=LONG64((poll93-previous_poll93)*1e6);previous_poll93=poll93;InterlockedExchange64(&last_input_us93,poll_us93);if(poll_us93>max_input_us93)InterlockedExchange64(&max_input_us93,poll_us93);state->heartbeat=GetTickCount64();
             ++input_polls94;
             bool focus=focused(),left=focus&&(GetAsyncKeyState(VK_LBUTTON)&0x8000),right=focus&&(GetAsyncKeyState(VK_RBUTTON)&0x8000);
@@ -752,12 +752,20 @@ static DWORD WINAPI worker(void*){void* targets[10]{};bool hooked=false;HANDLE r
             }
             transport::Payload data;Snapshot shown;bool show=transport::read(publication,data)&&transport::presentation(data,wall(),shown);
             const bool input_changed=left!=previous_left||right!=previous_right||focus!=previous_focus;
-            bool click_queued=false;double click_simulation=0;
+            bool click_queued=false;double click_simulation=0;Frame93 click_image113{};uint64_t click_number113=0;bool direct_ack113=false;double click_wall113=0;
             if(show&&(left!=previous_left||right!=previous_right)){Click click;Frame93 drawn;
+                click_wall113=wall();
                 AcquireSRWLockShared(&frame_lock93);drawn=frame93;ReleaseSRWLockShared(&frame_lock93);
-                if(frame_click93(data,drawn,wall(),left,right,focus,click)){
+                observation::PossessionPrefix current113{};overlay106::Ack ack113;
+                if(possession_snapshot93(current113)&&current113.ready&&!current113.stop&&!current113.release&&current113.mode==2&&current113.lease_generation==data.lease&&
+                   input_surface113.open(GetCurrentProcessId(),overlay106::QTE)&&input_surface113.ack(ack113)&&
+                   images113.newest(ack113,{unsigned(data.lease),current113.actor_id,current113.unit_id},data,click_wall113,drawn)){
+                    direct_ack113=true;click_number113=ack113.number;
+                }
+                click_image113=drawn;
+                if(frame_click93(data,drawn,click_wall113,left,right,focus,click)){
                     AcquireSRWLockExclusive(&click_lock);click_queued=queued.push(click);ReleaseSRWLockExclusive(&click_lock);click_simulation=click.simulation;
-                    if(click_queued){InterlockedIncrement(&click_frames93);InterlockedExchange64(&clicked_frame_age_us93,LONG64((wall()-drawn.submitted)*1e6));InterlockedExchange(&clicked_frame_inside93,in_success_zone(drawn.shown)?1:0);
+                    if(click_queued){InterlockedIncrement(&click_frames93);InterlockedExchange64(&clicked_frame_age_us93,LONG64((click_wall113-drawn.submitted)*1e6));InterlockedExchange(&clicked_frame_inside93,in_success_zone(drawn.shown)?1:0);
                         if(!click.paused&&((left&&!previous_left)||(right&&!previous_right))){auto freeze=data;freeze.prompt=drawn.shown;freeze.published_wall=wall();transport::publish(freeze_publication93,freeze);}
                     }
                 }else {InterlockedIncrement(&stale_frames93);if((left&&!previous_left)||(right&&!previous_right))InterlockedExchange(&stale_press93,1);}
@@ -770,7 +778,12 @@ static DWORD WINAPI worker(void*){void* targets[10]{};bool hooked=false;HANDLE r
                 <<",\"response_elapsed\":"<<(show?shown.response_elapsed:0)<<",\"response_seconds\":"<<(show?qte::response_deadline(shown):qte::ResponseWindowSeconds91)<<",\"response_remaining\":"<<(show?qte::response_remaining(shown):0)
                 <<",\"reticle\":"<<(show?reticle_position(shown):0)<<",\"zone_left\":"<<(show?zone_left(shown):0)<<",\"zone_width\":"<<(show?shown.zone_width:0)<<",\"placement\":"<<(show?shown.placement:0)
                 <<",\"ideal\":"<<(show?shown.ideal:0)<<",\"tolerance\":"<<(show?shown.tolerance:0)
-                <<",\"paused\":"<<(show&&shown.paused)<<",\"queued\":"<<click_queued<<",\"click_simulation\":"<<click_simulation<<"}\n";log_file.flush();}
+                <<",\"paused\":"<<(show&&shown.paused)<<",\"queued\":"<<click_queued<<",\"click_simulation\":"<<click_simulation;
+                if(click_queued)log_file<<",\"click_image113\":{\"native_ack\":"<<direct_ack113<<",\"number\":"<<click_number113
+                    <<",\"age_us\":"<<LONG64((click_wall113-click_image113.submitted)*1e6)<<",\"response_elapsed\":"<<click_image113.shown.response_elapsed
+                    <<",\"reticle\":"<<reticle_position(click_image113.shown)<<",\"zone_left\":"<<zone_left(click_image113.shown)<<",\"zone_width\":"<<click_image113.shown.zone_width
+                    <<",\"inside\":"<<in_success_zone(click_image113.shown)<<"}";
+                log_file<<"}\n";log_file.flush();}
             previous_left=left;previous_right=right;previous_focus=focus;
             transport::Payload completed;Snapshot feedback;const double now=wall();
             bool feedback_visible=!show&&transport::read(completion_publication,completed)&&

@@ -1,0 +1,56 @@
+{
+  "version": "0.19",
+  "candidate": 113,
+  "date": "2026-10-18",
+  "offline_passed": true,
+  "installed": false,
+  "loaded": false,
+  "live_accepted": false,
+  "published": false,
+  "package_created": false,
+  "components": {
+    "qte": {
+      "file": "qte-playable-v79.dll",
+      "bytes": 8447488,
+      "sha256": "1054a1b11cc2847518b7df2c603f32e7b3c8bb17637e3b2709ce4df404f8fde6"
+    },
+    "adapter": "Exact installed Test109 retained; no rebuild",
+    "hud": "Exact installed Test109 retained; no rebuild",
+    "loader": "No candidate loader built"
+  },
+  "checks": {
+    "full_final_qte_fixture_executables": 37,
+    "presented_input_assertions": 577,
+    "old_cache_wrong_judgements_reproduced": 36,
+    "corrected_presented_judgements": 36,
+    "concurrent_publications": 40000,
+    "actual_shared_channel_acknowledgement": true,
+    "dx_backend_metadata": [
+      9,
+      11
+    ],
+    "schedules_hz": [
+      30,
+      60,
+      75,
+      120,
+      144,
+      240
+    ]
+  },
+  "unchanged": {
+    "installed_Test109": true,
+    "frozen_local_v019_packages": true,
+    "recorder_capture112": true,
+    "watcher_restart_or_duplicate": false,
+    "settings_changed": false,
+    "raw_evidence_preserved": true
+  },
+  "limitations": [
+    "No physical scanout or end-to-end hardware latency measurement",
+    "Does not establish the historical physical frame at the reported click",
+    "No whole-game slowdown root cause or performance fix proved",
+    "No native battle crash fix",
+    "No new installer or live acceptance"
+  ]
+}
