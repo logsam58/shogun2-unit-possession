@@ -95,6 +95,10 @@ class TargetedTrace110 {
     }
 public:
     TargetedTrace110(HANDLE target,DWORD target_pid,const std::wstring&dir,bool synthetic):process(target),pid(target_pid),fixture(synthetic),folder(dir),log(dir+L"\\targeted110.jsonl",std::ios::app){
+        // Withdrawn after two real startup failures: a queued DR3 trap outlived
+        // its recorded binding. Keep research available only to toy fixtures.
+        disabled=!fixture;
+        if(disabled)event("hardware_trace_withdrawn","\"reason\":\"real startup single-step ownership regression; exception-only capture\"");
         event("targeted110_started","\"fixture\":"+std::string(fixture?"true":"false")+",\"no_game_code_or_data_writes\":true,\"scope\":\"effects destructor plus first audio wrapper/interface; four processor slots, not whole-process allocation tracing\"");
     }
     ~TargetedTrace110(){for(auto& pair:threads)if(pair.second.handle)CloseHandle(pair.second.handle);}
@@ -133,6 +137,7 @@ public:
 };
 
 inline bool TargetedTrace110::exception(DWORD tid,DWORD code){
+    if(!fixture)return false;
     if(code!=EXCEPTION_SINGLE_STEP)return false;
     auto p=threads.find(tid);if(p==threads.end()||!p->second.owned){event("single_step_thread_not_owned","\"thread\":"+std::to_string(tid)+",\"present\":"+(p!=threads.end()?"true":"false"));return false;}
     CONTEXT c{};c.ContextFlags=CONTEXT_FULL|CONTEXT_DEBUG_REGISTERS;
@@ -202,7 +207,7 @@ inline void TargetedTrace110::heartbeat(){
     unsigned armed=0;for(const auto& p:threads)if(p.second.owned)++armed;
     std::wstring path=folder+L"\\targeted110-health.json",temp=path+L".tmp";
     {std::ofstream f(temp);f<<"{\"version\":110,\"pid\":"<<pid<<",\"tick_ms\":"<<now
-       <<",\"state\":\""<<(finished?"finished":disabled?"budget_disabled":(destructor||audio_entry)?"armed":"waiting_for_supported_modules")
+       <<",\"state\":\""<<(finished?"finished":!fixture?"withdrawn":disabled?"budget_disabled":(destructor||audio_entry)?"armed":"waiting_for_supported_modules")
        <<"\",\"effects_destructor\":"<<address(destructor)<<",\"audio_scout\":"<<address(audio_entry)
        <<",\"audio_wrapper\":"<<address(audio_wrapper)<<",\"audio_interface\":"<<address(audio_object)
        <<",\"effects_word_watch\":"<<address(effects_word)<<",\"tracked_threads\":"<<threads.size()

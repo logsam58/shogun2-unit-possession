@@ -15,6 +15,9 @@ def sha(p):
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('--installed-root',type=Path,required=True);p.add_argument('--built-recorder',type=Path,required=True);p.add_argument('--evidence',type=Path,required=True);o=p.parse_args()
+    # Hardware tracing caused real startup failures despite synthetic passes.
+    # This deployment path may restore only the exact prior exception-only build.
+    assert sha(o.built_recorder)=='a2e987c99326acaa60b769228119ee9e48ea2fc20025853fd3e2f8370083e274', 'Diagnostics110 hardware deployment withdrawn after real startup failures; use the verified prior exception-only debugger.'
     root=o.installed_root.resolve();o.evidence.mkdir(parents=True,exist_ok=True)
     health=json.loads((root/'watcher-health.json').read_text())
     assert health['state']=='armed' and not health['active_sessions'] and time.time()-health['unix']<10

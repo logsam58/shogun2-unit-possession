@@ -1,5 +1,7 @@
 # Diagnostics110: session history and targeted lifetime tracing
 
+**Current status: hardware tracing withdrawn.** Two real launches ended with unhandled single-step traps from this diagnostic, despite the earlier synthetic passes. A verified capture-only debugger is installed; read-only history and existing capture remain. Source restricts hardware tracing to toy fixtures, and deployment rejects the withdrawn binary. Read [startup recovery](Diagnostics110-startup-recovery.md). The hardware design and original validation described below are historical, not the current installed coverage.
+
 This is a diagnostic-only update, separate from the pinned v0.19 player package and accepted Test109 gameplay. It adds no game DLL, patch, order or audio hook. The existing automatic watcher starts the updated session and its single external debugger on the next normal game launch. Recording does not wait for READY, battle or possession.
 
 ## Captured history

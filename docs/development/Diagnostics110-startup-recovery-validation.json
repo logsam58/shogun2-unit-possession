@@ -1,0 +1,27 @@
+{
+  "diagnostics_revision": 110,
+  "status": "capture_only_after_hardware_withdrawal",
+  "diagnostic_startup_failures": 2,
+  "first_fault": "0x80000004 AUDIOSES.DLL+0x61268; diagnostic DR3 ownership disagreement",
+  "withdrawn_debugger_sha256": "8a02b3af8db7f911202782b9195b72fd537870cfa40af03240d7c654128d3779",
+  "temporary_prior_debugger_sha256": "a2e987c99326acaa60b769228119ee9e48ea2fc20025853fd3e2f8370083e274",
+  "temporary_prior_detach_check": "FAILED Windows error5; preserved",
+  "installed_capture_only_debugger_sha256": "4b92e66f588ebe739fbb99f0d7aa9f75136255427d8a2af6bfafa75cea682193",
+  "fresh_checks": {
+    "normal_full_session": "PASS",
+    "handled_exception_full_session": "PASS",
+    "unhandled_crash_full_session": "PASS",
+    "safe_detach": "PASS",
+    "real_mode_hardware_disabled_native_fixture": "PASS; all targets/armed threads/traps zero",
+    "withdrawn_deployment_rejected_before_mutation": "PASS"
+  },
+  "hardware_tracing_for_real_game": false,
+  "read_only_lifecycle_retained": true,
+  "original_input_cpu_memory_gpu_vram_capture_retained": true,
+  "watcher_restarted": false,
+  "game_launched_or_terminated": false,
+  "gameplay_or_settings_changed": false,
+  "real_startup_recovery_accepted": false,
+  "native_battle_crash_fix_claimed": false,
+  "limits": "Real startup must be confirmed by a fresh user launch. No writer/destructor hardware history in capture-only mode; selected-unit sampling is not a complete allocation or AI-decision trace."
+}

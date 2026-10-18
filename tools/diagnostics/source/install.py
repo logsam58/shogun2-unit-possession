@@ -2,6 +2,8 @@
 import hashlib,json,os,shutil,subprocess,sys,time,winreg
 from pathlib import Path
 root=Path(__file__).resolve().parent
+if hashlib.sha256((root/'native'/'crash-recorder.exe').read_bytes()).hexdigest()=='8a02b3af8db7f911202782b9195b72fd537870cfa40af03240d7c654128d3779':
+    raise RuntimeError('Withdrawn Diagnostics110 debugger caused startup single-step crashes; rebuild with real-game hardware tracing disabled or restore the verified prior debugger.')
 install=Path(r'C:\Users\logsa\Documents\Codex\Shogun2Diagnostics')
 if install.exists() and not (install/'installation.json').exists():raise RuntimeError('Refusing to overwrite an unrelated installation directory')
 install.mkdir(parents=True,exist_ok=True)
