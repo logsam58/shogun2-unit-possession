@@ -5,7 +5,7 @@ root=Path(__file__).resolve().parent
 install=Path(r'C:\Users\logsa\Documents\Codex\Shogun2Diagnostics')
 if install.exists() and not (install/'installation.json').exists():raise RuntimeError('Refusing to overwrite an unrelated installation directory')
 install.mkdir(parents=True,exist_ok=True)
-for name in ('process_probe.py','process_memory.py','native_input.py','inspect_minidump.py','sensors.py','events.ps1','session.py','watcher.py','control.py','config.json','baseline.json'):
+for name in ('process_probe.py','process_memory.py','native_input.py','inspect_minidump.py','sensors.py','events.ps1','session.py','lifecycle110.py','watcher.py','control.py','config.json','baseline.json'):
     shutil.copy2(root/name,install/name)
 (install/'native').mkdir(exist_ok=True);shutil.copy2(root/'native'/'crash-recorder.exe',install/'native'/'crash-recorder.exe')
 # Private standard-library runtime survives updates/removal of the Codex dependency cache.

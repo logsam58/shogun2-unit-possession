@@ -8,6 +8,8 @@ The watcher detects game launches and starts core capture immediately, independe
 
 The x86 external debugger preserves normal native exception handling apart from the attach break and exact legacy thread-naming case. Severe first-chance faults and unhandled exceptions can produce full dumps. A recovered first-chance event must not be labeled a final crash. The debugger can detach without terminating the game.
 
+Diagnostics110 adds a bounded lifecycle sampler from launch, native phase/selected-unit/actor/command/effects history, and targeted processor breakpoints for an effects destructor and one verified DirectSound wrapper/interface. Owned hardware traps are handled by the existing debugger; unrelated exceptions retain normal handling. No game instructions or data are patched. Coverage, thread/trace budgets and exact module rejection are explicit. See [Diagnostics110](../../docs/development/Diagnostics110.md) for limits, synthetic tests, deployment and live readiness. It is separate from the pinned v0.19 player release and does not claim a crash fix.
+
 ## Setup limitations
 
 A portable diagnostics installer is not supplied. Source includes deployment helpers with machine-specific path assumptions that must be reviewed/configured before use on another computer. Supply a local Python runtime, build the x86 debugger and configure output paths/baseline component hashes separately. Runtime/config/baseline files are not tracked. Do not run source/install.py unchanged as a general-purpose installer.

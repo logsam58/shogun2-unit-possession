@@ -3,6 +3,8 @@ import ctypes as C
 from ctypes import wintypes as W
 import argparse,csv,hashlib,json,os,shutil,subprocess,sys,threading,time,traceback
 from pathlib import Path
+ROOT=Path(__file__).resolve().parent
+sys.path.insert(0,str(ROOT))
 from process_probe import Process,processes,modules,k,PROCESSENTRY32W
 from process_memory import sample as memory_sample,Region
 from sensors import Sensors
@@ -161,7 +163,7 @@ def session(pid,folder,fixture=False):
     folder=Path(folder);folder.mkdir(parents=True,exist_ok=True);start=time.time();done=threading.Event();lock=threading.Lock();events=(folder/'session-events.jsonl').open('a',buffering=1)
     def emit(event,**items):
         with lock:events.write(json.dumps({'event':event,**stamp(),**items})+'\n')
-    native=None;native_out=None;debug=None;debug_out=(folder/'debugger.log').open('a');gpu=None;sensors=None;process=None
+    lifecycle=None;native=None;native_out=None;debug=None;debug_out=(folder/'debugger.log').open('a');gpu=None;sensors=None;process=None
     status={'pid':pid,'started_unix':start,'fixture':fixture,'folder':str(folder),'debugger_attached':False,'native_input_active':False}
     try:
         # Attach before hardware discovery or battle/mod checks. No pause/READY gate.
@@ -172,6 +174,10 @@ def session(pid,folder,fixture=False):
         try:sensors=Sensors()
         except Exception as e:emit('pdh_unavailable',error=str(e))
         baseline=json.loads((ROOT/'baseline.json').read_text());
+        try:
+            from lifecycle110 import Lifecycle
+            lifecycle=Lifecycle(process,pid,folder,emit,modules)
+        except Exception as e:emit('lifecycle110_start_error',error=str(e))
         if not fixture:
             try:game_files(folder,baseline)
             except Exception as e:emit('game_config_error',error=str(e))
@@ -181,8 +187,11 @@ def session(pid,folder,fixture=False):
                 live,exit_code=alive(process.handle);now=time.monotonic()
                 if not live:emit('game_exited',exit_code=exit_code);status['exit_code']=exit_code;break
                 if (folder/'session.stop').exists() or (ROOT/'watcher.stop').exists():emit('stop_requested');break
+                if lifecycle:
+                    try:lifecycle.poll(now)
+                    except Exception as e:emit('lifecycle110_poll_error',error=str(e));lifecycle.close();lifecycle=None
                 foreground=W.DWORD();u.GetWindowThreadProcessId(u.GetForegroundWindow(),C.byref(foreground));focused=foreground.value==pid
-                controls={name:bool(u.GetAsyncKeyState(key)&0x8000) if focused else False for name,key in [('left',1),('right',2),('w',0x57),('a',0x41),('s',0x53),('d',0x44),('escape',0x1b),('space',0x20),('insert',0x2d),('f9',0x78),('f10',0x79),('f12',0x7b),('tab',9),('ctrl',0x11),('weapon1',0x31),('weapon2',0x32)]}
+                controls={name:bool(u.GetAsyncKeyState(key)&0x8000) if focused else False for name,key in [('left',1),('right',2),('w',0x57),('a',0x41),('s',0x53),('d',0x44),('escape',0x1b),('space',0x20),('insert',0x2d),('f9',0x78),('f10',0x79),('f12',0x7b),('tab',9),('ctrl',0x11),('shift',0x10),('q',0x51),('e',0x45),('z',0x5a),('c',0x43),('r',0x52),('f',0x46),('weapon1',0x31),('weapon2',0x32)]}
                 state={'focused':focused,**controls}
                 if state!=last_input:inputs.write(json.dumps({'event':'input_state',**stamp(),**state})+'\n');last_input=state
                 if now>=next_resource:
@@ -257,6 +266,7 @@ def session(pid,folder,fixture=False):
             try:debug.wait(timeout=90)
             except subprocess.TimeoutExpired:emit('debugger_still_finishing',pid=debug.pid) # Do not kill it mid-dump.
         if gpu:gpu.join(timeout=3)
+        if lifecycle:lifecycle.close()
         if sensors:sensors.close()
         if process:process.close()
         if native_out:native_out.close()

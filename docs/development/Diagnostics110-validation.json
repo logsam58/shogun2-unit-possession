@@ -1,0 +1,118 @@
+{
+  "date": "2026-10-18",
+  "diagnostics_version": 110,
+  "passed": true,
+  "installed": true,
+  "user_game_launched": false,
+  "live_accepted": false,
+  "accepted_mod_and_gameplay_changed": false,
+  "frozen_player_release_commit": "5d15f5620d4f5811dcce98086a8f586a2a941568",
+  "installed_gameplay": "Test109, cache65a081b4b316b2cf",
+  "fresh_checks": {
+    "read_model_protocol_bound_history_tests": 11,
+    "actual_x86_hardware_cases": 106,
+    "full_core_session_cases": 4,
+    "synthetic_dump_format_cases": 7,
+    "preserved_real_dump_decoder_checks": 2,
+    "actual_persistent_watcher_synthetic_start": 1,
+    "audio_inventory_and_PowerShell_parse": true
+  },
+  "failure_evidence_retained": [
+    "Initial concurrent hardware traps exposed invalid context handles. Original debug-event process/thread handles were closed early despite Windows-owned exit cleanup.",
+    "Corrected ownership; final106-case suite passes, including100 repeated cross-thread writes. Earlier failed fixtures remain private; this is a recorder correction, not an attributed game-crash fix."
+  ],
+  "source_inputs": [
+    {
+      "file": "tools/diagnostics/source/lifecycle110.py",
+      "bytes": 17267,
+      "sha256": "31536d7ebb3da454e7084ed9adc72573166ae2bd5fc3962055de0974ff08b82e"
+    },
+    {
+      "file": "tools/diagnostics/source/session.py",
+      "bytes": 22906,
+      "sha256": "a65c24b2e4fb5934ded061612a5c94e8bc230eb8d9130b8da0a547c93c726b2a"
+    },
+    {
+      "file": "tools/diagnostics/source/events.ps1",
+      "bytes": 1892,
+      "sha256": "3562a27b71819052dfee0a0919e4b0b3307e17b11ce073bcc37a61edbf4d4e67"
+    },
+    {
+      "file": "tools/diagnostics/source/deploy110.py",
+      "bytes": 3629,
+      "sha256": "7d5c262013c617c30df8ecf57aacaba1fb4d6af66f4f3f43dae899c2036fe958"
+    },
+    {
+      "file": "tools/diagnostics/source/install.py",
+      "bytes": 3138,
+      "sha256": "92df483636aa47e8895827d71c6fee57989b75a2c03373894387bbf9954e7f06"
+    },
+    {
+      "file": "tools/diagnostics/source/verify.py",
+      "bytes": 3216,
+      "sha256": "359d4777bd4ea5e4c9071d55e83fd009fdff157970242dcf319697b050aaafe5"
+    },
+    {
+      "file": "tools/diagnostics/source/verify_lifecycle110.py",
+      "bytes": 4920,
+      "sha256": "ae16e8a422e7184741bdc61bc36d076c0bef1920397c0d3f8bf94d9ac52ca80d"
+    },
+    {
+      "file": "tools/diagnostics/source/verify_targeted110.py",
+      "bytes": 4171,
+      "sha256": "8f6465702adb6d485206c4abacba1f15ec6b47fcf45a638c648155ec6ab648e7"
+    },
+    {
+      "file": "tools/diagnostics/source/native/crash_recorder.cpp",
+      "bytes": 10465,
+      "sha256": "05d4fa9a7fcd335b851bd0250e3c747bde0f5039c611d49ea1deaa68610ee4fc"
+    },
+    {
+      "file": "tools/diagnostics/source/native/targeted_trace110.h",
+      "bytes": 17020,
+      "sha256": "dde8ced8764016a19f989dda8e51fbce7e5c793d666ffb241d3847d07541b7eb"
+    },
+    {
+      "file": "tools/diagnostics/source/native/trace_fixture110.cpp",
+      "bytes": 2709,
+      "sha256": "b52cd1ecc88389fc25151b8323fdc84b1b716924b39036733e14afb44afbde95"
+    },
+    {
+      "file": "tools/diagnostics/source/native/identity.h",
+      "bytes": 4109,
+      "sha256": "5ceb7b14c711ae732612e6294d2d0b87d1d8f71c6630a04a3f695845afd4af29"
+    }
+  ],
+  "recorder_binary": {
+    "file": "artifacts/diagnostics-lifetime110/build/crash-recorder.exe",
+    "bytes": 325632,
+    "sha256": "8a02b3af8db7f911202782b9195b72fd537870cfa40af03240d7c654128d3779"
+  },
+  "no_game_code_patches_or_data_writes": true,
+  "debugger_uses_own_hardware_registers_and_RF": true,
+  "core_exception_forwarding_preserved": true,
+  "single_existing_watcher_retained": true,
+  "baseline_config_autorun_unchanged": true,
+  "research": "docs/development/Diagnostics110.md",
+  "known_limits": [
+    "Four processor slots: effects-destructor scout, first audio-wrapper/interface and one retired-owner word; not all allocations or audio interfaces.",
+    "Miles negative-count producer not continuously instrumented.",
+    "Selected-unit/followed-soldier coverage, not all AI intent or a fully decoded order queue.",
+    "Native phase IDs await live menu/deployment/post-battle correlation.",
+    "Hardware-hit/handler-work/trace-size limits can explicitly reduce coverage; real performance remains unmeasured.",
+    "No continuous instruction trace or physical input/scanout measurement; no crash-fix claim."
+  ],
+  "budgets": {
+    "lifecycle_interval_ms": 200,
+    "effects_entry_bound": 256,
+    "selected_unit_bound": 64,
+    "history_ring_samples": 600,
+    "pretrigger_files_max": 16,
+    "pretrigger_spacing_ms": 30000,
+    "dense_trace_MiB": 128,
+    "targeted_trace_MiB": 32,
+    "hardware_hits_per_second": 400,
+    "handler_work_us_per_second": 25000
+  },
+  "deployment_does_not_restart_watcher_or_install_game": true
+}

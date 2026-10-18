@@ -49,3 +49,5 @@ Test107 timing correction is in QTE `qte_session.h` publication and paused-time 
 
 
 Test108 presentation helpers are `hud_layout108.h` and `qte_meter108.h` in the shared possession-cleanup-v46/src directory. Test109 personal projectile tagging/passive contact observation is in adapter `friendly_fire109.h`, with the optional numeric `friendly_fire_protocol109.h` in that shared directory. HUD `audio_feedback109.h` consumes notifications and plays the private cropped resource. `tools/prepare_audio109.py` and `tools/audio109.json` define the repeatable local audio input; no game voice bytes are tracked.
+
+Diagnostics110 session history is in tools/diagnostics/source/lifecycle110.py; processor-trap ownership, exact module gates and lifetime/write evidence are in native/targeted_trace110.h within that diagnostic source tree. verify_lifecycle110.py and verify_targeted110.py cover read bounds, actual x86 traps, thread creation, exception forwarding, detach and budgets. See docs/development/Diagnostics110.md; this follow-up is separate from the pinned v0.19 player package.

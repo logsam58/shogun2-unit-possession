@@ -16,6 +16,10 @@ for mode in ('normal','handled','crash'):
     unhandled=summary['unhandled_exceptions'];first=summary['first_chance_exceptions']
     assert worker.returncode==0 and attached,(mode,worker.returncode,rows)
     assert (folder/'resources.jsonl').stat().st_size>0
+    lifecycle=[json.loads(x) for x in (folder/'lifecycle110.jsonl').read_text().splitlines()]
+    assert lifecycle[0]['event']=='lifecycle110_started' and lifecycle[0]['starts_before_mod_or_battle']
+    assert lifecycle[-1]['event']=='lifecycle110_finished'
+    assert json.loads((folder/'lifecycle110-health.json').read_text())['state']=='finished'
     if mode=='crash':
         assert len(unhandled)==1 and unhandled[0]['code']=='0xc0000005',summary
         assert unhandled[0]['access']=='write' and unhandled[0]['fault_address']=='0x42',unhandled
