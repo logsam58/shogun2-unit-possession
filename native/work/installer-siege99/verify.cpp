@@ -101,8 +101,10 @@ int wmain(){try{
     require(!ammo83_loader.empty()&&!ammo83_pack.empty(),"Test83 upgrade fixture missing");
     for(int interruption=0;interruption<4;++interruption){atomic_bytes(dll,ammo83_loader);atomic_bytes(pack,ammo83_pack);
         auto saved_selection=read_bytes(selection),saved_cache=read_bytes(cache);validate_game(game);
-        failed=false;try{install_all(game,data,{},interruption);}catch(...){failed=true;}
-        require(failed&&read_bytes(dll)==ammo83_loader&&read_bytes(pack)==ammo83_pack&&read_bytes(selection)==saved_selection&&read_bytes(cache)==saved_cache,"Interrupted Test83 upgrade failed rollback");}
+        failed=false;std::string failure83;try{install_all(game,data,{},interruption);}catch(const std::exception& e){failed=true;failure83=e.what();}
+        bool restored83=failed&&read_bytes(dll)==ammo83_loader&&read_bytes(pack)==ammo83_pack&&read_bytes(selection)==saved_selection&&read_bytes(cache)==saved_cache;
+        if(!restored83)std::cerr<<"Test83 stage="<<interruption<<" failed="<<failed<<" error="<<failure83<<" loader="<<(read_bytes(dll)==ammo83_loader)<<" pack="<<(read_bytes(pack)==ammo83_pack)<<" selection="<<(read_bytes(selection)==saved_selection)<<" cache="<<(read_bytes(cache)==saved_cache)<<"\n";
+        require(restored83,"Interrupted Test83 upgrade failed rollback");}
     install_all(game,data);require(hash_file(dll)==SETUP_BOOTSTRAP_SHA&&hash_file(pack)==EMBEDDED_PACK_SHA,"Test83 to Test84 upgrade failed");
 
     auto input84_loader=read_bytes(wizard_folder+L"\\..\\autoload84-preview\\dinput8.dll"),input84_pack=read_bytes(wizard_folder+L"\\..\\autoload84-preview\\marker.pack");
@@ -442,6 +444,35 @@ int wmain(){try{
     install_all(game,data,{},-1,local);
     require(read_bytes(dll+L".possession-previous")==previous106_loader&&read_bytes(pack+L".possession-previous")==previous106_pack,"Repeat install rotated Test106 backup");
     std::cout<<"PASS: exact Test106 predecessor upgrade, seven interruption rollbacks and repeat-install backup retention.\n";
+    auto previous107_loader=read_bytes(L"../autoload-test107-baseline/dinput8.dll"),previous107_pack=read_bytes(L"../autoload-test107-baseline/marker.pack");
+    require(!previous107_loader.empty()&&!previous107_pack.empty(),"Test107 predecessor fixtures missing");
+    for(int interruption=0;interruption<7;++interruption){
+        {flashstartup86::Key key;require(RegOpenKeyExW(flashstartup86::hive,flashstartup86::key_path.c_str(),0,KEY_SET_VALUE|KEY_WOW64_32KEY,&key.value)==ERROR_SUCCESS,"Test107 fixture flag reset");DWORD zero=0;
+         for(auto name:flashstartup86::names)require(RegSetValueExW(key.value,name,0,REG_DWORD,reinterpret_cast<BYTE*>(&zero),4)==ERROR_SUCCESS,"Test107 fixture flag write");}
+        atomic_bytes(dll,previous107_loader);atomic_bytes(pack,previous107_pack);auto saved_selection=read_bytes(selection),saved_cache=read_bytes(cache);
+        failed=false;try{install_all(game,data,{},interruption,local);}catch(...){failed=true;}
+        require(failed&&read_bytes(dll)==previous107_loader&&read_bytes(pack)==previous107_pack&&read_bytes(selection)==saved_selection&&read_bytes(cache)==saved_cache,"Test107 interruption failed rollback");
+    }
+    install_all(game,data,{},-1,local);require(hash_file(dll)==SETUP_BOOTSTRAP_SHA&&hash_file(pack)==EMBEDDED_PACK_SHA,"Test107 predecessor upgrade failed");
+    require(read_bytes(dll+L".possession-previous")==previous107_loader&&read_bytes(pack+L".possession-previous")==previous107_pack,"Test107 rollback backup differs");
+    install_all(game,data,{},-1,local);
+    require(read_bytes(dll+L".possession-previous")==previous107_loader&&read_bytes(pack+L".possession-previous")==previous107_pack,"Repeat install rotated Test107 backup");
+    std::cout<<"PASS: exact Test107 predecessor upgrade, seven interruption rollbacks and repeat-install backup retention.\n";
+
+    auto published017_loader=read_bytes(L"../autoload-v017-baseline/dinput8.dll"),published017_pack=read_bytes(L"../autoload-v017-baseline/marker.pack");
+    require(!published017_loader.empty()&&!published017_pack.empty(),"published v0.17 predecessor fixtures missing");
+    for(int interruption=0;interruption<7;++interruption){
+        {flashstartup86::Key key;require(RegOpenKeyExW(flashstartup86::hive,flashstartup86::key_path.c_str(),0,KEY_SET_VALUE|KEY_WOW64_32KEY,&key.value)==ERROR_SUCCESS,"published v0.17 fixture flag reset");DWORD zero=0;
+         for(auto name:flashstartup86::names)require(RegSetValueExW(key.value,name,0,REG_DWORD,reinterpret_cast<BYTE*>(&zero),4)==ERROR_SUCCESS,"published v0.17 fixture flag write");}
+        atomic_bytes(dll,published017_loader);atomic_bytes(pack,published017_pack);auto saved_selection=read_bytes(selection),saved_cache=read_bytes(cache);
+        failed=false;try{install_all(game,data,{},interruption,local);}catch(...){failed=true;}
+        require(failed&&read_bytes(dll)==published017_loader&&read_bytes(pack)==published017_pack&&read_bytes(selection)==saved_selection&&read_bytes(cache)==saved_cache,"published v0.17 interruption failed rollback");
+    }
+    install_all(game,data,{},-1,local);require(hash_file(dll)==SETUP_BOOTSTRAP_SHA&&hash_file(pack)==EMBEDDED_PACK_SHA,"published v0.17 predecessor upgrade failed");
+    require(read_bytes(dll+L".possession-previous")==published017_loader&&read_bytes(pack+L".possession-previous")==published017_pack,"published v0.17 rollback backup differs");
+    install_all(game,data,{},-1,local);
+    require(read_bytes(dll+L".possession-previous")==published017_loader&&read_bytes(pack+L".possession-previous")==published017_pack,"Repeat install rotated published v0.17 backup");
+    std::cout<<"PASS: exact published v0.17 predecessor upgrade, seven interruption rollbacks and repeat-install backup retention.\n";
 
     failed=false;try{launcher_selection("{\"unknown\":true}",game);}catch(...){failed=true;}require(failed,"Unknown cache accepted");
     std::string result="PASS: embedded payload hashes, transaction rollback, install/update/idempotency, actual checkpoint45 upgrade and interrupted-upgrade rollback, launcher activation and unrelated-entry preservation, DLL collision refusal, UTF8/UTF16 selection preservation, unknown-cache refusal. Fixture: "+utf8(root)+"\n";

@@ -4,9 +4,9 @@
 
 The battle continues around you. The game still runs the armies, formations, pathfinding, morale, fatigue, ammunition, projectile physics, casualties and victory conditions. Your other soldiers keep their own AI and can keep fighting and firing while you control one member of the unit.
 
-**[Download v0.17](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.17)** | [Known issues](docs/KNOWN_ISSUES.md) | [Build instructions](BUILD_AND_TEST.md) | [Contributing](CONTRIBUTING.md)
+**[Download v0.18](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.18)** | [Known issues](docs/KNOWN_ISSUES.md) | [Build instructions](BUILD_AND_TEST.md) | [Contributing](CONTRIBUTING.md)
 
-**v0.17** adds Q/E/Z/C/R unit commands, native move/attack and formation dragging, pace-matched following with catch-up, improved first-person model presentation, knockdown/get-up movement locking, native roster handling and horizontal/vertical animation head-look. See the [unit controls](#unit-orders-and-independent-ai) and [v0.17 release notes](docs/releases/v0.17.md).
+**v0.18** adds native fullscreen HUD/QTE presentation, smoother QTE marker timing and an infantry firing-animation correction. It keeps Q/E/Z/C/R unit commands, native move/attack and formation dragging, pace-matched following, first-person model improvements, recovery locking and combat head-look. See the [unit controls](#unit-orders-and-independent-ai) and [v0.18 release notes](docs/releases/v0.18.md).
 
 ## What the mod does
 

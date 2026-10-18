@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.18 - 18 October 2026
+
+Promotes the accepted Test107 gameplay with the full v0.17 possession and unit-control feature set.
+
+- Existing HUD, QTE and death artwork now has native DirectX9/11 presentation, retaining the Windows fallback and 1080p layouts. HUD visibility was accepted in1920×1080 fullscreen DirectX11 play.
+- Current proven simulation-clock anchors keep the QTE marker moving between combat callbacks. Pause, native authority, response deadlines and submitted-image click judgement are preserved.
+- A shared owned-infantry animation reset correction and consistent current aim identity address reproduced personal firing lifecycle failures while retaining independent unit firing.
+- Exact accepted gameplay binaries/source are retained. Fresh release loader/installer checks include exact Test107 and published-v0.17 upgrades, interruption rollback and repeat-install backup retention.
+
+The user reported Test107 "worked great" after verified loaded hashes and actual recording. Full roster/device/death-overlay coverage, hardware latency and the effects crash remain open. [Release notes](docs/releases/v0.18.md) and [validation](docs/releases/v0.18-validation.json).
+
 ## v0.17 - 17 October 2026
 
 Promotes the accepted Test104 gameplay into a versioned release package.

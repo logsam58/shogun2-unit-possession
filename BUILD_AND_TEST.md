@@ -65,11 +65,11 @@ Test103 additionally requires exact installed-Test102 loader/marker fixtures in 
 
 Test104 additionally requires exact installed-Test103 loader/marker fixtures in ignored `native/work/autoload-test103-baseline/`. The final installer suite exercises that exact upgrade, seven interrupted rollback stages and repeat-install retention.
 
-## v0.17 release metadata
+## Historical v0.17 release metadata
 
-For the unpublished Test105 audit, build with `--candidate 105`. After pinning its full source and validation receipt, package with `py tools/package_release.py --development-package --candidate 105`. This reads `docs/development/Test105-validation.json` and writes its own `artifacts/releases/v0.17-Test105/` folder; it does not rewrite the published v0.17 validation receipt or downloads.
+For the historical Test105 audit, build with `--candidate 105`. After pinning its full source and validation receipt, package with `py tools/package_release.py --development-package --candidate 105`. This reads `docs/development/Test105-validation.json` and writes its own `artifacts/releases/v0.17-Test105/` folder; it does not rewrite the published v0.17 validation receipt or downloads.
 
-Retain the exact accepted Test104 adapter, HUD and QTE when preparing this release. Run `py tools/build.py loader --release --tests`, then `py tools/build.py installer --release --tests`. The release flag removes the development label while retaining implementation revision104; it is mutually exclusive with `--candidate`. Neither command installs, launches or publishes.
+The historical v0.17 promotion retained the exact accepted Test104 adapter, HUD and QTE. Run `py tools/build.py loader --release --tests`, then `py tools/build.py installer --release --tests`. At that commit, the release flag removed the development label while retaining implementation revision104; it is mutually exclusive with `--candidate`. Neither command installs, launches or publishes.
 
 Installer regression additionally needs the exact accepted Test104 loader/marker in ignored `native/work/autoload-test104-baseline/`. Those fixtures exercise the actual upgrade, all seven interrupted rollbacks and repeat-install backup retention. After reviewing/committing source, run `py tools/package_release.py` to produce `artifacts/releases/v0.17/`. For publication, add the exact committed source ZIP and `SOURCE_SHA256SUMS.txt` to the pinned upload manifest; the publisher verifies every archive member against HEAD before uploading. The version/marker/PE and embedded payload hashes are checked; current target validation is read-only.
 
@@ -82,3 +82,11 @@ Build with `--candidate 106` and use `docs/development/Test106-validation.json` 
 ## Test107 QTE timing development
 
 Retain the exact verified Test106 adapter/HUD binaries and source inputs. Build/test QTE, then loader and installer with `--candidate 107`; run the complete changed QTE suite. The final installer additionally requires exact Test106 predecessor loader/marker fixtures in ignored `native/work/autoload-test106-baseline/`. Pin a development receipt that separates fresh QTE/loader/installer checks from retained Test106 adapter/HUD evidence. Package with `py tools/package_release.py --development-package --candidate 107`; published v0.17 assets/receipt are not replaced. The running game remains untouched until closed-game installation.
+
+## v0.18 release metadata
+
+Retain the exact accepted Test107 adapter, HUD and QTE, and their gameplay source inputs. Run `py tools/build.py loader --release --tests`, then `py tools/build.py installer --release --tests`. The release flag removes the development label and retains implementation revision107. The default development candidate is also107; use an explicit later `--candidate` for new work. These commands never install, launch or publish.
+
+The complete installer suite additionally requires exact Test107 loader/marker fixtures in ignored `native/work/autoload-test107-baseline/` and the published v0.17 loader/marker in `native/work/autoload-v017-baseline/`. Extract old setup resources201/202 as data only; do not execute an old installer. The suite verifies both exact upgrades, seven interrupted stages each and repeat-install retention. Keep the historical fixture closure as well. A failed fixture remains recorded; diagnose and rerun the full final payload before pinning a passing receipt.
+
+After review/audit and a clean commit, `py tools/package_release.py` produces `artifacts/releases/v0.18/`. Add a source ZIP whose every member matches the committed Git blob, its `SOURCE_SHA256SUMS.txt`, and both records to the six-file upload manifest. Explicitly requested publication uses the annotated v0.18 tag on that reviewed commit and downloads/hashes every uploaded asset before making it public to repository readers. Existing release assets and repository visibility remain unchanged.

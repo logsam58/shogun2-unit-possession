@@ -4,9 +4,9 @@
 
 | Suite | Coverage |
 | --- | --- |
-| Adapter: 56 executables (development) | Native forwarding, strict identity/lifetime, movement, camera return, weapons/accuracy, equipment, siege path/speed/crest/landing and cleanup |
-| Styled QTE: 32 executables | Combat preparation, clocks/cycles, input/deadlines, interruption feedback, registry churn, pacing and actual reusable styled surface |
-| HUD: 2 executables | Consistent contextual state, visibility and presentation policy |
+| Adapter: 60 executables (retained for v0.18) | Native forwarding, strict identity/lifetime, movement, camera return, weapons/accuracy, equipment, siege path/speed/crest/landing and cleanup |
+| Styled QTE: 36 executables (retained for v0.18) | Combat preparation, clocks/cycles, input/deadlines, interruption feedback, registry churn, pacing and actual reusable styled surface |
+| HUD: 3 executables (retained for v0.18) | Consistent contextual state, visibility and presentation policy |
 | Loader: 2 executables | Bootstrap, embedded payload integrity and integration |
 | Installer fixture | Supported predecessor upgrades, seven interruption stages, rollback, reinstall, collisions, cache retention and isolated HKCU handling |
 | Dump reader: 7 Python cases | Embedded, MemoryList and Memory64 stack layouts, exception-context preference and explicit missing-stack handling |
@@ -49,3 +49,9 @@ Unpublished Test106 adds actual private DirectX9/11 device and backbuffer tests 
 
 
 Test107 adds a production Session/publication regression with staggered native combat callbacks and frequent clock polls. It reproduces a74.8768% repeated-marker case before correction; the corrected27 phase/speed/refresh cases have no repeated/held samples. Pause/native-callback/input-level and precise expiry checks preserve authority. A separate cadence fixture distinguishes CPU acknowledgement polling from distinct submitted images. See `docs/development/Test107-validation.json` for fresh QTE/loader/installer checks and separately retained byte-identical Test106 adapter/HUD evidence. These are software/fixture measurements, not physical scanout or live acceptance.
+
+## v0.18 acceptance and release checks
+
+[v0.18 validation](docs/releases/v0.18-validation.json) promotes byte-identical Test107 gameplay after the user reported "worked great" in a session with verified loaded hashes, native1920×1080 fullscreen DirectX11 presentation and actual automatic debugger/input/native-memory/resources/GPU/VRAM capture. Retained gameplay evidence comprises the60 adapter and3 HUD executables from Test106 and36 QTE executables from Test107; these are not fresh promotion runs. New release checks cover both loader executables and the full final-payload installer, including exact Test107/published-v0.17 upgrades, all seven interrupted rollback stages for each and repeated installation. The receipt records any failed attempt and subsequent investigation separately.
+
+Release metadata, PE version, five embedded payloads, complete native/tool source closure, package checksums and source archive Git blobs are verified independently. The release-specific loader/cache is separate from the installed accepted Test107. Acceptance covers the tested behavior; death-overlay/all-driver coverage, physical scanout/input latency, complete roster/map lifecycles and the unresolved effects crash remain outside that claim.
