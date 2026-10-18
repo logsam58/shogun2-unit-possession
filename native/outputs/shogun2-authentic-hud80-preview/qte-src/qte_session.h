@@ -36,13 +36,16 @@ class Session {
             if(!std::isfinite(click.simulation)||click.simulation<processed_-(click.visible93?.025:1e-8)||click.simulation>point.horizon+1e-8){
                 bridge_.release(CancelReason92::ClickTimestamp);++errors_;continue;
             }
-            bridge_.input_sample(std::max(0.,click.simulation-processed_),click.serial,
+            bridge_.input_sample(click.paused?0.:std::max(0.,click.simulation-processed_),click.serial,
                                  click.left,click.right,click.paused,click.focused,click.visible93?&click.shown93:nullptr);
-            processed_=std::max(processed_,click.simulation);
+            if(!click.paused)processed_=std::max(processed_,click.simulation);
         }
         // Clicks use the facts governing their displayed window BEFORE native
         // facts refresh at this later callback. Paused intervals charge no dt.
-        double now=std::max(processed_,point.simulation);
+        // Keep pre-pause observed time pending until an unpaused native frame
+        // can consume it. Charging processed_ while Event is paused silently
+        // discards that interval and makes the projected marker snap backward.
+        double now=point.paused?processed_:std::max(processed_,point.simulation);
         bridge_.frame(owner,now-processed_,point.paused,focused,presented_input93_?0:bridge_.snapshot().serial,left_,right_);
         processed_=now;owner_=owner;anchor_=point_;anchor_.simulation=processed_;
         anchor_.horizon=std::max(anchor_.horizon,processed_);
@@ -101,6 +104,19 @@ public:
     }
     transport::Payload publication(uint32_t pid,double wall)const{
         auto prompt=bridge_.snapshot();auto anchor=anchor_;
+        // Combat facts advance only on native callbacks. Read-only clock polls
+        // can already prove a newer model tick between those callbacks. Publish
+        // a projected COPY at that current clock anchor; retaining the previous
+        // callback's horizon freezes the marker for most of a late callback's
+        // tick. No bridge/event mutation, native call or extra horizon is used.
+        if(point_.valid&&point_.battle==anchor.battle){
+            const double current=std::max(anchor.simulation,point_.simulation);
+            if(prompt.active&&prompt.result==Result::Pending){
+                prompt.paused=false;project_response(prompt,current-anchor.simulation);
+                prompt.paused=point_.paused;
+            }
+            anchor=point_;anchor.simulation=current;anchor.horizon=std::max(anchor.horizon,current);
+        }
         if(point_.paused){prompt.paused=true;anchor.paused=true;anchor.speed=0;}
         return {pid,clock_verified_?1u:0u,bridge_.occupied()?1u:0u,errors_+bridge_.replay_errors(),
                 owner_.lease,prompt,anchor,wall};

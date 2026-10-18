@@ -1,0 +1,25 @@
+# Test107 / v0.17 development: QTE current-clock publication
+
+The user confirmed the HUD is visible again in installed Test106, but the QTE remains very choppy. A fresh read-only check verified user-launched PID14800, exact Test106 loader/adapter/QTE/HUD backing paths and hashes, native1920x1080 fullscreen DirectX11 presentation, and actual debugger, OS input, native input/memory, CPU/resources and GPU/VRAM capture. The existing watcher started capture about0.175 seconds after launch without a READY/pause/battle gate. No recorder restart, duplicate recorder, game launch or game termination by the agent.
+
+During recorded QTE windows, native Present software cadence was about84fps median in the tightly matched samples; an earlier wider interval measured88fps. The QTE marker repeatedly held identical submitted geometry, reaching about89ms. Fast submission alone did not imply smooth marker motion. The user feedback is scoped positive HUD visibility, rejected QTE smoothness; death overlay/full roster coverage is not accepted by that feedback.
+
+## Reproduced cause and correction
+
+Session::poll_clock reads the current native model clock between combat callbacks. Timeline already reconciles prediction at each model tick, but Session::publication retained the preceding combat callback's timing anchor and horizon. A callback late within a100ms model step leaves only a short prediction interval; after that the marker hits the old limit and holds until the next combat callback, even though clock polls and native Presents continue.
+
+A regression exercising the production Session, clock polls, native-callback cadence and transport presentation reproduces74.8768% repeated marker samples and75ms holds at120Hz with an80ms callback phase. The previous Timeline-only drift test did not cover this publication boundary.
+
+Publication now projects a copy of the combat snapshot to the current proven numeric clock point and publishes that current anchor. It does not mutate the native bridge/event, read new actor facts, run animations or consume RNG on a helper/render thread. The same current one-model-step horizon, monotonic clock and authoritative input/expiry policy remain. This is not unlimited wall-time extrapolation or native identity grace.
+
+Pause tests also exposed discarded pre-pause observed time: paused native frames/queued paused levels advanced the processed timestamp while the event intentionally consumed no time, so later publication could snap backward. Paused levels still update their button state without judgement, but paused processing does not consume that pending simulation interval. The next unpaused native callback consumes the elapsed unpaused time; a ten-second pause consumes none of its wall duration. Existing minimum three seconds plus a complete cycle and exact timeout/native completion remain.
+
+The corrected regression has no repeated/held samples across27 callback-phase/speed/refresh combinations, plus100 paused native callbacks/level samples and precise expiry/native-once cases. These finite synthetic-clock/native-port fixtures do not certify physical scanout or every live scheduling path. A separate production cadence test distinguishes1000 CPU acknowledgement polls from200 unique native submissions, counts actual repeated images, and excludes pause/click freeze. New private clock107 counters report distinct submitted images and marker changes; retained clock105 counters remain available.
+
+## Preserved components and validation
+
+The exact working Test106 adapter and HUD binaries and all their source inputs are retained. Test106 DirectX composition, state restoration, pixel channel106, submitted-image geometry/input matching, fullscreen artwork/layout and fallback are unchanged. Test105 firing reset/aim/Timeline corrections and accepted Test104 movement, independent AI/fire, ammo/accuracy, Q/E/Z/C/R, recovery, head-look, RTS return and siege behavior are preserved. No new engine/graphics hooks or numeric protocol/layout changes. No graphics-quality/resolution changes.
+
+Freshly run the complete changed QTE suite, loader checks and final transactional installer regression with exact Test106 predecessor fixtures, seven interrupted rollbacks and repeat retention. Retain the prior60 adapter and3 HUD test receipts only with byte-identical binaries/source proof. Test107-validation.json separates fresh and retained checks. Published v0.17 assets/source/tag/receipt remain immutable; Test107 uses its own local development packages and receipt.
+
+Eight exact Test106 rollback files plus baseline106 are preserved privately. The running Test106 is not replaced by builds. Installation needs actual game exit and recording finalization, then a fresh user Steam launch/READY and exact loaded-hash/cache, retained/new QTE diagnostics, native presentation and actual recording checks before formal play. Automatic recording remains independent of these checks. No effects-crash fix, physical latency measurement or universal unit/map/device certification is claimed.

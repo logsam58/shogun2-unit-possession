@@ -2,7 +2,7 @@
 
 Current source product version: **0.17**, promoting accepted Test104 gameplay. Latest published product version: **0.17**. [Download the release](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.17), including the integrated installer, Windows package, source archive and checksums. Local installation is separate from publication. The release contains the native possession, weapon, melee QTE, HUD, unit-order, camera-return and siege systems described in the [README](../README.md).
 
-Unpublished development Test106 adds native DirectX frame composition for the existing HUD/QTE/death graphics after Test105 window recovery proved insufficient in the reported1080p/max-graphics session. It retains the Test105 shared firing/timing corrections and accepted Test104 gameplay. Published downloads remain unchanged. Exact local installation/loaded state comes from private receipts; see [Test106 scope and limits](development/Test106.md).
+Unpublished Test107 corrects QTE current-clock publication after Test106 restored user-visible HUD in recorded1080p fullscreen play but retained choppy marker motion. The working Test106 HUD/adapter are kept byte-identical; fresh timing/loader/installer checks and retained component checks remain distinct. See [Test107 evidence and limits](development/Test107.md). Published downloads remain unchanged.
 
 | Area | Implemented behavior | Coverage / limitation |
 | --- | --- | --- |

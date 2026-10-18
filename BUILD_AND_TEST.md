@@ -77,3 +77,8 @@ Installer regression additionally needs the exact accepted Test104 loader/marker
 ## Test106 presentation development
 
 Build with `--candidate 106` and use `docs/development/Test106-validation.json` plus `py tools/package_release.py --development-package --candidate 106`. Adapter tests now link Windows SDK d3d11/dxgi/d3d9/d3dcompiler libraries and include private actual-device compositor tests. ID3D11DeviceContext1 support is checked at runtime; unsupported initialization leaves the existing Windows fallback available. These tests neither launch the game nor change desktop display mode. Exact Test105 loader/marker fixtures in ignored `native/work/autoload-test105-baseline/` are required by the final installer predecessor/rollback tests. Preserve the installed eight-file rollback and recorder baseline independently. Published v0.17 packages/receipt are not replaced.
+
+
+## Test107 QTE timing development
+
+Retain the exact verified Test106 adapter/HUD binaries and source inputs. Build/test QTE, then loader and installer with `--candidate 107`; run the complete changed QTE suite. The final installer additionally requires exact Test106 predecessor loader/marker fixtures in ignored `native/work/autoload-test106-baseline/`. Pin a development receipt that separates fresh QTE/loader/installer checks from retained Test106 adapter/HUD evidence. Package with `py tools/package_release.py --development-package --candidate 107`; published v0.17 assets/receipt are not replaced. The running game remains untouched until closed-game installation.

@@ -560,6 +560,21 @@ static Surface93 surface93;
 static overlay106::Publisher pixels106;
 struct Image106 {uint64_t number{};Snapshot prompt{};};static Image106 images106[32];
 static Snapshot drawn_prompt106;static double drawn_wall106;
+static volatile LONG unique_frames107,moving_frames107,repeated_frames107;
+static __declspec(align(8)) volatile LONG64 max_marker_hold_us107;
+static double last_submission107=-1,marker_elapsed107,marker_changed107;static uint64_t marker_serial107;
+static void record_presented107(const Snapshot& shown,double submitted,bool click_freeze){
+    if(!std::isfinite(submitted)||submitted<=last_submission107)return;
+    last_submission107=submitted;InterlockedIncrement(&unique_frames107);
+    if(shown.result!=Result::Pending||shown.paused||click_freeze){marker_serial107=0;return;}
+    if(marker_serial107!=shown.serial||std::abs(marker_elapsed107-shown.response_elapsed)>1e-6){
+        InterlockedIncrement(&moving_frames107);marker_changed107=submitted;
+    }else{
+        InterlockedIncrement(&repeated_frames107);LONG64 held=LONG64(std::max(0.,submitted-marker_changed107)*1e6);
+        if(held>max_marker_hold_us107)InterlockedExchange64(&max_marker_hold_us107,held);
+    }
+    marker_serial107=shown.serial;marker_elapsed107=shown.response_elapsed;
+}
 static bool acknowledged_image106(const overlay106::Ack& ack,overlay106::Key key,uint64_t serial){
     const auto& image=images106[ack.number%32];
     if(!ack.number||image.number!=ack.number||!overlay106::same(ack.key,key)||image.prompt.serial!=serial||
@@ -630,6 +645,7 @@ static DWORD WINAPI render_worker(void*){
             render_stage=2;
             if(!state->stop&&show&&draw(shown,data.lease)){
                 const double submitted=drawn_wall106;const auto& presented=drawn_prompt106;
+                record_presented107(presented,submitted,click_freeze105);
                 AcquireSRWLockExclusive(&frame_lock93);frame93={presented,data.anchor.battle,data.lease,submitted};ReleaseSRWLockExclusive(&frame_lock93);
                 InterlockedIncrement(&frames93);LONG64 us=last_frame93>0?LONG64((submitted-last_frame93)*1e6):0;last_frame93=submitted;
                 InterlockedExchange64(&last_frame_us93,us);if(us>max_frame_us93)InterlockedExchange64(&max_frame_us93,us);
@@ -643,7 +659,7 @@ static DWORD WINAPI render_worker(void*){
                     }
                     marker_serial105=presented.serial;marker_elapsed105=presented.response_elapsed;
                 }else marker_serial105=0;
-            }else {if(!show||state->stop)pixels106.hide();last_frame93=0;marker_serial105=0;InterlockedExchange64(&presented_tick,0);ShowWindowAsync(overlay,SW_HIDE);}
+            }else {if(!show||state->stop)pixels106.hide();last_frame93=0;marker_serial105=marker_serial107=0;InterlockedExchange64(&presented_tick,0);ShowWindowAsync(overlay,SW_HIDE);}
             render_stage=3;
             if(now>=next_refresh93){MONITORINFOEXW mi{};mi.cbSize=sizeof(mi);DEVMODEW dm{};dm.dmSize=sizeof(dm);
                 if(GetMonitorInfoW(MonitorFromWindow(game,MONITOR_DEFAULTTONEAREST),reinterpret_cast<MONITORINFO*>(&mi))&&EnumDisplaySettingsW(mi.szDevice,ENUM_CURRENT_SETTINGS,&dm)&&dm.dmDisplayFrequency>=30&&dm.dmDisplayFrequency<=360)refresh_hz93=LONG(dm.dmDisplayFrequency);
@@ -777,6 +793,7 @@ static DWORD WINAPI worker(void*){void* targets[10]{};bool hooked=false;HANDLE r
                 <<",\"frame_interval_us93\":"<<InterlockedCompareExchange64(&last_frame_us93,0,0)<<",\"max_frame_interval_us93\":"<<InterlockedCompareExchange64(&max_frame_us93,0,0)
                 <<",\"clock105\":1,\"anchor_simulation105\":"<<data.anchor.simulation<<",\"anchor_horizon105\":"<<data.anchor.horizon
                 <<",\"moving_frames105\":"<<moving_frames105<<",\"repeated_frames105\":"<<repeated_frames105<<",\"max_marker_hold_us105\":"<<InterlockedCompareExchange64(&max_marker_hold_us105,0,0)
+                <<",\"clock107\":1,\"unique_frames107\":"<<unique_frames107<<",\"moving_frames107\":"<<moving_frames107<<",\"repeated_frames107\":"<<repeated_frames107<<",\"max_marker_hold_us107\":"<<InterlockedCompareExchange64(&max_marker_hold_us107,0,0)
                 <<",\"canceled92_total\":"<<canceled_total92<<",\"canceled92_reason\":"<<canceled_reason92<<",\"canceled92_serial\":"<<InterlockedCompareExchange64(&canceled_serial92,0,0)
                 <<",\"registration92_ready\":"<<registration_ready92<<",\"registration92_waiting\":"<<registration_waiting92<<",\"registration92_rejected\":"<<registration_rejected92<<",\"registration92_reason_mask\":"<<registration_reason92
                 <<",\"commitment_phase\":"<<recorded_phase

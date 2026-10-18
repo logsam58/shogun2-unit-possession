@@ -43,3 +43,6 @@ Test105 retains the `throw_stop_scope83.h` compatibility filename while generali
 
 
 Test106 presentation is in `native/outputs/shogun2-accuracy90-preview/src/native_overlay106.h`; optional numeric/pixel transport is in `native/outputs/shogun2-possession-cleanup-v46/src/overlay_surface106.h`. Existing HUD/QTE DIB rendering publishes those pixels; the adapter composites them at native DirectX Present. `verify_directx106.cpp`, `verify_overlay106.cpp`, `verify_overlay_identity106.cpp` and QTE `verify_presented106.cpp` exercise actual graphics state/pixels, channel ownership and submitted-image judgement. Development scope/limitations are in `docs/development/Test106.md`.
+
+
+Test107 timing correction is in QTE `qte_session.h` publication and paused-time accounting. Private distinct-submission counters are in `playable_runtime.cpp`; `verify_publication107.cpp` exercises the production coordinator/transport boundary, and `verify_cadence107.cpp` verifies the production counter's unique-frame semantics. Test106 adapter/HUD source and binaries remain exact.
