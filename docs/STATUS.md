@@ -21,6 +21,8 @@ Offline fixtures cover important native forwarding, identity, cleanup, geometry,
 
 Current development priorities are the unresolved effects crash, mounted-bow presentation, broader ranged-unit/animation coverage, crowded-combat interruptions and siege-map lifecycle testing. Known limitations and reporting guidance are in [KNOWN_ISSUES.md](KNOWN_ISSUES.md) and [CONTRIBUTING.md](../CONTRIBUTING.md).
 
+The current unpublished [Test105 audit](development/Test105.md) additionally investigates display-mode-dependent missing UI, intermittent infantry firing resets and QTE marker stutter. It corrects reproduced animation ownership and timeline defects and hardens display-window recovery. Offline evidence, installed state and live acceptance remain separate; it does not replace the published v0.17 assets or establish exclusive-fullscreen compatibility.
+
 
 The `unit-commands-and-first-person-visibility` branch contains **v0.17**, retaining the exact Test104 adapter, HUD and QTE accepted in the recorded playtest on 17 October 2026. The development history below explains the fixes included in this release. Test101 received "BIG improvement" feedback after exact loaded/capture verification; that is scoped user feedback rather than a complete roster certification. Test102 adds native contextual Q single/double orders, Z walk/run and Follow Me pace/catch-up. The Test101 Q/camera/pose corrections are retained. [Test102 notes](development/Test102.md) distinguish offline checks from pending live behavior.
 

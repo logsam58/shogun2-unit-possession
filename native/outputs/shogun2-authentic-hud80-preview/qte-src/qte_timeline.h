@@ -27,7 +27,15 @@ public:
         if(f.wall<last_wall_||f.tick<last_tick_||std::abs(f.step-step_)>1e-8)return {};
         const double floor=double(f.tick-origin_tick_)*step_;
         const double horizon=floor+step_;
-        if(f.tick!=last_tick_){last_tick_=f.tick;last_progress_=f.wall;}
+        if(f.tick!=last_tick_){
+            last_tick_=f.tick;last_progress_=f.wall;
+            // Reconcile prediction at each actual model step. A permanent
+            // battle-start wall anchor accumulates even tiny scheduling drift
+            // until every displayed frame is clamped to the tick horizon.
+            // Keep already observed/clicked time monotonic and retain the
+            // same one-step native horizon, pause and stale-clock limits.
+            anchor_sim_=std::max(time_,floor);anchor_wall_=f.wall;
+        }
         // Pause and rate transitions start at the last displayed value. They
         // never charge wall time spent paused or retrospectively change clicks.
         if(f.speed!=speed_){anchor_sim_=time_;anchor_wall_=f.wall;speed_=f.speed;}

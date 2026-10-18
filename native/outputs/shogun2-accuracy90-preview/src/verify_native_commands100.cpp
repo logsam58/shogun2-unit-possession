@@ -332,10 +332,10 @@ int main(){SetUnhandledExceptionFilter(&fault100);try{
     }
     aim_frame={};aim_frame.actor=possessed;aim_frame.env=environment;aim_frame.tick=GetTickCount64();
     aim_frame.lease101=possession_lease.generation;aim_frame.serial101=possession_lease.identity.actor_id;aim_frame.unit101=possession_lease.identity.unit_id;
-    ViewRay strict_eye101{};require(read_aim_frame(strict_eye101,true),"Current eye identity rejected");
-    ++aim_frame.lease101;require(!read_aim_frame(strict_eye101,true),"Prior possession eye reused");--aim_frame.lease101;
-    ++aim_frame.serial101;require(!read_aim_frame(strict_eye101,true),"Foreign actor eye reused");--aim_frame.serial101;
-    ++aim_frame.unit101;require(!read_aim_frame(strict_eye101,true),"Foreign unit eye reused");
+    ViewRay strict_eye101{};require(read_aim_frame(strict_eye101,true)&&read_aim_frame(strict_eye101),"Current eye identity rejected");
+    ++aim_frame.lease101;require(!read_aim_frame(strict_eye101,true)&&!read_aim_frame(strict_eye101),"Prior possession eye reused by presentation or gameplay");--aim_frame.lease101;
+    ++aim_frame.serial101;require(!read_aim_frame(strict_eye101,true)&&!read_aim_frame(strict_eye101),"Foreign actor eye reused by presentation or gameplay");--aim_frame.serial101;
+    ++aim_frame.unit101;require(!read_aim_frame(strict_eye101,true)&&!read_aim_frame(strict_eye101),"Foreign unit eye reused by presentation or gameplay");
     input_window=nullptr;native_window_proc=nullptr;DestroyWindow(window);
     require(context_cleanups100==group_cleanups100,"Native order/context cleanup lifecycles differ");
     std::cout<<"PASS: "<<calls<<" original native formation packets; point/fire/guard ABI and atomic queue failure; actual lease/foreign guards; native scene/sort lifetime; per-draw command volleys; 1000 original skin-cache/visibility cycles and restoration; stock native Q/RMB press-drag-release and no-order focus cleanup. Providers/allocators are fixture substitutions; no game loaded or launched.\n";return 0;

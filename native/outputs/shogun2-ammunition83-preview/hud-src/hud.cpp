@@ -1,6 +1,7 @@
 // Read-only authentic HUD candidate. Never writes game memory or handles gameplay input.
 #include "../../shogun2-possession-cleanup-v46/src/identity.h"
 #include "../../shogun2-possession-cleanup-v46/src/protocol.h"
+#include "../../shogun2-possession-cleanup-v46/src/game_window105.h"
 #include "hud_renderer.h"
 #include "hud_surface100.h"
 #include "accuracy_protocol90.h"
@@ -105,11 +106,8 @@ static bool measure(){
     Status final{};if(!snapshot(final)||final.lease_generation!=s.lease_generation||final.actor_id!=s.actor_id||final.unit_id!=s.unit_id||final.mode!=POSSESSED)return false;
     display=d;return true;
 }
-static BOOL CALLBACK choose_window(HWND w,LPARAM){DWORD p=0;GetWindowThreadProcessId(w,&p);
-    if(p==pid&&IsWindowVisible(w)&&!GetWindow(w,GW_OWNER)){RECT r{};GetClientRect(w,&r);if(r.right>=640&&r.bottom>=360){game=w;return FALSE;}}return TRUE;}
 static bool paint(){
-    RECT client{};POINT pos{};GetClientRect(game,&client);ClientToScreen(game,&pos);int width=client.right,height=client.bottom;
-    if(width<640||height<360)return false;
+    RECT client{};POINT pos{};if(!gamewindow105::client(game,client,pos))return false;int width=client.right,height=client.bottom;
     if(!hud_surface100.ensure(width,height))return false;
     auto screen=hud_surface100.screen(),dc=hud_surface100.memory();auto pixels=hud_surface100.pixels();memset(pixels,0,size_t(width)*height*4);
     {Gdiplus::Bitmap surface(width,height,width*4,PixelFormat32bppPARGB,static_cast<BYTE*>(pixels));Gdiplus::Graphics g(&surface);hud80::render(g,assets,float(width),float(height),display);}
@@ -117,11 +115,12 @@ static bool paint(){
     bool ok=UpdateLayeredWindow(overlay,screen,&pos,&size,dc,&origin,0,&alpha,ULW_ALPHA)!=0;
     if(ok)SetWindowPos(overlay,HWND_TOPMOST,0,0,0,0,SWP_NOMOVE|SWP_NOSIZE|SWP_NOACTIVATE|SWP_SHOWWINDOW);return ok;
 }
-static void update(){bool ok=false;try{ok=measure();}catch(...){ok=false;}DWORD fg=0;GetWindowThreadProcessId(GetForegroundWindow(),&fg);
+static void update(){game=gamewindow105::refresh(game,pid);bool ok=false;try{ok=measure();}catch(...){ok=false;}DWORD fg=0;GetWindowThreadProcessId(GetForegroundWindow(),&fg);
     if(!ok||!IsWindow(game)||IsIconic(game)||!IsWindowVisible(game)||fg!=pid){if(visible)ShowWindow(overlay,SW_HIDE);visible=false;return;}
     visible=paint();if(!visible)ShowWindow(overlay,SW_HIDE);}
 static LRESULT CALLBACK proc(HWND w,UINT msg,WPARAM wp,LPARAM lp){
     if(msg==WM_NCHITTEST)return HTTRANSPARENT;if(msg==WM_MOUSEACTIVATE)return MA_NOACTIVATE;if(msg==WM_ERASEBKGND)return 1;
+    if(msg==WM_DISPLAYCHANGE||msg==WM_DPICHANGED){hud_surface100.reset();return 0;}
     if(msg==WM_TIMER){if(WaitForSingleObject(process,0)==WAIT_OBJECT_0){DestroyWindow(w);return 0;}update();return 0;}
     if(msg==WM_DESTROY){PostQuitMessage(0);return 0;}return DefWindowProcW(w,msg,wp,lp);}
 static int preview(int argc,wchar_t** argv){
@@ -180,7 +179,7 @@ int wmain(int argc,wchar_t** argv){Gdiplus::GdiplusStartupInput input;ULONG_PTR 
             if(climb_map97.h)climb_shared97=static_cast<climb97::Status*>(MapViewOfFile(climb_map97.h,FILE_MAP_READ,0,0,sizeof(climb97::Status)));
             if(argc==2){bool ok=measure();std::wcout<<L"active="<<ok<<L" unit="<<(display.unit?display.unit->name:L"unavailable")<<L" faction="<<display.faction<<L" mon="<<display.mon<<L" men="<<display.men<<L" morale="<<display.morale<<L" fatigue="<<display.fatigue<<L"\n";result=ok?0:2;}
             else{Handle singleton(CreateMutexW(nullptr,FALSE,L"Local\\Shogun2PossessionHUD46"));if(GetLastError()==ERROR_ALREADY_EXISTS)result=0;
-                else{EnumWindows(choose_window,0);require(game!=nullptr,"No game window");SetProcessDPIAware();WNDCLASSW cls{};cls.lpfnWndProc=proc;cls.hInstance=GetModuleHandleW(nullptr);cls.lpszClassName=L"ShogunAuthenticHUD80";require(RegisterClassW(&cls)!=0,"HUD class failed");
+                else{game=gamewindow105::find(pid);SetProcessDPIAware();WNDCLASSW cls{};cls.lpfnWndProc=proc;cls.hInstance=GetModuleHandleW(nullptr);cls.lpszClassName=L"ShogunAuthenticHUD80";require(RegisterClassW(&cls)!=0,"HUD class failed");
                     overlay=CreateWindowExW(WS_EX_LAYERED|WS_EX_TRANSPARENT|WS_EX_NOACTIVATE|WS_EX_TOOLWINDOW|WS_EX_TOPMOST,cls.lpszClassName,L"Shogun FPS HUD",WS_POPUP,0,0,0,0,nullptr,nullptr,cls.hInstance,nullptr);require(overlay!=nullptr,"HUD window failed");
                     SetTimer(overlay,1,150,nullptr);MSG msg{};while(GetMessageW(&msg,nullptr,0,0)>0){TranslateMessage(&msg);DispatchMessageW(&msg);}result=0;}}
             if(commands_shared100)UnmapViewOfFile(commands_shared100);if(commands_map100)CloseHandle(commands_map100);

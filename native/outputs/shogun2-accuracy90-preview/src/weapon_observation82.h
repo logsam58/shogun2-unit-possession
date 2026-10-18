@@ -1,7 +1,7 @@
 #pragma once
 #include <intrin.h>
-// Retain Test82 observations. Test83 adds a scoped sling-reset ownership guard;
-// every other native stop/clock forwards. Never synthesize a timed projectile.
+// Retain bounded observations. The reset guard now covers the currently owned
+// infantry personal-weapon animation; every other stop/clock forwards.
 #include "throw_stop_scope83.h"
 struct WeaponObservation82 {
     uint64_t tick;

@@ -1,5 +1,6 @@
 #include "qte_service94.h"
 #include "../../shogun2-possession-cleanup-v46/src/identity.h"
+#include "../../shogun2-possession-cleanup-v46/src/game_window105.h"
 #include "playable_protocol.h"
 #include "native_observer.h"
 #include "possession_observation.h"
@@ -538,11 +539,12 @@ static NativeVerdict* __fastcall select_hook(void* self,void*,NativeVerdict* out
         }
     }__finally{InterlockedDecrement(&active_callbacks);}return answer;
 }
-static BOOL CALLBACK choose_window(HWND w,LPARAM){DWORD p=0;GetWindowThreadProcessId(w,&p);
-    if(p==GetCurrentProcessId()&&IsWindowVisible(w)&&!GetWindow(w,GW_OWNER)){RECT r{};GetClientRect(w,&r);
-        if(r.right>=640&&r.bottom>=360){game=w;return FALSE;}}return TRUE;}
+static volatile LONG display_reset105;
+static volatile LONG moving_frames105,repeated_frames105;
+static __declspec(align(8)) volatile LONG64 max_marker_hold_us105;
 static LRESULT CALLBACK overlay_proc(HWND w,UINT msg,WPARAM wp,LPARAM lp){
     if(msg==WM_NCHITTEST)return HTTRANSPARENT;if(msg==WM_MOUSEACTIVATE)return MA_NOACTIVATE;
+    if(msg==WM_DISPLAYCHANGE||msg==WM_DPICHANGED){InterlockedExchange(&display_reset105,1);return 0;}
     return DefWindowProcW(w,msg,wp,lp);}
 struct Surface93 {
     HDC screen{},dc{};HBITMAP bitmap{};HGDIOBJ old{};void* pixels{};int size{};
@@ -555,8 +557,10 @@ struct Surface93 {
 };
 static Surface93 surface93;
 static bool draw(const Snapshot& prompt){
+    game=gamewindow105::refresh(game,GetCurrentProcessId());
+    if(InterlockedExchange(&display_reset105,0))surface93.clear();
     if(!prompt.active||!focused()||!IsWindow(game)||IsIconic(game)){ShowWindow(overlay,SW_HIDE);return false;}
-    RECT client{};POINT corner{};GetClientRect(game,&client);ClientToScreen(game,&corner);
+    RECT client{};POINT corner{};if(!gamewindow105::client(game,client,corner)){ShowWindow(overlay,SW_HIDE);return false;}
     float scale=std::min(float(client.right)/1920.f,float(client.bottom)/1080.f);
     if(client.right>=1280&&client.bottom>=720)scale=std::max(.85f,scale);scale*=.85f;
     const int size=int(std::ceil(320.f*scale));if(!surface93.ensure(size))return false;
@@ -588,6 +592,7 @@ static DWORD WINAPI render_worker(void*){
             cls.lpszClassName,L"Shogun melee QTE",WS_POPUP,0,0,320,320,nullptr,nullptr,module,nullptr);
         require(overlay!=nullptr,"QTE overlay failed");InterlockedExchange(&render_ready,1);SetEvent(render_initialized);
         PreciseWait93 pace93;precise_render93=pace93.precise();double last_frame93=wall(),next_refresh93=0;
+        uint64_t marker_serial105=0;double marker_elapsed105=0,marker_changed105=0;
         while(!render_stop){
             InterlockedExchange64(&render_heartbeat,LONG64(GetTickCount64()));render_stage=1;
             MSG msg;while(PeekMessageW(&msg,nullptr,0,0,PM_REMOVE)){TranslateMessage(&msg);DispatchMessageW(&msg);}
@@ -597,9 +602,10 @@ static DWORD WINAPI render_worker(void*){
                 if(transport::read(completion_publication,done)&&done.prompt.serial>=data.prompt.serial&&
                    now-done.published_wall<(done.prompt.result==Result::Canceled?1.1:.45))show=transport::presentation(done,now,shown);
             }
+            bool click_freeze105=false;
             if(show&&shown.result==Result::Pending&&!shown.paused){transport::Payload frozen;
                 if(transport::read(freeze_publication93,frozen)&&frozen.prompt.serial==shown.serial&&
-                   frozen.lease==data.lease&&frozen.anchor.battle==data.anchor.battle&&now>=frozen.published_wall&&now-frozen.published_wall<.12)shown=frozen.prompt;
+                   frozen.lease==data.lease&&frozen.anchor.battle==data.anchor.battle&&now>=frozen.published_wall&&now-frozen.published_wall<.12){shown=frozen.prompt;click_freeze105=true;}
             }
             render_stage=2;
             if(!state->stop&&show&&draw(shown)){
@@ -608,7 +614,16 @@ static DWORD WINAPI render_worker(void*){
                 InterlockedIncrement(&frames93);LONG64 us=last_frame93>0?LONG64((submitted-last_frame93)*1e6):0;last_frame93=submitted;
                 InterlockedExchange64(&last_frame_us93,us);if(us>max_frame_us93)InterlockedExchange64(&max_frame_us93,us);
                 InterlockedExchange64(&presented_tick,LONG64(GetTickCount64()));InterlockedExchange64(&presented_serial,LONG64(shown.serial));
-            }else {last_frame93=0;InterlockedExchange64(&presented_tick,0);ShowWindowAsync(overlay,SW_HIDE);}
+                if(shown.result==Result::Pending&&!shown.paused&&!click_freeze105){
+                    if(marker_serial105!=shown.serial||std::abs(marker_elapsed105-shown.response_elapsed)>1e-6){
+                        InterlockedIncrement(&moving_frames105);marker_changed105=submitted;
+                    }else{
+                        InterlockedIncrement(&repeated_frames105);LONG64 held=LONG64((submitted-marker_changed105)*1e6);
+                        if(held>max_marker_hold_us105)InterlockedExchange64(&max_marker_hold_us105,held);
+                    }
+                    marker_serial105=shown.serial;marker_elapsed105=shown.response_elapsed;
+                }else marker_serial105=0;
+            }else {last_frame93=0;marker_serial105=0;InterlockedExchange64(&presented_tick,0);ShowWindowAsync(overlay,SW_HIDE);}
             render_stage=3;
             if(now>=next_refresh93){MONITORINFOEXW mi{};mi.cbSize=sizeof(mi);DEVMODEW dm{};dm.dmSize=sizeof(dm);
                 if(GetMonitorInfoW(MonitorFromWindow(game,MONITOR_DEFAULTTONEAREST),reinterpret_cast<MONITORINFO*>(&mi))&&EnumDisplaySettingsW(mi.szDevice,ENUM_CURRENT_SETTINGS,&dm)&&dm.dmDisplayFrequency>=30&&dm.dmDisplayFrequency<=360)refresh_hz93=LONG(dm.dmDisplayFrequency);
@@ -667,7 +682,8 @@ static DWORD WINAPI worker(void*){void* targets[10]{};bool hooked=false;HANDLE r
         wchar_t path[MAX_PATH];GetModuleFileNameW(module,path,MAX_PATH);std::wstring folder=path;folder=folder.substr(0,folder.find_last_of(L'\\'));
         log_file.open(folder+L"\\private\\qte-playable79-"+std::to_wstring(GetCurrentProcessId())+L".jsonl",std::ios::app);
         log_file<<std::setprecision(12);
-        EnumWindows(choose_window,0);require(game!=nullptr,"Game window unavailable");
+        // The renderer reacquires a replaced window and waits through minimization.
+        game=gamewindow105::find(GetCurrentProcessId());
         render_initialized=CreateEventW(nullptr,TRUE,FALSE,nullptr);require(render_initialized!=nullptr,"Renderer event failed");
         renderer=CreateThread(nullptr,0,render_worker,nullptr,0,nullptr);require(renderer!=nullptr,"Renderer thread failed");
         require(WaitForSingleObject(render_initialized,5000)==WAIT_OBJECT_0&&render_ready,"Renderer initialization failed");
@@ -739,6 +755,8 @@ static DWORD WINAPI worker(void*){void* targets[10]{};bool hooked=false;HANDLE r
                 <<",\"input_interval_us93\":"<<InterlockedCompareExchange64(&last_input_us93,0,0)<<",\"max_input_interval_us93\":"<<InterlockedCompareExchange64(&max_input_us93,0,0)
                 <<",\"clicked_frame_age_us93\":"<<InterlockedCompareExchange64(&clicked_frame_age_us93,0,0)<<",\"clicked_frame_inside93\":"<<clicked_frame_inside93
                 <<",\"frame_interval_us93\":"<<InterlockedCompareExchange64(&last_frame_us93,0,0)<<",\"max_frame_interval_us93\":"<<InterlockedCompareExchange64(&max_frame_us93,0,0)
+                <<",\"clock105\":1,\"anchor_simulation105\":"<<data.anchor.simulation<<",\"anchor_horizon105\":"<<data.anchor.horizon
+                <<",\"moving_frames105\":"<<moving_frames105<<",\"repeated_frames105\":"<<repeated_frames105<<",\"max_marker_hold_us105\":"<<InterlockedCompareExchange64(&max_marker_hold_us105,0,0)
                 <<",\"canceled92_total\":"<<canceled_total92<<",\"canceled92_reason\":"<<canceled_reason92<<",\"canceled92_serial\":"<<InterlockedCompareExchange64(&canceled_serial92,0,0)
                 <<",\"registration92_ready\":"<<registration_ready92<<",\"registration92_waiting\":"<<registration_waiting92<<",\"registration92_rejected\":"<<registration_rejected92<<",\"registration92_reason_mask\":"<<registration_reason92
                 <<",\"commitment_phase\":"<<recorded_phase

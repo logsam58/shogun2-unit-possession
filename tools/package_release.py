@@ -172,10 +172,15 @@ def web_links(text, relative):
 
 
 def main():
+    global RECEIPT
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--verify-only', action='store_true', help='Check build inputs without requiring a committed tree or creating player downloads')
     parser.add_argument('--development-package', action='store_true', help='Keep an unpublished Test candidate in its own version/Test directory')
+    parser.add_argument('--candidate', type=int, help='Use docs/development/TestN-validation.json without replacing a published release receipt')
     args = parser.parse_args()
+    if args.candidate is not None:
+        require(args.development_package and args.candidate >= 100, '--candidate requires --development-package and a Test number >=100')
+        RECEIPT = ROOT / 'docs/development' / ('Test' + str(args.candidate) + '-validation.json')
     receipt, versions, target = verify_inputs()
     if args.verify_only:
         print(json.dumps({'passed': True, 'embedded_payloads_verified': 5, 'pe_version': versions, 'target_check': target}, indent=2))
@@ -193,7 +198,7 @@ def main():
         'product': 'Shogun 2 First-Person Possession', 'version': VERSION, 'tag': TAG,
         'source_commit': head, 'cache_id': receipt['cache_id'], 'engine_sha256': ENGINE_SHA,
         'pe_version': versions, 'components': receipt['release_binaries'],
-        'installer': record(folder / SETUP), 'validation': 'docs/releases/' + TAG + '-validation.json', 'candidate': receipt.get('candidate'), 'development_candidate': receipt.get('development_candidate', False),
+        'installer': record(folder / SETUP), 'validation': RECEIPT.relative_to(ROOT).as_posix(), 'candidate': receipt.get('candidate'), 'development_candidate': receipt.get('development_candidate', False),
         'validation_sha256': sha(RECEIPT), 'target_check': target,
         'game_installed_or_launched': False,
         'known_issues': ['Unresolved extended-play native effects crash; mod involvement undetermined', 'Mounted-bow presentation', 'Incomplete specialty-unit, roster and siege-map validation']
@@ -203,6 +208,8 @@ def main():
     members = {SETUP: (folder / SETUP).read_bytes(), 'release-manifest.json': manifest_path.read_bytes()}
     for source, name in [('README.md', 'README.md'), ('docs/KNOWN_ISSUES.md', 'KNOWN_ISSUES.md'), ('THIRD_PARTY_NOTICES.md', 'THIRD_PARTY_NOTICES.md'), ('docs/releases/' + TAG + '.md', 'RELEASE_NOTES.md')]:
         members[name] = web_links((ROOT / source).read_text(encoding='utf-8'), Path(source)).encode('utf-8')
+    if args.candidate is not None:
+        members['CANDIDATE_NOTES.md'] = (ROOT / 'docs/development' / ('Test' + str(args.candidate) + '.md')).read_bytes()
     members['LICENSE-MINHOOK.txt'] = (ROOT / 'native/outputs/shogun2-accuracy90-preview/vendor/LICENSE.txt').read_bytes()
     members['PACKAGE_SHA256SUMS.txt'] = ''.join(hashlib.sha256(data).hexdigest() + '  ' + name + '\n' for name, data in sorted(members.items())).encode()
     archive = folder / ARCHIVE

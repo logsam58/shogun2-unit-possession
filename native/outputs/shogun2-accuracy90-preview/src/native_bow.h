@@ -37,12 +37,13 @@ static void capture_aim_frame(uintptr_t camera){
     }__except(EXCEPTION_EXECUTE_HANDLER){InterlockedExchange(&state->release,1);state->shot_error=94;}
 }
 static bool read_aim_frame(ViewRay& ray,bool presentation101=false){
+    (void)presentation101; // Compatibility argument: every consumer now proves the same lease.
     for(unsigned i=0;i<4;++i){
         LONG seq=aim_sequence;if(seq&1)continue;
         AimFrame frame{};MemoryBarrier();memcpy(&frame,&aim_frame,sizeof(frame));MemoryBarrier();
         if(seq!=aim_sequence)continue;
         if(frame.actor!=possessed||frame.env!=environment||GetTickCount64()-frame.tick>250)return false;
-        if(presentation101&&(frame.lease101!=possession_lease.generation||frame.serial101!=possession_lease.identity.actor_id||frame.unit101!=possession_lease.identity.unit_id))return false;
+        if(!possession_lease.active||frame.lease101!=possession_lease.generation||frame.serial101!=possession_lease.identity.actor_id||frame.unit101!=possession_lease.identity.unit_id)return false;
         ray=frame.ray;return true;
     }
     return false;

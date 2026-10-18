@@ -67,6 +67,8 @@ Test104 additionally requires exact installed-Test103 loader/marker fixtures in 
 
 ## v0.17 release metadata
 
+For the unpublished Test105 audit, build with `--candidate 105`. After pinning its full source and validation receipt, package with `py tools/package_release.py --development-package --candidate 105`. This reads `docs/development/Test105-validation.json` and writes its own `artifacts/releases/v0.17-Test105/` folder; it does not rewrite the published v0.17 validation receipt or downloads.
+
 Retain the exact accepted Test104 adapter, HUD and QTE when preparing this release. Run `py tools/build.py loader --release --tests`, then `py tools/build.py installer --release --tests`. The release flag removes the development label while retaining implementation revision104; it is mutually exclusive with `--candidate`. Neither command installs, launches or publishes.
 
 Installer regression additionally needs the exact accepted Test104 loader/marker in ignored `native/work/autoload-test104-baseline/`. Those fixtures exercise the actual upgrade, all seven interrupted rollbacks and repeat-install backup retention. After reviewing/committing source, run `py tools/package_release.py` to produce `artifacts/releases/v0.17/`. For publication, add the exact committed source ZIP and `SOURCE_SHA256SUMS.txt` to the pinned upload manifest; the publisher verifies every archive member against HEAD before uploading. The version/marker/PE and embedded payload hashes are checked; current target validation is read-only.

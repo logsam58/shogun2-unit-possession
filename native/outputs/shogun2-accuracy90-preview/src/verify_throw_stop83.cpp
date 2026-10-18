@@ -60,24 +60,25 @@ int main(){try{
   state->mode=POSSESSED;state->release=state->stop=0;state->weapon_phase=WEAPON_DRAW;state->aim_pose=1;
   weapon_actor=possessed;weapon_clip=130;field<unsigned char>(possessed,0xf0)=1;field<unsigned>(possessed,0x1f0)=14;
   field<uintptr_t>(possessed,0x688)=0;field<uintptr_t>(possessed,0x474)=fp;field<unsigned>(possessed,0x1d8)=0;
+  field<unsigned>(possessed,0x1d4)=130;field<uintptr_t>(fp,4)=ap;
   field<unsigned>(ap,0x64)=35;field<unsigned>(ap,8)=_countof(path)-1;};
  arm();reset(&actor);require(!forwarded&&field<uintptr_t>(possessed,0x474)==fp,"Captured frame-zero reset cancelled owned throw");
  for(unsigned f=1;f<35;++f){field<unsigned>(possessed,0x1d8)=f;state->weapon_phase=f<10?WEAPON_DRAW:WEAPON_FIRED;reset(&actor);}
  require(!forwarded&&field<uintptr_t>(possessed,0x474)==fp,"Protected throw lost before native completion");
  field<unsigned>(possessed,0x1d8)=35;reset(&actor);require(forwarded==1&&!field<uintptr_t>(possessed,0x474),"Native completion not forwarded");
- arm();state->weapon_phase=0;field<uintptr_t>(possessed,0x474)=holdp;reset(&actor);require(forwarded==1,"Held native sling pose cancelled");
+ arm();state->weapon_phase=0;field<uintptr_t>(possessed,0x474)=holdp;field<unsigned>(possessed,0x1d4)=124;reset(&actor);require(forwarded==1,"Held native sling pose cancelled");
  for(unsigned guard=0;guard<15;++guard){arm();switch(guard){
   case 0:held83=false;break;case 1:enabled=0;break;case 2:identity_valid=false;break;
   case 3:state->mode=IDLE;break;case 4:state->release=1;break;case 5:state->stop=1;break;
   case 6:field<unsigned char>(possessed,0xf0)=0;break;case 7:mounted_weapon=true;break;
   case 8:equipment_slot81=equipment81::Melee;break;case 9:field<uintptr_t>(possessed,0x688)=1;break;
   case 10:field<unsigned>(possessed,0x1f0)=8;break;case 11:own_weapon_call=1;break;
-  case 12:field<unsigned>(ap,0x64)=36;break;case 13:field<unsigned>(ap,8)=3;break;
+  case 12:field<unsigned>(ap,0x64)=0;break;case 13:field<uintptr_t>(fp,4)=0;break;
   case 14:weapon_clip=758;break;}
   unsigned n=forwarded;reset(&actor);require(forwarded==n+1&&!field<uintptr_t>(possessed,0x474),"Stop guard failed to forward");
  }
  arm();unsigned n=forwarded;weapon_animation_stop_hook82(&actor,nullptr);require(forwarded==n+1,"Unrelated caller suppressed");
  arm();n=forwarded;reset(&other);require(forwarded==n+1&&field<uintptr_t>(possessed,0x474)==fp,"Other actor changed");
  VirtualFree(reinterpret_cast<void*>(base),0,MEM_RELEASE);
- std::cout<<"PASS: production sling stop guard protects only captured reset through native frames; completion, release, death, mounted, QTE, mode, asset, explicit calls and other actors forward.\n";return 0;
+ std::cout<<"PASS: retained production sling sequence protects the captured reset through native frames; completion, release, death, mounted, QTE, mode, invalid asset, explicit calls and other actors forward.\n";return 0;
  }catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}}
