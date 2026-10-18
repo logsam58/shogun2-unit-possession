@@ -85,7 +85,7 @@ Retain the exact verified Test106 adapter/HUD binaries and source inputs. Build/
 
 ## v0.18 release metadata
 
-Retain the exact accepted Test107 adapter, HUD and QTE, and their gameplay source inputs. Run `py tools/build.py loader --release --tests`, then `py tools/build.py installer --release --tests`. The release flag removes the development label and retains implementation revision107. The default development candidate is also107; use an explicit later `--candidate` for new work. These commands never install, launch or publish.
+Retain the exact accepted Test107 adapter, HUD and QTE, and their gameplay source inputs. Run `py tools/build.py loader --release --tests`, then `py tools/build.py installer --release --tests`. The release flag removes the development label and retains implementation revision107. At the v0.18 commit the default development candidate was107; use an explicit later `--candidate` for new work. These commands never install, launch or publish.
 
 The complete installer suite additionally requires exact Test107 loader/marker fixtures in ignored `native/work/autoload-test107-baseline/` and the published v0.17 loader/marker in `native/work/autoload-v017-baseline/`. Extract old setup resources201/202 as data only; do not execute an old installer. The suite verifies both exact upgrades, seven interrupted stages each and repeat-install retention. Keep the historical fixture closure as well. A failed fixture remains recorded; diagnose and rerun the full final payload before pinning a passing receipt.
 
@@ -94,4 +94,10 @@ After review/audit and a clean commit, `py tools/package_release.py` produces `a
 
 ## Test109 HUD and friendly-fire development
 
-Run `tools/prepare_audio109.py --game <local game> --ffmpeg <ffmpeg.exe>` to prepare the separately verified private voice input. Build/test adapter and HUD using explicit `--candidate 109`; retain the exact Test108 QTE and source inputs. Then build/test loader and installer with candidate109. The current default107 is historical. Test109 adds a passive native impact observer and out-of-process Windows audio playback, with native-ABI and notification/PCM fixtures. Use its own development receipt/package; published v0.18 remains immutable.
+Run `tools/prepare_audio109.py --game <local game> --ffmpeg <ffmpeg.exe>` to prepare the separately verified private voice input. Build/test adapter and HUD using explicit `--candidate 109`; retain the exact Test108 QTE and source inputs. Then build/test loader and installer with candidate109. The current default is109. Test109 adds a passive native impact observer and out-of-process Windows audio playback, with native-ABI and notification/PCM fixtures. Use its own development receipt/package; published v0.18 remains immutable.
+
+## v0.19 release metadata
+
+Retain exact accepted Test109 adapter/HUD/QTE binaries and all their native output source inputs. Build/test only loader and installer with `--release`; it removes the development label while retaining implementation revision109. The default development candidate is109. Prepare exact installed-Test109 loader/marker fixtures in `native/work/autoload-test109-baseline/` and published-v0.18 fixtures in `native/work/autoload-v018-baseline/`, extracting setup resources201/202 as data only. Retain historical fixtures. The complete final installer suite covers both new exact upgrades, seven interruption stages each and repeat-install rollback retention.
+
+Pin docs/releases/v0.19-validation.json with fresh and retained evidence, audit/stage/commit source, then run `py tools/package_release.py`. Add a source ZIP matching every committed Git blob and its checksum. Local packaging does not publish/install/launch. Published v0.18 and earlier assets stay exact; the installed Test109 and recorder baseline109 remain unchanged until an explicitly authorized replacement.

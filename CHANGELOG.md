@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.19 - 18 October 2026
+
+Promotes the exact accepted Test109 gameplay with the existing possession, combat, command and siege systems.
+
+- Less cluttered native-style HUD: unchanged bottom-left soldier card, vertical right-edge Q/E/Z/C/R legend and relevant-only bottom-centre context.
+- Compact top-centre QTE with a larger mouse-button cue, retained INTERRUPTED feedback and unchanged accepted timing/input authority.
+- Original cropped SHAMEFUL DISPLAY callout for verified direct personal projectile hits on allies; the routing lead-in is excluded. Playback runs asynchronously in the HUD process.
+- Exact gameplay binaries/source retained. Fresh release loader and full installer fixtures cover Test109 and published-v0.18 upgrades, seven interrupted rollbacks each and repeat-install retention.
+
+The player accepted Test109 without sending READY; automatic recording verifies the build and capture retrospectively. That session crashed with blood disabled through a distinct invalid DirectSound virtual call. Originating corruption, possible mod involvement and the relationship to earlier effects/Miles crashes remain unresolved. No crash fix is included. [Release notes](docs/releases/v0.19.md) and [validation](docs/releases/v0.19-validation.json).
+
 ## v0.18 - 18 October 2026
 
 Promotes the accepted Test107 gameplay with the full v0.17 possession and unit-control feature set.

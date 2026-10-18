@@ -1,8 +1,8 @@
 # Support and development status
 
-Current source product version: **0.18**, promoting accepted Test107 gameplay. [Download v0.18](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.18), including the integrated installer, Windows package, source archive and checksums. Publication and local installation are separate. The release contains the native possession, weapon, melee QTE, HUD, unit-order, camera-return and siege systems described in the [README](../README.md).
+Current source product version: **0.19**, retaining the exact accepted Test109 adapter/HUD/QTE. Local release packages are prepared; the [latest published download remains v0.18](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.18). Installation, publication and loaded state are separate. See [v0.19 notes](releases/v0.19.md) and [validation](releases/v0.19-validation.json).
 
-v0.18 adds native DirectX presentation for the existing HUD/QTE/death artwork, current-clock QTE publication and the shared infantry firing-animation correction. The user reported Test107 worked great after verified loaded components and actual recording in 1920Ã—1080 fullscreen DirectX11. This is scoped acceptance, without a universal roster/device or effects-crash claim. See [v0.18 notes](releases/v0.18.md) and [validation](releases/v0.18-validation.json).
+v0.19 adds the uncluttered HUD, compact top-centre QTE with larger button cues, and original cropped SHAMEFUL DISPLAY feedback for direct personal projectile hits on allies. The player said “I loved it” after Test109 play; automatic recording verifies loaded build and capture retrospectively. No formal pre-play READY verification occurred. Native effects/audio crashes remain unresolved, including a new DirectSound fault with blood disabled.
 
 | Area | Implemented behavior | Coverage / limitation |
 | --- | --- | --- |
@@ -17,18 +17,8 @@ v0.18 adds native DirectX presentation for the existing HUD/QTE/death artwork, c
 | Base game / expansions | Native content catalog includes SHOGUN 2, Rise and Fall weapon records | Catalog coverage is broader than confirmed live roster coverage |
 | Naval / artillery | Stock artillery first-person behavior retained | Naval possession, ship commands and crew possession not implemented |
 | Multiplayer / overhauls | No compatibility certification | Require separate investigation and testing |
-| Stability | Crash capture and diagnostic tools available | Extended-play native effects crash unresolved |
+| Stability | Crash capture and diagnostic tools available | Native effects and audio-thread crashes unresolved |
 
 Offline fixtures cover important native forwarding, identity, cleanup, geometry, timing and installation cases. They do not simulate every battle. [VALIDATION.md](../VALIDATION.md) and the release receipt distinguish freshly run checks from retained component evidence.
 
-Current development priorities are the unresolved effects crash, mounted-bow presentation, broader ranged-unit/animation coverage, crowded-combat interruptions and siege-map lifecycle testing. Known limitations and reporting guidance are in [KNOWN_ISSUES.md](KNOWN_ISSUES.md) and [CONTRIBUTING.md](../CONTRIBUTING.md).
-
-## Current unpublished candidate
-
-[Test109](development/Test109.md) includes the simplified Test108 HUD and a short original-game SHAMEFUL DISPLAY notification for a verified personal projectile hitting an ally. The routing lead-in is cropped out. The passive impact observer preserves native damage and existing gameplay; asynchronous playback runs in the HUD process. See its validation receipt for the actual installation state and offline/live limits. Published v0.18 remains unchanged.
-
-## Development history
-
-Test100 unit commands and model presentation were rejected. Test101 improved crosshair placement, stationary following and owned camera/weapon presentation. Test102 added native contextual Q double-click orders and follow/Z pace; failed targeting and possession drops prompted Test103 current-context/input isolation and knockdown/get-up locking. Test104 confined roster overrides to FPS camera work, guarded a reproduced UI followed-actor overwrite and added horizontal combat head-look. The user accepted Test104 for v0.17.
-
-Test105 corrected a reproduced owned-infantry animation reset and QTE timeline drift. Test106 added actual native graphics presentation after window-only recovery did not restore fullscreen UI. The user confirmed HUD visibility but rejected QTE smoothness. Test107 reproduced and corrected stale combat-callback publication while retaining the exact Test106 adapter/HUD. Its accepted gameplay is promoted to v0.18. Numbered [development receipts](development/Test107-validation.json) preserve the fresh/retained test distinctions and limits; earlier published downloads remain unchanged.
+Current development priorities are the unresolved native effects/audio crashes, mounted-bow presentation, broader ranged-unit/animation coverage, crowded-combat interruptions and siege-map lifecycle testing. Known limitations and reporting guidance are in [KNOWN_ISSUES.md](KNOWN_ISSUES.md) and [CONTRIBUTING.md](../CONTRIBUTING.md).

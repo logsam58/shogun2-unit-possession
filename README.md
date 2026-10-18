@@ -4,9 +4,9 @@
 
 The battle continues around you. The game still runs the armies, formations, pathfinding, morale, fatigue, ammunition, projectile physics, casualties and victory conditions. Your other soldiers keep their own AI and can keep fighting and firing while you control one member of the unit.
 
-**[Download v0.18](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.18)** | [Known issues](docs/KNOWN_ISSUES.md) | [Build instructions](BUILD_AND_TEST.md) | [Contributing](CONTRIBUTING.md)
+**Source version: v0.19.** [Latest published download (v0.18)](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.18) | [Known issues](docs/KNOWN_ISSUES.md) | [Build instructions](BUILD_AND_TEST.md) | [Contributing](CONTRIBUTING.md)
 
-**v0.18** adds native fullscreen HUD/QTE presentation, smoother QTE marker timing and an infantry firing-animation correction. It keeps Q/E/Z/C/R unit commands, native move/attack and formation dragging, pace-matched following, first-person model improvements, recovery locking and combat head-look. See the [unit controls](#unit-orders-and-independent-ai) and [v0.18 release notes](docs/releases/v0.18.md).
+**v0.19** adds a less cluttered native-style HUD, a compact top-centre QTE with larger mouse-button cues, and the original **“SHAMEFUL DISPLAY!”** callout when your personal projectile hits an ally. The preceding routing sentence is excluded. It retains native fullscreen presentation, smooth QTE timing and the existing possession, combat, unit commands and siege systems. See the [unit controls](#unit-orders-and-independent-ai) and [v0.19 release notes](docs/releases/v0.19.md). The v0.19 package is prepared locally; GitHub publication is separate.
 
 ## What the mod does
 
@@ -68,7 +68,7 @@ The compact HUD uses SHOGUN 2 artwork, trim and fonts to fit the game's presenta
 Requirements: a Windows Steam installation of SHOGUN 2 using the supported retail engine build, and a single-player land battle. The mod runs as x86 native code inside the game. Players do not need a compiler, Python, a game SDK or a separate companion launcher.
 
 1. Close SHOGUN 2 completely.
-2. Download **Shogun2-First-Person-v0.15-Setup.exe** from the [release page](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.15), or extract the Windows ZIP and run the setup inside it.
+2. Download **Shogun2-First-Person-v0.18-Setup.exe** from the [release page](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.18), or extract the Windows ZIP and run the setup inside it.
 3. Select the SHOGUN 2 game folder in the wizard. Setup checks the engine and existing mod files, installs the runtime and selects the possession mod in the launcher.
 4. Launch normally through Steam, enter a land battle, select a living unit and press **F9**.
 5. Press **F10 / Escape** to return to command. **F12** disables the mod for the running session.
@@ -104,7 +104,7 @@ The supported `Empire.Retail.dll` SHA256 is `022fae2e2da92b59b8b1b8ee52887003c62
 
 The mod targets single-player land combat, including sieges. Weapon catalogs cover content from SHOGUN 2, Rise of the Samurai and Fall of the Samurai, but that is not a claim of complete campaign or roster validation. Naval possession and ship commands are not implemented; artillery retains its stock first-person behavior. Multiplayer compatibility is unverified. Overhaul mods, altered engine builds and other camera/input injectors need separate testing.
 
-**An unresolved crash has occurred during extended siege play.** Captured dumps show a native effects-table dereference; the preceding state change and possible mod involvement are unresolved. v0.15 does not include a fix for that crash. Mounted-bow visuals, specialty-unit coverage and some crowded-combat/ownership transitions also require further testing. Read the [full issue list](docs/KNOWN_ISSUES.md) and [support status](docs/STATUS.md) before reporting a problem.
+**Native effects and audio-thread crashes remain unresolved.** Captures include an effects-table dereference, a Miles sample-loop fault and a distinct DirectSound invalid function-pointer call with blood effects disabled. Their originating state changes and possible mod involvement are unresolved; v0.19 does not claim a crash fix. Mounted-bow visuals, specialty-unit coverage and some crowded-combat/ownership transitions also require further testing. Read the [full issue list](docs/KNOWN_ISSUES.md) and [support status](docs/STATUS.md) before reporting a problem.
 
 ## Source, architecture and development
 
