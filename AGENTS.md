@@ -1,3 +1,7 @@
+# Player-facing writing
+
+Use plain, casual English in README, GitHub About and release descriptions. Explain what the player can do and keep controls easy to find. Put implementation, build IDs, fingerprints, fixture counts and investigation detail in architecture/build/validation/technical notes. Keep real limitations visible in ordinary words; avoid repeating caveats after every feature. Preserve the complete feature guide rather than reducing it to changes from the latest session. Description edits do not retag or replace published downloads.
+
 # v0.20 release checkpoint / exact Test115 gameplay (18 October 2026)
 
 User selected the currently played Test115 checkpoint for the next version on GitHub. VERSION is0.20; default development and release implementation revision is115. Retain the exact Test115 adapter/HUD/QTE binaries and314 tracked native output source inputs. v0.19 remains a preserved earlier local package, not overwritten. Release work changes metadata, predecessor recognition/fixtures and documentation only; it does not install or replace the running Test115/cache53be0ea5409bcdd3 or recorder baseline.

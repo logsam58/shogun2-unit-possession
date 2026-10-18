@@ -2,15 +2,13 @@
 
 ## v0.20 - 18 October 2026
 
-Packages the current Test115 gameplay checkpoint. Changes since the last published v0.18 include:
+- Cleaner HUD, with commands down the right side and less clutter around the weapon information.
+- Smaller top-centre melee meter and larger mouse-button prompts.
+- Tighter QTE click handling and fewer repeated checks in crowded melee. The occasional severe battle slowdown is still being investigated.
+- Cropped original SHAMEFUL DISPLAY callout when you shoot an ally.
+- Updated installer, with the existing possession, weapons, unit orders, cavalry and siege features.
 
-- Uncluttered native-style HUD, vertical Q/E/Z/C/R legend, contextual bottom information, compact top-centre QTE and larger mouse-button cues.
-- Cropped original SHAMEFUL DISPLAY callout for direct personal projectile hits on allies, without the preceding routing sentence.
-- QTE clicks read the latest native acknowledged image directly, retaining current identity, expiry, pause and native outcome checks.
-- Unrelated readable infantry encounters use one bounded 80-byte snapshot; failed snapshots retain the original individual-read fallback and possible matches retain full identity proof. Offline cases verify the work reduction; this does not establish a whole-game FPS fix.
-- Exact Test115 adapter, HUD and QTE binaries retained. Release loader/installer metadata and exact predecessor upgrade/rollback coverage updated for v0.20.
-
-A five-minute trace captured 19,021 frames and 44 sampled QTE serials with no significant lag reported. Earlier intermittent crowded-fight slowdowns, native effects/audio crashes and mounted-bow presentation remain unresolved. [Release notes](docs/releases/v0.20.md) and [validation](docs/releases/v0.20-validation.json).
+Crashes, mounted-bow visuals and some clipping remain open problems. [Player release notes](docs/releases/v0.20.md) · [Technical notes and test details](docs/releases/v0.20-technical.md).
 
 ## v0.19 - 18 October 2026
 
