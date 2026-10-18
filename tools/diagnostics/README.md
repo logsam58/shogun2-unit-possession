@@ -12,6 +12,8 @@ Diagnostics110 adds bounded lifecycle sampling from launch and native phase/sele
 
 ## Setup limitations
 
+Diagnostics112 adds independent pre-dump fault reports and bounded, explicitly labeled readable/minimal dump fallbacks. It addresses observed evidence loss when DbgHelp cannot read process memory; it does not fix the underlying game fault. See [Diagnostics112](../../docs/development/Diagnostics112.md) for verified coverage and limits.
+
 Diagnostics111 separates the default capture-only executable from fingerprint-locked toy tracing. Its installer/deployment gate checks the compiled capability and PE imports before mutation. The offline build and failure-injection workflow is described in [Diagnostics111](../../docs/development/Diagnostics111.md). The active installation is not changed merely by building these tools.
 
 A portable diagnostics installer is not supplied. Source includes deployment helpers with machine-specific path assumptions that must be reviewed/configured before use on another computer. Supply a local Python runtime, build the x86 debugger and configure output paths/baseline component hashes separately. Runtime/config/baseline files are not tracked. Do not run source/install.py unchanged as a general-purpose installer.

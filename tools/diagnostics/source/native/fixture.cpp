@@ -1,8 +1,16 @@
 #include <windows.h>
 #include <cwchar>
+#include <intrin.h>
+static int loader_fault112(){
+ // Deliberately damage only this toy's loader pointer while raising a handled
+ // AV. It reproduces fault-time module-enumeration/dump read failures.
+ auto loader=reinterpret_cast<volatile DWORD*>(__readfsdword(0x30)+0xc);DWORD original=*loader;*loader=1;
+ __try{*reinterpret_cast<volatile int*>(0x42)=1;}__except(EXCEPTION_EXECUTE_HANDLER){*loader=original;return 0;}return 8;
+}
 static int handled_code111(DWORD code){__try{RaiseException(code,0,0,nullptr);}__except(EXCEPTION_EXECUTE_HANDLER){return 0;}return 8;}
 static DWORD WINAPI churn111(void*){Sleep(2);return 0;}
 int wmain(int argc,wchar_t**argv){SetErrorMode(SEM_FAILCRITICALERRORS|SEM_NOGPFAULTERRORBOX);Sleep(2500);const wchar_t*mode=argc>1?argv[1]:L"normal";
+if(wcscmp(mode,L"loader-fault112")==0)return loader_fault112();
 if(wcscmp(mode,L"handled-single-step")==0)return handled_code111(EXCEPTION_SINGLE_STEP);
 if(wcscmp(mode,L"handled-breakpoint")==0)return handled_code111(EXCEPTION_BREAKPOINT);
 if(wcscmp(mode,L"handled-custom")==0)return handled_code111(0xe0421111);

@@ -18,6 +18,7 @@ def main():
  build('crash-recorder','crash_recorder.cpp',libs=['bcrypt.lib','dbghelp.lib','user32.lib'])
  build('diagnostics-fixture','fixture.cpp')
  build('verify-ownership111','verify_ownership111.cpp')
+ build('verify-dump112','verify_dump112.cpp',libs=['bcrypt.lib','dbghelp.lib','user32.lib'])
  if o.experimental:
   build('trace-fixture110','trace_fixture110.cpp')
   pin=out/'fixture-pin111.h';pin.write_text('#define SHOGUN2_EXPERIMENTAL_TRACE_FIXTURES 1\n#define SHOGUN2_TRACE_FIXTURE_SHA256 "'+sha(out/'trace-fixture110.exe')+'"\n')

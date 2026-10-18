@@ -1,0 +1,24 @@
+{
+  "revision": 112,
+  "status": "recorder_only_installed_next_launch_not_live_accepted",
+  "recorder_sha256": "68e3cfee5f91900ae275bb62651a3ec2bd28d853dbc7092c1709856adfa831ac",
+  "rollback_sha256": "4b92e66f588ebe739fbb99f0d7aa9f75136255427d8a2af6bfafa75cea682193",
+  "files_replaced": 1,
+  "hardware_tracer_compiled": false,
+  "fresh_tests": {
+    "native_writer_cache_snapshot_cases": 8,
+    "dump_decode_cases": 3,
+    "full_core_sessions": 4,
+    "real_fault_snapshots": 3,
+    "actual_toy_loader_corruption_case": 1,
+    "binary_policy": "PASS"
+  },
+  "all_passed": true,
+  "actual_loader_case": "Three real DbgHelp failures; independent context/stack/module report survives, handled toy exits0",
+  "initial_failure_retained": "x86 SIZE_T/std::min compiler mismatch corrected before final build",
+  "gameplay_settings_baseline_changed": false,
+  "watcher_restarted": false,
+  "agent_launched_or_terminated_game": false,
+  "native_crash_fix_claimed": false,
+  "limits": "Partial-read origin in real game unproven; readable snapshots are bounded and explicitly incomplete. Dump retry cannot recover all inaccessible process state. Future real startup/capture still needs user READY."
+}

@@ -12,14 +12,9 @@ using SessionTrace=CaptureOnly111;
 static std::string utf8(const std::wstring&w){if(w.empty())return {};int n=WideCharToMultiByte(CP_UTF8,0,w.data(),int(w.size()),nullptr,0,nullptr,nullptr);std::string s(n,' ');WideCharToMultiByte(CP_UTF8,0,w.data(),int(w.size()),s.data(),n,nullptr,nullptr);return s;}
 static std::string quote(const std::string&s){std::ostringstream o;o<<'"';for(unsigned char c:s){if(c=='"'||c=='\\')o<<'\\'<<c;else if(c<32)o<<"\\u"<<std::hex<<std::setw(4)<<std::setfill('0')<<unsigned(c);else o<<c;}o<<'"';return o.str();}
 static std::wstring file_name(HANDLE h){wchar_t b[32768];DWORD n=h?GetFinalPathNameByHandleW(h,b,32768,0):0;return n&&n<32768?std::wstring(b,n):L"";}
-static std::string location(DWORD pid,uintptr_t address){Handle s(CreateToolhelp32Snapshot(TH32CS_SNAPMODULE|TH32CS_SNAPMODULE32,pid));MODULEENTRY32W m{};m.dwSize=sizeof(m);if(s.h!=INVALID_HANDLE_VALUE&&Module32FirstW(s.h,&m)){do{auto base=reinterpret_cast<uintptr_t>(m.modBaseAddr);if(address>=base&&address<base+m.modBaseSize)return utf8(m.szModule)+"+"+hex(address-base);}while(Module32NextW(s.h,&m));}return hex(address);}
-static void dump(HANDLE process,DWORD pid,DWORD tid,const EXCEPTION_RECORD*record,const std::wstring&path,bool full){
- Handle file(CreateFileW(path.c_str(),GENERIC_WRITE,0,nullptr,CREATE_NEW,FILE_ATTRIBUTE_NORMAL,nullptr));require(file.h!=INVALID_HANDLE_VALUE,"Dump creation failed");
- CONTEXT ctx{};ctx.ContextFlags=CONTEXT_FULL|CONTEXT_DEBUG_REGISTERS;Handle thread(OpenThread(THREAD_GET_CONTEXT,FALSE,tid));EXCEPTION_RECORD copy{};EXCEPTION_POINTERS pointers{};MINIDUMP_EXCEPTION_INFORMATION info{};
- bool captured=record&&thread.h&&GetThreadContext(thread.h,&ctx);if(captured){copy=*record;pointers.ExceptionRecord=&copy;pointers.ContextRecord=&ctx;info.ThreadId=tid;info.ExceptionPointers=&pointers;info.ClientPointers=FALSE;}
- auto flags=static_cast<MINIDUMP_TYPE>(MiniDumpNormal|MiniDumpWithThreadInfo|MiniDumpWithUnloadedModules|MiniDumpWithIndirectlyReferencedMemory|MiniDumpWithFullMemoryInfo|(full?MiniDumpWithFullMemory:0));
- require(MiniDumpWriteDump(process,pid,file.h,flags,captured?&info:nullptr,nullptr,nullptr)!=FALSE,"MiniDumpWriteDump failed");FlushFileBuffers(file.h);
-}
+#include "crash_capture112.h"
+static ModuleCache112 module_cache112;
+static std::string location(DWORD pid,uintptr_t address){auto cached=module_cache112.locate(address);if(cached!=hex(address))return cached;Handle s(CreateToolhelp32Snapshot(TH32CS_SNAPMODULE|TH32CS_SNAPMODULE32,pid));MODULEENTRY32W m{};m.dwSize=sizeof(m);if(s.h!=INVALID_HANDLE_VALUE&&Module32FirstW(s.h,&m)){do{auto base=reinterpret_cast<uintptr_t>(m.modBaseAddr);if(address>=base&&address<base+m.modBaseSize)return utf8(m.szModule)+"+"+hex(address-base);}while(Module32NextW(s.h,&m));}return hex(address);}
 static DWORD watch_pid;static HWND watch_window;
 static BOOL CALLBACK window_for_pid(HWND w,LPARAM){DWORD pid{};GetWindowThreadProcessId(w,&pid);if(pid==watch_pid&&IsWindowVisible(w)&&!GetWindow(w,GW_OWNER)){watch_window=w;return FALSE;}return TRUE;}
 static bool exists(const std::wstring&p){return GetFileAttributesW(p.c_str())!=INVALID_FILE_ATTRIBUTES;}
@@ -40,18 +35,18 @@ int wmain(int argc,wchar_t**argv){DWORD pid=0;bool attached=false;std::unique_pt
    if(!watch_window||!IsWindow(watch_window)){watch_window=nullptr;EnumWindows(window_for_pid,0);}bool hung=watch_window&&IsHungAppWindow(watch_window);if(hung&&!hung_since)hung_since=now;if(!hung)hung_since=0;
    bool requested=exists(request);if(requested||(!hang_dumped&&hung_since&&now-hung_since>=30000)){
     std::wstring path=folder+L"\\hang-"+std::to_wstring(pid)+L"-"+std::to_wstring(now)+L".dmp";
-    try{dump(process.h,pid,0,nullptr,path,false);log<<"{\"event\":\"hang_dump\",\"tick_ms\":"<<now<<",\"path\":"<<quote(utf8(path))<<"}\n";}
+    try{auto written=dump112(process.h,pid,0,nullptr,path,false,log);log<<"{\"event\":\"hang_dump\",\"tick_ms\":"<<now<<",\"path\":"<<quote(utf8(written))<<"}\n";}
     catch(const std::exception&e){log<<"{\"event\":\"dump_error\",\"tick_ms\":"<<now<<",\"error\":"<<quote(e.what())<<"}\n";}hang_dumped=true;if(requested)DeleteFileW(request.c_str());
    }
    log<<"{\"event\":\"heartbeat\",\"tick_ms\":"<<now<<",\"pid\":"<<pid<<",\"window_hung\":"<<hung<<"}\n";log.flush();next_status=now+1000;
   }
   DEBUG_EVENT e{};if(!WaitForDebugEvent(&e,100)){DWORD error=GetLastError();if(error==ERROR_SEM_TIMEOUT)continue;log<<"{\"event\":\"debug_wait_error\",\"winerror\":"<<error<<"}\n";break;}
   DWORD disposition=DBG_CONTINUE;now=GetTickCount64();
-  if(e.dwDebugEventCode==CREATE_PROCESS_DEBUG_EVENT){log<<"{\"event\":\"process_created\",\"tick_ms\":"<<now<<",\"base\":"<<quote(hex(reinterpret_cast<uintptr_t>(e.u.CreateProcessInfo.lpBaseOfImage)))<<",\"path\":"<<quote(utf8(file_name(e.u.CreateProcessInfo.hFile)))<<"}\n";if(e.u.CreateProcessInfo.hFile)CloseHandle(e.u.CreateProcessInfo.hFile);trace->new_thread(e.dwThreadId);/* Debug API owns process/thread event handles until exit; do not close early. */}
+  if(e.dwDebugEventCode==CREATE_PROCESS_DEBUG_EVENT){module_cache112.add(reinterpret_cast<uintptr_t>(e.u.CreateProcessInfo.lpBaseOfImage),e.u.CreateProcessInfo.hFile,file_name(e.u.CreateProcessInfo.hFile));log<<"{\"event\":\"process_created\",\"tick_ms\":"<<now<<",\"base\":"<<quote(hex(reinterpret_cast<uintptr_t>(e.u.CreateProcessInfo.lpBaseOfImage)))<<",\"path\":"<<quote(utf8(file_name(e.u.CreateProcessInfo.hFile)))<<"}\n";if(e.u.CreateProcessInfo.hFile)CloseHandle(e.u.CreateProcessInfo.hFile);trace->new_thread(e.dwThreadId);/* Debug API owns process/thread event handles until exit; do not close early. */}
   else if(e.dwDebugEventCode==CREATE_THREAD_DEBUG_EVENT){log<<"{\"event\":\"thread_created\",\"tick_ms\":"<<now<<",\"thread\":"<<e.dwThreadId<<",\"start\":"<<quote(hex(reinterpret_cast<uintptr_t>(e.u.CreateThread.lpStartAddress)))<<"}\n";trace->new_thread(e.dwThreadId);/* ContinueDebugEvent closes this event handle on thread exit. */}
   else if(e.dwDebugEventCode==EXIT_THREAD_DEBUG_EVENT){trace->exit_thread(e.dwThreadId);log<<"{\"event\":\"thread_exited\",\"tick_ms\":"<<now<<",\"thread\":"<<e.dwThreadId<<",\"exit_code\":"<<e.u.ExitThread.dwExitCode<<"}\n";}
-  else if(e.dwDebugEventCode==LOAD_DLL_DEBUG_EVENT){log<<"{\"event\":\"module_loaded\",\"tick_ms\":"<<now<<",\"base\":"<<quote(hex(reinterpret_cast<uintptr_t>(e.u.LoadDll.lpBaseOfDll)))<<",\"path\":"<<quote(utf8(file_name(e.u.LoadDll.hFile)))<<"}\n";trace->module(reinterpret_cast<uintptr_t>(e.u.LoadDll.lpBaseOfDll),file_name(e.u.LoadDll.hFile));if(e.u.LoadDll.hFile)CloseHandle(e.u.LoadDll.hFile);}
-  else if(e.dwDebugEventCode==UNLOAD_DLL_DEBUG_EVENT){trace->unload(reinterpret_cast<uintptr_t>(e.u.UnloadDll.lpBaseOfDll));log<<"{\"event\":\"module_unloaded\",\"tick_ms\":"<<now<<",\"base\":"<<quote(hex(reinterpret_cast<uintptr_t>(e.u.UnloadDll.lpBaseOfDll)))<<"}\n";}
+  else if(e.dwDebugEventCode==LOAD_DLL_DEBUG_EVENT){module_cache112.add(reinterpret_cast<uintptr_t>(e.u.LoadDll.lpBaseOfDll),e.u.LoadDll.hFile,file_name(e.u.LoadDll.hFile));log<<"{\"event\":\"module_loaded\",\"tick_ms\":"<<now<<",\"base\":"<<quote(hex(reinterpret_cast<uintptr_t>(e.u.LoadDll.lpBaseOfDll)))<<",\"path\":"<<quote(utf8(file_name(e.u.LoadDll.hFile)))<<"}\n";trace->module(reinterpret_cast<uintptr_t>(e.u.LoadDll.lpBaseOfDll),file_name(e.u.LoadDll.hFile));if(e.u.LoadDll.hFile)CloseHandle(e.u.LoadDll.hFile);}
+  else if(e.dwDebugEventCode==UNLOAD_DLL_DEBUG_EVENT){module_cache112.loaded.erase(reinterpret_cast<uintptr_t>(e.u.UnloadDll.lpBaseOfDll));trace->unload(reinterpret_cast<uintptr_t>(e.u.UnloadDll.lpBaseOfDll));log<<"{\"event\":\"module_unloaded\",\"tick_ms\":"<<now<<",\"base\":"<<quote(hex(reinterpret_cast<uintptr_t>(e.u.UnloadDll.lpBaseOfDll)))<<"}\n";}
   else if(e.dwDebugEventCode==EXCEPTION_DEBUG_EVENT){auto&x=e.u.Exception;auto&r=x.ExceptionRecord;DWORD code=r.ExceptionCode;auto address=reinterpret_cast<uintptr_t>(r.ExceptionAddress);disposition=DBG_EXCEPTION_NOT_HANDLED;
    if(trace->exception(e.dwThreadId,code)){disposition=DBG_CONTINUE;}
    else if(code==EXCEPTION_BREAKPOINT&&!initial_break){initial_break=true;disposition=DBG_CONTINUE;}
@@ -65,7 +60,8 @@ int wmain(int argc,wchar_t**argv){DWORD pid=0;bool attached=false;std::unique_pt
     bool full=!x.dwFirstChance||(fatal&&first_dumps==0);if(!x.dwFirstChance||(fatal&&first_dumps<2)){
      if(x.dwFirstChance)++first_dumps;
      std::wstring path=folder+L"\\"+(!x.dwFirstChance?L"unhandled-":L"first-chance-")+std::to_wstring(pid)+L"-"+std::to_wstring(exceptions)+L".dmp";
-     try{dump(process.h,pid,e.dwThreadId,&r,path,full);log<<"{\"event\":\"dump_written\",\"tick_ms\":"<<GetTickCount64()<<",\"full_memory\":"<<full<<",\"path\":"<<quote(utf8(path))<<"}\n";}
+     try{bool saved=fault_snapshot112(process.h,pid,e.dwThreadId,r,path+L".snapshot.json",module_cache112);log<<"{\"event\":\"fault_snapshot112\",\"tick_ms\":"<<GetTickCount64()<<",\"success\":"<<(saved?"true":"false")<<",\"path\":"<<quote(utf8(path+L".snapshot.json"))<<"}\n";log.flush();}catch(const std::exception&failure){log<<"{\"event\":\"snapshot_error112\",\"error\":"<<quote(failure.what())<<"}\n";log.flush();}
+     try{dump112(process.h,pid,e.dwThreadId,&r,path,full,log);}
      catch(const std::exception&failure){log<<"{\"event\":\"dump_error\",\"tick_ms\":"<<GetTickCount64()<<",\"error\":"<<quote(failure.what())<<"}\n";}
     }
    }
