@@ -1,6 +1,20 @@
 # Changelog
 
-## v0.16 - prepared 17 October 2026
+## v0.17 - 17 October 2026
+
+Promotes the accepted Test104 gameplay into a versioned release package.
+
+- Native Q/E/Z/C/R unit commands, contextual walk/run/charge orders and stock formation dragging.
+- Follow Me catches up at a run, then matches walking/running pace without stationary mouse-look restarting orders; Z captures one position/facing for walk or double-tap run.
+- Improved owned first-person near clipping and eye-relative infantry weapon/arm look, with preserved native pose caches and exact restoration.
+- Current native Q targeting excludes the possessed formation from the aim ray. Manual movement stays locked through knockdown and the complete get-up animation.
+- FPS roster overrides stay inside camera work, protecting ordinary native unit consumers; exact current holder lookup and a guarded UI followed-actor write reduce reproduced possession-drop paths.
+- Horizontal and vertical head-look continue through QTE and native kill-animation handoff.
+- The exact accepted adapter, HUD and QTE binaries are retained. Release metadata is 0.17; loader/installer integrity and exact Test104 upgrade/rollback checks are freshly run.
+
+The user accepted Test104 after verified loaded hashes and automatic crash/input/memory/hardware capture. This does not certify all maps/units or fix the unresolved effects crash and mounted-bow presentation. [Release notes](docs/releases/v0.17.md) and [validation](docs/releases/v0.17-validation.json). GitHub publication is separate.
+
+## v0.16 - unpublished development series, 17 October 2026
 
 - Q remaps native contextual move/attack: single-tap walk, double-tap run/charge, and hold/drag native formation placement with first-person aim active.
 - E stops; Z captures Hold Here with guard, single-tap walk or double-tap run; C follows beside/around the player and runs to catch up before matching the player's native pace.
@@ -8,7 +22,7 @@
 - Stationary mouse-look no longer restarts follow goals. Near clipping and infantry arm/weapon look use the owned first-person camera/current eye, with exact restoration and preserved native head/shoulder caches.
 - Native unit pathfinding, formation geometry, run eligibility, fatigue, equipment, accuracy, QTE, RTS return and siege foundations are retained.
 
-Local development build Test102; not yet published. New pace and contextual attack behavior still needs recorded live validation. [Release notes](docs/releases/v0.16.md).
+Historical development builds Test102 through Test104; superseded by v0.17. Test104 received user playtest acceptance before promotion. [Release notes](docs/releases/v0.16.md).
 
 ## v0.15 - 17 October 2026
 

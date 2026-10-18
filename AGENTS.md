@@ -1,6 +1,6 @@
 # Contributor and automation instructions
 
-Current local development work is v0.16 / Test104. Read docs/development/Test104.md and its validation receipt for native roster scope, the selected/wavering UI followed-actor write guard and committed-animation head-look. Test103 remains the installed baseline until a local installation receipt explicitly supersedes it. A built candidate is not installed or live accepted.
+Current product version is v0.17, promoting the gameplay accepted in the Test104 playtest on 17 October 2026. Read docs/releases/v0.17.md and its validation receipt. The adapter, HUD and QTE binaries are retained exactly from the verified Test104 session; release-specific builds change metadata and installer predecessor support. User acceptance does not certify every unit/map or resolve the known effects crash. Installed and loaded versions are separate facts established by local receipts; preparing v0.17 does not replace the installed Test104 loader.
 
 Read README.md, BUILD_AND_TEST.md, SOURCE_MAP.md, VALIDATION.md, docs/STATUS.md and docs/KNOWN_ISSUES.md before changing the project. Work in this maintained source checkout. VERSION defines the product release; directory suffixes and protocol versions are compatibility identifiers.
 

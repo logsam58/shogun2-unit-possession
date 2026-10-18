@@ -6,7 +6,7 @@ The battle continues around you. The game still runs the armies, formations, pat
 
 **[Download v0.15](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.15)** | [Known issues](docs/KNOWN_ISSUES.md) | [Build instructions](BUILD_AND_TEST.md) | [Contributing](CONTRIBUTING.md)
 
-**Development version: v0.16 (Test104).** Adds Q/E/Z/C/R unit commands, native contextual move/attack orders, formation dragging, pace-matched following with catch-up, and closer first-person model presentation. Test104 confines FPS roster overrides to camera work, guards a native UI followed-actor overwrite path, and adds horizontal head-look during committed combat. Test103 targeting and knockdown recovery corrections are retained. This build is being validated locally; the linked v0.15 download keeps its original controls. See [v0.16 notes](docs/releases/v0.16.md).
+**Current source version: v0.17.** Promotes the accepted Test104 gameplay: Q/E/Z/C/R unit commands, native move/attack and formation dragging, pace-matched following with catch-up, improved first-person model presentation, knockdown/get-up movement locking, native roster handling and horizontal/vertical animation head-look. The gameplay binaries are the exact files used in the verified playtest. v0.17 is prepared locally; the linked GitHub v0.15 download keeps its original controls until a separate publication. See [v0.17 notes](docs/releases/v0.17.md).
 
 ## What the mod does
 

@@ -4,7 +4,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1];NATIVE=ROOT/'native';OUT=ROOT/'artifacts';BIN=OUT/'bin';OBJ=OUT/'obj';TEST=OUT/'tests';LOG=OUT/'logs'
 ADAPTER=NATIVE/'outputs/shogun2-accuracy90-preview';QTE=NATIVE/'outputs/shogun2-authentic-hud80-preview';HUD=NATIVE/'outputs/shogun2-ammunition83-preview';AUTO=NATIVE/'work/autoload99-preview';INSTALL=NATIVE/'work/installer-siege99'
 COMMON=['/nologo','/std:c++17','/EHsc','/O2','/MT','/W4'];BASE_LIBS=['bcrypt.lib','user32.lib','gdi32.lib'];QTE_LIBS=BASE_LIBS+['gdiplus.lib','ole32.lib'];SETUP_LIBS=['bcrypt.lib','shell32.lib','advapi32.lib','comdlg32.lib','user32.lib','gdi32.lib']
-receipts=[];hooks=[];CANDIDATE=None
+receipts=[];hooks=[];CANDIDATE=None;RELEASE=False
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 def quote(command):
  for x in command:
@@ -66,7 +66,7 @@ def loader(tests):
   source=BIN/name
   if not source.is_file():raise SystemExit('Build adapter, qte and hud first: '+name)
   shutil.copy2(source,payload/name)
- subprocess.run([sys.executable,str(AUTO/'prepare_embedded.py'),*(['--candidate',str(CANDIDATE)] if CANDIDATE else [])],check=True)
+ subprocess.run([sys.executable,str(AUTO/'prepare_embedded.py'),*(['--release'] if RELEASE else ['--candidate',str(CANDIDATE)])],check=True)
  resources=rc(AUTO/'payload.rc','loader');run('loader',[compile_cpp(AUTO/'bootstrap.cpp',BIN/'dinput8.dll',[resources],['/DEF:'+str(AUTO/'dinput8.def'),'bcrypt.lib','shell32.lib'],['/LD'])]);shutil.copy2(BIN/'dinput8.dll',AUTO/'dinput8.dll');shutil.copy2(AUTO/'marker.pack',BIN/'marker.pack')
  (AUTO/'setup_hashes.h').write_text('#pragma once\nstatic const char* SETUP_BOOTSTRAP_SHA="'+sha(BIN/'dinput8.dll')+'";\n')
  if tests:
@@ -90,13 +90,13 @@ def find_vcvars():
   if p.is_file():return p
  raise SystemExit('Set SHOGUN2_VCVARS to vcvars32.bat or run tools/configure.py --vcvars <path>.')
 def main():
- global VCVARS,CANDIDATE
- parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('target',choices=['adapter','qte','hud','loader','installer','all']);parser.add_argument('--tests',action='store_true');parser.add_argument('--candidate',type=int,default=104,help='Distinct unpublished Test number (100 or later)');args=parser.parse_args();CANDIDATE=args.candidate
+ global VCVARS,CANDIDATE,RELEASE
+ parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('target',choices=['adapter','qte','hud','loader','installer','all']);parser.add_argument('--tests',action='store_true');mode=parser.add_mutually_exclusive_group();mode.add_argument('--candidate',type=int,default=104,help='Distinct unpublished Test number (100 or later)');mode.add_argument('--release',action='store_true',help='Package the accepted Test104 gameplay with release metadata; does not publish or install');args=parser.parse_args();CANDIDATE=args.candidate;RELEASE=args.release
  if CANDIDATE is not None and CANDIDATE<100:parser.error('--candidate must be 100 or later')
  VCVARS=find_vcvars()
  for p in [BIN,OBJ,TEST,LOG]:p.mkdir(parents=True,exist_ok=True)
  targets=['adapter','qte','hud','loader','installer'] if args.target=='all' else [args.target]
  for target in targets:globals()[target](args.tests)
  binaries=[{'file':str(p.relative_to(ROOT)),'bytes':p.stat().st_size,'sha256':sha(p)} for p in BIN.iterdir() if p.suffix in {'.dll','.exe','.pack'}]
- (OUT/'build-results.json').write_text(json.dumps({'candidate':CANDIDATE,'results':receipts,'binaries':binaries,'game_installed_or_launched':False,'rebuilt_payload_is_not_the_installed_hash_identity':True},indent=2)+'\n');print('Build complete; outputs are in artifacts/bin. No installer or game was launched.')
+ (OUT/'build-results.json').write_text(json.dumps({'candidate':CANDIDATE,'development_candidate':not RELEASE,'results':receipts,'binaries':binaries,'game_installed_or_launched':False,'rebuilt_payload_is_not_the_installed_hash_identity':True},indent=2)+'\n');print('Build complete; outputs are in artifacts/bin. No installer or game was launched.')
 if __name__=='__main__':main()

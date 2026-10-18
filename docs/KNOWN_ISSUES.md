@@ -4,7 +4,7 @@
 
 A crash remains unresolved after extended siege play. Full dumps show C0000005 reading address 0x2C at Empire.Retail.dll RVA 0x14A4011 in native effects processing. An effects object has a null table and zero count while an active record still references an element. The immediate dereference is established; the originating state change, lifetime error and possible mod involvement are not.
 
-v0.15 and the v0.16 development build contain no speculative fix for this fault. Matching native code bytes or a native module in a crash report does not exclude a mod-induced earlier state change. Resource samples around the captured case did not show exhaustion, but they do not rule out every allocation or hardware problem. Reports from other crashes may have a different cause.
+v0.17 retains the accepted gameplay without a speculative fix for this fault. Matching native code bytes or a native module in a crash report does not exclude a mod-induced earlier state change. Resource samples around the captured case did not show exhaustion, but they do not rule out every allocation or hardware problem. Reports from other crashes may have a different cause.
 
 When reporting a crash, include the version, unit/map, actions before the exit, other mods and exception/module/offset if available. Optional [diagnostics](../tools/diagnostics/README.md) can preserve more evidence. Full process dumps and raw input logs should be reviewed privately before sharing.
 
@@ -21,8 +21,8 @@ When reporting a crash, include the version, unit/map, actions before the exit, 
 - **Input timing:** QTE input matches recent software-submitted geometry and simulation time. Physical scanout, mouse hardware and end-to-end latency are not measured by this implementation.
 - **Coverage:** multiplayer, overhaul-mod compatibility, every campaign lifecycle, naval/ship control and crew possession are not certified. Artillery retains stock first-person behavior.
 
-- **Formation recovery / RTS drops:** Test103 play reported rigid casualty/displacement reformation and returns to RTS under pressure or wavering. Test104 confines roster overrides to native FPS camera work and protects a reproduced UI followed-actor overwrite path. The two captured living drops do not establish their writer or morale cause. Native reformation/path completion and remaining exits require recorded play; no universal fix is claimed. Z still uses native guard, without a replacement reformation loop.
-- **Committed animation head-look:** Test104 adds horizontal mouse-look up to 100 degrees either side of the animated head while retaining vertical control and native eye translation/roll. Authored kill/recovery assets and clipping across the roster remain pending live coverage.
+- **Formation recovery / RTS drops:** Test103 play reported rigid casualty/displacement reformation and returns to RTS under pressure or wavering. Test104 confines roster overrides to native FPS camera work and protects a reproduced UI followed-actor overwrite path. The two captured living drops do not establish their writer or morale cause. The user accepted Test104 after recorded play. This does not establish every native path/formation lifecycle or eliminate all possible possession exits. Z still uses native guard, without a replacement reformation loop.
+- **Committed animation head-look:** Test104 adds horizontal mouse-look up to 100 degrees either side of the animated head while retaining vertical control and native eye translation/roll. The Test104 playtest received positive acceptance; authored kill/recovery assets and clipping across the full roster still need broader coverage.
 
 ## Installation and startup
 
