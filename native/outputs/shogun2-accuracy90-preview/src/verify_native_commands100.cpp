@@ -14,6 +14,7 @@ static std::vector<UINT> native_messages100;static std::vector<unsigned> native_
 static void* __cdecl cursor_alloc100(unsigned size){require(size==60,"Unexpected fixture cursor allocation");return native_cursor_copy100;}
 static void* __fastcall cursor_copy100(void* out,void*,const void* in){memcpy(out,in,60);return out;}
 static void __cdecl cursor_free100(void* block,unsigned size){require(block==native_cursor_copy100&&size==60,"Foreign cursor cleanup");++native_cursor_frees100;}
+static void __fastcall cursor_preview100(void*,void*,uintptr_t){}
 static void __fastcall cursor_refresh100(void* cursor,void*,unsigned,unsigned,unsigned){field<uintptr_t>(reinterpret_cast<uintptr_t>(cursor),0x24)=reinterpret_cast<uintptr_t>(native_cursor_hit100);}
 static LRESULT CALLBACK stock_window100(HWND window,UINT message,WPARAM flags,LPARAM point){
     native_messages100.push_back(message);if(message==WM_CANCELMODE)return 0;
@@ -71,7 +72,7 @@ static void __fastcall release100(void* task,void*){
 }
 struct NativeFixture100 {
     void* image{};Status status{};
-    std::vector<unsigned char> root=std::vector<unsigned char>(0x1000),env=std::vector<unsigned char>(0x28300),common=std::vector<unsigned char>(0x200),phase=std::vector<unsigned char>(0x2900),
+    std::vector<unsigned char> root=std::vector<unsigned char>(0x1800),env=std::vector<unsigned char>(0x28300),common=std::vector<unsigned char>(0x200),phase=std::vector<unsigned char>(0x2900),
         manager=std::vector<unsigned char>(0x910),point_manager=std::vector<unsigned char>(0x100),camera=std::vector<unsigned char>(0x200),view=std::vector<unsigned char>(0x40),
         holder=std::vector<unsigned char>(0x210),peer_holder=std::vector<unsigned char>(0x210),selected=std::vector<unsigned char>(0x500),owner=std::vector<unsigned char>(0x200),
         config=std::vector<unsigned char>(0x100),actor=std::vector<unsigned char>(0x700),peer=std::vector<unsigned char>(0x700),actor_unit=std::vector<unsigned char>(0x1800),
@@ -97,7 +98,7 @@ struct NativeFixture100 {
         jump(0x342930,reinterpret_cast<void*>(&write_group100));jump(0x285990,reinterpret_cast<void*>(&write_point100));jump(0x2859e0,reinterpret_cast<void*>(&write_uint100));jump(0x285a00,reinterpret_cast<void*>(&write_uint100));
         jump(0x285d00,reinterpret_cast<void*>(&write_byte100));jump(0x285ce0,reinterpret_cast<void*>(&write_short100));jump(0x285a20,reinterpret_cast<void*>(&write_float100));
         jump(0x3f6290,reinterpret_cast<void*>(&cell100));jump(0x3ea8a0,reinterpret_cast<void*>(&ground100));jump(0x36e8f0,reinterpret_cast<void*>(&world_one100));jump(0x36e7b0,reinterpret_cast<void*>(&world_two100));jump(0x101a80,reinterpret_cast<void*>(&sort100));jump(0xf04d0,reinterpret_cast<void*>(&free100));
-        jump(0x335260,reinterpret_cast<void*>(&cursor_refresh100));jump(0xf7440,reinterpret_cast<void*>(&cursor_alloc100));jump(0x252bf0,reinterpret_cast<void*>(&cursor_copy100));jump(0x14fbc77,reinterpret_cast<void*>(&cursor_free100));
+        jump(0x1101da0,reinterpret_cast<void*>(&cursor_preview100));jump(0x335260,reinterpret_cast<void*>(&cursor_refresh100));jump(0xf7440,reinterpret_cast<void*>(&cursor_alloc100));jump(0x252bf0,reinterpret_cast<void*>(&cursor_copy100));jump(0x14fbc77,reinterpret_cast<void*>(&cursor_free100));
         field<unsigned>(reinterpret_cast<uintptr_t>(native_cursor_hit100),4)=1;field<unsigned char>(base,0x1b3116b)=1;
         const unsigned char routing[]={0x31,0xc0,0xc3};memcpy(reinterpret_cast<void*>(base+0x1821e0),routing,sizeof routing);
         DWORD previous{};require(VirtualProtect(image,0x1580000,PAGE_EXECUTE_READ,&previous)!=0,"Fixture code protection");FlushInstructionCache(GetCurrentProcess(),image,0x1580000);

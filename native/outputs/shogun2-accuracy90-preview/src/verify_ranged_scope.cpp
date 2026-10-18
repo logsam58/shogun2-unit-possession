@@ -68,6 +68,9 @@ static void check_forwarded(Task& task,Actor& actor){
     require(draw_calls==old_draw+1&&release_calls==old_release+1&&reload_calls==old_reload+2&&play_calls==old_play+1&&change_calls==old_change+1,"AI callbacks did not forward exactly once per call");
     require(last_actor==reinterpret_cast<uintptr_t>(&actor)&&!memcmp(&task,&before,sizeof task),"Another AI actor or task changed");
 }
+static unsigned recovery_plays103,recovery_changes103,recovery_expected_clip103;
+static void __fastcall recovery_play103(void*,void*,unsigned clip,unsigned force,unsigned attached,float speed){require(clip==recovery_expected_clip103&&force==1&&attached==0&&speed==1.25f,"Recovery playback arguments changed");++recovery_plays103;}
+static void __fastcall recovery_change103(void*,void*,unsigned mode,unsigned skip,unsigned attached){require(prone_mode103(mode)&&skip==0&&attached==1,"Prone transition arguments changed");++recovery_changes103;}
 int main(){try{
     original_task_lower_gate96=original_task_idle_gate96=original_task_animation_gate95=original_ready_gate=original_draw_gate=original_task_reload_gate=original_finish_gate=reinterpret_cast<RangedGate>(address(&Task::gate));
     original_draw=reinterpret_cast<RangedAction>(address(&Task::draw));original_native_release=reinterpret_cast<RangedAction>(address(&Task::release));
@@ -118,6 +121,26 @@ int main(){try{
         check_forwarded(controlled,player);
     }
     mounted_weapon=false;field<unsigned>(possessed,0x1f0)=0;
+    // Recovery blocks manual sequencing without restoring this actor's native
+    // ranged waits. Peers still run their independent original task pipeline.
+    for(unsigned clip:{0x455u,0x456u}){
+        unsigned active[4]={clip,0,0,0};field<uintptr_t>(possessed,0x474)=reinterpret_cast<uintptr_t>(active);field<unsigned>(possessed,0x1d4)=clip;
+        state->weapon_phase=WEAPON_DRAW;state->aim_pose=AIM_READY;state->aiming=state->fire_request=1;auto original_actor=player;
+        auto gates=gate_calls;
+        require(weapon_owned(possessed)&&weapon_task_lower_gate96(&controlled,nullptr)&&weapon_task_idle_gate96(&controlled,nullptr)&&weapon_task_animation_gate95(&controlled,nullptr)&&gate_calls==gates,"Recovery blocked same-unit ranged task completion");
+        weapon_tick(possessed);require(!state->weapon_phase&&!state->aim_pose&&!state->aiming&&!state->fire_request&&!memcmp(&player,&original_actor,sizeof player),"Recovery tick canceled native animation or retained manual sequence");
+        Task peer;peer.actor=reinterpret_cast<uintptr_t>(&same_unit);check_forwarded(peer,same_unit);
+        field<uintptr_t>(possessed,0x474)=0;field<unsigned>(possessed,0x1d4)=0;state->weapon_phase=WEAPON_DRAW;state->aim_pose=AIM_READY;
+        auto saved_play=original_play;original_play=reinterpret_cast<PlayAnimation>(&recovery_play103);recovery_expected_clip103=clip;auto plays=recovery_plays103;
+        weapon_play_hook(&player,nullptr,clip,1,0,1.25f);original_play=saved_play;
+        require(recovery_plays103==plays+1&&!state->weapon_phase&&!state->aim_pose,"Manual aim suppressed incoming get-up clip");
+    }
+    for(unsigned mode:{12u,13u}){state->weapon_phase=WEAPON_DRAW;state->aim_pose=AIM_READY;
+        auto saved_change=original_change;original_change=reinterpret_cast<ChangeState>(&recovery_change103);auto changes=recovery_changes103;
+        weapon_change_hook(&player,nullptr,mode,0,1);original_change=saved_change;
+        require(recovery_changes103==changes+1&&!state->weapon_phase&&!state->aim_pose,"Manual aim suppressed native prone transition");
+    }
+    state->weapon_phase=WEAPON_RELOAD;state->aim_pose=AIM_READY;
     // Releasing, disabling, invalid identity, unsupported personal weapons and
     // native melee/death transitions must restore all original AI behavior.
     for(unsigned scenario=0;scenario<8;++scenario){

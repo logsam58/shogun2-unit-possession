@@ -44,7 +44,7 @@ int main(){void* allocation=nullptr;try{
         require(poll(),"Native successful poll forwarded");
         require(current[0x21]==0&&previous[0x21]==0&&climb_key_held97,"Wall action key masked only in owned keyboard stream");
         for(unsigned i=0;i<11;++i)require(!current[keyboard84::scan(i)]&&!previous[keyboard84::scan(i)],"Owned key current and previous masked");
-        require(current[0x11]==0x80&&current[0x2a]==0x80&&current[0x44]==0x80&&current[0x1d]==0x80,"Other native key bytes preserved");
+        require(current[0x11]==0&&previous[0x11]==0&&current[0x2a]==0x80&&current[0x44]==0x80&&current[0x1d]==0x80,"Owned WASD must not leak into native camera/selection actions; exit/Shift/Ctrl preserved");
         require(physical[2]==0x80&&keyboard_window_owned84('1')&&keyboard_window_owned84('0')&&keyboard_window_owned84(VK_TAB)&&!keyboard_window_owned84(VK_F10),"Physical input and exit control preserved");
     }
     require(edges.sample(3,true)==0,"Held equipment input does not repeat");
@@ -69,6 +69,6 @@ int main(){void* allocation=nullptr;try{
     unsigned hooked_reads=unsigned(keyboard_polls84);
     require(poll()&&current[2]==0x80&&unsigned(keyboard_polls84)==hooked_reads&&reads==hooked_reads+1,"Unhooked native poll executes exactly once");
     MH_Uninitialize();VirtualFree(allocation,0,MEM_RELEASE);allocation=nullptr;
-    std::cout<<"PASS: 50000 original isolation plus 5000 wall isolation calls through production keyboard hook; exact native prologue/state-copy operands, cdecl/AL return, native failures, FPS number/Tab/F isolation, unchanged other keys, held-key RTS handoff and exact byte restoration. Full native input lifecycle still requires live validation.\n";
+    std::cout<<"PASS: 50000 original isolation plus 5000 wall isolation calls through production keyboard hook; exact native prologue/state-copy operands, cdecl/AL return, native failures, FPS number/Tab/F isolation, WASD isolation and unchanged exit/Ctrl keys, held-key RTS handoff and exact byte restoration. Full native input lifecycle still requires live validation.\n";
     return 0;
 }catch(const std::exception& ex){MH_Uninitialize();if(allocation)VirtualFree(allocation,0,MEM_RELEASE);std::cerr<<ex.what()<<'\n';return 1;}}

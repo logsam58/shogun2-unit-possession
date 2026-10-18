@@ -1,5 +1,7 @@
 # Contributor and automation instructions
 
+Current local development work is v0.16 / Test103. Read docs/development/Test103.md and its validation receipt for the latest targeting, ownership-input and knockdown-recovery changes. Test102 mixed live feedback and unresolved release causes are documented there; a built candidate is not automatically installed or live accepted.
+
 Read README.md, BUILD_AND_TEST.md, SOURCE_MAP.md, VALIDATION.md, docs/STATUS.md and docs/KNOWN_ISSUES.md before changing the project. Work in this maintained source checkout. VERSION defines the product release; directory suffixes and protocol versions are compatibility identifiers.
 
 Preserve native movement/fatigue, independent unit AI and firing, equipment/ammunition, effective-accuracy spread, saved RTS camera return, QTE timing/commitment, HUD and siege traversal. Keep strict current actor/unit/lease/holder/camera/serial/death/routing validation. Never replace current identity proof with a stale pointer or a time-based grace period. Keep numeric shared protocols compatible unless an explicit coordinated version change is required.

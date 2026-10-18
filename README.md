@@ -6,7 +6,7 @@ The battle continues around you. The game still runs the armies, formations, pat
 
 **[Download v0.15](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.15)** | [Known issues](docs/KNOWN_ISSUES.md) | [Build instructions](BUILD_AND_TEST.md) | [Contributing](CONTRIBUTING.md)
 
-**Development version: v0.16 (Test102).** Adds Q/E/Z/C/R unit commands, native contextual move/attack orders, formation dragging, pace-matched following with catch-up, and closer first-person model presentation. This build is being validated locally; the linked v0.15 download keeps its original controls. See [v0.16 notes](docs/releases/v0.16.md).
+**Development version: v0.16 (Test103).** Adds Q/E/Z/C/R unit commands, native contextual move/attack orders, formation dragging, pace-matched following with catch-up, and closer first-person model presentation. Test103 adds recovery movement lock, contextual targeting and input-ownership corrections after Test102 feedback. This build is being validated locally; the linked v0.15 download keeps its original controls. See [v0.16 notes](docs/releases/v0.16.md).
 
 ## What the mod does
 
@@ -18,7 +18,7 @@ Select a living unit during a land battle and press **F9** to possess an eligibl
 
 ### Movement, terrain and cavalry
 
-Move with **WASD**, hold **Shift** to run, and use the mouse to look. Movement uses the game's walking/running parameters, acceleration, turn limits, terrain interaction and fatigue. Possession does not give every soldier a common movement speed.
+Move with **WASD**, hold **Shift** to run, and use the mouse to look. Manual movement stays locked through knockdown and the native get-up animation. Movement uses the game's walking/running parameters, acceleration, turn limits, terrain interaction and fatigue. Possession does not give every soldier a common movement speed.
 
 Mounted possession keeps rider and horse identities together and separates looking from steering. Mounted free-look is constrained around the rider's forward direction. Cavalry support exists, but mounted-bow presentation remains a known problem; see the [coverage table](docs/STATUS.md).
 

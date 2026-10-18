@@ -1,0 +1,141 @@
+{
+  "version": "0.16",
+  "candidate": 103,
+  "date": "2026-10-17",
+  "passed": true,
+  "offline_passed": true,
+  "published": false,
+  "development_candidate": true,
+  "live_accepted": false,
+  "predecessor": "Test102 mixed live feedback: follow/gait mostly worked; Q attack failed; repeated alive ownership drops; cannon knockdown movement reported",
+  "engine_sha256": "022fae2e2da92b59b8b1b8ee52887003c624e3c8eca060b209f5d792a7f874f5",
+  "components": {
+    "adapter": {
+      "file": "possession-v46.dll",
+      "bytes": 496128,
+      "sha256": "30abc6312948c6db14868c49cd6e46fd6d4159ede413172e8f2f46e722e05f76"
+    },
+    "hud": {
+      "file": "possession-hud.exe",
+      "bytes": 25308672,
+      "sha256": "ff5963e3f5f923897732c15d3282c24f5f284eb85be471005ec1aab93224d8d1"
+    },
+    "qte": {
+      "file": "qte-playable-v79.dll",
+      "bytes": 8436736,
+      "sha256": "acc3e6dba3a6ad58088a5e240f9eae5ca2e47debd10d6db9a5aace879df7bd5b"
+    },
+    "loader": {
+      "file": "dinput8.dll",
+      "bytes": 34549760,
+      "sha256": "7144d4af2a0259c9622d51ef8e06d817a157296c240bde0e94919cfd79dfb592"
+    },
+    "marker": {
+      "file": "marker.pack",
+      "bytes": 859,
+      "sha256": "6391e20222869126a6c516dfc777e87b0359b0c8b3f921fffde2734b20d768b1"
+    },
+    "setup": {
+      "file": "Shogun2-Possession-Setup.exe",
+      "bytes": 34972160,
+      "sha256": "41ced6d94d5e89e4f62776620296b27dc1390f4b3bd95cad4847ebb619f4096a"
+    },
+    "maintenance_cli": {
+      "file": "install_cli.exe",
+      "bytes": 34952704,
+      "sha256": "a6507572b8d90300f23421ce1aa9960948a9f55715ffd180d32921c8586dbad4"
+    }
+  },
+  "cache_id": "f99ed76883f701cf",
+  "fresh_checks": [
+    {
+      "name": "minhook",
+      "passed": true,
+      "seconds": 3.136,
+      "log": "artifacts\\logs\\minhook.log",
+      "log_sha256": "dc8c5849812a4685d32b4ade623c83776e10a08e32a814a4f6314709731822d9"
+    },
+    {
+      "name": "adapter",
+      "passed": true,
+      "seconds": 6.625,
+      "log": "artifacts\\logs\\adapter.log",
+      "log_sha256": "7232a9b159ef2cd1dd224eef0ec1204bfe6400047719a5a3697588489f0a9f8f"
+    },
+    {
+      "name": "adapter-tests",
+      "passed": true,
+      "seconds": 110.588,
+      "log": "artifacts\\logs\\adapter-tests.log",
+      "executables": 54,
+      "log_sha256": "33b5f1423fe20c8396b698b255a4210e235bdf0915d6f34e50a8948d4df19469"
+    },
+    {
+      "name": "loader",
+      "passed": true,
+      "seconds": 4.105,
+      "log": "artifacts\\logs\\loader.log",
+      "log_sha256": "336b023a25405f667730122dec3fe3f7b5016f9ef9aa3c70d5503ba48ca378aa"
+    },
+    {
+      "name": "loader-tests",
+      "passed": true,
+      "seconds": 6.548,
+      "log": "artifacts\\logs\\loader-tests.log",
+      "log_sha256": "c915aa440aa4a051d8cfd5614cc901a0f7df7cac1521d31d40397735aa0c3aeb"
+    },
+    {
+      "name": "installer",
+      "passed": true,
+      "seconds": 8.105,
+      "log": "artifacts\\logs\\installer.log",
+      "log_sha256": "8267be106920bb7a4a725c43f2187afc6b7554336c755ec7b261c041a5b19a24"
+    },
+    {
+      "name": "installer-tests",
+      "passed": true,
+      "seconds": 143.334,
+      "log": "artifacts\\logs\\installer-tests.log",
+      "log_sha256": "dfa12a6e3f58864d09aafa41de37ee05679a2eb456488e2438e7ddde372b198c"
+    }
+  ],
+  "fresh_suites": {
+    "adapter_executables": 54,
+    "loader_executables": 2,
+    "installer": "Full final-payload upgrade/interruption/rollback/collision/retention suite including exact Test102 upgrade, seven interruptions and repeat install"
+  },
+  "retained_checks": {
+    "hud": "Exact Test102 binary and implementation; no fresh HUD suite or rendering claimed",
+    "qte": "Exact Test102/published v0.15 binary and source; earlier32-case receipt retained, no fresh QTE suite or rendering claimed"
+  },
+  "regressions": {
+    "original_native_camera_cycles": 200,
+    "owned_camera_cycle_blocks": 400,
+    "production_input_blocks": 200,
+    "original_hover_provider_refreshes": 201,
+    "native_recovery_clock_and_production_motion_frames": 420,
+    "original_target_constructor_pairs": 200,
+    "explicit_cases": [
+      "exit/stale-serial native camera forwarding",
+      "two prone postures",
+      "active get-up after standing posture already selected",
+      "native clock clears actual animation; stale planned clip does not lock",
+      "queued pre-impact shot retires without ammo/animation mutation",
+      "personal get-up/prone transition admitted; owned ranged barriers and peer callbacks retained",
+      "native special/banner same-unit accessor; ground/building/other-unit ray hits preserved; stale-lease/RTS queries unchanged",
+      "all retained Q single/double/drag, Z anchor, follow gait/catch-up and stationary regressions"
+    ]
+  },
+  "new_native_hooks": 2,
+  "new_hook_rvas": [
+    "0x2f79a0",
+    "0x10ee5b0"
+  ],
+  "numeric_protocols_unchanged": true,
+  "command_protocol": {
+    "version": 100,
+    "bytes": 80
+  },
+  "live_limits": "Synthetic scene hits and per-target metadata/eligibility, window host, view count and motion integrator substitutions. Native attack submission/AI completion, actual impacts/get-up assets and remaining release causes require recorded live play. Native cycling involvement in Test102 releases is not proven. No effects-crash fix claimed.",
+  "validation_refinement": "Initial new fixture compile cast corrected; intermediate full adapter exposed recovery predicate coupled to ranged ownership. Separated personal recovery suppression from unchanged unit ranged barriers and retained Shift/Ctrl Q modifiers. Final queued-shot edge and explicit same-unit recovery regressions included and held press-snapshot hover/release-endpoint separation included before final payload rebuild."
+}

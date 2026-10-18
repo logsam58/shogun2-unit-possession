@@ -1,6 +1,6 @@
 # Support and development status
 
-Current source product version: **0.16**, local development Test102. Latest published product version: **0.15**. The release contains the native possession, weapon, melee QTE, HUD, unit-order, camera-return and siege systems described in the [README](../README.md).
+Current source product version: **0.16**, local development Test103. Latest published product version: **0.15**. The release contains the native possession, weapon, melee QTE, HUD, unit-order, camera-return and siege systems described in the [README](../README.md).
 
 | Area | Implemented behavior | Coverage / limitation |
 | --- | --- | --- |
@@ -22,4 +22,6 @@ Offline fixtures cover important native forwarding, identity, cleanup, geometry,
 Current development priorities are the unresolved effects crash, mounted-bow presentation, broader ranged-unit/animation coverage, crowded-combat interruptions and siege-map lifecycle testing. Known limitations and reporting guidance are in [KNOWN_ISSUES.md](KNOWN_ISSUES.md) and [CONTRIBUTING.md](../CONTRIBUTING.md).
 
 
-The `unit-commands-and-first-person-visibility` branch contains **v0.16 / Test102**. Test101 received "BIG improvement" feedback after exact loaded/capture verification; that is scoped user feedback rather than a complete roster certification. Test102 adds native contextual Q single/double orders, Z walk/run and Follow Me pace/catch-up. The Test101 Q/camera/pose corrections are retained. [Test102 notes](development/Test102.md) distinguish offline checks from pending live behavior.
+The `unit-commands-and-first-person-visibility` branch contains **v0.16 / Test103**. Test101 received "BIG improvement" feedback after exact loaded/capture verification; that is scoped user feedback rather than a complete roster certification. Test102 adds native contextual Q single/double orders, Z walk/run and Follow Me pace/catch-up. The Test101 Q/camera/pose corrections are retained. [Test102 notes](development/Test102.md) distinguish offline checks from pending live behavior.
+
+Test102 received mixed feedback: following/gait mostly worked, Q attack failed, and multiple unintended possession exits occurred. **Test103** corrects current-target refresh/own-formation occlusion, isolates native movement/camera inputs, records detailed release failures, and locks manual movement throughout native knockdown/get-up. Its [development notes](development/Test103.md) separate reproduced native paths from unproven live causes.

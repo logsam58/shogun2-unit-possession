@@ -108,6 +108,8 @@ static void manual_bow_apply(const uint32_t* payload,uintptr_t context){
         if(!enabled||state->stop||state->release||state->mode!=POSSESSED||actor!=possessed||env!=environment||env!=ticket_environment||!followed(actor,false)){state->shot_error=70;return;}
         if(field<uintptr_t>(actor,0)!=base+0x15dfec8||field<unsigned char>(actor,0xf0)!=1||field<uintptr_t>(actor,0x214)!=unit
             ||field<unsigned>(actor,0x1c8)!=ticket_actor||field<unsigned>(unit,4)!=ticket_unit){state->shot_error=71;return;}
+        // A queued shot must never cancel or replace a native get-up animation.
+        if(native_recovery103(actor)){InterlockedExchange(&state->weapon_phase,0);state->aim_pose=0;InterlockedExchange(&state->fire_request,0);++state->shots_canceled;return;}
         // Check again at the native release boundary, before consuming ammunition.
         if(!weapon_ready_held()){
             InterlockedExchange(&state->weapon_phase,0);state->aim_pose=0;++state->shots_canceled;

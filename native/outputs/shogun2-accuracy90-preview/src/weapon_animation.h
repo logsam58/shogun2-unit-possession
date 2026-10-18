@@ -1,4 +1,5 @@
 #include "native_air99.h"
+#include "native_recovery103.h"
 #pragma once
 #include "ranged_task_completion.h"
 #include "personal_weapon_profile.h"
@@ -284,6 +285,10 @@ static bool __fastcall weapon_task_idle_gate96(void* task,void*){
     return original_task_idle_gate96(task);
 }
 static void __fastcall weapon_play_hook(void* actor,void*,unsigned clip,unsigned force,unsigned attached,float speed){
+    if(!own_weapon_call&&recovery_clip103(clip)&&weapon_owned(reinterpret_cast<uintptr_t>(actor))){
+        state->weapon_phase=WEAPON_IDLE;state->aim_pose=0;InterlockedExchange(&state->aiming,0);InterlockedExchange(&state->fire_request,0);
+        original_play(actor,clip,force,attached,speed);return;
+    }
     if(!own_weapon_call&&(state->weapon_phase||state->aim_pose)&&weapon_owned(reinterpret_cast<uintptr_t>(actor)))return;
     if(!own_weapon_call&&weapon_owned(reinterpret_cast<uintptr_t>(actor))&&equipment_slot81==equipment81::Melee&&
        ((clip>=124&&clip<=140)||clip==750||clip==751||(clip>=753&&clip<=786)))return;
@@ -292,7 +297,7 @@ static void __fastcall weapon_play_hook(void* actor,void*,unsigned clip,unsigned
 static void __fastcall weapon_change_hook(void* actor,void*,unsigned mode,unsigned skip,unsigned attached){
     if(!own_weapon_call&&(state->weapon_phase||state->aim_pose)&&weapon_owned(reinterpret_cast<uintptr_t>(actor))){
         // Let death, impacts and melee transitions interrupt the sequence.
-        if(!personal_weapon_mode(mode,weapon_mounted())){InterlockedExchange(&state->weapon_phase,WEAPON_IDLE);state->aim_pose=0;InterlockedExchange(&state->aiming,0);}
+        if(prone_mode103(mode)||!personal_weapon_mode(mode,weapon_mounted())){InterlockedExchange(&state->weapon_phase,WEAPON_IDLE);state->aim_pose=0;InterlockedExchange(&state->aiming,0);}
         else return;
     }
     if(!own_weapon_call&&weapon_owned(reinterpret_cast<uintptr_t>(actor))){
@@ -308,6 +313,7 @@ static void __fastcall weapon_change_hook(void* actor,void*,unsigned mode,unsign
 }
 static void begin_weapon_impl(const uint32_t* payload,uintptr_t context){
     __try {
+        if(weapon_owned(payload[11])&&native_recovery103(payload[11])){InterlockedExchange(&state->weapon_phase,WEAPON_IDLE);state->aim_pose=0;InterlockedExchange(&state->fire_request,0);++state->shots_canceled;return;}
         if(!weapon_ready_held()){++state->shots_canceled;return;}
         if(!weapon_owned(payload[11])||state->weapon_phase||field<float>(payload[11],0x390)>0){state->shot_error=87;return;}
         weapon_actor=payload[11];weapon_context=context;memcpy(weapon_payload,payload,sizeof(weapon_payload));
@@ -350,6 +356,9 @@ static void begin_weapon(const uint32_t* payload,uintptr_t context){
 }
 static void weapon_tick(uintptr_t actor){
     __try {
+        if(weapon_owned(actor)&&native_recovery103(actor)){
+            state->weapon_phase=WEAPON_IDLE;state->aim_pose=0;InterlockedExchange(&state->aiming,0);InterlockedExchange(&state->fire_request,0);return;
+        }
         if(!weapon_owned(actor)){mounted_draw={};InterlockedExchange(&state->weapon_phase,WEAPON_IDLE);state->aim_pose=0;return;}
         // A rejected rendered pose lowers the owned weapon at its simulation
         // boundary. Keep FPS ownership; invalid actor/engine contexts still use

@@ -21,8 +21,9 @@ static bool __cdecl keyboard_poll84(){
     }
     if(valid){const unsigned scans98[]={0x11,0x1e,0x1f,0x20,0x10,0x12,0x2a,0x36};unsigned physical98=0;
         for(unsigned i=0;i<8;++i)if(current[scans98[i]]&0x80)physical98|=1u<<i;
-        unsigned masked98=(keyboard_fps84()&&keyboard_wall98?255u:0u)|keyboard_wall_held98;
-        keyboard_wall_held98=keyboard_fps84()&&keyboard_wall98?physical98:keyboard_wall_held98&physical98;
+        unsigned owned98=keyboard_fps84()?(keyboard_wall98?255u:15u):0u;
+        unsigned masked98=owned98|keyboard_wall_held98;
+        keyboard_wall_held98=keyboard_fps84()?(physical98&owned98):keyboard_wall_held98&physical98;
         for(unsigned i=0;i<8;++i)if(masked98&(1u<<i))current[scans98[i]]=previous[scans98[i]]=0;
     }
     command_keyboard_filter100.apply(current,previous,keyboard_fps84(),valid);

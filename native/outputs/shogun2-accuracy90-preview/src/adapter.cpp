@@ -126,6 +126,18 @@ static const unsigned char signature[16]={0x55,0x8b,0xec,0x83,0xe4,0xf0,0x83,0xe
 template<class T>static T& field(uintptr_t p,unsigned off){return *reinterpret_cast<T*>(p+off);}
 #include "native_wall97.h"
 #include "native_subject.h"
+#include "native_recovery103.h"
+static volatile LONG recovery_blocks103,recovery_active103;
+static bool recovery_prepare103(uintptr_t actor){
+    bool blocked=native_recovery103(actor);InterlockedExchange(&recovery_active103,blocked?1:0);
+    if(!blocked)return false;
+    // Do not zero native velocity/impulse or pin the actor. The original motion
+    // integrator, collision and animation root movement still execute once.
+    InterlockedExchange(&state->aiming,0);InterlockedExchange(&state->fire_request,0);
+    state->weapon_phase=0;state->aim_pose=0;
+    state->requested_speed=state->effective_speed=0;InterlockedIncrement(&recovery_blocks103);return true;
+}
+
 static bool weapon_mounted(){return possession_lease.active&&possession_lease.identity.mount!=0;}
 static bool native_routing(uintptr_t actor_unit);
 // After proven death, the camera consumes only numeric head poses captured by
@@ -146,7 +158,28 @@ static __declspec(thread) unsigned follow_failure93;
 static volatile LONG release_stage93,release_confirmed93,release_recovered93,release_flags93;
 static __declspec(align(8)) volatile LONG64 release_tick93;
 static bool reject_follow93(unsigned stage){follow_failure93=stage;return false;}
+struct Release103 {unsigned sequence,stage,lease,actor,unit,serial,mode,clip,count,capacity;uintptr_t expected,cam_actor,manager_actor,selected,owner,group_vt,members,first;uint64_t tick;};
+static SRWLOCK release_lock103=SRWLOCK_INIT;
+static Release103 releases103[8];static unsigned release_sequence103;
+static void release_snapshot103(){
+    Release103 x{};x.stage=follow_failure93;x.lease=possession_lease.generation;x.actor=state->actor_id;x.unit=state->unit_id;x.tick=GetTickCount64();x.expected=possessed;
+    __try{const auto& i=possession_lease.identity;x.cam_actor=field<uintptr_t>(i.camera,0x188);x.manager_actor=field<uintptr_t>(i.manager,0x8fc);
+        x.serial=field<unsigned>(possessed,0x1c8);x.mode=field<unsigned>(possessed,0x1f0);x.clip=field<unsigned>(possessed,0x1d4);
+        x.selected=field<uintptr_t>(i.environment,0x2826c);if(x.selected)x.owner=field<uintptr_t>(x.selected,0x4a8);
+        if(x.owner){auto g=x.owner+0xb0;x.group_vt=field<uintptr_t>(g,0);x.count=field<unsigned>(g,0x14);x.capacity=field<unsigned>(g,0x10);x.members=field<uintptr_t>(g,0x18);if(x.members&&x.count&&x.capacity)x.first=field<uintptr_t>(x.members,0);}
+    }__except(EXCEPTION_EXECUTE_HANDLER){}
+    AcquireSRWLockExclusive(&release_lock103);x.sequence=++release_sequence103;releases103[(x.sequence-1)%8]=x;ReleaseSRWLockExclusive(&release_lock103);
+}
+static void release_log103(std::ostream& log){
+    static unsigned last;Release103 copy[8]{};unsigned end;
+    AcquireSRWLockShared(&release_lock103);end=release_sequence103;memcpy(copy,releases103,sizeof copy);ReleaseSRWLockShared(&release_lock103);
+    for(unsigned n=end>8&&last<end-8?end-8:last;n<end;++n){const auto& x=copy[n%8];
+        log<<"{\"event\":\"identity_release103\",\"sequence\":"<<x.sequence<<",\"tick_ms\":"<<x.tick<<",\"stage\":"<<x.stage<<",\"lease\":"<<x.lease<<",\"actor\":"<<x.actor<<",\"unit\":"<<x.unit<<",\"serial\":"<<x.serial<<",\"mode\":"<<x.mode<<",\"clip\":"<<x.clip
+           <<",\"expected_actor\":"<<x.expected<<",\"camera_actor\":"<<x.cam_actor<<",\"manager_actor\":"<<x.manager_actor<<",\"selected\":"<<x.selected<<",\"owner\":"<<x.owner<<",\"group_vtable\":"<<x.group_vt<<",\"count\":"<<x.count<<",\"capacity\":"<<x.capacity<<",\"members\":"<<x.members<<",\"first_unit\":"<<x.first<<"}\n";
+    }last=end;
+}
 static void note_follow_release93(){
+    release_snapshot103();
     InterlockedExchange(&release_stage93,LONG(follow_failure93));InterlockedIncrement(&release_confirmed93);InterlockedExchange64(&release_tick93,LONG64(GetTickCount64()));
     __try{LONG flags=field<unsigned char>(possessed,0xf0)|(field<unsigned char>(possessed,0xa1)<<8)|(field<unsigned char>(possessed,0xa2)<<16)|(field<unsigned char>(possessed,0xa3)<<24);InterlockedExchange(&release_flags93,flags);}__except(EXCEPTION_EXECUTE_HANDLER){InterlockedExchange(&release_flags93,-1);}
 }
@@ -233,12 +266,17 @@ static bool adopt_possession97(uintptr_t actor){
 #include "camera_choice97.h"
 // Native camera action handler: ECX=input object, two stack arguments, RET8.
 // Observe only its real environment backlink; forward both arguments and EAX.
+static bool camera_owned(uintptr_t);
+static volatile LONG camera_input_blocks103;
 static uintptr_t __fastcall camera_input(void* object,void*,uintptr_t first,uintptr_t second){
     __try {
         uintptr_t root=field<uintptr_t>(base,0x1bc8180);
         uintptr_t env=root?field<uintptr_t>(root,0x110):0;
         if(env&&field<uintptr_t>(reinterpret_cast<uintptr_t>(object),0x1c)==env)
-            state->camera_input_thread=GetCurrentThreadId();
+            {state->camera_input_thread=GetCurrentThreadId();
+                auto manager=field<uintptr_t>(env,0x281fc),camera=manager?field<uintptr_t>(manager,0x8e0):0;
+                if(camera&&state->mode==POSSESSED&&!dead_view()&&camera_owned(camera)){InterlockedIncrement(&camera_input_blocks103);return 0;}
+            }
     }__except(EXCEPTION_EXECUTE_HANDLER){}
     ++camera_callback_depth;
     uintptr_t result=0;
@@ -627,6 +665,7 @@ static bool prepare(uintptr_t actor) {
         if(actor!=locomotion_actor())return false;
         if(!confirm_follow93(possessed)){note_follow_release93();++state->identity_releases;relinquish();return false;}
         if(dead_view())return false;
+        if(recovery_prepare103(actor))return false;
         if(climb_prepare97(actor))return false;
         if(finish_melee_handoff78(actor))return false;
         // The human request owns mounted combat too. During that commitment
@@ -728,7 +767,7 @@ static void snapshot_log(std::ofstream& log) {
      if(count!=previous){previous=count;log<<"{\"event\":\"animation_handoff78\",\"tick_ms\":"<<GetTickCount64()
         <<",\"handoffs\":"<<count<<",\"native_view_updates\":"<<animation_view_updates78<<",\"playback_anchor_bypasses\":"<<melee_playback_hold_bypasses78
         <<",\"root\":["<<melee_handoff_root78[0]<<','<<melee_handoff_root78[1]<<','<<melee_handoff_root78[2]<<"]}\n";}}
-    log_mounted_pose_diagnostic(log);log_mounted_sequence69(log);log_mounted_render70(log);log_weapon_observation82(log);log_mounted_pose_audit87(log);
+    release_log103(log);log_mounted_pose_diagnostic(log);log_mounted_sequence69(log);log_mounted_render70(log);log_weapon_observation82(log);log_mounted_pose_audit87(log);
     {static LONG seen=-1;LONG blocks=mounted_carbine_predraw_blocks72;
       if(blocks!=seen){seen=blocks;
         log<<"{\"event\":\"mounted_carbine_gate72\",\"tick_ms\":"<<GetTickCount64()
@@ -746,6 +785,7 @@ static void snapshot_log(std::ofstream& log) {
     if(!ok)return;
     log<<"{\"event\":\"control_metrics\",\"tick_ms\":"<<GetTickCount64()<<",\"mode\":"<<s.mode;
     control_metrics(log,s);accuracy_log90(log);climb_log97(log);
+    log<<",\"context103\":1,\"camera_cycle_blocks103\":"<<camera_cycle_blocks103<<",\"camera_input_blocks103\":"<<camera_input_blocks103<<",\"cursor_self_hits103\":"<<cursor_self_hits103<<",\"cursor_queries103\":"<<cursor_queries103<<",\"cursor_errors103\":"<<cursor_errors103<<",\"command_target_samples103\":"<<command_target_samples103<<",\"command_target_kind103\":"<<command_target_kind103<<",\"command_target_unit103\":"<<command_target_unit103<<",\"recovery103\":1,\"recovery_blocks103\":"<<recovery_blocks103<<",\"recovery_active103\":"<<recovery_active103;
     log<<",\"ranged_barrier96\":1,\"lower_barrier_bypasses96\":"<<lower_barrier_bypasses96<<",\"idle_barrier_bypasses96\":"<<idle_barrier_bypasses96<<",\"look_pitch96\":1,\"ranged_barrier95\":1,\"animation_barrier_bypasses95\":"<<animation_barrier_bypasses95<<",\"same_unit_ai_draws95\":"<<same_unit_ai_draws95<<",\"same_unit_ai_releases95\":"<<same_unit_ai_releases95;
     log<<",\"release_stage93\":"<<release_stage93<<",\"release_confirmed93\":"<<release_confirmed93<<",\"release_recovered93\":"<<release_recovered93<<",\"release_tick93\":"<<InterlockedCompareExchange64(&release_tick93,0,0)<<",\"release_flags93\":"<<release_flags93;
     log<<"}\n";
@@ -820,7 +860,7 @@ static DWORD WINAPI worker(void*) {
         const unsigned char projectile_camera_sig[8]={0x56,0x8b,0xf1,0x57,0x8d,0xbe,0xec,0x08};
         require(memcmp(projectile_camera_target,projectile_camera_sig,8)==0,"Projectile camera signature differs");
         require(MH_CreateHook(projectile_camera_target,reinterpret_cast<void*>(&projectile_camera),reinterpret_cast<void**>(&original_projectile_camera))==MH_OK,"Projectile camera hook failed");
-        create_weapon_hooks();create_mounted_render_hooks70();create_siege_hooks97();
+        create_weapon_hooks();create_mounted_render_hooks70();create_siege_hooks97();create_context_hooks103();
 
         create_dispersion_hook();
         create_interface_hooks();
@@ -913,6 +953,7 @@ static DWORD WINAPI worker(void*) {
         bool guarded=state->fire_ticket!=0;
         MH_STATUS result=MH_OK;
         if(MH_DisableHook(keyboard_poll_target84)!=MH_OK)result=MH_UNKNOWN;
+        for(unsigned rva:{0x2f79a0u,0x10ee5b0u})if(MH_DisableHook(reinterpret_cast<void*>(base+rva))!=MH_OK)result=MH_UNKNOWN;
         for(void* p:{reinterpret_cast<void*>(base+0xf9c360),reinterpret_cast<void*>(base+0xf9bf20),reinterpret_cast<void*>(base+0x122f740),cursor_target})if(MH_DisableHook(p)!=MH_OK)result=MH_UNKNOWN;
         for(void* p:{reinterpret_cast<void*>(base+0x2fcb10),reinterpret_cast<void*>(base+0x341560),reinterpret_cast<void*>(base+0x2d6210),reinterpret_cast<void*>(base+0x340d30),reinterpret_cast<void*>(base+0x3945c0),reinterpret_cast<void*>(base+0x3cf280),target,cancel_target,toggle_target,matrix_target,camera_input_target,projectile_camera_target,reinterpret_cast<void*>(base+0x3ca920),reinterpret_cast<void*>(base+0x3e8b50),reinterpret_cast<void*>(base+0x3f0370),reinterpret_cast<void*>(base+0x3f03d0),reinterpret_cast<void*>(base+0x3e3f50),reinterpret_cast<void*>(base+0x3d3630),reinterpret_cast<void*>(base+0x3d4320),reinterpret_cast<void*>(base+0x3e1a20),reinterpret_cast<void*>(base+0x4272e0),reinterpret_cast<void*>(base+0x4c56d0)})if(MH_DisableHook(p)!=MH_OK)result=MH_UNKNOWN;
         if(!guarded){if(MH_DisableHook(reinterpret_cast<void*>(base+0x2ac0b0))!=MH_OK)result=MH_UNKNOWN;}

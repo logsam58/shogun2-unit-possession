@@ -4,7 +4,7 @@
 
 | Suite | Coverage |
 | --- | --- |
-| Adapter: 53 executables (development) | Native forwarding, strict identity/lifetime, movement, camera return, weapons/accuracy, equipment, siege path/speed/crest/landing and cleanup |
+| Adapter: 54 executables (development) | Native forwarding, strict identity/lifetime, movement, camera return, weapons/accuracy, equipment, siege path/speed/crest/landing and cleanup |
 | Styled QTE: 32 executables | Combat preparation, clocks/cycles, input/deadlines, interruption feedback, registry churn, pacing and actual reusable styled surface |
 | HUD: 2 executables | Consistent contextual state, visibility and presentation policy |
 | Loader: 2 executables | Bootstrap, embedded payload integrity and integration |
@@ -35,3 +35,5 @@ Before a source push, run `py tools/audit_repository.py`. It checks staged blob 
 [Test101 correction validation](docs/development/Test101-validation.json) records the final 53 adapter executables, exact native projection/camera-cache and stationary-follow/Q regressions, loader integrity and Test100 transactional upgrade/rollback. HUD/QTE sources and binaries are retained rather than claimed as newly rendered or retested. Test100 was live rejected for Q/Follow Me and rifle/arm clipping; Test101 still needs live acceptance.
 
 [Test102 / v0.16 validation](docs/development/Test102-validation.json) pins the final adapter, native gait/tap regressions, loader integrity and full Test101 upgrade/interruption/rollback payload. The release-build receipt additionally pins the tracked native/tool source closure in [v0.16-validation.json](docs/releases/v0.16-validation.json). HUD/QTE binaries are retained; their suites and visuals are not reported as freshly rerun. New catch-up, native contextual attack/targeting and formation gait still require recorded live play.
+
+[Test103 correction validation](docs/development/Test103-validation.json) records native contextual targeting, current input/camera ownership and full active-animation recovery-lock cases. Test102 user feedback is mixed; remaining release causes and actual attack/recovery behavior require recorded live validation. Exact Test102 upgrade and interruption rollback are included in the new installer payload checks.

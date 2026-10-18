@@ -174,6 +174,7 @@ def web_links(text, relative):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--verify-only', action='store_true', help='Check build inputs without requiring a committed tree or creating player downloads')
+    parser.add_argument('--development-package', action='store_true', help='Keep an unpublished Test candidate in its own version/Test directory')
     args = parser.parse_args()
     receipt, versions, target = verify_inputs()
     if args.verify_only:
@@ -181,7 +182,9 @@ def main():
         return
     require(not git('status', '--porcelain'), 'Commit and review the source before creating a release package')
     head = git('rev-parse', 'HEAD')
-    folder = ROOT / 'artifacts/releases' / TAG
+    if args.development_package:
+        require(receipt.get('development_candidate') and isinstance(receipt.get('candidate'), int), 'Development package requires a numbered candidate receipt')
+    folder = ROOT / 'artifacts/releases' / (TAG + ('-Test' + str(receipt['candidate']) if args.development_package else ''))
     folder.mkdir(parents=True, exist_ok=True)
     publication = folder / 'publication-receipt.json'
     require(not publication.exists(), 'Publication receipt already exists; refusing to replace release assets')

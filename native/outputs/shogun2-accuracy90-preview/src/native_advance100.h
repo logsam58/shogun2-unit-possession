@@ -8,6 +8,7 @@ static bool command_native_double102,command_native_drag102;
 static float command_native_yaw102,command_native_pitch102;
 static uint64_t command_native_down102;
 static volatile LONG command_native_doubles102;
+static volatile LONG command_target_samples103,command_target_kind103,command_target_unit103;
 static unsigned command_native_lease100,command_native_sequence100;
 static uintptr_t command_native_environment100;
 static volatile LONG command_native_presses100,command_native_moves100,command_native_releases100,command_native_cancels100;
@@ -47,7 +48,25 @@ static void command_native_cancel100(){
 static bool command_native_ready100(HWND window){
     if(!state||!native_window_proc||window!=input_window||GetCurrentThreadId()!=state->window_thread||!possession_lease.active||
        !enabled||state->stop||state->release||state->mode!=POSSESSED||!followed(possessed,false)||!camera_owned(possession_lease.identity.camera)||dead_view())return false;
-    melee60::Request commitment{};return !melee_request(commitment)&&!wall_subject97(possessed)&&!native_airborne_subject99(possessed);
+    melee60::Request commitment{};return !melee_request(commitment)&&!wall_subject97(possessed)&&!native_airborne_subject99(possessed)&&!native_recovery103(possessed);
+}
+// Same target refresh/provider update as the native frame path1101b90.
+// A short Q tap must not commit using the prior frame's hover provider.
+static void command_refresh103(uintptr_t root){
+    using Mode=unsigned(__thiscall*)(void*);using Refresh=void(__thiscall*)(void*,unsigned,unsigned,unsigned);using Preview=void(__thiscall*)(void*,uintptr_t);
+    unsigned mode=reinterpret_cast<Mode>(base+0x10fde30)(reinterpret_cast<void*>(root));
+    reinterpret_cast<Refresh>(base+0x335260)(reinterpret_cast<void*>(root+0x10c),0,0,mode);
+    auto hit=field<uintptr_t>(root,0x130);
+    // Native1101b90 keeps the press snapshot as the hover provider while
+    // dragging. The current hit remains the separate release endpoint.
+    auto held=field<uintptr_t>(root,0x134);
+    reinterpret_cast<Preview>(base+0x1101da0)(reinterpret_cast<void*>(root),held?held:hit);
+    unsigned kind=0,id=0;if(hit){
+        if(field<uintptr_t>(hit,0xc))kind|=1;
+        if(field<uintptr_t>(hit,0x18))kind|=4;
+        auto target=field<uintptr_t>(hit,0x20);if(target){kind|=2;auto u=field<uintptr_t>(target,0);if(u)id=field<unsigned>(u,4);}
+    }
+    InterlockedExchange(&command_target_kind103,LONG(kind));InterlockedExchange(&command_target_unit103,LONG(id));InterlockedIncrement(&command_target_samples103);
 }
 static bool command_native_begin100(HWND window){
     __try{
@@ -60,6 +79,7 @@ static bool command_native_begin100(HWND window){
         command_native_down102=GetTickCount64();command_native_yaw102=state->yaw;command_native_pitch102=state->pitch;command_native_drag102=false;
         AcquireSRWLockExclusive(&command_input_lock100);command_native_double102=command_q_tap102.consume(command_native_down102,GetDoubleClickTime(),possession_lease.generation);ReleaseSRWLockExclusive(&command_input_lock100);
         if(command_native_double102)InterlockedIncrement(&command_native_doubles102);
+        command_refresh103(root);
         CallWindowProcW(native_window_proc,window,command_native_double102?WM_RBUTTONDBLCLK:WM_RBUTTONDOWN,MK_RBUTTON|command_native_modifiers100(),point);InterlockedIncrement(&command_native_presses100);return true;
     }__except(EXCEPTION_EXECUTE_HANDLER){command_native_cancel100();return false;}
 }
@@ -71,6 +91,7 @@ static bool command_native_end100(HWND window){
         RECT client{};auto point=command_native_point100(window,client);if(point==-1){command_native_cancel100();return false;}
         auto now102=GetTickCount64();
         bool tap102=!command_native_drag102&&std::hypot(std::remainder(state->yaw-command_native_yaw102,command100::tau),state->pitch-command_native_pitch102)<.01f&&now102>=command_native_down102&&now102-command_native_down102<=GetDoubleClickTime();
+        command_refresh103(command_native_root100);
         CallWindowProcW(native_window_proc,window,WM_RBUTTONUP,command_native_modifiers100(),point);
         AcquireSRWLockExclusive(&command_input_lock100);
         if(tap102&&!command_native_double102)command_q_tap102.arm(command_native_down102,possession_lease.generation);else command_q_tap102.reset();

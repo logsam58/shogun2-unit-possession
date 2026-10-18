@@ -1,6 +1,7 @@
 #pragma once
 #include "command_protocol100.h"
 #include "native_advance100.h"
+#include "native_context103.h"
 // Included after native orders, weapons, traversal and interface helpers.
 using FacingConstructor100=void*(__thiscall*)(void*,const void*,const void*,unsigned,float,unsigned,unsigned);
 using OrientationConstructor100=void*(__thiscall*)(void*,const void*,const void*,unsigned,unsigned,unsigned);

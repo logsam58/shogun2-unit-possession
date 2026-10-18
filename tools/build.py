@@ -91,7 +91,7 @@ def find_vcvars():
  raise SystemExit('Set SHOGUN2_VCVARS to vcvars32.bat or run tools/configure.py --vcvars <path>.')
 def main():
  global VCVARS,CANDIDATE
- parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('target',choices=['adapter','qte','hud','loader','installer','all']);parser.add_argument('--tests',action='store_true');parser.add_argument('--candidate',type=int,default=102,help='Distinct unpublished Test number (100 or later)');args=parser.parse_args();CANDIDATE=args.candidate
+ parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('target',choices=['adapter','qte','hud','loader','installer','all']);parser.add_argument('--tests',action='store_true');parser.add_argument('--candidate',type=int,default=103,help='Distinct unpublished Test number (100 or later)');args=parser.parse_args();CANDIDATE=args.candidate
  if CANDIDATE is not None and CANDIDATE<100:parser.error('--candidate must be 100 or later')
  VCVARS=find_vcvars()
  for p in [BIN,OBJ,TEST,LOG]:p.mkdir(parents=True,exist_ok=True)

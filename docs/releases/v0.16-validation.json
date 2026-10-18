@@ -1,19 +1,19 @@
 {
   "version": "0.16",
-  "candidate": 102,
+  "candidate": 103,
   "date": "2026-10-17",
   "passed": true,
   "offline_passed": true,
   "published": false,
   "development_candidate": true,
   "live_accepted": false,
-  "predecessor": "Test101 scoped BIG improvement feedback; exact loaded/capture receipt retained",
+  "predecessor": "Test102 mixed live feedback: follow/gait mostly worked; Q attack failed; repeated alive ownership drops; cannon knockdown movement reported",
   "engine_sha256": "022fae2e2da92b59b8b1b8ee52887003c624e3c8eca060b209f5d792a7f874f5",
   "components": {
     "adapter": {
       "file": "possession-v46.dll",
-      "bytes": 491520,
-      "sha256": "4999d2d2499e79ff7cf02baa594f6ee7d52f778553fcde8d5e3d356af6b7e413"
+      "bytes": 496128,
+      "sha256": "30abc6312948c6db14868c49cd6e46fd6d4159ede413172e8f2f46e722e05f76"
     },
     "hud": {
       "file": "possession-hud.exe",
@@ -27,114 +27,117 @@
     },
     "loader": {
       "file": "dinput8.dll",
-      "bytes": 34545152,
-      "sha256": "cd7f4d3a40ec9164d5cc99f23d8438ca678a2c8c2345e3052a3a4d8cb1a092e4"
+      "bytes": 34549760,
+      "sha256": "7144d4af2a0259c9622d51ef8e06d817a157296c240bde0e94919cfd79dfb592"
     },
     "marker": {
       "file": "marker.pack",
       "bytes": 859,
-      "sha256": "59219510e47fe867b5e48e52d797606613e88117091558193a99a6a25dcc1b32"
+      "sha256": "6391e20222869126a6c516dfc777e87b0359b0c8b3f921fffde2734b20d768b1"
     },
     "setup": {
       "file": "Shogun2-Possession-Setup.exe",
-      "bytes": 34967552,
-      "sha256": "5a4365e2d69ddd0c8334e8c747f89bb165349776ea01ad5eed9ce4d4290db101"
+      "bytes": 34972160,
+      "sha256": "41ced6d94d5e89e4f62776620296b27dc1390f4b3bd95cad4847ebb619f4096a"
     },
     "maintenance_cli": {
       "file": "install_cli.exe",
-      "bytes": 34947584,
-      "sha256": "5a1805598807a44ee3dfd5a1a8790993f9dbe276ecc610bcdee2aca944c93b3c"
+      "bytes": 34952704,
+      "sha256": "a6507572b8d90300f23421ce1aa9960948a9f55715ffd180d32921c8586dbad4"
     }
   },
-  "cache_id": "994a23734cbf7b40",
+  "cache_id": "f99ed76883f701cf",
   "fresh_checks": [
     {
       "name": "minhook",
       "passed": true,
-      "seconds": 3.345,
+      "seconds": 3.136,
       "log": "artifacts\\logs\\minhook.log",
       "log_sha256": "dc8c5849812a4685d32b4ade623c83776e10a08e32a814a4f6314709731822d9"
     },
     {
       "name": "adapter",
       "passed": true,
-      "seconds": 6.939,
+      "seconds": 6.625,
       "log": "artifacts\\logs\\adapter.log",
-      "log_sha256": "0bc87fe1048a42ad9976f60bbe216dd657d387276d3d007583aa569be6a0edf1"
+      "log_sha256": "7232a9b159ef2cd1dd224eef0ec1204bfe6400047719a5a3697588489f0a9f8f"
     },
     {
       "name": "adapter-tests",
       "passed": true,
-      "seconds": 100.077,
+      "seconds": 110.588,
       "log": "artifacts\\logs\\adapter-tests.log",
-      "executables": 53,
-      "log_sha256": "a090dd72d946f41e9120edbd5b703d7881d02f45c3e7949b89b40d3494e0bedb"
+      "executables": 54,
+      "log_sha256": "33b5f1423fe20c8396b698b255a4210e235bdf0915d6f34e50a8948d4df19469"
     },
     {
       "name": "loader",
       "passed": true,
-      "seconds": 3.931,
+      "seconds": 4.105,
       "log": "artifacts\\logs\\loader.log",
       "log_sha256": "336b023a25405f667730122dec3fe3f7b5016f9ef9aa3c70d5503ba48ca378aa"
     },
     {
       "name": "loader-tests",
       "passed": true,
-      "seconds": 5.988,
+      "seconds": 6.548,
       "log": "artifacts\\logs\\loader-tests.log",
       "log_sha256": "c915aa440aa4a051d8cfd5614cc901a0f7df7cac1521d31d40397735aa0c3aeb"
     },
     {
       "name": "installer",
       "passed": true,
-      "seconds": 7.649,
+      "seconds": 8.105,
       "log": "artifacts\\logs\\installer.log",
       "log_sha256": "8267be106920bb7a4a725c43f2187afc6b7554336c755ec7b261c041a5b19a24"
     },
     {
       "name": "installer-tests",
       "passed": true,
-      "seconds": 135.825,
+      "seconds": 143.334,
       "log": "artifacts\\logs\\installer-tests.log",
-      "log_sha256": "22b6073edf670136e1563b1517d91eac9bc518fcb6a6c88dfd23112e992db420"
+      "log_sha256": "dfa12a6e3f58864d09aafa41de37ee05679a2eb456488e2438e7ddde372b198c"
     }
   ],
   "fresh_suites": {
-    "adapter_executables": 53,
+    "adapter_executables": 54,
     "loader_executables": 2,
-    "installer": "Full final-payload upgrade/interruption/rollback/collision/retention suite, including exact Test101 and repeated install backup retention"
+    "installer": "Full final-payload upgrade/interruption/rollback/collision/retention suite including exact Test102 upgrade, seven interruptions and repeat install"
   },
   "retained_checks": {
-    "hud": "Exact Test101 binary; HUD implementation source unchanged, private shared command-policy helpers added without enum/status layout changes; no fresh HUD suite or rendering claimed",
-    "qte": "Exact published v0.15/Test101 binary and QTE source; earlier32-case receipt retained, not rerun"
+    "hud": "Exact Test102 binary and implementation; no fresh HUD suite or rendering claimed",
+    "qte": "Exact Test102/published v0.15 binary and source; earlier32-case receipt retained, no fresh QTE suite or rendering claimed"
   },
   "regressions": {
-    "original_native_gait_packets": 200,
-    "native_hold_guard_gait_transactions": 200,
-    "stationary_follow_frames_retained": 600,
-    "new_stationary_run_follow_frames": 600,
-    "catchup_band_policy_frames": 1000,
-    "production_cases": [
-      "native denied run",
-      "catch-up run while leader walks",
-      "return to walk on arrival",
-      "pace-only retained heading/goal",
-      "opposing keys and crouch lock",
-      "foreign/dead peer exclusion",
-      "actual native Q7/6 double-click and flag clear",
-      "third-tap and focus cleanup",
-      "Z immediate walk/repeat suppression/second-tap run with original position/facing",
-      "Tap interval boundary/late/lease/clock/reset cases"
+    "original_native_camera_cycles": 200,
+    "owned_camera_cycle_blocks": 400,
+    "production_input_blocks": 200,
+    "original_hover_provider_refreshes": 201,
+    "native_recovery_clock_and_production_motion_frames": 420,
+    "original_target_constructor_pairs": 200,
+    "explicit_cases": [
+      "exit/stale-serial native camera forwarding",
+      "two prone postures",
+      "active get-up after standing posture already selected",
+      "native clock clears actual animation; stale planned clip does not lock",
+      "queued pre-impact shot retires without ammo/animation mutation",
+      "personal get-up/prone transition admitted; owned ranged barriers and peer callbacks retained",
+      "native special/banner same-unit accessor; ground/building/other-unit ray hits preserved; stale-lease/RTS queries unchanged",
+      "all retained Q single/double/drag, Z anchor, follow gait/catch-up and stationary regressions"
     ]
   },
+  "new_native_hooks": 2,
+  "new_hook_rvas": [
+    "0x2f79a0",
+    "0x10ee5b0"
+  ],
   "numeric_protocols_unchanged": true,
   "command_protocol": {
     "version": 100,
     "bytes": 80
   },
-  "new_native_hooks": 0,
-  "live_limits": "Fixture world/window providers, synthetic actor/peer records and substituted native run predicate; full native contextual target classification/attack, AI path completion, native gait/formation behavior and roster/map visuals require recorded user play. No effects crash fix claimed.",
-  "validation_refinement": "First full adapter run passed; compile caught one missed local variable rename during edge-case refinement; corrected and full final suites rerun. Tap state synchronized with existing input/lifecycle lock before final payload build.",
+  "live_limits": "Synthetic scene hits and per-target metadata/eligibility, window host, view count and motion integrator substitutions. Native attack submission/AI completion, actual impacts/get-up assets and remaining release causes require recorded live play. Native cycling involvement in Test102 releases is not proven. No effects-crash fix claimed.",
+  "validation_refinement": "Initial new fixture compile cast corrected; intermediate full adapter exposed recovery predicate coupled to ranged ownership. Separated personal recovery suppression from unchanged unit ranged barriers and retained Shift/Ctrl Q modifiers. Final queued-shot edge and explicit same-unit recovery regressions included and held press-snapshot hover/release-endpoint separation included before final payload rebuild.",
   "build_inputs": [
     {
       "file": "native/outputs/shogun2-accuracy90-preview/src/accuracy_geometry90.h",
@@ -146,7 +149,7 @@
     },
     {
       "file": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "sha256": "d067ab35bb22f66f1c0e5333038d5ae0a129cdc624343721a62fd3519f678e6c"
+      "sha256": "f55e8fe2d01708b88071e967e463566d7ba4f789682f4c9918d6547743f9521d"
     },
     {
       "file": "native/outputs/shogun2-accuracy90-preview/src/aim_geometry.h",
@@ -366,7 +369,7 @@
     },
     {
       "file": "native/outputs/shogun2-accuracy90-preview/src/native_advance100.h",
-      "sha256": "a6057836dd4c8d9fa8570232eb5295583912999d7c49891823fb5c1a8f89f02c"
+      "sha256": "38345a4be766d8e8a0fbd3db6f712d10dbdd2d5f6f0ad62b896c52bb3bec1932"
     },
     {
       "file": "native/outputs/shogun2-accuracy90-preview/src/native_air99.h",
@@ -374,11 +377,15 @@
     },
     {
       "file": "native/outputs/shogun2-accuracy90-preview/src/native_bow.h",
-      "sha256": "4e8a3026bcc878c41ae7b4f1e185f6a7e1fe26d3a972a113e080d3962ee5d122"
+      "sha256": "732de0635085d0606b16b9bd031fc9aba03431634505841e965ee9c05caed1b7"
     },
     {
       "file": "native/outputs/shogun2-accuracy90-preview/src/native_commands100.h",
-      "sha256": "6059b61b16a159beced34e18045a1ff5002a0ffb6a96f96771e1135f88acd7e7"
+      "sha256": "7294983095d14b95737a28a8e82fffe50a60068e80b8c2506ca9db0bef9d3249"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/native_context103.h",
+      "sha256": "3c6906423dbc168fc61298665b9c2b1799a1d07fb0c1ca1cba51e44705b338b0"
     },
     {
       "file": "native/outputs/shogun2-accuracy90-preview/src/native_fatigue.h",
@@ -390,7 +397,7 @@
     },
     {
       "file": "native/outputs/shogun2-accuracy90-preview/src/native_keyboard84.h",
-      "sha256": "3a4566eb213098404dadc7a7dc687f831763250dd940930b2bf65ac221fd90bb"
+      "sha256": "f62c3fd31079a1049f4b802846aa172b177bb5357fd66b5f759fc92bdfa2deb3"
     },
     {
       "file": "native/outputs/shogun2-accuracy90-preview/src/native_movement.h",
@@ -403,6 +410,10 @@
     {
       "file": "native/outputs/shogun2-accuracy90-preview/src/native_palettes89.generated.h",
       "sha256": "ed0d5ac0db595504ace6f04a9b2dea13660694392a4c2714275dc2403622ce30"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/native_recovery103.h",
+      "sha256": "8347ecacff37946fb8acf04d4143adde58fea7b270fe030966b002aa64ac387d"
     },
     {
       "file": "native/outputs/shogun2-accuracy90-preview/src/native_speed_modifiers.h",
@@ -549,6 +560,10 @@
       "sha256": "d6ca16af50070350a40ecc0c6d71290bb6e52056fe671cc5cf1e886fb2861bc5"
     },
     {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_context103.cpp",
+      "sha256": "244be6e9491cadfb3357b3300e17129705a5cdc072f7e9e4df3ceb8a68ffbb01"
+    },
+    {
       "file": "native/outputs/shogun2-accuracy90-preview/src/verify_decoded_rigs89.cpp",
       "sha256": "d502ac504a99623f1460e719a99681eed47d2104f1810c06b47757e5b35f75b2"
     },
@@ -574,7 +589,7 @@
     },
     {
       "file": "native/outputs/shogun2-accuracy90-preview/src/verify_keyboard84.cpp",
-      "sha256": "93155a5078cf2af0c17f72eeaa010554928c92a703f064747b7f1c99345280dd"
+      "sha256": "64a65453cb6de8b23598c67205012405126411f5317afb48886075e208673795"
     },
     {
       "file": "native/outputs/shogun2-accuracy90-preview/src/verify_look96.cpp",
@@ -650,7 +665,7 @@
     },
     {
       "file": "native/outputs/shogun2-accuracy90-preview/src/verify_native_commands100.cpp",
-      "sha256": "f21067b2c9d11c962e16b6b15dcb054562da9cb3960d929eb100148d84b3b7db"
+      "sha256": "8b3b19d74b32bd9b3b24911e7789c8a8f1bda08b3a3286d39ba3b587f049108d"
     },
     {
       "file": "native/outputs/shogun2-accuracy90-preview/src/verify_native_intent.cpp",
@@ -686,7 +701,7 @@
     },
     {
       "file": "native/outputs/shogun2-accuracy90-preview/src/verify_ranged_scope.cpp",
-      "sha256": "d5376d1617be6c7ed70453e510ac41d69de0cd1d1338183508fa03da3957823c"
+      "sha256": "012b229dc80ab6e5756fcd9d01e2beebf5057b3bf7f302eb328d935e23515cc5"
     },
     {
       "file": "native/outputs/shogun2-accuracy90-preview/src/verify_rts_camera90.cpp",
@@ -714,7 +729,7 @@
     },
     {
       "file": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "sha256": "b84fd91a59349c3043087db265a193fa9704c472ad07083e52ffa6c6c4db3dca"
+      "sha256": "add29eba247c9747031c040a74dc3d7a7ae9de0c21354ccc7272cace43fa373e"
     },
     {
       "file": "native/outputs/shogun2-accuracy90-preview/src/weapon_observation82.h",
@@ -1290,7 +1305,7 @@
     },
     {
       "file": "native/work/autoload99-preview/prepare_embedded.py",
-      "sha256": "df55a0ff2f11ade71c9aad6da04458407f44663331304d1b4c312112b15016fc"
+      "sha256": "454907164a609072f5eb98fbdb93840a32db7f901fe3783c89da87af8ab1bf6a"
     },
     {
       "file": "native/work/autoload99-preview/setup.cpp",
@@ -1314,7 +1329,7 @@
     },
     {
       "file": "native/work/installer-siege99/install.h",
-      "sha256": "0217581b5da77df181d3586d7d70fd61d6d0b774e52e98e3b2e457fb8b93de9f"
+      "sha256": "d852b2486575f0114aac0fe36c3d7c5d1a9cd37d5c902b0c65a335cf9ecd106d"
     },
     {
       "file": "native/work/installer-siege99/install_cli.cpp",
@@ -1326,7 +1341,7 @@
     },
     {
       "file": "native/work/installer-siege99/previous_cache_catalog.h",
-      "sha256": "a92cf8328133135e95aa0ee82d3a30e5e67a8a14bd024857b3fc1931de124ab5"
+      "sha256": "2394d4cc8759c004694fce105c113e7ff1a98855b81e005e179e5110339eaf41"
     },
     {
       "file": "native/work/installer-siege99/setup.rc",
@@ -1334,7 +1349,7 @@
     },
     {
       "file": "native/work/installer-siege99/verify.cpp",
-      "sha256": "257655dbc6a4920c38ad69529c6cf4cc8b1c422fa23126e5382c60ebd4fed90a"
+      "sha256": "ce4a159f675d2d5ee4858e5a02b74496a30038d0b15755c7c00a9a73a597711c"
     },
     {
       "file": "native/work/installer-siege99/wizard.cpp",
@@ -1346,7 +1361,7 @@
     },
     {
       "file": "tools/build.py",
-      "sha256": "04cb63c5d1e2455f67505a4d228e4f33cdc0f38592b76298ef0cd85b880872e0"
+      "sha256": "c1f1d91f49fefb0a16ddb040304129731c3a66294d0101427b5a21f739cab7e7"
     },
     {
       "file": "tools/configure.py",
@@ -1446,14 +1461,14 @@
     },
     {
       "file": "tools/package_release.py",
-      "sha256": "e91d036de31640e6666fbcc1dbecef1a351ff3de40e3246ac627206fdd4052b3"
+      "sha256": "fe8f32ec8315466549b4be67086dc74840e3a64e3f67beaf7a98f0ac561b15c0"
     }
   ],
   "release_binaries": [
     {
       "name": "possession-v46.dll",
-      "bytes": 491520,
-      "sha256": "4999d2d2499e79ff7cf02baa594f6ee7d52f778553fcde8d5e3d356af6b7e413"
+      "bytes": 496128,
+      "sha256": "30abc6312948c6db14868c49cd6e46fd6d4159ede413172e8f2f46e722e05f76"
     },
     {
       "name": "possession-hud.exe",
@@ -1467,23 +1482,23 @@
     },
     {
       "name": "dinput8.dll",
-      "bytes": 34545152,
-      "sha256": "cd7f4d3a40ec9164d5cc99f23d8438ca678a2c8c2345e3052a3a4d8cb1a092e4"
+      "bytes": 34549760,
+      "sha256": "7144d4af2a0259c9622d51ef8e06d817a157296c240bde0e94919cfd79dfb592"
     },
     {
       "name": "marker.pack",
       "bytes": 859,
-      "sha256": "59219510e47fe867b5e48e52d797606613e88117091558193a99a6a25dcc1b32"
+      "sha256": "6391e20222869126a6c516dfc777e87b0359b0c8b3f921fffde2734b20d768b1"
     },
     {
       "name": "Shogun2-Possession-Setup.exe",
-      "bytes": 34967552,
-      "sha256": "5a4365e2d69ddd0c8334e8c747f89bb165349776ea01ad5eed9ce4d4290db101"
+      "bytes": 34972160,
+      "sha256": "41ced6d94d5e89e4f62776620296b27dc1390f4b3bd95cad4847ebb619f4096a"
     },
     {
       "name": "install_cli.exe",
-      "bytes": 34947584,
-      "sha256": "5a1805598807a44ee3dfd5a1a8790993f9dbe276ecc610bcdee2aca944c93b3c"
+      "bytes": 34952704,
+      "sha256": "a6507572b8d90300f23421ce1aa9960948a9f55715ffd180d32921c8586dbad4"
     }
   ],
   "gameplay": {
@@ -1492,8 +1507,8 @@
     "components": [
       {
         "name": "possession-v46.dll",
-        "bytes": 491520,
-        "sha256": "4999d2d2499e79ff7cf02baa594f6ee7d52f778553fcde8d5e3d356af6b7e413"
+        "bytes": 496128,
+        "sha256": "30abc6312948c6db14868c49cd6e46fd6d4159ede413172e8f2f46e722e05f76"
       },
       {
         "name": "possession-hud.exe",
