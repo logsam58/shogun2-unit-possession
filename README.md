@@ -4,9 +4,9 @@
 
 The battle continues around you. The game still runs the armies, formations, pathfinding, morale, fatigue, ammunition, projectile physics, casualties and victory conditions. Your other soldiers keep their own AI and can keep fighting and firing while you control one member of the unit.
 
-**Source version: v0.19.** [Latest published download (v0.18)](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.18) | [Known issues](docs/KNOWN_ISSUES.md) | [Build instructions](BUILD_AND_TEST.md) | [Contributing](CONTRIBUTING.md)
+**Version: v0.20.** [Download v0.20](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.20) | [Known issues](docs/KNOWN_ISSUES.md) | [Build instructions](BUILD_AND_TEST.md) | [Contributing](CONTRIBUTING.md)
 
-**v0.19** adds a less cluttered native-style HUD, a compact top-centre QTE with larger mouse-button cues, and the original **“SHAMEFUL DISPLAY!”** callout when your personal projectile hits an ally. The preceding routing sentence is excluded. It retains native fullscreen presentation, smooth QTE timing and the existing possession, combat, unit commands and siege systems. See the [unit controls](#unit-orders-and-independent-ai) and [v0.19 release notes](docs/releases/v0.19.md). The v0.19 package is prepared locally; GitHub publication is separate.
+**v0.20** combines the uncluttered native-style HUD, compact top-centre QTE with larger mouse-button cues, and cropped **“SHAMEFUL DISPLAY!”** friendly-fire callout with more direct QTE click handling and reduced redundant crowd-encounter reads. It retains the full possession, ranged combat, unit command and siege systems described below. Intermittent crowded-battle slowdowns and native crashes remain unresolved. See the [unit controls](#unit-orders-and-independent-ai) and [v0.20 release notes](docs/releases/v0.20.md).
 
 ## What the mod does
 
@@ -104,7 +104,7 @@ The supported `Empire.Retail.dll` SHA256 is `022fae2e2da92b59b8b1b8ee52887003c62
 
 The mod targets single-player land combat, including sieges. Weapon catalogs cover content from SHOGUN 2, Rise of the Samurai and Fall of the Samurai, but that is not a claim of complete campaign or roster validation. Naval possession and ship commands are not implemented; artillery retains its stock first-person behavior. Multiplayer compatibility is unverified. Overhaul mods, altered engine builds and other camera/input injectors need separate testing.
 
-**Native effects and audio-thread crashes remain unresolved.** Captures include an effects-table dereference, a Miles sample-loop fault and a distinct DirectSound invalid function-pointer call with blood effects disabled. Their originating state changes and possible mod involvement are unresolved; v0.19 does not claim a crash fix. Mounted-bow visuals, specialty-unit coverage and some crowded-combat/ownership transitions also require further testing. Read the [full issue list](docs/KNOWN_ISSUES.md) and [support status](docs/STATUS.md) before reporting a problem.
+**Native effects and audio-thread crashes remain unresolved.** Captures include an effects-table dereference, a Miles sample-loop fault and a distinct DirectSound invalid function-pointer call with blood effects disabled. Their originating state changes and possible mod involvement are unresolved; v0.20 does not claim a crash fix. Mounted-bow visuals, specialty-unit coverage and some crowded-combat/ownership transitions also require further testing. Read the [full issue list](docs/KNOWN_ISSUES.md) and [support status](docs/STATUS.md) before reporting a problem.
 
 ## Source, architecture and development
 

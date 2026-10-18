@@ -48,7 +48,7 @@ Existing automatic recording must continue between sessions and start on launch 
 
 ## Release process
 
-VERSION defines the release. Prepare complete player release notes and a validation receipt under docs/releases/. Build/test gameplay components as needed, then build/test the release loader and installer. Keep component hashes and whether checks were freshly run or retained explicit.
+VERSION defines the release. Update the numeric and string Windows version fields in `native/work/installer-siege99/setup.rc` alongside it; package verification rejects mismatches. Prepare complete player release notes and a validation receipt under docs/releases/. Build/test gameplay components as needed, then build/test the release loader and installer. Keep component hashes and whether checks were freshly run or retained explicit.
 
 Review/stage source and run `py tools/audit_repository.py`, then commit it. `py tools/package_release.py` packages the clean pinned VERSION source/build, verifies versions, embedded resources and receipts, and emits installer/ZIP/manifest/checksums under ignored artifacts/releases/v<VERSION>. Its target check uses the maintenance CLI's read-only `--check-only` operation.
 
@@ -101,3 +101,9 @@ Run `tools/prepare_audio109.py --game <local game> --ffmpeg <ffmpeg.exe>` to pre
 Retain exact accepted Test109 adapter/HUD/QTE binaries and all their native output source inputs. Build/test only loader and installer with `--release`; it removes the development label while retaining implementation revision109. The default development candidate is109. Prepare exact installed-Test109 loader/marker fixtures in `native/work/autoload-test109-baseline/` and published-v0.18 fixtures in `native/work/autoload-v018-baseline/`, extracting setup resources201/202 as data only. Retain historical fixtures. The complete final installer suite covers both new exact upgrades, seven interruption stages each and repeat-install rollback retention.
 
 Pin docs/releases/v0.19-validation.json with fresh and retained evidence, audit/stage/commit source, then run `py tools/package_release.py`. Add a source ZIP matching every committed Git blob and its checksum. Local packaging does not publish/install/launch. Published v0.18 and earlier assets stay exact; the installed Test109 and recorder baseline109 remain unchanged until an explicitly authorized replacement.
+
+## v0.20 release metadata
+
+The default development revision and `--release` implementation revision are115. Retain exact Test115 adapter/HUD/QTE binaries and all native output source inputs; build/test only the release loader and installer. In addition to historical inputs, prepare exact Test115 loader/marker fixtures in `native/work/autoload-test115-baseline/` and local v0.19 fixtures in `native/work/autoload-v019-baseline/`. Extract old setup resources201/202 as data only. The full installer suite checks both upgrades, seven interrupted stages each and repeat-install retention.
+
+Pin `docs/releases/v0.20-validation.json`, audit staged source, commit, and package with `py tools/package_release.py`. Add an exact committed source ZIP/checksum to the six-file upload manifest. Explicit publication uses an annotated v0.20 tag, a normal fast-forward push, and `py tools/github_release.py --publish`, which downloads/hashes all uploaded assets before publishing. Existing v0.18 and earlier published downloads and the local v0.19 archive remain unchanged. Packaging/publication does not install, launch, replace the recorder or prove an intermittent slowdown/crash fix.

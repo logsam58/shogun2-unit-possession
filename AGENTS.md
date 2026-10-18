@@ -1,3 +1,11 @@
+# v0.20 release checkpoint / exact Test115 gameplay (18 October 2026)
+
+User selected the currently played Test115 checkpoint for the next version on GitHub. VERSION is0.20; default development and release implementation revision is115. Retain the exact Test115 adapter/HUD/QTE binaries and314 tracked native output source inputs. v0.19 remains a preserved earlier local package, not overwritten. Release work changes metadata, predecessor recognition/fixtures and documentation only; it does not install or replace the running Test115/cache53be0ea5409bcdd3 or recorder baseline.
+
+Read docs/releases/v0.20.md and v0.20-validation.json. Release receipt flags are preparation snapshots; private artifacts/v0.20-release and artifacts/releases/v0.20/publication-receipt.json establish actual packaging/publication state. Publication requires reviewed clean commit, annotated v0.20 tag, exact-source archive and six download/hash-verified assets; preserve88 prior local release files and existing GitHub versions/visibility. Exact Test115 and local-v0.19 upgrades, seven interrupted rollbacks each and repeat-install retention join the full historical installer suite. Gameplay suites are retained adapter61/HUD5/QTE39, not freshly rerun for wrapper metadata.
+
+The five-minute reference had no significant lag reported; it is not a performance fix or controlled reproduction. Earlier crowd slowdown, native effects/audio/engine crashes and mounted-bow presentation remain unresolved. No global pose-lock correction is included; production concurrency/identity/restoration/death fixtures and full adapter checks remain prerequisites. No experimental hardware tracing, game launch, installation, recorder restart/duplicate or settings changes are authorized merely by release preparation. Ordinary capture continues; further live performance traces require explicit READY. Earlier current/pending statements below are historical.
+
 # Test115 LIVE / five-minute smooth-play reference saved (18 October 2026)
 
 User requested five-minute trace, then explicitly replied READY in battle. Capture d completed and saved on D:/Shogun2Recordings/20261018-174413-pid14464/performance116/20261018-222839-five-minute. User feedback: NO SIGNIFICANT LAG. Treat as a smooth-play reference, not a reproduced failure, controlled same-scene baseline, or performance-fix acceptance.

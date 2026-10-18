@@ -57,3 +57,6 @@ Diagnostics111 isolates default capture in native/capture_only111.h; native/trac
 Diagnostics112 adds native/crash_capture112.h for independent fault snapshots, load-event module caching and bounded dump fallbacks. native/verify_dump112.cpp and source/verify_capture112.py check actual context evidence, dump formats, output failure and toy loader corruption. See docs/development/Diagnostics112.md; only diagnostics change.
 
 Test113 QTE input uses qte_presented113.h and playable_runtime.cpp to resolve the latest native image acknowledgement independently of render-worker polling. verify_input113.cpp reproduces the older-cache judgement error and exercises real shared-channel acknowledgement, bounded concurrent history, identity and expiry. This uninstalled candidate retains the accepted adapter/HUD and does not resolve the separately reported possession slowdown.
+
+
+v0.20 packages the exact Test115 runtime. QTE `qte_presentation93.h` / `playable_runtime.cpp` retain the direct latest-native-acknowledgement input history from Test113. `native_reservation.h` and `verify_crowd115.cpp` contain the bounded foreign-encounter snapshot/fallback and differential identity cases. The product version and release defaults advance independently of those stable filenames and numeric protocols. No animation-lock correction is included.

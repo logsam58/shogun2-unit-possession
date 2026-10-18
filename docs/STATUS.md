@@ -1,8 +1,8 @@
 # Support and development status
 
-Current source product version: **0.19**, retaining the exact accepted Test109 adapter/HUD/QTE. Local release packages are prepared; the [latest published download remains v0.18](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.18). Installation, publication and loaded state are separate. See [v0.19 notes](releases/v0.19.md) and [validation](releases/v0.19-validation.json).
+Current product version: **0.20**, packaging the Test115 possession adapter, HUD and QTE gameplay. [Download v0.20](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.20). See [release notes](releases/v0.20.md) and [validation](releases/v0.20-validation.json). Release loader/cache identity is distinct from the development build; packaging and publication do not replace an already running installation.
 
-v0.19 adds the uncluttered HUD, compact top-centre QTE with larger button cues, and original cropped SHAMEFUL DISPLAY feedback for direct personal projectile hits on allies. The player said “I loved it” after Test109 play; automatic recording verifies loaded build and capture retrospectively. No formal pre-play READY verification occurred. Native effects/audio crashes remain unresolved, including a new DirectSound fault with blood disabled.
+v0.20 includes the uncluttered HUD, compact top-centre QTE, cropped friendly-fire callout, latest native acknowledged-image click handling and bounded crowd-encounter reads. A five-minute Test115 session produced no significant lag reported by the player and included 44 sampled QTE serials. Earlier crowded-fight slowdowns remain unresolved; this session is a smooth-play reference, not reproduction or proof of a fix. Native effects/audio crashes remain open, including captures with blood disabled.
 
 | Area | Implemented behavior | Coverage / limitation |
 | --- | --- | --- |
@@ -21,4 +21,4 @@ v0.19 adds the uncluttered HUD, compact top-centre QTE with larger button cues, 
 
 Offline fixtures cover important native forwarding, identity, cleanup, geometry, timing and installation cases. They do not simulate every battle. [VALIDATION.md](../VALIDATION.md) and the release receipt distinguish freshly run checks from retained component evidence.
 
-Current development priorities are the unresolved native effects/audio crashes, mounted-bow presentation, broader ranged-unit/animation coverage, crowded-combat interruptions and siege-map lifecycle testing. Known limitations and reporting guidance are in [KNOWN_ISSUES.md](KNOWN_ISSUES.md) and [CONTRIBUTING.md](../CONTRIBUTING.md).
+Current development priorities are intermittent crowded-battle slowdown, the unresolved native effects/audio crashes, mounted-bow presentation, broader ranged-unit/animation coverage, crowded-combat interruptions and siege-map lifecycle testing. Known limitations and reporting guidance are in [KNOWN_ISSUES.md](KNOWN_ISSUES.md) and [CONTRIBUTING.md](../CONTRIBUTING.md).

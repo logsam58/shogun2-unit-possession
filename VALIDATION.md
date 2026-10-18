@@ -4,9 +4,9 @@
 
 | Suite | Coverage |
 | --- | --- |
-| Adapter: 60 executables (retained for v0.18) | Native forwarding, strict identity/lifetime, movement, camera return, weapons/accuracy, equipment, siege path/speed/crest/landing and cleanup |
-| Styled QTE: 36 executables (retained for v0.18) | Combat preparation, clocks/cycles, input/deadlines, interruption feedback, registry churn, pacing and actual reusable styled surface |
-| HUD: 3 executables (retained for v0.18) | Consistent contextual state, visibility and presentation policy |
+| Adapter: 61 executables (retained from Test109) | Native forwarding, strict identity/lifetime, movement, camera return, weapons/accuracy, equipment, siege path/speed/crest/landing and cleanup |
+| Styled QTE: 39 executables (retained from Test115) | Combat preparation, clocks/cycles, input/deadlines, interruption feedback, registry churn, pacing and actual reusable styled surface |
+| HUD: 5 executables (retained from Test109) | Consistent contextual state, visibility and presentation policy |
 | Loader: 2 executables | Bootstrap, embedded payload integrity and integration |
 | Installer fixture | Supported predecessor upgrades, seven interruption stages, rollback, reinstall, collisions, cache retention and isolated HKCU handling |
 | Dump reader: 7 Python cases | Embedded, MemoryList and Memory64 stack layouts, exception-context preference and explicit missing-stack handling |
@@ -61,3 +61,11 @@ Release metadata, PE version, five embedded payloads, complete native/tool sourc
 [v0.19 validation](docs/releases/v0.19-validation.json) promotes the exact Test109 adapter/HUD and Test108 QTE. Retained evidence comprises61 adapter,5 HUD and36 QTE executables, twelve HUD previews/eight viewport checks and Test109 pixel equivalence. Only release loader and final installer checks are freshly run, including exact Test109/published-v0.18 upgrade, seven interruption stages each and repeat-install retention. Embedded payloads, PE0.19, native/tool source closure and package/source-archive hashes are verified independently.
 
 The player accepted Test109 without sending READY before play. Automatic recording still captured exact module/HUD identities,1920x1080 fullscreen native presentation, input/native memory and CPU/GPU/VRAM. This is retrospective evidence, not a claimed pre-play check. The session crashed with blood disabled; first-chance and unhandled dumps agree on an invalid DirectSound virtual call. Its originating corruption/lifetime, relation to earlier effects/Miles faults and mod involvement remain unresolved. v0.19 includes no crash patch or universal roster/device/ally-hit certification.
+
+## v0.20 release evidence
+
+v0.20 retains all three exact Test115 gameplay binaries and all tracked native output source inputs. Retained evidence covers Test109 adapter61/HUD5 and the full Test115 QTE39 suite, including the Test113 acknowledged-image correction and 5,152 differential/current-identity/fallback crowd cases plus 100,000 encounters. Gameplay suites are retained, not described as rerun for metadata-only packaging.
+
+Release loader2 and the complete final installer suite are freshly run. Exact Test115 and local v0.19 predecessors join the historical upgrade fixtures, each with seven interruption rollbacks and repeat-install backup retention. The release receipt pins current source closure, payload/PE versions and fresh/retained results separately.
+
+The Test115 five-minute reference has 305.07 seconds of target CPU samples, 299.07 seconds of frames, 19,021 frames and 44 sampled visible QTE serials. User feedback was no significant lag; recorded loss/property-error counters were zero. Earlier severe slowdowns were not reproduced in this reference. Sampled lock frames also occur during this smooth session and do not quantify all waiting or establish a cause. Native crashes, physical display latency and complete roster/map coverage remain unresolved. Raw recordings, paths, dumps and process data stay outside Git.
