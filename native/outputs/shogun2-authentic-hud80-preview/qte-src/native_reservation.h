@@ -8,6 +8,9 @@ inline bool owns(const Reader& r,uint32_t engine,uint32_t held,const NativeActor
         (current.kind!=Horse||horse_rider(r,engine,current,rider));
 }
 inline bool member(const Reader& r,uint32_t engine,uint32_t held,uint32_t actor,const NativeActor& identity){
+    // A human has no rider alias: a different address cannot be a member.
+    // This only rejects; every possible hit still proves current identity.
+    if(identity.kind==Human&&actor!=identity.address)return false;
     if(!owns(r,engine,held,identity))return false;
     if(actor==identity.address)return true;
     NativeActor rider;

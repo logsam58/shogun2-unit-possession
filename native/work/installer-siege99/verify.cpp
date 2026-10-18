@@ -493,6 +493,21 @@ int wmain(){try{
     require(read_bytes(dll+L".possession-previous")==previous109_loader&&read_bytes(pack+L".possession-previous")==previous109_pack,"Repeat install rotated Test109 backup");
     std::cout<<"PASS: exact Test109 predecessor upgrade, seven interruption rollbacks and repeat-install backup retention.\n";
 
+    auto previous113_loader=read_bytes(L"../autoload-test113-baseline/dinput8.dll"),previous113_pack=read_bytes(L"../autoload-test113-baseline/marker.pack");
+    require(!previous113_loader.empty()&&!previous113_pack.empty(),"Test113 predecessor fixtures missing");
+    for(int interruption=0;interruption<7;++interruption){
+        {flashstartup86::Key key;require(RegOpenKeyExW(flashstartup86::hive,flashstartup86::key_path.c_str(),0,KEY_SET_VALUE|KEY_WOW64_32KEY,&key.value)==ERROR_SUCCESS,"Test113 fixture flag reset");DWORD zero=0;
+         for(auto name:flashstartup86::names)require(RegSetValueExW(key.value,name,0,REG_DWORD,reinterpret_cast<BYTE*>(&zero),4)==ERROR_SUCCESS,"Test113 fixture flag write");}
+        atomic_bytes(dll,previous113_loader);atomic_bytes(pack,previous113_pack);auto saved_selection=read_bytes(selection),saved_cache=read_bytes(cache);
+        failed=false;try{install_all(game,data,{},interruption,local);}catch(...){failed=true;}
+        require(failed&&read_bytes(dll)==previous113_loader&&read_bytes(pack)==previous113_pack&&read_bytes(selection)==saved_selection&&read_bytes(cache)==saved_cache,"Test113 interruption failed rollback");
+    }
+    install_all(game,data,{},-1,local);require(hash_file(dll)==SETUP_BOOTSTRAP_SHA&&hash_file(pack)==EMBEDDED_PACK_SHA,"Test113 predecessor upgrade failed");
+    require(read_bytes(dll+L".possession-previous")==previous113_loader&&read_bytes(pack+L".possession-previous")==previous113_pack,"Test113 rollback backup differs");
+    install_all(game,data,{},-1,local);
+    require(read_bytes(dll+L".possession-previous")==previous113_loader&&read_bytes(pack+L".possession-previous")==previous113_pack,"Repeat install rotated Test113 backup");
+    std::cout<<"PASS: exact Test113 predecessor upgrade, seven interruption rollbacks and repeat-install backup retention.\n";
+
     auto published018_loader=read_bytes(L"../autoload-v018-baseline/dinput8.dll"),published018_pack=read_bytes(L"../autoload-v018-baseline/marker.pack");
     require(!published018_loader.empty()&&!published018_pack.empty(),"published v0.18 predecessor fixtures missing");
     for(int interruption=0;interruption<7;++interruption){
