@@ -6,6 +6,7 @@
 #include "native_observer.h"
 #include "possession_observation.h"
 #include "native_battle_clock.h"
+#include "native_clock_identity116.h"
 #include "qte_session.h"
 #include "qte_presentation93.h"
 #include "qte_presented113.h"
@@ -62,6 +63,7 @@ static volatile LONG conflicts_blocked,foreign_releases_preserved;
 static observation::Registry lifetimes;
 static EncounterAdmission admission;
 static ClockFrame delivery_clock;
+static BattleClockIdentity116 battle_clock_identity116;
 static volatile LONG delivery_address,suppressed_prompts;
 static melee60::Submit submit_commitment;
 static melee60::Request commitment;
@@ -157,7 +159,8 @@ static void sample_playback(uint32_t address){
 static bool focused(){DWORD pid=0;GetWindowThreadProcessId(GetForegroundWindow(),&pid);return pid==GetCurrentProcessId();}
 static bool clock_frame(uint32_t env,ClockFrame& frame){NativeClock c;
     if(!battle_clock(reader(),env,engine,c))return false;
-    frame={uint64_t(env)<<32|c.phase,c.tick,wall(),c.step,c.speed};return true;}
+    const auto battle=battle_clock_identity116.observe(c);if(!battle)return false;
+    frame={battle,c.tick,wall(),c.step,c.speed};return true;}
 static bool routing(void*,uint32_t unit,bool& value){uint32_t root{},env{},common{},phase{},routing_state{};uint8_t on{};
     auto r=reader();if(!r.get(engine+0x1bc8180,root)||!r.get(root+0x110,env)||!r.get(env+8,common)||
        !r.get(common+0xb4,phase)||!r.get(phase+0x2778,on)||!r.get(unit+0xcec,routing_state))return false;
