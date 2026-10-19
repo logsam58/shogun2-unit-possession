@@ -3,6 +3,8 @@
 #include "mounted_look85.h"
 #include "look_pitch96.h"
 #include "animation_look104.h"
+#include "possession_entry125.h"
+#include "combat_focus125.h"
 #include "possession_lease.h"
 #include "control_metrics.h"
 #include "camera_entry_gate.h"
@@ -36,6 +38,27 @@ static bool overlay_key106(const overlay106::Frame& frame,unsigned layer){
 // Numeric heading published only at validated native boundaries. The mouse
 // worker never dereferences a horse pointer, including during battle changes.
 static volatile LONG mounted_heading85=-1;
+static volatile LONG entry_movement125;
+static SRWLOCK entry_lock125=SRWLOCK_INIT;
+static look125::Focus combat_focus125;
+static volatile LONG combat_entry_locked126;
+static SRWLOCK combat_pair_lock126=SRWLOCK_INIT;
+static look126::Pair combat_pair126;
+static void combat_pair_reset126(){AcquireSRWLockExclusive(&combat_pair_lock126);combat_pair126={};ReleaseSRWLockExclusive(&combat_pair_lock126);}
+static bool combat_pair_ready126(const melee60::Request& request){
+    AcquireSRWLockShared(&combat_pair_lock126);auto pair=combat_pair126;ReleaseSRWLockShared(&combat_pair_lock126);
+    return pair.locked(request,GetTickCount64());
+}
+// Worker consumes numeric intent only; all native actor reads stay at acquisition.
+static unsigned entry_input125(unsigned physical,bool focused){
+    AcquireSRWLockExclusive(&entry_lock125);
+    // Check the mode inside the same lock as acquisition: an older ARMED
+    // input poll must not erase the just-published movement handoff.
+    if(!focused||!state||state->mode!=POSSESSED||state->release||state->stop||
+       (physical&(FORWARD|BACKWARD|LEFT|RIGHT)))InterlockedExchange(&entry_movement125,0);
+    unsigned result=physical|unsigned(InterlockedCompareExchange(&entry_movement125,0,0));
+    ReleaseSRWLockExclusive(&entry_lock125);return result;
+}
 static HWND input_window;
 static WNDPROC native_window_proc;
 #include "raw_mouse.h"
@@ -276,12 +299,17 @@ static bool confirm_follow93(uintptr_t actor){
 // Commit on the validated window boundary; do not wait for a ground-motion callback.
 static bool adopt_possession97(uintptr_t actor){
     if(!state||!state->acquire||possessed||!followed(actor,true))return false;
-    possessed=actor;auto cam=possession_lease.identity.camera;
-    state->yaw=std::atan2(field<float>(cam,0x64),field<float>(cam,0x6c));state->pitch=0;
-    if(possession_lease.identity.mount){unsigned heading=field<unsigned short>(possession_lease.identity.mount,0x64);
-        InterlockedExchange(&mounted_heading85,LONG(heading));state->yaw=mountedlook85::constrain(state->yaw,heading);
-    }else InterlockedExchange(&mounted_heading85,-1);
-    InterlockedExchange(&state->acquire,0);InterlockedExchange(&state->mode,POSSESSED);climb_adopt98(actor);return true;
+    possessed=actor;auto locomotion=possession_lease.identity.mount?possession_lease.identity.mount:actor;
+    unsigned heading=field<unsigned short>(locomotion,0x64);
+    state->yaw=entry125::facing(heading);state->pitch=0;combat_focus125.reset();InterlockedExchange(&combat_entry_locked126,0);combat_pair_reset126();
+    InterlockedExchange(&mounted_heading85,possession_lease.identity.mount?LONG(heading):-1);
+    unsigned carry=entry125::carry(field<unsigned>(locomotion,0x1f0),field<unsigned>(locomotion,0x244),
+        field<float>(locomotion,0x8c),field<float>(locomotion,0x94));
+    AcquireSRWLockExclusive(&entry_lock125);
+    if(unsigned(state->input)&(FORWARD|BACKWARD|LEFT|RIGHT))carry=0;
+    InterlockedExchange(&entry_movement125,LONG(carry));InterlockedOr(&state->input,LONG(carry));
+    InterlockedExchange(&state->acquire,0);InterlockedExchange(&state->mode,POSSESSED);
+    ReleaseSRWLockExclusive(&entry_lock125);climb_adopt98(actor);return true;
 }
 #include "camera_choice97.h"
 // Native camera action handler: ECX=input object, two stack arguments, RET8.
@@ -360,7 +388,16 @@ static bool native_melee_active78(uintptr_t actor,bool playing_only){
         (field<uintptr_t>(witness,0x30)==actor||field<uintptr_t>(witness,0x34)==actor)&&
         (!playing_only||field<unsigned char>(witness,0xd1)!=0);
 }
+static void observe_combat_pair126(uintptr_t actor,const melee60::Request& request,bool player){
+    __try{
+    look126::Pose sample{};sample.x=field<float>(actor,0x48);sample.z=field<float>(actor,0x50);
+    sample.bearing=field<unsigned short>(actor,0x64);sample.tick=GetTickCount64();
+    sample.animation=field<uintptr_t>(actor,0x688);sample.playing=native_melee_active78(actor,true);sample.valid=true;
+    AcquireSRWLockExclusive(&combat_pair_lock126);combat_pair126.observe(request,player,sample);ReleaseSRWLockExclusive(&combat_pair_lock126);
+    }__except(EXCEPTION_EXECUTE_HANDLER){} // Observation never changes native combat control.
+}
 static void observe_melee_handoff78(uintptr_t actor,const melee60::Request& request,bool player){
+    observe_combat_pair126(actor,request,player);
     auto& tracking=player?melee_handoff78:melee_opponent_motion78;
     if(!player||actor==locomotion_actor())tracking.observe(actor,possession_lease.generation,
         field<unsigned>(actor,0x1c8),field<unsigned>(field<uintptr_t>(actor,0x214),4),request.serial,
@@ -551,6 +588,8 @@ static void enter_selected_soldier(){
 static void pose_manual_origin(float* origin);
 static bool posed_arrow_origin(float* origin);
 #include "weapon_animation.h"
+#include "formation_arrival129.h"
+#include "unit_detach130.h"
 #include "equipment_native81.h"
 // Revision40 attachment predicate was not reached for the display arrow.
 #include "mounted_render_clock.h"
@@ -609,17 +648,37 @@ static void adjust_eye(uintptr_t camera) {
             refresh(reinterpret_cast<void*>(camera));return;
         }
         float yaw=state->yaw,pitch=state->pitch;
-        melee60::Request committed;
-        if(melee_request(committed)||(possession_lease.active&&melee_handoff78.matches(locomotion_actor(),possession_lease.generation,
+        melee60::Request committed;bool commitment=melee_request(committed);
+        if(commitment||(possession_lease.active&&melee_handoff78.matches(locomotion_actor(),possession_lease.generation,
             possession_lease.identity.mount?possession_lease.identity.mount_id:possession_lease.identity.actor_id,possession_lease.identity.unit_id))){
             deathpose::Eye native_eye;
             memcpy(native_eye.view,reinterpret_cast<void*>(camera+8),sizeof native_eye.view);
             memcpy(native_eye.up,reinterpret_cast<void*>(camera+0x58),sizeof native_eye.up);
             if(!animationview::angles(native_eye,yaw,pitch))return;
             deathpose::Eye free_eye;
-            if(!look104::free_eye(native_eye,state->yaw,state->pitch,free_eye))return;
+            if(commitment){
+                InterlockedExchange(&entry_movement125,0);
+                if(combat_focus125.begin(committed)){
+                    InterlockedExchange(&combat_entry_locked126,1);
+                    InterlockedExchange(&raw_mouse_x,0);InterlockedExchange(&raw_mouse_y,0);
+                }
+            }
+            if(combat_focus125.valid&&!combat_focus125.unlocked){
+                // The untouched native eye follows the facing/engagement animation.
+                // Capture that exact view at unlock; do not snap or run a separate turn.
+                state->yaw=yaw;state->pitch=pitch;
+                bool locked=commitment?combat_pair_ready126(committed):
+                    (melee_handoff78.native_playback&&melee_handoff78.encounter==combat_focus125.serial);
+                if(combat_focus125.release(locked,state->yaw)){
+                    InterlockedExchange(&raw_mouse_x,0);InterlockedExchange(&raw_mouse_y,0);
+                }
+            }
+            if(combat_focus125.valid){
+                if(!combat_focus125.unlocked)free_eye=native_eye;
+                else if(!look125::free_eye(native_eye,state->yaw,state->pitch,combat_focus125.yaw,free_eye))return;
+            }else if(!look104::free_eye(native_eye,state->yaw,state->pitch,free_eye))return;
             if(!animationview::angles(free_eye,yaw,pitch))return;
-            state->yaw=yaw;animation_view_active78=true;InterlockedExchange(&animation_look_active104,1);InterlockedIncrement(&animation_look_updates104);
+            state->yaw=yaw;InterlockedExchange(&combat_entry_locked126,combat_focus125.valid&&!combat_focus125.unlocked?1:0);animation_view_active78=true;InterlockedExchange(&animation_look_active104,1);InterlockedIncrement(&animation_look_updates104);
             memcpy(reinterpret_cast<void*>(camera+8),free_eye.view,sizeof free_eye.view);
             memcpy(reinterpret_cast<void*>(camera+0x58),free_eye.up,sizeof free_eye.up);
             native_eye=free_eye;
@@ -629,6 +688,7 @@ static void adjust_eye(uintptr_t camera) {
             state->native_eye_y=state->raised_eye_y=field<float>(camera,0xc);
             remember_owned_eye(camera);InterlockedIncrement(&animation_view_updates78);return;
         }
+        InterlockedExchange(&combat_entry_locked126,0);
         InterlockedExchange(&animation_look_active104,0);
         if(!std::isfinite(yaw)||!std::isfinite(pitch))return;
         if(possession_lease.identity.mount){
@@ -668,7 +728,7 @@ static void __fastcall camera_matrix(void* camera,void*,const void* matrix) {
         }
     }__finally {--camera_callback_depth;}
 }
-static void relinquish(){InterlockedExchange(&animation_look_active104,0);command_reset100();climb_reset97();request_rts_restore90();next_accuracy90=0;publish_accuracy90(nullptr,0,0);InterlockedExchange(&mounted_heading85,-1);equipment_reset81();reset_death_view();InterlockedExchange(&manual_arrow_released,0);state->arrow_visual_hidden=0;possession_lease.release();InterlockedExchange(&state->input,0);InterlockedExchange(&state->aiming,0);state->aim_pose=0;InterlockedExchange(&state->weapon_phase,WEAPON_IDLE);possessed=0;environment=0;unit=0;InterlockedExchange(&state->follow,0);InterlockedExchange(&state->pending_order,0);follow_target=false;InterlockedExchange(&state->fire_request,0);InterlockedExchange(&state->mode,IDLE);}
+static void relinquish(){InterlockedExchange(&entry_movement125,0);combat_focus125.reset();combat_pair_reset126();InterlockedExchange(&combat_entry_locked126,0);InterlockedExchange(&animation_look_active104,0);command_reset100();climb_reset97();request_rts_restore90();next_accuracy90=0;publish_accuracy90(nullptr,0,0);InterlockedExchange(&mounted_heading85,-1);equipment_reset81();reset_death_view();InterlockedExchange(&manual_arrow_released,0);state->arrow_visual_hidden=0;possession_lease.release();InterlockedExchange(&state->input,0);InterlockedExchange(&state->aiming,0);state->aim_pose=0;InterlockedExchange(&state->weapon_phase,WEAPON_IDLE);possessed=0;environment=0;unit=0;InterlockedExchange(&state->follow,0);InterlockedExchange(&state->pending_order,0);follow_target=false;InterlockedExchange(&state->fire_request,0);InterlockedExchange(&state->mode,IDLE);}
 static void end_death_on_window(){
     if(!InterlockedExchange(&death_return_pending,0))return;
     __try{uintptr_t manager=possession_lease.identity.manager;uintptr_t env=environment;
@@ -684,17 +744,17 @@ static bool prepare(uintptr_t actor) {
         if(!enabled || state->stop || GetTickCount64()-state->heartbeat>500){relinquish();return false;}
         if(InterlockedExchange(&state->release,0)){relinquish();InterlockedExchange(&state->acquire,0);}
         if(state->acquire&&!possessed)adopt_possession97(actor);
-        if(apply_melee_motion(actor))return false;
+        if(apply_melee_motion(actor)){if(actor==locomotion_actor())InterlockedExchange(&entry_movement125,0);return false;}
         if(actor!=locomotion_actor())return false;
         if(!confirm_follow93(possessed)){note_follow_release93();++state->identity_releases;relinquish();return false;}
         if(dead_view())return false;
-        if(recovery_prepare103(actor))return false;
-        if(climb_prepare97(actor))return false;
-        if(finish_melee_handoff78(actor))return false;
+        if(recovery_prepare103(actor)){InterlockedExchange(&entry_movement125,0);return false;}
+        if(climb_prepare97(actor)){InterlockedExchange(&entry_movement125,0);return false;}
+        if(finish_melee_handoff78(actor)){InterlockedExchange(&entry_movement125,0);return false;}
         // The human request owns mounted combat too. During that commitment
         // WASD cannot override a horse's native matched-combat movement.
         melee60::Request mount_commitment;
-        if(possession_lease.identity.mount&&melee_request(mount_commitment))return false;
+        if(possession_lease.identity.mount&&melee_request(mount_commitment)){InterlockedExchange(&entry_movement125,0);return false;}
         unsigned bearing=field<unsigned short>(actor,0x64);
         if(possession_lease.identity.mount){
             InterlockedExchange(&mounted_heading85,LONG(bearing));
@@ -707,6 +767,7 @@ static bool prepare(uintptr_t actor) {
         float yaw=state->yaw;
         if(!std::isfinite(yaw)){relinquish();return false;}
         bool crouch_locked=equipment_prepare_motion81();
+        if(crouch_locked)InterlockedExchange(&entry_movement125,0);
         unsigned movement_input=equipment81::movement_input(unsigned(state->input),crouch_locked);
         float speed=0,turn_rate=0;
         if(!read_native_movement(movement_input,speed,turn_rate)){state->error=24;relinquish();return false;}
@@ -825,6 +886,7 @@ static void snapshot_log(std::ofstream& log) {
         <<"],\"velocity\":["<<s.velocity[0]<<','<<s.velocity[1]<<','<<s.velocity[2]<<"],\"bearing\":"<<s.bearing<<",\"yaw\":"<<s.yaw<<",\"pitch\":"<<s.pitch<<",\"native_eye_y\":"<<s.native_eye_y<<",\"raised_eye_y\":"<<s.raised_eye_y<<",\"mouse_events\":"<<s.mouse_events<<",\"controlled_updates\":"<<s.controlled_updates<<",\"other_updates\":"<<s.other_updates<<",\"camera_cancels\":"<<s.camera_cancels<<",\"camera_suppressed\":"<<s.camera_suppressed<<",\"cancel_caller_rva\":"<<s.cancel_caller<<",\"orders_sent\":"<<s.orders_sent<<",\"last_order\":"<<s.last_order<<",\"order_error\":"<<s.order_error<<",\"follow\":"<<s.follow<<",\"packet_size\":"<<s.packet_size<<",\"queue_before\":"<<s.queue_before<<",\"queue_after\":"<<s.queue_after<<",\"window_thread\":"<<s.window_thread<<",\"camera_thread\":"<<s.camera_thread<<",\"order_target\":["<<s.order_target_x<<','<<s.order_target_z<<"],\"formation\":["<<s.formation_x<<','<<s.formation_z<<"],\"formation_count\":"<<s.formation_count<<",\"projectile_camera_suppressed\":"<<s.projectile_camera_suppressed<<",\"weapon_phase\":"<<s.weapon_phase<<",\"weapon_record\":"<<s.weapon_record<<",\"weapon_animation\":"<<s.weapon_animation<<",\"weapon_mouse_captured\":"<<s.weapon_mouse_captured<<",\"aiming\":"<<s.aiming<<",\"aim_pose\":"<<s.aim_pose<<",\"aim_blend\":"<<s.aim_blend<<",\"hip_fov\":"<<s.hip_fov<<",\"view_fov\":"<<s.view_fov<<",\"hud_hidden\":"<<s.hud_hidden<<",\"crosshair_visible\":"<<s.crosshair_visible<<",\"pose_muzzle_updates\":"<<s.pose_muzzle_updates<<",\"pose_weapon_record\":"<<s.pose_weapon_record<<",\"pose_native_clip\":"<<s.pose_native_clip<<",\"pose_native_bias\":"<<s.pose_native_bias<<",\"bow_origin_aligned\":"<<s.bow_origin_aligned<<",\"bow_origin_correction\":"<<s.bow_origin_correction<<",\"shot_camera_origin\":["<<s.shot_camera_origin[0]<<','<<s.shot_camera_origin[1]<<','<<s.shot_camera_origin[2]<<']'<<",\"pose_updates\":"<<s.pose_updates<<",\"pose_aim_updates\":"<<s.pose_aim_updates<<",\"pose_restores\":"<<s.pose_restores<<",\"pose_error\":"<<s.pose_error<<",\"pose_bones\":"<<s.pose_bones<<",\"pose_pitch\":"<<s.pose_pitch<<",\"camera_pitch\":"<<s.camera_pitch<<",\"native_matrix_override\":"<<s.native_matrix_override<<",\"raw_mouse_active\":"<<s.raw_mouse_active<<",\"raw_mouse_error\":"<<s.raw_mouse_error<<",\"raw_mouse_events\":"<<s.raw_mouse_events<<",\"raw_aim_events\":"<<s.raw_aim_events<<",\"raw_y_total\":"<<s.raw_y_total<<",\"raw_aim_y_total\":"<<s.raw_aim_y_total<<",\"interface_error\":"<<s.interface_error<<",\"interface_restores\":"<<s.interface_restores<<",\"cursor_suppressed\":"<<s.cursor_suppressed<<",\"aim_clip\":"<<s.aim_clip<<",\"draws_started\":"<<s.draws_started<<",\"reloads_started\":"<<s.reloads_started<<",\"ai_shots_suppressed\":"<<s.ai_shots_suppressed<<",\"weapon_release_time\":"<<s.weapon_release_time<<",\"weapon_reload_remaining\":"<<s.weapon_reload_remaining<<",\"shots_queued\":"<<s.shots_queued<<",\"shots_spawned\":"<<s.shots_spawned<<",\"shots_blocked\":"<<s.shots_blocked<<",\"shots_canceled\":"<<s.shots_canceled<<",\"spread_removed\":"<<s.spread_removed<<",\"direct_fire\":"<<s.direct_fire<<",\"launch_delta\":"<<s.launch_delta<<",\"shot_origin\":["<<s.shot_origin[0]<<','<<s.shot_origin[1]<<','<<s.shot_origin[2]<<']'<<",\"shot_velocity\":["<<s.shot_velocity[0]<<','<<s.shot_velocity[1]<<','<<s.shot_velocity[2]<<']'<<",\"shot_view_direction\":["<<s.shot_view_direction[0]<<','<<s.shot_view_direction[1]<<','<<s.shot_view_direction[2]<<']'<<",\"shot_error\":"<<s.shot_error<<",\"fire_ticket\":"<<s.fire_ticket<<",\"shot_packet_size\":"<<s.shot_packet_size<<",\"shot_thread\":"<<s.shot_thread<<",\"ammo_before\":"<<s.ammo_before<<",\"ammo_after\":"<<s.ammo_after<<",\"shot_target\":["<<s.shot_target[0]<<','<<s.shot_target[1]<<','<<s.shot_target[2]<<"],\"error\":"<<s.error<<"}\n";log.flush();
 }
 static void mouse_look101(int dx,int dy,unsigned input,float elapsed){
+    if(InterlockedCompareExchange(&combat_entry_locked126,0,0))return; // Native pair facing owns the initial view.
     melee60::Request committed;
     if(!dead_view()&&std::abs(dx)<500&&std::abs(dy)<500){
         float turn=float(bool(input&TURN_RIGHT))-float(bool(input&TURN_LEFT));
@@ -886,9 +948,9 @@ static DWORD WINAPI worker(void*) {
         const unsigned char projectile_camera_sig[8]={0x56,0x8b,0xf1,0x57,0x8d,0xbe,0xec,0x08};
         require(memcmp(projectile_camera_target,projectile_camera_sig,8)==0,"Projectile camera signature differs");
         require(MH_CreateHook(projectile_camera_target,reinterpret_cast<void*>(&projectile_camera),reinterpret_cast<void**>(&original_projectile_camera))==MH_OK,"Projectile camera hook failed");
-        create_weapon_hooks();create_mounted_render_hooks70();create_siege_hooks97();create_context_hooks103();
+        create_weapon_hooks();create_formation_arrival129();create_unit_detach130();create_mounted_render_hooks70();create_siege_hooks97();create_context_hooks103();
 
-        create_dispersion_hook();create_friendly_hook109();
+        create_dispersion_hook();create_friendly_hook109();create_follow_voice125();
         create_interface_hooks();
         create_pose_hook();
         create_fatigue_hooks();
@@ -947,7 +1009,8 @@ static DWORD WINAPI worker(void*) {
             }else {if(was_focus)InterlockedExchange(&state->release,1);f9=f10=f12=false;}
             if(!focus){left_mouse=false;InterlockedExchange(&state->aiming,0);}
             if((state->mode!=POSSESSED||state->stop||state->release||!focus)&&interface_active)restore_interface_on_window();
-            was_focus=focus;InterlockedExchange(&state->input,dead_view()?0:LONG(input));
+            was_focus=focus;input=entry_input125(input,focus&&!dead_view());
+            InterlockedExchange(&state->input,dead_view()?0:LONG(input));
             uint64_t now=GetTickCount64();float elapsed=std::min(float(now-last_mouse)*0.001f,0.05f);last_mouse=now;
             bool command_resume100=InterlockedExchange(&command_recenter100,0)!=0;
             if(command_resume100){mouse_captured=false;InterlockedExchange(&raw_mouse_x,0);InterlockedExchange(&raw_mouse_y,0);}
@@ -985,12 +1048,14 @@ static DWORD WINAPI worker(void*) {
         MH_STATUS result=MH_OK;
         if(!mileszero123::disable())result=MH_UNKNOWN;
         if(MH_DisableHook(keyboard_poll_target84)!=MH_OK)result=MH_UNKNOWN;
-        for(unsigned rva:{0x2f79a0u,0x10ee5b0u,0x325ca0u,0x321d70u,0x3e5170u})if(MH_DisableHook(reinterpret_cast<void*>(base+rva))!=MH_OK)result=MH_UNKNOWN;
+        for(unsigned rva:{0x2fc450u,0x2f79a0u,0x10ee5b0u,0x325ca0u,0x321d70u,0x3e5170u})if(MH_DisableHook(reinterpret_cast<void*>(base+rva))!=MH_OK)result=MH_UNKNOWN;
         for(void* p:{reinterpret_cast<void*>(base+0xf9c360),reinterpret_cast<void*>(base+0xf9bf20),reinterpret_cast<void*>(base+0x122f740),cursor_target})if(MH_DisableHook(p)!=MH_OK)result=MH_UNKNOWN;
         for(void* p:{reinterpret_cast<void*>(base+0x2fcb10),reinterpret_cast<void*>(base+0x341560),reinterpret_cast<void*>(base+0x2d6210),reinterpret_cast<void*>(base+0x340d30),reinterpret_cast<void*>(base+0x3945c0),reinterpret_cast<void*>(base+0x3cf280),reinterpret_cast<void*>(base+0x473f80),target,cancel_target,toggle_target,matrix_target,camera_input_target,projectile_camera_target,reinterpret_cast<void*>(base+0x3ca920),reinterpret_cast<void*>(base+0x3e8b50),reinterpret_cast<void*>(base+0x3f0370),reinterpret_cast<void*>(base+0x3f03d0),reinterpret_cast<void*>(base+0x3e3f50),reinterpret_cast<void*>(base+0x3d3630),reinterpret_cast<void*>(base+0x3d4320),reinterpret_cast<void*>(base+0x3e1a20),reinterpret_cast<void*>(base+0x4272e0),reinterpret_cast<void*>(base+0x4c56d0)})if(MH_DisableHook(p)!=MH_OK)result=MH_UNKNOWN;
         if(!guarded){if(MH_DisableHook(reinterpret_cast<void*>(base+0x2ac0b0))!=MH_OK)result=MH_UNKNOWN;}
         for(void* p:{reinterpret_cast<void*>(base+0x3f06e0),reinterpret_cast<void*>(base+0x3c73e0)})if(MH_DisableHook(p)!=MH_OK)result=MH_UNKNOWN;
-        for(void* p:{reinterpret_cast<void*>(base+0x3d3ce0),reinterpret_cast<void*>(base+0x3d33f0),reinterpret_cast<void*>(base+0x3d3d40),reinterpret_cast<void*>(base+0x3d3de0),reinterpret_cast<void*>(base+0x3d3e90),reinterpret_cast<void*>(base+0x3d3e60),reinterpret_cast<void*>(base+0x3d3fc0)})if(MH_DisableHook(p)!=MH_OK)result=MH_UNKNOWN;
+        for(void* p:{reinterpret_cast<void*>(base+0x3d3ce0),reinterpret_cast<void*>(base+0x3d33f0),reinterpret_cast<void*>(base+0x3d3d40),reinterpret_cast<void*>(base+0x3d3de0),reinterpret_cast<void*>(base+0x3d3e90),reinterpret_cast<void*>(base+0x3d3e60),reinterpret_cast<void*>(base+0x3d3fc0),reinterpret_cast<void*>(base+0x3cfa60),reinterpret_cast<void*>(base+0x3d41d0),reinterpret_cast<void*>(base+0x3cbe40)})if(MH_DisableHook(p)!=MH_OK)result=MH_UNKNOWN;
+        // Pending native rejoin retains its read-only combat compatibility.
+        if(disable_control_hooks130()!=MH_OK)result=MH_UNKNOWN;
         state->fire_guard=guarded?1:0;state->error=result==MH_OK?0:30;
         memcpy(state->restored_code,target,16);bool restored=memcmp(state->restored_code,state->original_code,16)==0;
         bool camera_restored=memcmp(cancel_target,cancel_sig,8)==0&&memcmp(toggle_target,toggle_sig,8)==0&&memcmp(matrix_target,matrix_sig,8)==0;

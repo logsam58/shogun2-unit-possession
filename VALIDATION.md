@@ -1,12 +1,12 @@
 # Validation and evidence
 
-The current release is [v0.22](docs/releases/v0.22-validation.json). Historical candidate receipts below preserve their original scope; the discarded Test116/117 experiments are excluded from the current build.
+The current source checkpoint is [v0.23](docs/releases/v0.23-validation.json); the latest published download remains v0.22 until publication. Historical candidate receipts below preserve their original scope; the discarded Test116/117 experiments are excluded from the current build.
 
 ## What the suites check
 
 | Suite | Coverage |
 | --- | --- |
-| Adapter: 62 executables (retained from Test123) | Native forwarding, strict identity/lifetime, movement, camera return, weapons/accuracy, equipment, siege path/speed/crest/landing and cleanup |
+| Adapter: 71 executables (retained from Test130) | Native forwarding, strict identity/lifetime, movement, camera return, weapons/accuracy, equipment, siege path/speed/crest/landing and cleanup |
 | Styled QTE: 46 executables (retained from Test124) | Combat preparation, clocks/cycles, input/deadlines, interruption feedback, registry churn, pacing and actual reusable styled surface |
 | HUD: 5 executables (retained from Test122) | Consistent contextual state, visibility and presentation policy |
 | Loader: 2 executables | Bootstrap, embedded payload integrity and integration |
@@ -83,3 +83,7 @@ Menu and battle gates verified the actual Test122 components and recording. The 
 The [v0.22 receipt](docs/releases/v0.22-validation.json) pins exact Test124 gameplay: retained Test123 adapter62, Test124 QTE46 and Test122 HUD5 evidence. New release checks cover loader2, full final-payload installer regression and seven Python dump-format cases. Exact published-v0.21 and Test124 predecessors are checked through upgrades, seven interruptions and repeat-install retention. Gameplay binaries are retained, not rebuilt for promotion.
 
 The player reported smooth Large-unit 1v1 play at maximum graphics in DX11 and explicitly selected the checkpoint for publication. This is subjective configuration-specific acceptance, with no new FPS trace or loaded-build verification for that report. Earlier severe Test124 slowdowns and Ultra crowd limits remain recorded; CPU0â€“3 gave no noticeable benefit and was restored. The pinned audio guard's native fixture addresses one reproduced zero-count defect, not every captured crash. See [technical notes](docs/releases/v0.22-technical.md).
+
+## v0.23 acceptance
+
+The user accepted Test130's independent soldier/unit behavior after its exact loaded-build battle gate and reported a crash in the same session. Diagnostics were off. This accepts gameplay, not crash safety or a crash cause. [v0.23 validation](docs/releases/v0.23-validation.json) separates fresh packaging checks from retained gameplay evidence.

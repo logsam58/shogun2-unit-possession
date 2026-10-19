@@ -31,6 +31,7 @@ static SRWLOCK command_volley_lock100=SRWLOCK_INIT;
 static command100::Volley command_volley100;
 static volatile LONG command_peer_releases100,command_peer_blocks100;
 static void command_feedback_set100(command100::Feedback feedback,unsigned error=0){command_feedback100=feedback;command_feedback_until100=GetTickCount64()+1800;command_error100=error;}
+#include "follow_voice125.h"
 static bool command_native_signatures100(uintptr_t image){
     const unsigned char construct[]={0x56,0x8b,0x74,0x24,8,0x57,0x8b,0xf9};
     for(unsigned address:{0x255680u,0x2557e0u,0x255140u})if(memcmp(reinterpret_cast<void*>(image+address),construct,sizeof construct))return false;
@@ -147,6 +148,7 @@ static bool command_frame_matches100(const command100::Frame& frame){
         GetTickCount64()>=frame.tick&&GetTickCount64()-frame.tick<=250;
 }
 static void command_reset100(){
+    command_voice_reset125();
     command_native_cancel100();command_input_reset100();command_follow100.reset();command_pace102.reset();command_gap102=0;command_follow_run102=0;command_generation100=0;
     command_mode100=command100::MoveMode::None;InterlockedExchange(&command_fire_mode100,0);
     command_reset_volley100();
@@ -358,6 +360,7 @@ static void process_orders(uintptr_t camera){
         while(command_pop100(event)){
             if(busy){InterlockedExchange(&command_placing100,0);command_feedback_set100(command100::Feedback::Busy);continue;}
             if(event.input!=command100::Input::Stop&&!command_frame_matches100(event.frame)){command_feedback_set100(command100::Feedback::Unavailable,65);continue;}
+            command_voice_reset125();
             if(event.input==command100::Input::Stop){
                 if(issue_native_order(ORDER_HOLD,frame.position.x,frame.position.z)){
                     command_mode100=command100::MoveMode::Stop;InterlockedExchange(&state->follow,0);command_follow100.reset();InterlockedExchange(&command_placing100,0);InterlockedExchange(&command_recenter100,1);command_feedback_set100(command100::Feedback::Stopped);

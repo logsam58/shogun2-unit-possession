@@ -115,3 +115,7 @@ Default implementation revision is122. Retain the exact accepted Test122 adapter
 ## v0.22 release
 
 Default implementation revision is124. Retain exact accepted Test124 adapter/HUD/QTE binaries and their native source; build/test only the release loader and installer with `--release --tests`. Prepare exact Test124 and published-v0.21 loader/marker fixtures in `native/work/autoload-test124-baseline/` and `native/work/autoload-v021-baseline/`. Extract predecessor installer resources201/202 as data only. Full installer regression covers both upgrades, all seven interruptions and repeated-install backup retention, alongside historical fixtures. Pin fresh release results separately from retained Test123 adapter62/Test124 QTE46/Test122 HUD5 evidence. Follow the release process with v0.22 notes/receipt and an exact committed source ZIP. Publication does not install or change game preferences, affinity or recording.
+
+## v0.23 release
+
+Default revision is130. Retain exact accepted Test130 adapter/HUD/QTE and native output source; build/test only loader and installer with `--release --tests`. Exact Test130 and published-v0.22 data fixtures are in ignored `native/work/autoload-test130-baseline/` and `native/work/autoload-v022-baseline/`. Full upgrade tests cover seven interruptions and repeat-install retention. Pin all native/tool inputs, separating retained adapter71/QTE46/HUD5 evidence from fresh packaging. Packaging and committing do not replace Test130, start diagnostics, launch the game or publish a GitHub release.

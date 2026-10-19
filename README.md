@@ -4,7 +4,9 @@ Take control of a soldier in your army and fight your **Total War: SHOGUN 2** ba
 
 Fight on foot or horseback, fire bows and guns, and face enemy soldiers in melee. Your unit fights alongside you, and you can give them orders without leaving first person.
 
-**[Download v0.22](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.22)** · [Release notes](docs/releases/v0.22.md) · [Known problems](docs/KNOWN_ISSUES.md)
+**[Download latest published release (v0.22)](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.22)** · [v0.23 notes](docs/releases/v0.23.md) · [Known problems](docs/KNOWN_ISSUES.md)
+
+The current source is **v0.23**. Your unit can form up and fire while you move freely away from its formation. Follow Me also gives one acknowledgement per order instead of repeating it as the unit catches up.
 
 ## Playing the mod
 
@@ -59,13 +61,13 @@ You can't issue these orders while locked in a melee animation, climbing or land
 
 ## Known problems and compatibility
 
-The latest player test was smooth with **Large units, one full army per side and maximum graphics in DX11**. Ultra units with several armies or heavy fighting nearby can still slow down badly. v0.22 keeps the recent optimizations and adds protection against one reproduced audio fault; other crashes remain unresolved. Mounted bows can look wrong, and some weapon or arm clipping remains. See the [known problems and reporting guide](docs/KNOWN_ISSUES.md).
+The latest player test was smooth with **Large units, one full army per side and maximum graphics in DX11**. Ultra units with several armies or heavy fighting nearby can still slow down badly. v0.23 retains those optimizations and the guard against one reproduced audio fault. A crash was reported during the successful v0.23 gameplay test; its cause remains unresolved. Mounted bows can look wrong, and some weapon or arm clipping remains. See the [known problems and reporting guide](docs/KNOWN_ISSUES.md).
 
 The mod is intended for single-player land battles and sieges. It supports weapons from the base game, Rise of the Samurai and Fall of the Samurai, though not every unit, ammo type or castle layout has been tested. Multiplayer and overhaul mods haven't been confirmed to work. Ship possession isn't included; artillery uses the game's existing first-person mode.
 
 ## For contributors
 
-The mod is written in C++, with Python build and debugging tools. Start with the [source map](SOURCE_MAP.md), [build guide](BUILD_AND_TEST.md) and [contributing guide](CONTRIBUTING.md). The [architecture](docs/ARCHITECTURE.md), [v0.22 technical notes](docs/releases/v0.22-technical.md) and [validation records](VALIDATION.md) cover implementation, tests and ongoing investigations.
+The mod is written in C++, with Python build and debugging tools. Start with the [source map](SOURCE_MAP.md), [build guide](BUILD_AND_TEST.md) and [contributing guide](CONTRIBUTING.md). The [architecture](docs/ARCHITECTURE.md), [v0.23 technical notes](docs/releases/v0.23-technical.md) and [validation records](VALIDATION.md) cover implementation, tests and ongoing investigations.
 
 Building the full HUD and QTE needs separately prepared game resources; a fresh clone doesn't include them. The optional [crash recorder](tools/diagnostics/README.md) has its own setup and isn't part of the player installer. The source download is for contributors; players should use the setup download above.
 

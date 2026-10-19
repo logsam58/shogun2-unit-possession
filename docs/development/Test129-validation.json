@@ -1,0 +1,60 @@
+{
+  "passed": true,
+  "candidate": 129,
+  "version": "0.22",
+  "base_commit": "3cd6e5a5d18ba8a11ff8b7a333b44ba53cf9c756",
+  "fresh_suites": {
+    "adapter": 68,
+    "loader": 2,
+    "installer": true
+  },
+  "retained_suites": {
+    "QTE_Test124": 46,
+    "HUD_Test122": 5
+  },
+  "components": [
+    {
+      "name": "possession-v46.dll",
+      "bytes": 538624,
+      "sha256": "1e4bffbd7623768b860f9dd6a31a8fd1f6cb2d59c1749489015677a30ec9983f"
+    },
+    {
+      "name": "possession-hud.exe",
+      "bytes": 25441280,
+      "sha256": "2904d8930d536a9d8c0412a662f2aeed969330392e332e5ffe531070d67e67b1"
+    },
+    {
+      "name": "qte-playable-v79.dll",
+      "bytes": 8451584,
+      "sha256": "cfec68115c0e031179a9fc1a8fcb968b9edd0b05b713a45f54b2756bfd39dd4e"
+    },
+    {
+      "name": "dinput8.dll",
+      "bytes": 34739712,
+      "sha256": "137bc6cb9a4b43886ba93ca92f4d6147008ae3b7d806fcbe8aecb6951c256665"
+    },
+    {
+      "name": "marker.pack",
+      "bytes": 859,
+      "sha256": "bb10ad9fc55337f1be9544c0cd300ff97ad6ec1e4110c75595fa1ed256fcaf6d"
+    },
+    {
+      "name": "Shogun2-Possession-Setup.exe",
+      "bytes": 35169280,
+      "sha256": "bee7ccd6385b0a940f9d7db0206f503f5bdb4b6d18f27e71aebc3e0ca702aafd"
+    },
+    {
+      "name": "install_cli.exe",
+      "bytes": 35148800,
+      "sha256": "ef3b2f2108ab83b58d7a41f7a5945fe868294a67351e60d25f3d1d1aa86ac16a"
+    }
+  ],
+  "cache_id": "4cb35051d6c62aa6",
+  "runtime_changes": "Supplement Test128 firing waits with one caller-scoped native formation-arrival exception for the freshly fully proved owned player actor or reciprocal mount. Original native deployment work and queued orders can complete after AI soldiers arrive. Native peer arrival, actor/task state, other callers and fire policy remain original. Accepted Test127 voice/Test126 camera retained",
+  "installed": false,
+  "loaded": false,
+  "live_accepted": false,
+  "published": false,
+  "recording_active": false,
+  "limits": "Original-native fixture executes arrival, child scheduler/retirement, view/unit completion, queued-order retirement and Fire at Will permission on synthetic records initialized after planning. Destructors/environment providers are substituted; path planning, live scheduler integration and projectile dispatch are not validated. User battle acceptance still pending. Existing Ultra/crowd performance and crash limits remain unresolved."
+}

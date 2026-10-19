@@ -176,6 +176,7 @@ static bool ranged_subject_owned(uintptr_t subject){
         InterlockedIncrement(&mounted_horse_task_bypasses);return true;
     }__except(EXCEPTION_EXECUTE_HANDLER){return false;}
 }
+#include "ranged_position128.h"
 static bool mounted_clock_held(uintptr_t actor){
     __try{return actor==possessed&&weapon_mounted()&&weapon_owned(actor)&&!state->weapon_phase&&
         weapon_ready_held()&&mounted_draw_owned(actor)&&field<unsigned>(actor,0x1d8)>=mounted_draw.hold_frame;}
@@ -486,6 +487,7 @@ static void weapon_tick(uintptr_t actor){
     }__except(EXCEPTION_EXECUTE_HANDLER){own_weapon_call=0;state->shot_error=92;InterlockedExchange(&state->weapon_phase,WEAPON_IDLE);InterlockedExchange(&state->release,1);}
 }
 static void create_weapon_hooks(){
+    create_ranged_position128();
     const unsigned char stop82[]={0x56,0x8b,0xf1,0x8b,0x86,0x74,4,0};
     require(!memcmp(reinterpret_cast<void*>(base+0x3ca920),stop82,sizeof stop82),"Animation stop observation signature differs");
     require(MH_CreateHook(reinterpret_cast<void*>(base+0x3ca920),reinterpret_cast<void*>(&weapon_animation_stop_hook82),reinterpret_cast<void**>(&original_animation_stop82))==MH_OK,"Animation stop observation hook failed");

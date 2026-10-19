@@ -1,0 +1,13 @@
+# Test128 / v0.22: firing while the player is out of formation
+
+The player reported that Hold Here units would not fire until the possessed soldier returned to formation. This candidate excludes the manually controlled ranged soldier from two native firing movement-readiness waits. The rest of the unit still follows its normal readiness and firing rules.
+
+The preserved native code provides two distinct checks: the unit firing-state movement aggregate (1aef50 calls 3cfa60 for each member), and the personal fire-task movement wait (3b2d90 calls 3d41d0). The first exception applies only at that exact aggregate call site. Other calls to the same actor predicate return the original result. The personal wait requires the same current owned-subject proof used by the existing ranged barriers, plus a fresh adapter heartbeat. Supported mounted principals require the existing reciprocal rider/horse proof. Invalid identity, death, exit, disabled control or stale heartbeat restore native behavior.
+
+Neither hook writes the actor movement flag, changes the roster, moves the player into a slot or enables Fire at Will. AI peers still complete their own native waits. Native range, ammunition, target selection and order policy remain authoritative. No unit-wide ready flag is forced.
+
+A cheap subject filter rejects unrelated soldiers before full validation, including while mounted; no ownership result is cached.
+
+Two new fixtures execute the original retail unit aggregate, actor predicate, personal wait and fire-permission routine. They also execute the original manual-intent API and its native movement-driver early-return branch, which preserves the prior settled flag even for a stationary intent. This is a bounded native mechanism, not proof of the entire live scheduler. They reproduce the owned subject holding the native wait, then verify its exemption while AI peer waits remain effective. They cover caller isolation, rosters up to 1,000, synthetic projectile families and modes, unchanged actor/task bytes, exact hook restoration and invalid full production possession proofs. Environment/roster records are synthetic; these checks do not reproduce the entire live order scheduler or establish the root cause of the user's battle. Hold Here firing after player displacement remains subject to live validation.
+
+Accepted Test127 Follow Me audio and Test126 native-animation camera/entry behavior are retained. HUD/QTE binaries remain exact. Product version stays v0.22; this is an unpublished development candidate. Recorder/debugger stay off. No game launch, graphics, thread or affinity changes are part of this update. Ultra crowd performance and crashes remain unresolved.

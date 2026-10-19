@@ -32,6 +32,7 @@ int main(){void* memory=nullptr;try{
     require(apply_melee_motion(enemy_actor)&&intents==2&&intent_actor==enemy_actor,"Opponent did not hold/face");
     auto calls=intents;r.phase=melee60::NativeCombat;PossessionMeleeCommitment63(&r);
     require(apply_melee_motion(possessed)&&apply_melee_motion(enemy_actor)&&intents==calls,"Native combat must receive no player intent");
+    field<uintptr_t>(possessed,0x688)=1;require(apply_melee_motion(possessed)&&intents==calls,"Unavailable camera observation changed native combat control");field<uintptr_t>(possessed,0x688)=0;
     field<unsigned>(ptr(enemy_unit),0xf7c)=1;require(apply_melee_motion(enemy_actor)&&intents==calls,"Ranged melee pair bypassed commitment or injected movement during native playback");field<unsigned>(ptr(enemy_unit),0xf7c)=0;
     field<unsigned>(enemy_actor,0x1c8)=10;require(!apply_melee_motion(enemy_actor),"Foreign/reused actor entered pair steering");field<unsigned>(enemy_actor,0x1c8)=9;
     // Stale Facing packets must not rewind native animation root motion.

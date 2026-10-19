@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.23 — 2026-10-19
+
+- Let the rest of your unit form up and fire while your possessed soldier moves independently. Leaving possession restores normal squad control.
+- Face the soldier's direction on entry and carry walking/running movement into possession.
+- Follow the opening combat animation before allowing limited head-look during melee prompts.
+- Stop repeated Follow Me voice acknowledgements as the unit moves and catches up.
+- Retain the HUD, QTE, weapon behavior and crowd optimizations.
+
+The player accepted Test130 gameplay and reported a crash in the same session. Its cause remains unresolved. [Player notes](docs/releases/v0.23.md) · [Technical notes](docs/releases/v0.23-technical.md).
+
 ## v0.22 — 2026-10-19
 
 - Keep the latest crowd-performance improvements, cleaner HUD and friendly-fire callout.

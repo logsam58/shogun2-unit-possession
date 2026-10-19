@@ -70,3 +70,7 @@ Active gameplay source matches the tested Test122 tree. The v0.20 adapter/HUD ar
 ## v0.22
 
 Active gameplay source matches Test124. Adapter `miles_zero123.h`, its integration in `adapter.cpp` and `verify_miles123.cpp` provide the pinned Miles zero-count guard and native differential fixture. QTE `native_selection_prefix.h` and `verify_preparation124.cpp` add the rejection-only initial encounter filter with current positive validation and individual-read fallback. Other gameplay inputs match the retained Test122 source. See [technical notes](docs/releases/v0.22-technical.md).
+
+## v0.23
+
+Active native output source and exact runtime binaries match accepted Test130. `possession_entry125.h`, `combat_focus125.h` and `combat_turn126.h` implement entry facing/gait and animation-led look. `follow_voice125.h` contains accepted Test127 acknowledgements. `unit_detach130.h` separates squad participation from unit/stat ownership; `unit_detach_combat130.h` preserves personal combat reads and deferred rejoin. Earlier readiness headers remain complementary. New fixtures describe original-code/provider boundaries. See [technical notes](docs/releases/v0.23-technical.md).

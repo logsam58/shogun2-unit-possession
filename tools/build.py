@@ -93,7 +93,7 @@ def find_vcvars():
  raise SystemExit('Set SHOGUN2_VCVARS to vcvars32.bat or run tools/configure.py --vcvars <path>.')
 def main():
  global VCVARS,CANDIDATE,RELEASE
- parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('target',choices=['adapter','qte','hud','loader','installer','all']);parser.add_argument('--tests',action='store_true');mode=parser.add_mutually_exclusive_group();mode.add_argument('--candidate',type=int,default=124,help='Distinct unpublished Test number (100 or later)');mode.add_argument('--release',action='store_true',help='Package Test124 gameplay with release metadata; does not publish or install');args=parser.parse_args();CANDIDATE=args.candidate;RELEASE=args.release
+ parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('target',choices=['adapter','qte','hud','loader','installer','all']);parser.add_argument('--tests',action='store_true');mode=parser.add_mutually_exclusive_group();mode.add_argument('--candidate',type=int,default=130,help='Distinct unpublished Test number (100 or later)');mode.add_argument('--release',action='store_true',help='Package Test130 gameplay with release metadata; does not publish or install');args=parser.parse_args();CANDIDATE=args.candidate;RELEASE=args.release
  if CANDIDATE is not None and CANDIDATE<100:parser.error('--candidate must be 100 or later')
  VCVARS=find_vcvars()
  for p in [BIN,OBJ,TEST,LOG]:p.mkdir(parents=True,exist_ok=True)

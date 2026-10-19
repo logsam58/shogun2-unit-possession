@@ -4,11 +4,11 @@ The mod is still being worked on. These are the main things to watch for.
 
 ## Crashes and slowdowns
 
-Crashes can happen during battles, including with blood turned off. We've captured several different failures, but haven't pinned down what starts them or whether they share a cause.
+The accepted v0.23 gameplay test also ended in a crash. Its cause has not been established. Crashes can happen during battles, including with blood turned off. We've captured several different failures, but haven't pinned down what starts them or whether they share a cause.
 
 v0.22 was reported smooth with Large units, one massive army per side and maximum graphics in DX11. Ultra units with substantial army presence can still become very slow. The audio guard covers one reproduced fault; it does not resolve all crashes. It can happen without a QTE showing, and sometimes the QTE stays smooth while the battle slows down. Some fights recover on their own. Leaving and re-entering possession isn't a confirmed fix.
 
-If you hit either problem, include the unit, map and what was happening nearby. The [technical notes](releases/v0.22-technical.md#audio-guard) contain the crash details and investigation limits.
+If you hit either problem, include the unit, map and what was happening nearby. The [technical notes](releases/v0.23-technical.md#remaining-limits) contain the crash details and investigation limits.
 
 ## Visual problems
 
