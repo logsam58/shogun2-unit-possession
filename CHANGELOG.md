@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.21 - 19 October 2026
+
+- Improved first-person performance in large infantry and cavalry fights by reducing repeated checks for unrelated soldiers.
+- Keeps the updated HUD, melee prompts, unit controls and cropped "SHAMEFUL DISPLAY!" friendly-fire callout.
+- Packages the exact Test122 gameplay selected after a successful playtest. That session ended in a crash; crash safety remains unresolved.
+- Updated installer with verified upgrades and interrupted-install rollback from v0.20 and Test122.
+
+[Release notes](docs/releases/v0.21.md) · [Technical details](docs/releases/v0.21-technical.md).
+
 ## v0.20 - 18 October 2026
 
 - Cleaner HUD, with commands down the right side and less clutter around the weapon information.

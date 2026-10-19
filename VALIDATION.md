@@ -71,3 +71,9 @@ v0.20 retains all three exact Test115 gameplay binaries and all tracked native o
 Release loader2 and the complete final installer suite are freshly run. Exact Test115 and local v0.19 predecessors join the historical upgrade fixtures, each with seven interruption rollbacks and repeat-install backup retention. The release receipt pins current source closure, payload/PE versions and fresh/retained results separately.
 
 The Test115 five-minute reference has 305.07 seconds of target CPU samples, 299.07 seconds of frames, 19,021 frames and 44 sampled visible QTE serials. User feedback was no significant lag; recorded loss/property-error counters were zero. Earlier severe slowdowns were not reproduced in this reference. Sampled lock frames also occur during this smooth session and do not quantify all waiting or establish a cause. Native crashes, physical display latency and complete roster/map coverage remain unresolved. Raw recordings, paths, dumps and process data stay outside Git.
+
+## v0.21 release evidence
+
+Exact Test122 gameplay is retained:44 QTE fixtures plus its separately compiled45th selector fixture; five HUD fixtures and a native friendly-fire impact fixture; unchanged adapter evidence from v0.20. Release loader and installer are freshly checked, including exact v0.20/Test122 upgrades, seven interrupted stages and repeat-install retention. The complete build source is pinned in [the receipt](docs/releases/v0.21-validation.json).
+
+Menu and battle gates verified the actual Test122 components and recording. The user reported "worked great" and requested v0.21, but the session ended in an unhandled access violation. Performance feedback is accepted for publication; neither crash safety nor a universal lag fix is established.

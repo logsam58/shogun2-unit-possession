@@ -6,7 +6,6 @@
 #include "native_observer.h"
 #include "possession_observation.h"
 #include "native_battle_clock.h"
-#include "native_clock_identity116.h"
 #include "qte_session.h"
 #include "qte_presentation93.h"
 #include "qte_presented113.h"
@@ -63,7 +62,6 @@ static volatile LONG conflicts_blocked,foreign_releases_preserved;
 static observation::Registry lifetimes;
 static EncounterAdmission admission;
 static ClockFrame delivery_clock;
-static BattleClockIdentity116 battle_clock_identity116;
 static volatile LONG delivery_address,suppressed_prompts;
 static melee60::Submit submit_commitment;
 static melee60::Request commitment;
@@ -117,6 +115,17 @@ static bool possession_snapshot93(observation::PossessionPrefix& p);
 static void clear_commitment(){commitment={};if(submit_commitment)submit_commitment(&commitment);}
 static bool refresh_committed_pose(const NativeActor& actor,float* position){
     auto r=reader();uint32_t table{},serial{},unit{},id{};
+    std::array<uint8_t,0x218> prefix121{};
+    if(r.get(actor.address,prefix121)){
+        memcpy(&table,prefix121.data(),4);memcpy(&serial,prefix121.data()+0x1c8,4);
+        memcpy(&unit,prefix121.data()+0x214,4);
+        if(table!=actor_table(engine,actor.kind)||serial!=actor.serial||unit!=actor.unit||
+           !r.get(unit+4,id)||id!=actor.unit_serial)return false;
+        for(unsigned i=0;i<3;++i){
+            memcpy(position+i,prefix121.data()+0x48+i*4,4);
+            if(!std::isfinite(position[i]))return false;
+        }return true;
+    }
     if(!r.get(actor.address,table)||table!=actor_table(engine,actor.kind)||!r.get(actor.address+0x1c8,serial)||serial!=actor.serial||
        !r.get(actor.address+0x214,unit)||unit!=actor.unit||!r.get(unit+4,id)||id!=actor.unit_serial)return false;
     for(unsigned i=0;i<3;++i)if(!r.get(actor.address+0x48+i*4,position[i])||!std::isfinite(position[i]))return false;
@@ -159,8 +168,7 @@ static void sample_playback(uint32_t address){
 static bool focused(){DWORD pid=0;GetWindowThreadProcessId(GetForegroundWindow(),&pid);return pid==GetCurrentProcessId();}
 static bool clock_frame(uint32_t env,ClockFrame& frame){NativeClock c;
     if(!battle_clock(reader(),env,engine,c))return false;
-    const auto battle=battle_clock_identity116.observe(c);if(!battle)return false;
-    frame={battle,c.tick,wall(),c.step,c.speed};return true;}
+    frame={uint64_t(env)<<32|c.phase,c.tick,wall(),c.step,c.speed};return true;}
 static bool routing(void*,uint32_t unit,bool& value){uint32_t root{},env{},common{},phase{},routing_state{};uint8_t on{};
     auto r=reader();if(!r.get(engine+0x1bc8180,root)||!r.get(root+0x110,env)||!r.get(env+8,common)||
        !r.get(common+0xb4,phase)||!r.get(phase+0x2778,on)||!r.get(unit+0xcec,routing_state))return false;
@@ -173,14 +181,37 @@ static bool possession_snapshot93(observation::PossessionPrefix& p){
         MemoryBarrier();memcpy(&p,possession,sizeof p);MemoryBarrier();if(seq==possession->sequence)return true;}
     return false;
 }
-static uint32_t fps_camera_actor(uint64_t* lease=nullptr){
+// Callback-local fields from the SAME current actor read as the identity.
+// These never survive a call and never substitute for the numeric lease proof.
+struct CameraScope121 {bool valid{};uint32_t mount{},backlink{};};
+static uint32_t fps_camera_actor(uint64_t* lease=nullptr,CameraScope121* scope121=nullptr){
     if(!possession||!state)return 0;
     observation::PossessionPrefix p{};if(!possession_snapshot93(p))return 0;
     if(p.magic!=0x31504353||p.version!=46||p.pid!=GetCurrentProcessId()||
        !p.ready||p.stop||p.release||p.mode!=2||!p.lease_generation||GetTickCount64()-p.heartbeat>1000)return 0;
     uint32_t root{},env{},manager{},camera{},actor{},table{},serial{},unit{},id{};auto r=reader();uint8_t alive{};
     if(!r.get(engine+0x1bc8180,root)||!r.get(root+0x110,env)||!r.get(env+0x281fc,manager)||
-       !r.get(manager+0x8e0,camera)||!r.get(camera+0x188,actor)||!r.get(actor,table)||table!=engine+0x15dfec8||
+       !r.get(manager+0x8e0,camera)||!r.get(camera+0x188,actor))return 0;
+    // One fresh actor prefix replaces four separate reads. Dependent pointers
+    // and the unit serial still come from the current camera/lease; nothing
+    // is retained across callbacks. Preserve sparse-readable fallback.
+    std::array<uint8_t,0x218> prefix119{};
+    bool scope_read121=false;
+    if(scope121){
+        *scope121={};std::array<uint8_t,0x68c> full121{};
+        if(r.get(actor,full121)){
+            memcpy(prefix119.data(),full121.data(),prefix119.size());
+            memcpy(&scope121->mount,full121.data()+0x210,4);
+            memcpy(&scope121->backlink,full121.data()+0x688,4);
+            scope121->valid=scope_read121=true;
+        }
+    }
+    // Unreadable/guarded tail: retain the exact earlier prefix/field fallback.
+    if(scope_read121||r.get(actor,prefix119)){
+        memcpy(&table,prefix119.data(),4);memcpy(&serial,prefix119.data()+0x1c8,4);
+        memcpy(&unit,prefix119.data()+0x214,4);alive=prefix119[0xf0];
+        if(table!=engine+0x15dfec8||serial!=p.actor_id||!r.get(unit+4,id)||id!=p.unit_id||alive>1)return 0;
+    }else if(!r.get(actor,table)||table!=engine+0x15dfec8||
        !r.get(actor+0x1c8,serial)||serial!=p.actor_id||!r.get(actor+0x214,unit)||!r.get(unit+4,id)||id!=p.unit_id||
        !r.get(actor+0xf0,alive)||alive>1)return 0;
     if(lease)*lease=p.lease_generation;return actor;
@@ -195,7 +226,35 @@ static uint32_t owned_combat_actor(uint32_t witness,uint64_t* lease=nullptr){
     if(physical&&strictmelee::includes(reader(),physical,witness))return physical;
     return 0;
 }
-static bool scoped(uint32_t witness){return owned_combat_actor(witness)!=0||strictmelee::includes(reader(),fps_camera_actor(),witness);}
+static bool scoped(uint32_t witness){
+    if(!witness||witness>UINT32_MAX-0x100)return false;
+    CameraScope121 scope;auto camera=fps_camera_actor(nullptr,&scope);if(!camera)return false;
+    auto r=reader();
+    if(scope.valid){
+        if(scope.backlink==witness)return true;
+        std::array<uint32_t,20> participants{};
+        if(r.get(witness,participants)){
+            auto contains=[&](uint32_t actor){
+                for(auto offsets:{std::pair<unsigned,unsigned>{0x10,0x24},{0x30,0x38},{0x3c,0x48}}){
+                    uint32_t count=participants[offsets.second/4];if(count>5)continue;
+                    for(uint32_t i=0;i<count;++i)if(participants[offsets.first/4+i]==actor)return true;
+                }return false;
+            };
+            if(contains(camera))return true;
+            if(!scope.mount)return false;
+            uint32_t backlink{};
+            if(!(r.get(scope.mount+0x688,backlink)&&backlink==witness)&&!contains(scope.mount))return false;
+            // A possible mounted alias still needs the original fresh,
+            // reciprocal ownership proof; a participant pointer cannot grant it.
+            return owned_combat_actor(witness)!=0;
+        }
+    }
+    // Preserve readable individual groups when either large snapshot fails.
+    if(strictmelee::includes(r,camera,witness))return true;
+    uint32_t mount{};if(!r.get(camera+0x210,mount)||!mount)return false;
+    if(!strictmelee::includes(r,mount,witness))return false;
+    return owned_combat_actor(witness)!=0;
+}
 static bool approved(uint32_t address,uint64_t generation){uint64_t lease{};if(!fps_actor(&lease))return false;
     AcquireSRWLockShared(&authorization_lock);auto copy=authorization;ReleaseSRWLockShared(&authorization_lock);
     if(!copy.matches(address,generation,lease)||!copy.sealed)return false;
@@ -509,6 +568,30 @@ static uint32_t __fastcall target_hook(void* witness,void*,uint32_t actor,uint32
         answer=native_target(witness,actor,b,c,d,e,f,g,h,i,j,k,l,m);
     }__finally{InterlockedDecrement(&active_callbacks);}return answer;
 }
+static bool selector_contains_proved122(void*const* begin,void*const* end){
+    bool contains=false;uint32_t player=fps_actor(),camera=fps_camera_actor();
+    uintptr_t start=uintptr_t(begin),finish=uintptr_t(end);
+    if(player&&finish>=start&&finish-start<=20&&((finish-start)&3)==0){
+        for(uintptr_t slot=start;slot<finish;slot+=4){uint32_t actor{};if(!reader().get(uint32_t(slot),actor))break;contains|=actor==player||actor==camera;}
+    }return contains;
+}
+static bool selector_contains122(void*const* begin,void*const* end){
+    uintptr_t start=uintptr_t(begin),finish=uintptr_t(end);
+    if(finish<=start||finish-start>20||((finish-start)&3))return false;
+    CameraScope121 scope;auto camera=fps_camera_actor(nullptr,&scope);if(!camera)return false;
+    uint32_t mount=scope.mount;
+    if(!scope.valid&&!reader().get(camera+0x210,mount))return selector_contains_proved122(begin,end);
+    std::array<uint32_t,5> actors{};auto r=reader();unsigned count=unsigned((finish-start)/4);
+    bool snapshot=start>=0x10000&&finish<=UINT32_MAX&&r.read&&r.read(r.context,uint32_t(start),actors.data(),count*4);
+    bool possible=false;
+    for(unsigned i=0;i<count;++i){uint32_t actor{};
+        if(snapshot)actor=actors[i];else if(!r.get(uint32_t(start+i*4),actor))break;
+        possible|=actor==camera||(mount&&actor==mount);
+    }
+    // A possible match re-reads the original physical identity and selector
+    // participants. Neither stale snapshot values nor failed bulk reads grant it.
+    return possible&&selector_contains_proved122(begin,end);
+}
 static NativeVerdict* __fastcall select_hook(void* self,void*,NativeVerdict* output,
     void*const* begin,void*const* end,uint32_t flags,uint32_t flags2){
     InterlockedIncrement(&active_callbacks);InterlockedIncrement(state->calls+3);NativeVerdict* answer=nullptr;
@@ -529,10 +612,11 @@ static NativeVerdict* __fastcall select_hook(void* self,void*,NativeVerdict* out
             }
             *output=verdict;answer=output;
         }else {
-            bool contains=false;uint32_t player=fps_actor(),camera=fps_camera_actor();
-            uintptr_t start=uintptr_t(begin),finish=uintptr_t(end);
-            if(player&&finish>=start&&finish-start<=20&&((finish-start)&3)==0){
-                for(uintptr_t slot=start;slot<finish;slot+=4){uint32_t actor{};if(!reader().get(uint32_t(slot),actor))break;contains|=actor==player||actor==camera;}
+            bool contains=false;
+            // Without our replay scope this hook always forwards the stock
+            // verdict. Do not prove player identity merely to discard it.
+            if(enabled&&owns_coordinator&&replay_parent){
+                contains=selector_contains122(begin,end);
             }
             answer=selection_ports.select(self,output,begin,end,flags,flags2);
             // Never return null role pointers to native prepare: it immediately

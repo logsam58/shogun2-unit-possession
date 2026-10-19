@@ -6,9 +6,9 @@ The mod is still being worked on. These are the main things to watch for.
 
 Crashes can happen during battles, including with blood turned off. We've captured several different failures, but haven't pinned down what starts them or whether they share a cause.
 
-Large infantry and cavalry fights can also become very slow. It can happen without a QTE showing, and sometimes the QTE stays smooth while the battle slows down. Some fights recover on their own. Leaving and re-entering possession isn't a confirmed fix.
+v0.21 improves crowded-fight performance and the latest player test worked well, but large infantry and cavalry fights can still become slow. It can happen without a QTE showing, and sometimes the QTE stays smooth while the battle slows down. Some fights recover on their own. Leaving and re-entering possession isn't a confirmed fix.
 
-If you hit either problem, include the unit, map and what was happening nearby. The [technical notes](releases/v0.20-technical.md#crash-evidence) contain the crash details and investigation limits.
+If you hit either problem, include the unit, map and what was happening nearby. The [technical notes](releases/v0.21-technical.md#crash-evidence) contain the crash details and investigation limits.
 
 ## Visual problems
 

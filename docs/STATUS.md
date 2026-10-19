@@ -1,8 +1,6 @@
-# Support and development status
+# Current status
 
-Current product version: **0.20**, packaging the Test115 possession adapter, HUD and QTE gameplay. [Download v0.20](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.20). See [release notes](releases/v0.20.md) and [validation](releases/v0.20-validation.json). Release loader/cache identity is distinct from the development build; packaging and publication do not replace an already running installation.
-
-v0.20 includes the uncluttered HUD, compact top-centre QTE, cropped friendly-fire callout, latest native acknowledged-image click handling and bounded crowd-encounter reads. A five-minute Test115 session produced no significant lag reported by the player and included 44 sampled QTE serials. Earlier crowded-fight slowdowns remain unresolved; this session is a smooth-play reference, not reproduction or proof of a fix. Native effects/audio crashes remain open, including captures with blood disabled.
+v0.21 packages Test122. The player reported that it worked great and requested publication; the same session ended in a crash. Performance feedback is positive, stability remains unresolved. See [release notes](releases/v0.21.md), [technical notes](releases/v0.21-technical.md) and [validation](releases/v0.21-validation.json).
 
 | Area | Implemented behavior | Coverage / limitation |
 | --- | --- | --- |

@@ -62,3 +62,7 @@ Test113 QTE input uses qte_presented113.h and playable_runtime.cpp to resolve th
 
 
 v0.20 packages the exact Test115 runtime. QTE `qte_presentation93.h` / `playable_runtime.cpp` retain the direct latest-native-acknowledgement input history from Test113. `native_reservation.h` and `verify_crowd115.cpp` contain the bounded foreign-encounter snapshot/fallback and differential identity cases. The product version and release defaults advance independently of those stable filenames and numeric protocols. No animation-lock correction is included.
+
+## v0.21
+
+Active gameplay source matches the tested Test122 tree. The v0.20 adapter/HUD are retained. QTE `native_combat_actor.h`, `native_reservation.h`, `strict_melee_gate.h` and `playable_runtime.cpp` contain performance changes118-122, with `verify_scope118.cpp` through `verify_scope122.cpp` and `verify_identity120.cpp`. Test116/117 experiments are excluded from active source and retained in Git history. See [technical notes](docs/releases/v0.21-technical.md).

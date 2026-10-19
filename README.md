@@ -4,7 +4,7 @@ Take control of a soldier in your army and fight your **Total War: SHOGUN 2** ba
 
 Fight on foot or horseback, fire bows and guns, and face enemy soldiers in melee. Your unit fights alongside you, and you can give them orders without leaving first person.
 
-**[Download v0.20](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.20)** · [Release notes](docs/releases/v0.20.md) · [Known problems](docs/KNOWN_ISSUES.md)
+**[Download v0.21](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.21)** · [Release notes](docs/releases/v0.21.md) · [Known problems](docs/KNOWN_ISSUES.md)
 
 ## Playing the mod
 
@@ -20,7 +20,7 @@ And if you shoot one of your own men, you'll hear **“SHAMEFUL DISPLAY!”**
 
 You'll need the Windows Steam version of **Total War: SHOGUN 2**.
 
-1. Open the [release page](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.20) and download **Shogun2-First-Person-v0.20-Setup.exe**.
+1. Open the [release page](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.21) and download **Shogun2-First-Person-v0.21-Setup.exe**.
 2. Close the game completely, run setup and choose your Shogun 2 folder.
 3. Launch through Steam. In a land battle, select one of your units and press **F9**.
 
@@ -59,13 +59,13 @@ You can't issue these orders while locked in a melee animation, climbing or land
 
 ## Known problems and compatibility
 
-Crashes and heavy slowdowns still happen, especially in crowded fights. Mounted bows can look wrong, and some weapon or arm clipping remains. See the [known problems and reporting guide](docs/KNOWN_ISSUES.md).
+This version improves performance in crowded fights, though slowdowns may still happen. Crashes remain unresolved. Mounted bows can look wrong, and some weapon or arm clipping remains. See the [known problems and reporting guide](docs/KNOWN_ISSUES.md).
 
 The mod is intended for single-player land battles and sieges. It supports weapons from the base game, Rise of the Samurai and Fall of the Samurai, though not every unit, ammo type or castle layout has been tested. Multiplayer and overhaul mods haven't been confirmed to work. Ship possession isn't included; artillery uses the game's existing first-person mode.
 
 ## For contributors
 
-The mod is written in C++, with Python build and debugging tools. Start with the [source map](SOURCE_MAP.md), [build guide](BUILD_AND_TEST.md) and [contributing guide](CONTRIBUTING.md). The [architecture](docs/ARCHITECTURE.md), [v0.20 technical notes](docs/releases/v0.20-technical.md) and [validation records](VALIDATION.md) cover implementation, tests and ongoing investigations.
+The mod is written in C++, with Python build and debugging tools. Start with the [source map](SOURCE_MAP.md), [build guide](BUILD_AND_TEST.md) and [contributing guide](CONTRIBUTING.md). The [architecture](docs/ARCHITECTURE.md), [v0.21 technical notes](docs/releases/v0.21-technical.md) and [validation records](VALIDATION.md) cover implementation, tests and ongoing investigations.
 
 Building the full HUD and QTE needs separately prepared game resources; a fresh clone doesn't include them. The optional [crash recorder](tools/diagnostics/README.md) has its own setup and isn't part of the player installer. The source download is for contributors; players should use the setup download above.
 

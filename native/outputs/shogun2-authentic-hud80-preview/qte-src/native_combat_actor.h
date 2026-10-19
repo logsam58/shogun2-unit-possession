@@ -13,11 +13,21 @@ inline uint32_t actor_table(uint32_t engine,uint32_t kind){
 inline bool combat_identity(const Reader& r,uint32_t actor,uint32_t engine,NativeActor& out,bool require_alive=true){
     if(!actor||actor>UINT32_MAX-0x700)return false;
     uint32_t table{},serial{},unit{},id{},side{};uint8_t alive{};float height{};
+    std::array<uint8_t,0x218> prefix120{};
+    if(r.get(actor,prefix120)){
+        memcpy(&table,prefix120.data(),4);alive=prefix120[0xf0];
+        memcpy(&unit,prefix120.data()+0x214,4);memcpy(&serial,prefix120.data()+0x1c8,4);
+        memcpy(&side,prefix120.data()+0x44,4);memcpy(&height,prefix120.data()+0x4c,4);
+        if((table!=actor_table(engine,Human)&&table!=actor_table(engine,Horse))||
+           alive>1||(require_alive&&alive!=1)||!unit||unit>UINT32_MAX-0xfd0||
+           !r.get(unit+4,id)||!id||!std::isfinite(height))return false;
+    }else {
     if(!r.get(actor,table)||(table!=actor_table(engine,Human)&&table!=actor_table(engine,Horse))||
        !r.get(actor+0xf0,alive)||alive>1||(require_alive&&alive!=1)||
        !r.get(actor+0x214,unit)||!unit||unit>UINT32_MAX-0xfd0||
        !r.get(actor+0x1c8,serial)||!r.get(unit+4,id)||!id||
        !r.get(actor+0x44,side)||!r.get(actor+0x4c,height)||!std::isfinite(height))return false;
+    }
     out={actor,serial,unit,id,side,height,table==actor_table(engine,Horse)?Horse:Human};return true;
 }
 // Exact reciprocal link, same unit/side/environment, and a unique ordinary

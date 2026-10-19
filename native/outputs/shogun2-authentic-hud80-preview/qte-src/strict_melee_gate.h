@@ -5,6 +5,16 @@ namespace qte { namespace strictmelee {
 inline bool includes(const Reader& r,uint32_t actor,uint32_t witness){
     if(!actor||!witness||witness>UINT32_MAX-0x100)return false;
     uint32_t backlink{};if(r.get(actor+0x688,backlink)&&backlink==witness)return true;
+    // One current, local participant snapshot. No cross-callback cache and no
+    // native writes. Retain the individual reads when a page boundary prevents
+    // reading the whole prefix: an earlier readable group can still match.
+    std::array<uint32_t,20> prefix{};
+    if(r.get(witness,prefix)){
+        for(auto offsets:{std::pair<unsigned,unsigned>{0x10,0x24},{0x30,0x38},{0x3c,0x48}}){
+            uint32_t count=prefix[offsets.second/4];if(count>5)continue;
+            for(uint32_t i=0;i<count;++i)if(prefix[offsets.first/4+i]==actor)return true;
+        }return false;
+    }
     for(auto offsets:{std::pair<unsigned,unsigned>{0x10,0x24},{0x30,0x38},{0x3c,0x48}}){
         uint32_t count{};if(!r.get(witness+offsets.second,count)||count>5)continue;
         for(uint32_t i=0;i<count;++i){uint32_t member{};if(!r.get(witness+offsets.first+i*4,member))break;if(member==actor)return true;}
