@@ -1,5 +1,7 @@
 # Validation and evidence
 
+The unpublished [Test117 candidate](docs/development/Test117.md) adds a production native render-copy regression to the adapter suite. Its [receipt](docs/development/Test117-validation.json) separates fresh adapter/loader/installer checks from the exact retained Test116 QTE and HUD. Offline copy speed is not a whole-game performance result.
+
 ## What the suites check
 
 | Suite | Coverage |

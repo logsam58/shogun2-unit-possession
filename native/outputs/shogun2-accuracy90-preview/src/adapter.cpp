@@ -10,6 +10,7 @@
 #include "legacy_v34.h"
 #include "../vendor/include/MinHook.h"
 #include "native_overlay106.h"
+#include "native_render_copy117.h"
 #include <intrin.h>
 static_assert(sizeof(void*)==4,"Build this adapter for x86");
 static HMODULE self_module;
@@ -910,6 +911,7 @@ static DWORD WINAPI worker(void*) {
             }
         }
         state->heartbeat=GetTickCount64();InterlockedExchange(&enabled,1);
+        require(rendercopy117::create(base,engine.size),"Native render-copy117 preparation failed");
         require(MH_EnableHook(MH_ALL_HOOKS)==MH_OK,"Hook enable failed");InterlockedExchange(&state->ready,1);
         log<<"{\"event\":\"hook_ready\",\"pid\":"<<GetCurrentProcessId()<<",\"sha256\":\""<<EXPECTED_HASH<<"\",\"motion_rva\":\"0x367600\"}\n";log.flush();
         bool f9=false,f10=false,f12=false,was_focus=false,mouse_captured=false,left_mouse=false;uint64_t next=0,last_mouse=GetTickCount64();
@@ -978,7 +980,7 @@ static DWORD WINAPI worker(void*) {
         // never forwarded as an ordinary ammo-free projectile after shutdown.
         for(unsigned i=0;i<20&&state->fire_ticket;++i)Sleep(50);
         bool guarded=state->fire_ticket!=0;
-        MH_STATUS result=MH_OK;
+        MH_STATUS result=rendercopy117::disable()?MH_OK:MH_UNKNOWN;
         if(MH_DisableHook(keyboard_poll_target84)!=MH_OK)result=MH_UNKNOWN;
         for(unsigned rva:{0x2f79a0u,0x10ee5b0u,0x325ca0u,0x321d70u,0x3e5170u})if(MH_DisableHook(reinterpret_cast<void*>(base+rva))!=MH_OK)result=MH_UNKNOWN;
         for(void* p:{reinterpret_cast<void*>(base+0xf9c360),reinterpret_cast<void*>(base+0xf9bf20),reinterpret_cast<void*>(base+0x122f740),cursor_target})if(MH_DisableHook(p)!=MH_OK)result=MH_UNKNOWN;
@@ -996,7 +998,7 @@ static DWORD WINAPI worker(void*) {
         if(!native_fatigue_signatures(base))state->error=31;
         log<<"{\"event\":\"disabled\",\"reason\":\"explicit_stop\",\"tick_ms\":"<<GetTickCount64()<<",\"bytes_restored\":"<<(restored?"true":"false")<<",\"camera_bytes_restored\":"<<(camera_restored?"true":"false")<<",\"hook_status\":"<<int(result)<<"}\n";log.flush();
         // Keep DLL, mapping, and trampoline resident until process exit: no unload race.
-    }catch(const std::exception& ex){nativeoverlay106::stop();if(state){state->error=1;state->ready=0;}if(log){log<<"{\"event\":\"initialization_failed\",\"reason\":\""<<ex.what()<<"\"}\n";log.flush();}}
+    }catch(const std::exception& ex){rendercopy117::disable();nativeoverlay106::stop();if(state){state->error=1;state->ready=0;}if(log){log<<"{\"event\":\"initialization_failed\",\"reason\":\""<<ex.what()<<"\"}\n";log.flush();}}
     return 0;
 }
 BOOL WINAPI DllMain(HINSTANCE instance,DWORD reason,LPVOID) {

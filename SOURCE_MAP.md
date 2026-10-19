@@ -1,5 +1,7 @@
 # Source map
 
+Test117 native render-copy hooks and full loaded-function fingerprint gates are in `native/outputs/shogun2-accuracy90-preview/src/native_render_copy117.h`. `verify_render_copy117.cpp` exercises the production hooks against a private, hash-verified engine image, including native sorting and concurrent disable. No engine machine code is tracked. See [Test117](docs/development/Test117.md) for scope and limits.
+
 The mod is native C++ with Python build and diagnostic tools. VERSION is the product version. Numeric suffixes in paths and filenames are stable component/interface identifiers; use the active paths below when changing code.
 
 | Component | Active path | Responsibilities |
