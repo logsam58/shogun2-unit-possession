@@ -4,7 +4,7 @@ Take control of a soldier in your army and fight your **Total War: SHOGUN 2** ba
 
 Fight on foot or horseback, fire bows and guns, and face enemy soldiers in melee. Your unit fights alongside you, and you can give them orders without leaving first person.
 
-**[Download latest published release (v0.22)](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.22)** · [v0.23 notes](docs/releases/v0.23.md) · [Known problems](docs/KNOWN_ISSUES.md)
+**[Download v0.23](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.23)** · [v0.23 notes](docs/releases/v0.23.md) · [Known problems](docs/KNOWN_ISSUES.md)
 
 The current source is **v0.23**. Your unit can form up and fire while you move freely away from its formation. Follow Me also gives one acknowledgement per order instead of repeating it as the unit catches up.
 
@@ -22,7 +22,7 @@ And if you shoot one of your own men, you'll hear **“SHAMEFUL DISPLAY!”**
 
 You'll need the Windows Steam version of **Total War: SHOGUN 2**.
 
-1. Open the [release page](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.22) and download **Shogun2-First-Person-v0.22-Setup.exe**.
+1. Open the [release page](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.23) and download **Shogun2-First-Person-v0.23-Setup.exe**.
 2. Close the game completely, run setup and choose your Shogun 2 folder.
 3. Launch through Steam. In a land battle, select one of your units and press **F9**.
 

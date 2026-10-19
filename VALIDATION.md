@@ -1,6 +1,6 @@
 # Validation and evidence
 
-The current source checkpoint is [v0.23](docs/releases/v0.23-validation.json); the latest published download remains v0.22 until publication. Historical candidate receipts below preserve their original scope; the discarded Test116/117 experiments are excluded from the current build.
+The current release is [v0.23](docs/releases/v0.23-validation.json). Historical candidate receipts below preserve their original scope; the discarded Test116/117 experiments are excluded from the current build.
 
 ## What the suites check
 
