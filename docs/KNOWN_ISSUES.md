@@ -6,9 +6,9 @@ The mod is still being worked on. These are the main things to watch for.
 
 Crashes can happen during battles, including with blood turned off. We've captured several different failures, but haven't pinned down what starts them or whether they share a cause.
 
-v0.21 improves crowded-fight performance and the latest player test worked well, but large infantry and cavalry fights can still become slow. It can happen without a QTE showing, and sometimes the QTE stays smooth while the battle slows down. Some fights recover on their own. Leaving and re-entering possession isn't a confirmed fix.
+v0.22 was reported smooth with Large units, one massive army per side and maximum graphics in DX11. Ultra units with substantial army presence can still become very slow. The audio guard covers one reproduced fault; it does not resolve all crashes. It can happen without a QTE showing, and sometimes the QTE stays smooth while the battle slows down. Some fights recover on their own. Leaving and re-entering possession isn't a confirmed fix.
 
-If you hit either problem, include the unit, map and what was happening nearby. The [technical notes](releases/v0.21-technical.md#crash-evidence) contain the crash details and investigation limits.
+If you hit either problem, include the unit, map and what was happening nearby. The [technical notes](releases/v0.22-technical.md#audio-guard) contain the crash details and investigation limits.
 
 ## Visual problems
 
@@ -52,6 +52,7 @@ Please include:
 - Unit, weapon and ammo.
 - What you did, what you expected and what actually happened.
 - Other mods and graphics settings, especially for visual or timing problems.
+- Army count and unit size for slowdowns, plus whether the same nearby fight is smooth in RTS mode.
 - For a crash, any error message or exception/module information you have.
 
 The optional [crash recorder](../tools/diagnostics/README.md) can collect more detail. Full dumps and input recordings can contain private data, so review them before sharing. The [contributing guide](../CONTRIBUTING.md#useful-bug-reports) has more reporting detail.

@@ -1,6 +1,6 @@
 # Current status
 
-v0.21 packages Test122. The player reported that it worked great and requested publication; the same session ended in a crash. Performance feedback is positive, stability remains unresolved. See [release notes](releases/v0.21.md), [technical notes](releases/v0.21-technical.md) and [validation](releases/v0.21-validation.json).
+v0.22 preserves Test124. The player accepted Large unit size, one massive army per side and maximum graphics in DX11 as smooth throughout. Ultra-size crowded battles still slow down; general crash safety remains unproven. The release retains the crowd optimizations and adds the specific Miles zero-count guard. See [release notes](releases/v0.22.md), [technical notes](releases/v0.22-technical.md) and [validation](releases/v0.22-validation.json).
 
 | Area | Implemented behavior | Coverage / limitation |
 | --- | --- | --- |

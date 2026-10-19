@@ -1,6 +1,6 @@
 # Source map
 
-Test117 native render-copy hooks and full loaded-function fingerprint gates are in `native/outputs/shogun2-accuracy90-preview/src/native_render_copy117.h`. `verify_render_copy117.cpp` exercises the production hooks against a private, hash-verified engine image, including native sorting and concurrent disable. No engine machine code is tracked. See [Test117](docs/development/Test117.md) for scope and limits.
+The discarded Test117 render-copy experiment is retained in Git history, not the active build. See [Test117](docs/development/Test117.md) for its historical scope and limits.
 
 The mod is native C++ with Python build and diagnostic tools. VERSION is the product version. Numeric suffixes in paths and filenames are stable component/interface identifiers; use the active paths below when changing code.
 
@@ -66,3 +66,7 @@ v0.20 packages the exact Test115 runtime. QTE `qte_presentation93.h` / `playable
 ## v0.21
 
 Active gameplay source matches the tested Test122 tree. The v0.20 adapter/HUD are retained. QTE `native_combat_actor.h`, `native_reservation.h`, `strict_melee_gate.h` and `playable_runtime.cpp` contain performance changes118-122, with `verify_scope118.cpp` through `verify_scope122.cpp` and `verify_identity120.cpp`. Test116/117 experiments are excluded from active source and retained in Git history. See [technical notes](docs/releases/v0.21-technical.md).
+
+## v0.22
+
+Active gameplay source matches Test124. Adapter `miles_zero123.h`, its integration in `adapter.cpp` and `verify_miles123.cpp` provide the pinned Miles zero-count guard and native differential fixture. QTE `native_selection_prefix.h` and `verify_preparation124.cpp` add the rejection-only initial encounter filter with current positive validation and individual-read fallback. Other gameplay inputs match the retained Test122 source. See [technical notes](docs/releases/v0.22-technical.md).

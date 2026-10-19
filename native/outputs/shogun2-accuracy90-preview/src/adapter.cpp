@@ -10,6 +10,7 @@
 #include "legacy_v34.h"
 #include "../vendor/include/MinHook.h"
 #include "native_overlay106.h"
+#include "miles_zero123.h"
 #include <intrin.h>
 static_assert(sizeof(void*)==4,"Build this adapter for x86");
 static HMODULE self_module;
@@ -910,7 +911,10 @@ static DWORD WINAPI worker(void*) {
             }
         }
         state->heartbeat=GetTickCount64();InterlockedExchange(&enabled,1);
-        require(MH_EnableHook(MH_ALL_HOOKS)==MH_OK,"Hook enable failed");InterlockedExchange(&state->ready,1);
+        require(MH_EnableHook(MH_ALL_HOOKS)==MH_OK,"Hook enable failed");
+        const auto audio_guard123=mileszero123::install();
+        log<<"{\"event\":\"miles_zero123\",\"status\":"<<audio_guard123<<"}\n";log.flush();
+        InterlockedExchange(&state->ready,1);
         log<<"{\"event\":\"hook_ready\",\"pid\":"<<GetCurrentProcessId()<<",\"sha256\":\""<<EXPECTED_HASH<<"\",\"motion_rva\":\"0x367600\"}\n";log.flush();
         bool f9=false,f10=false,f12=false,was_focus=false,mouse_captured=false,left_mouse=false;uint64_t next=0,last_mouse=GetTickCount64();
         // Release builds remain available until explicit disable or game exit.
@@ -979,6 +983,7 @@ static DWORD WINAPI worker(void*) {
         for(unsigned i=0;i<20&&state->fire_ticket;++i)Sleep(50);
         bool guarded=state->fire_ticket!=0;
         MH_STATUS result=MH_OK;
+        if(!mileszero123::disable())result=MH_UNKNOWN;
         if(MH_DisableHook(keyboard_poll_target84)!=MH_OK)result=MH_UNKNOWN;
         for(unsigned rva:{0x2f79a0u,0x10ee5b0u,0x325ca0u,0x321d70u,0x3e5170u})if(MH_DisableHook(reinterpret_cast<void*>(base+rva))!=MH_OK)result=MH_UNKNOWN;
         for(void* p:{reinterpret_cast<void*>(base+0xf9c360),reinterpret_cast<void*>(base+0xf9bf20),reinterpret_cast<void*>(base+0x122f740),cursor_target})if(MH_DisableHook(p)!=MH_OK)result=MH_UNKNOWN;

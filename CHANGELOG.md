@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.22 — 2026-10-19
+
+- Keep the latest crowd-performance improvements, cleaner HUD and friendly-fire callout.
+- Skip more work for unrelated melee encounters while preserving full checks for the player's combat.
+- Guard a reproduced zero-sample audio fault. Other crash causes remain under investigation.
+- Preserve the player-confirmed smooth Large-unit, one-army-per-side, maximum-graphics DX11 configuration. Ultra units with heavy army presence can still cause severe slowdown.
+
+See [release notes](docs/releases/v0.22.md) for controls and installation, and [technical notes](docs/releases/v0.22-technical.md) for implementation and evidence.
+
 ## v0.21 - 19 October 2026
 
 - Improved first-person performance in large infantry and cavalry fights by reducing repeated checks for unrelated soldiers.

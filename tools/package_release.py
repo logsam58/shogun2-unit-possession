@@ -201,7 +201,7 @@ def main():
         'installer': record(folder / SETUP), 'validation': RECEIPT.relative_to(ROOT).as_posix(), 'candidate': receipt.get('candidate'), 'development_candidate': receipt.get('development_candidate', False),
         'validation_sha256': sha(RECEIPT), 'target_check': target,
         'game_installed_or_launched': False,
-        'known_issues': ['Unresolved native effects and audio-thread crashes, including a blood-disabled capture; mod involvement undetermined', 'Mounted-bow presentation', 'Intermittent crowded-battle slowdown remains unresolved', 'Incomplete specialty-unit, roster and siege-map validation']
+        'known_issues': ['Unresolved native effects and audio-thread crashes, including a blood-disabled capture; mod involvement undetermined', 'Mounted-bow presentation', 'Ultra unit size with heavy army presence can still cause severe slowdown; Large 1v1 max-DX11 play was reported smooth', 'Incomplete specialty-unit, roster and siege-map validation']
     }
     manifest_path = folder / 'release-manifest.json'
     manifest_path.write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8', newline='\n')

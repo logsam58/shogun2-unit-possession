@@ -1,14 +1,14 @@
 # Validation and evidence
 
-The unpublished [Test117 candidate](docs/development/Test117.md) adds a production native render-copy regression to the adapter suite. Its [receipt](docs/development/Test117-validation.json) separates fresh adapter/loader/installer checks from the exact retained Test116 QTE and HUD. Offline copy speed is not a whole-game performance result.
+The current release is [v0.22](docs/releases/v0.22-validation.json). Historical candidate receipts below preserve their original scope; the discarded Test116/117 experiments are excluded from the current build.
 
 ## What the suites check
 
 | Suite | Coverage |
 | --- | --- |
-| Adapter: 61 executables (retained from Test109) | Native forwarding, strict identity/lifetime, movement, camera return, weapons/accuracy, equipment, siege path/speed/crest/landing and cleanup |
-| Styled QTE: 39 executables (retained from Test115) | Combat preparation, clocks/cycles, input/deadlines, interruption feedback, registry churn, pacing and actual reusable styled surface |
-| HUD: 5 executables (retained from Test109) | Consistent contextual state, visibility and presentation policy |
+| Adapter: 62 executables (retained from Test123) | Native forwarding, strict identity/lifetime, movement, camera return, weapons/accuracy, equipment, siege path/speed/crest/landing and cleanup |
+| Styled QTE: 46 executables (retained from Test124) | Combat preparation, clocks/cycles, input/deadlines, interruption feedback, registry churn, pacing and actual reusable styled surface |
+| HUD: 5 executables (retained from Test122) | Consistent contextual state, visibility and presentation policy |
 | Loader: 2 executables | Bootstrap, embedded payload integrity and integration |
 | Installer fixture | Supported predecessor upgrades, seven interruption stages, rollback, reinstall, collisions, cache retention and isolated HKCU handling |
 | Dump reader: 7 Python cases | Embedded, MemoryList and Memory64 stack layouts, exception-context preference and explicit missing-stack handling |
@@ -54,7 +54,7 @@ Test107 adds a production Session/publication regression with staggered native c
 
 ## v0.18 acceptance and release checks
 
-[v0.18 validation](docs/releases/v0.18-validation.json) promotes byte-identical Test107 gameplay after the user reported "worked great" in a session with verified loaded hashes, native1920×1080 fullscreen DirectX11 presentation and actual automatic debugger/input/native-memory/resources/GPU/VRAM capture. Retained gameplay evidence comprises the60 adapter and3 HUD executables from Test106 and36 QTE executables from Test107; these are not fresh promotion runs. New release checks cover both loader executables and the full final-payload installer, including exact Test107/published-v0.17 upgrades, all seven interrupted rollback stages for each and repeated installation. The receipt records any failed attempt and subsequent investigation separately.
+[v0.18 validation](docs/releases/v0.18-validation.json) promotes byte-identical Test107 gameplay after the user reported "worked great" in a session with verified loaded hashes, native1920Ã—1080 fullscreen DirectX11 presentation and actual automatic debugger/input/native-memory/resources/GPU/VRAM capture. Retained gameplay evidence comprises the60 adapter and3 HUD executables from Test106 and36 QTE executables from Test107; these are not fresh promotion runs. New release checks cover both loader executables and the full final-payload installer, including exact Test107/published-v0.17 upgrades, all seven interrupted rollback stages for each and repeated installation. The receipt records any failed attempt and subsequent investigation separately.
 
 Release metadata, PE version, five embedded payloads, complete native/tool source closure, package checksums and source archive Git blobs are verified independently. The release-specific loader/cache is separate from the installed accepted Test107. Acceptance covers the tested behavior; death-overlay/all-driver coverage, physical scanout/input latency, complete roster/map lifecycles and the unresolved effects crash remain outside that claim.
 
@@ -77,3 +77,9 @@ The Test115 five-minute reference has 305.07 seconds of target CPU samples, 299.
 Exact Test122 gameplay is retained:44 QTE fixtures plus its separately compiled45th selector fixture; five HUD fixtures and a native friendly-fire impact fixture; unchanged adapter evidence from v0.20. Release loader and installer are freshly checked, including exact v0.20/Test122 upgrades, seven interrupted stages and repeat-install retention. The complete build source is pinned in [the receipt](docs/releases/v0.21-validation.json).
 
 Menu and battle gates verified the actual Test122 components and recording. The user reported "worked great" and requested v0.21, but the session ended in an unhandled access violation. Performance feedback is accepted for publication; neither crash safety nor a universal lag fix is established.
+
+## v0.22 release evidence
+
+The [v0.22 receipt](docs/releases/v0.22-validation.json) pins exact Test124 gameplay: retained Test123 adapter62, Test124 QTE46 and Test122 HUD5 evidence. New release checks cover loader2, full final-payload installer regression and seven Python dump-format cases. Exact published-v0.21 and Test124 predecessors are checked through upgrades, seven interruptions and repeat-install retention. Gameplay binaries are retained, not rebuilt for promotion.
+
+The player reported smooth Large-unit 1v1 play at maximum graphics in DX11 and explicitly selected the checkpoint for publication. This is subjective configuration-specific acceptance, with no new FPS trace or loaded-build verification for that report. Earlier severe Test124 slowdowns and Ultra crowd limits remain recorded; CPU0â€“3 gave no noticeable benefit and was restored. The pinned audio guard's native fixture addresses one reproduced zero-count defect, not every captured crash. See [technical notes](docs/releases/v0.22-technical.md).

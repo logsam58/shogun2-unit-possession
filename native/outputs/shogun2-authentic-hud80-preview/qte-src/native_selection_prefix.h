@@ -47,8 +47,27 @@ inline bool selection_input(const Reader& reader,uint32_t witness,uint32_t engin
     out=input;return true;
 }
 inline bool preparation_participant(const Reader& reader,uint32_t witness,uint32_t engine,uint32_t actor){
+    if(!actor)return false;
+    // Reject unrelated initial encounters before calculating their complete
+    // native selection context and participant positions. This current local
+    // snapshot never grants membership: possible hits repeat the original
+    // selection_input and participant reads below. Keep the exact original
+    // path if the bounded read is unavailable; never cache across callbacks.
+    if(witness&&witness<=UINT32_MAX-0x100){
+        std::array<uint8_t,0xef> prefix124{};
+        if(reader.get(witness,prefix124)){
+            const auto alternate=prefix124[0xee];
+            if(prefix124[0xc]||prefix124[0xd0]||alternate>1)return false;
+            const unsigned count_offset=alternate?0x38:0x24,begin_offset=alternate?0x30:0x10;
+            uint32_t count{};memcpy(&count,prefix124.data()+count_offset,4);
+            if(count<2||count>(alternate?2u:5u))return false;
+            bool possible=false;
+            for(unsigned i=0;i<count;++i){uint32_t member{};memcpy(&member,prefix124.data()+begin_offset+i*4,4);possible|=member==actor;}
+            if(!possible)return false;
+        }
+    }
     SelectionInput input;
-    if(!actor||!selection_input(reader,witness,engine,input))return false;
+    if(!selection_input(reader,witness,engine,input))return false;
     for(uint32_t i=0;i<input.count;++i){uint32_t member{};
         if(!reader.get(input.begin+i*4,member))return false;
         if(member==actor)return true;

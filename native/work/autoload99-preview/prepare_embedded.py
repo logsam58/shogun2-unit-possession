@@ -2,7 +2,7 @@ from pathlib import Path
 import argparse,hashlib,json,struct,re
 here=Path(__file__).resolve().parent
 root=here.parents[1]
-parser=argparse.ArgumentParser();mode=parser.add_mutually_exclusive_group();mode.add_argument('--candidate',type=int,default=122);mode.add_argument('--release',action='store_true',help='Release metadata for Test122 gameplay');args=parser.parse_args()
+parser=argparse.ArgumentParser();mode=parser.add_mutually_exclusive_group();mode.add_argument('--candidate',type=int,default=124);mode.add_argument('--release',action='store_true',help='Release metadata for Test124 gameplay');args=parser.parse_args()
 if args.candidate is not None:assert args.candidate>=100, 'Candidate must be 100 or later'
 version=(root.parent/'VERSION').read_text().strip()
 development=not args.release
