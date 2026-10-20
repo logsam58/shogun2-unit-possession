@@ -4,11 +4,11 @@ This is a native C++ first-person possession mod for Total War: SHOGUN 2. Read R
 
 ## Current baseline
 
-v0.24 retains the exact user-accepted Test138 gameplay binaries and native output source. The accepted result followed a fresh loaded-build and recording check. Preserve Test136 Rapid Advance, the native1 melee toggle, Q targeting, reversible squad detachment, independent formation firing, camera, HUD and QTE.
+v0.25 retains the exact Test140 gameplay, accepted by the user with charging explicitly marked buggy. This is user-reported acceptance; no formal Test140 loaded-build gate was run. Exact accepted Test138/v0.24 remains recoverable. Preserve Test136 Rapid Advance, the native1 melee toggle, Q targeting, reversible squad detachment, independent formation firing, camera, HUD and QTE.
 
 Ordinary native locomotion states0/4 pass unchanged. The accepted melee readiness handling and scoped advance-task detached-actor compatibility remain. This acceptance does not certify all animation assets, measured FPS or universal crash safety. First-person weapon/arm quality is deferred. Ultra crowd slowdowns and other crashes remain open.
 
-The next checkpoint is native infantry/cavalry charging; docs/development/Checkpoint2.md is a preparation plan, not implemented charging. T/G abilities and variable bow draw follow later. Use native ability definitions, restrictions and original game icons/button artwork; no placeholders.
+Checkpoint2 is native infantry/cavalry charging. Test140 is an unpublished charge-contact correction after Test139 locomotion worked but contact became a QTE; its exact check/install status is in the local artifacts/Test140 receipts. The user accepted it with a charging caveat. Read docs/development/Checkpoint2.md and docs/development/Test140.md before extending it. T/G abilities and variable bow draw follow later. Use native ability definitions, restrictions and original game icons/button artwork; no placeholders.
 
 ## Changes and validation
 

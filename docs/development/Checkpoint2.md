@@ -1,6 +1,6 @@
 # Checkpoint 2: native infantry and cavalry charges
 
-Checkpoint 1 is complete by the player's decision, with first-person weapon/arm presentation left for later. v0.24/Test138 removes the rejected locomotion override while retaining the accepted combat behavior. Finish its offline checks and closed-game installation before starting charge changes.
+Checkpoint 1 is accepted as v0.24/Test138, with first-person weapon/arm presentation left for later. Test139 implements a native formation-charge bridge; its first user test reached charge locomotion but contact became a QTE. Test140 corrects charge contact priority and native horse jump ownership; see [its scope and tests](Test140.md). The player accepted Test140 as v0.25 with charging explicitly marked buggy. Further charge polish is deferred; the formal Test140 loaded-build gate was not run. The requirements below still govern the work.
 
 ## What should happen
 

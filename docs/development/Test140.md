@@ -1,0 +1,17 @@
+# Test140: native charge contact and horse jumping
+
+Test139 reached charge locomotion, but the user reported that infantry and cavalry contact opened a QTE. The retained QTE runtime explicitly replaced charge encounters with an offensive prompt. This candidate lets a freshly proved native charge encounter run its original preparation, selector, target registration and update instead. The game retains its chosen target, verdict and animation, including a failed or countered charge; no guaranteed kill is introduced.
+
+One bounded encounter record follows the current camera lease, physical actor/reciprocal mount, serials, environment and native witness generation. A live native charge task plus charge planning state is required. A charge task already marked done can still identify its queued contact before task replacement. Native jump tasks on a proved horse also qualify. Ordinary melee retains the existing QTE. No new crowd scan or hook is added. Witness removal, failed preparation, exceptions, lease changes and identity reuse clear the record. Its lifetime check does not create registry entries; a focused removed-witness test reproduced and corrected that accumulation path.
+
+Stock selected pairs use the existing numeric adapter alignment/playback handoff, without a prompt hold. Original native targets guide alignment; animation root motion owns playback. A current native horse jump task retains reciprocal possession identity and bypasses manual translation through completion, including overlapping pair alignment. A focused regression reproduced alignment overwriting an already-started native jump before that priority was corrected. Jump eligibility, launch and animation selection remain native; this is not a fabricated jump at a chosen radius.
+
+The preserved on-demand decoder/animation companion checked103 matched charge-kill and horse/rider jump declarations and96 distinct stock assets. Selected indexed native instruction exports were byte-checked against the supported engine. The decoder was reused through the existing explicit read-only archive relocation; no reconstruction build was resumed.
+
+The focused production QTE dispatch fixture supplies native selection/preparation/clip results and focus explicitly. It checks unchanged native success, survival and countercharge verdicts, no QTE acquisition,12000 updates after charge pose exit, target forwarding, alignment/root-motion handoff, removal and stale lifetime rejection. The adapter fixture executes original retail charge and horse-jump factories with asset/path/property/contact providers identified in source. Final animation appearance, jump availability and live outcomes remain unproved until a fresh loaded-build/capture gate and gameplay feedback.
+
+Retain accepted v0.24/Test138, Rapid136, native1, Q targeting, detachment/formation firing, HUD, camera, recovery and siege behavior. Exact HUD is retained; adapter and QTE are rebuilt and tested. This unpublished development candidate does not advance the release version. Checkpoint2 remains open; T/G abilities with native icons and variable bow draw are later work.
+
+## User acceptance and v0.25
+
+The player reported improved gameplay and accepted Test140 as v0.25, with charging marked buggy. This is user-reported acceptance; no formal Test140 loaded-build/capture gate was performed. Preserve the exact Test140 gameplay during release promotion. Further charging polish and POV quality are deferred.

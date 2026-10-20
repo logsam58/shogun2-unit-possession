@@ -1,0 +1,119 @@
+{
+  "passed": true,
+  "candidate": 139,
+  "version": "0.24",
+  "development_candidate": true,
+  "base_commit": "e069476ec3a260f65796d6b7ab900c3f1134ce55",
+  "fresh_suites": {
+    "adapter": 80,
+    "loader": 2,
+    "installer": true
+  },
+  "fresh_checks": [
+    {
+      "name": "minhook",
+      "passed": true,
+      "seconds": 2.801,
+      "log": "artifacts\\logs\\minhook.log"
+    },
+    {
+      "name": "adapter",
+      "passed": true,
+      "seconds": 6.563,
+      "log": "artifacts\\logs\\adapter.log"
+    },
+    {
+      "name": "adapter-tests",
+      "passed": true,
+      "seconds": 197.85,
+      "log": "artifacts\\logs\\adapter-tests.log",
+      "executables": 80
+    },
+    {
+      "name": "loader",
+      "passed": true,
+      "seconds": 3.873,
+      "log": "artifacts\\logs\\loader.log"
+    },
+    {
+      "name": "loader-tests",
+      "passed": true,
+      "seconds": 5.918,
+      "log": "artifacts\\logs\\loader-tests.log"
+    },
+    {
+      "name": "installer",
+      "passed": true,
+      "seconds": 7.832,
+      "log": "artifacts\\logs\\installer.log"
+    },
+    {
+      "name": "installer-tests",
+      "passed": true,
+      "seconds": 415.293,
+      "log": "artifacts\\logs\\installer-tests.log"
+    }
+  ],
+  "python_tests": 7,
+  "retained_suites": {
+    "QTE_Test124": 46,
+    "HUD_Test134": 6
+  },
+  "components": [
+    {
+      "name": "possession-v46.dll",
+      "bytes": 563200,
+      "sha256": "34cf229c7e3ea0087bdc0c98f3c4d7d071988a7667c76dd70d113d1a377ba4cb"
+    },
+    {
+      "name": "possession-hud.exe",
+      "bytes": 25442304,
+      "sha256": "07dd83203ff5a951085b2bfc1819b23763ad76b73376f029f9b01ece8ee3ae69"
+    },
+    {
+      "name": "qte-playable-v79.dll",
+      "bytes": 8451584,
+      "sha256": "cfec68115c0e031179a9fc1a8fcb968b9edd0b05b713a45f54b2756bfd39dd4e"
+    },
+    {
+      "name": "dinput8.dll",
+      "bytes": 34765312,
+      "sha256": "5c6220320390035647b2045c5fc71526d091a3d0c28f7068e39cb7bd714c7bd3"
+    },
+    {
+      "name": "marker.pack",
+      "bytes": 870,
+      "sha256": "2a05572fe7e80a007e3aaa72a797817f26963648d43c1080f4169e1c4111f7a4"
+    },
+    {
+      "name": "Shogun2-Possession-Setup.exe",
+      "bytes": 35198464,
+      "sha256": "293cb560c9af2084fdb7395dfb3ced9bed1185e7f0b9949096d6e9bdd05647fc"
+    },
+    {
+      "name": "install_cli.exe",
+      "bytes": 35179520,
+      "sha256": "9e4dbb36c445c0abf4e06019fa5b9f8e1f8f57a19d7c34021de6357715b71f1a"
+    }
+  ],
+  "cache_id": "76f6babfd17c6803",
+  "installed": false,
+  "loaded": false,
+  "live_accepted": false,
+  "published": false,
+  "recording_active": false,
+  "recorder_armed": true,
+  "runtime_changes": "Native formation charge intent bridged to the detached player; original task, speed, contact and cancellation; native look/Q/mode/Rapid/detachment/fire/HUD/QTE preserved.",
+  "decoder": {
+    "charge_declarations": 18,
+    "assets": 18,
+    "existing_decoder_reused": true,
+    "archive_rebuild_resumed": false
+  },
+  "limits": "Native construction/entry/gait/pose/speed and full charge-update contact branch execute original retail code with synthetic actors. Geometry/pathfinding, property values, transitions and contact eligibility/queue results are explicit providers. Live outcomes, charge bonuses, final rendering and full roster coverage require fresh tests. Native formation charge evidence is required; standalone targeting is not invented. POV/Ultra/other crashes remain open.",
+  "remaining_checkpoints": [
+    "Live native charge validation",
+    "T/G abilities using original native icons/buttons",
+    "Variable bow draw"
+  ]
+}

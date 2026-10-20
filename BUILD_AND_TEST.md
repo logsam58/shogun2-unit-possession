@@ -1,3 +1,15 @@
+## v0.25 / accepted Test140
+
+Promote exact Test140 gameplay with charging marked buggy. Release metadata uses revision140; retain adapter80/QTE47/HUD6 and run fresh loader2, complete installer upgrades/rollback and Python7. See docs/releases/v0.25-technical.md.
+
+## Test140 charge contact candidate
+
+Use explicit `--candidate 140`: adapter80, QTE47, loader2, the complete installer suite including exact Test139 plus prior upgrades/seven interruptions/repeat backups, and Python7. Retain exact HUD6. Install with the game closed and preserve exact Test139 rollback alongside accepted Test138. Fresh loaded hashes and recording must be checked after READY before formal play.
+
+## Test139 charging candidate
+
+Use explicit `--candidate 139`. Run adapter80, loader2, the complete installer suite including exact installed Test138 and all prior predecessors/seven interruptions/repeat backups, and Python7. Retain exact accepted HUD6/QTE46. Close the game for replacement, preserve exact Test138 rollback and require a fresh loaded-build/capture cue afterward. See docs/development/Test139.md for original-code/provider boundaries. v0.24/Test138 remains the accepted release baseline until gameplay feedback.
+
 ## v0.24 release baseline
 
 The release retains exact accepted Test138 gameplay. `--release` now labels revision138 as v0.24 with no development suffix. Run loader2, the complete installer suite (exact Test138 plus all earlier predecessors, seven interruptions/repeat backups), and Python7. Retain adapter79/HUD6/QTE46 rather than rebuilding gameplay. Pin all tracked native/tool inputs and verify embedded payloads/PE/marker before packaging. See docs/releases/v0.24-technical.md and its receipt. Candidate sections below are historical build records.

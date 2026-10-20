@@ -1,3 +1,11 @@
+## v0.25 / accepted Test140
+
+Promote exact Test140 gameplay with charging marked buggy. Release metadata uses revision140; retain adapter80/QTE47/HUD6 and run fresh loader2, complete installer upgrades/rollback and Python7. See docs/releases/v0.25-technical.md.
+
+## Test140 charge contact
+
+QTE `native_charge_contact140.h` bridges original charge encounters around prompt acquisition while reusing the adapter alignment/playback channel. `verify_charge140.cpp` exercises production dispatch/selector/target boundaries and removed-lifetime cleanup; `native_registry94.h::matches140` proves an existing generation without creating an entry. Adapter `native_subject.h` recognizes the original horse jump task; `adapter.cpp` yields manual translation and `verify_charge139.cpp` exercises its original factory and lease/motion handoff. See docs/development/Test140.md for provider and live limits.
+
 ## v0.24 release
 
 The current gameplay is exact accepted Test138, including Rapid136, the native1 unit toggle, enemy-priority Q targeting, mode artwork, ordinary native locomotion and scoped detached-advance compatibility. Promotion changes only native/work packaging and tools metadata. See docs/releases/v0.24-technical.md. Native charging is a separate prepared checkpoint; historical candidate entries below do not supersede the current baseline.
@@ -13,6 +21,8 @@ Test136 adds adapter rapid_pace136.h: bounded read-only same-unit native velocit
 Test135 keeps compatibility filenames: native_movement.h selects original18c120 unit gait during exact Rapid; native_commands100.h and native_fatigue.h/native_speed_modifiers.h share it. verify_rapid132.cpp compares original gait/speed; verify_fatigue.cpp isolates gait selection for hook costs. See docs/development/Test135.md.
 
 # Source map
+
+Test139 adds `native_charge139.h` and `verify_charge139.cpp` under the active adapter source. The motion boundary bridges current native formation charge descriptors into the original personal task, with bounded roster/target proof, native speed and cancellation. Exact Test138 HUD/QTE are retained. See docs/development/Test139.md for scope and fixture providers; live charge acceptance is pending.
 
 Test132 adds body_look132.h (bounded numeric turn goal) and rapid_advance132.h (read-only exact active-effect lookup), with the production integration in adapter.cpp/native_movement.h. verify_rapid132.cpp executes original native modifier/lookup and the requested Shift policy. The revised verify_head131.cpp now checks model-led visible yaw and restored pitch/QTE responsiveness.
 

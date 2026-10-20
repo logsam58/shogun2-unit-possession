@@ -1,0 +1,189 @@
+{
+  "final_review": {
+    "source_review_complete": true,
+    "initial_full_suite_passed": true,
+    "jump_alignment_overwrite_reproduced_then_fixed": true,
+    "removed_lifetime_ghost_reproduced_then_fixed": true,
+    "QTE_lookup_does_not_create_lifetimes": true,
+    "requires_fresh_final_adapter80_QTE47_loader2_installer_and_Python7": true,
+    "ordinary_QTE_and_crowd_threshold_focused_checks_passed": true,
+    "interrupted_validation_owned_process_only": "validation-interruption140.json"
+  },
+  "line_ending_preservation": {
+    "passed": true,
+    "changes": [
+      {
+        "file": "native/outputs/shogun2-accuracy90-preview/src/verify_charge139.cpp",
+        "before": "4a771de1b2b0ac4f3a4cd1a42c9d319380f38215760b93df6dce75517cfaa73d",
+        "after": "a5bad8884f0687c2a7b943628465c4ccd17414a40b27fd25266284ba770c2531",
+        "logical_LF_unchanged": true
+      },
+      {
+        "file": "AGENTS.md",
+        "before": "089363dc7ba4ad0a13e827da5c4dae92bdb26ac7bd5911b3a1a24431ef1ed1af",
+        "after": "6474c2677c34c29461f0cd70e22289dee0a42dd0c52bfd2e9041d1f516ec5743",
+        "logical_LF_unchanged": true
+      },
+      {
+        "file": "docs/development/Checkpoint2.md",
+        "before": "2e92f76b9982355de38bcd9bc5622c7d854b95ad93d31428c07fa4b47792cd55",
+        "after": "55263b4feb84d65bfb822907ee1fb31b7284c7b2f5fbfd86ae4694a038b4744c",
+        "logical_LF_unchanged": true
+      },
+      {
+        "file": "native/work/installer-siege99/install.h",
+        "before": "8b761fc6df6cec52c2f0887cdea9f866c719e9db0258e59ac7d7be3698c72f83",
+        "after": "2e196ec6f411d568f7437c517d18682731bbb239f88bb8617c7daea3853083a0",
+        "logical_LF_unchanged": true
+      },
+      {
+        "file": "native/work/installer-siege99/previous_cache_catalog.h",
+        "before": "d4ac7723e1259d74388e8dcd72f177d375e3017ecdbbfffecd57d3e9bd090d32",
+        "after": "a56b3ac9db6d5e42e49639921ba37734ed3530fdc9deee9a1c0925f1e7efe89e",
+        "logical_LF_unchanged": true
+      },
+      {
+        "file": "native/work/installer-siege99/verify.cpp",
+        "before": "5ecb99ac41717a0573eec46f4fdfdd521b2bb9af088703041263a18a88fdfd41",
+        "after": "4a578bab7447983a64623454006dfd116dda174520e464961ec75a0c04ff97b6",
+        "logical_LF_unchanged": true
+      }
+    ]
+  },
+  "passed": true,
+  "candidate": 140,
+  "version": "0.24",
+  "development_candidate": true,
+  "base_commit": "e069476ec3a260f65796d6b7ab900c3f1134ce55",
+  "fresh_suites": {
+    "adapter": 80,
+    "qte": 47,
+    "loader": 2,
+    "installer": true
+  },
+  "fresh_checks": [
+    {
+      "name": "minhook",
+      "passed": true,
+      "seconds": 2.767,
+      "log": "artifacts\\logs\\minhook.log"
+    },
+    {
+      "name": "adapter",
+      "passed": true,
+      "seconds": 6.578,
+      "log": "artifacts\\logs\\adapter.log"
+    },
+    {
+      "name": "adapter-tests",
+      "passed": true,
+      "seconds": 198.503,
+      "log": "artifacts\\logs\\adapter-tests.log",
+      "executables": 80
+    },
+    {
+      "name": "minhook",
+      "passed": true,
+      "seconds": 2.818,
+      "log": "artifacts\\logs\\minhook.log"
+    },
+    {
+      "name": "qte",
+      "passed": true,
+      "seconds": 5.696,
+      "log": "artifacts\\logs\\qte.log"
+    },
+    {
+      "name": "qte-tests",
+      "passed": true,
+      "seconds": 138.589,
+      "log": "artifacts\\logs\\qte-tests.log",
+      "executables": 47
+    },
+    {
+      "name": "loader",
+      "passed": true,
+      "seconds": 3.644,
+      "log": "artifacts\\logs\\loader.log"
+    },
+    {
+      "name": "loader-tests",
+      "passed": true,
+      "seconds": 5.841,
+      "log": "artifacts\\logs\\loader-tests.log"
+    },
+    {
+      "name": "installer",
+      "passed": true,
+      "seconds": 7.523,
+      "log": "artifacts\\logs\\installer.log"
+    },
+    {
+      "name": "installer-tests",
+      "passed": true,
+      "seconds": 402.048,
+      "log": "artifacts\\logs\\installer-tests.log"
+    }
+  ],
+  "python_tests": 7,
+  "retained_suites": {
+    "HUD_Test134": 6
+  },
+  "components": [
+    {
+      "name": "possession-v46.dll",
+      "bytes": 563200,
+      "sha256": "2133370ec7b3e8fb4d50552c807a5e3f72b9edd2db54f2609c9728c44c149efc"
+    },
+    {
+      "name": "possession-hud.exe",
+      "bytes": 25442304,
+      "sha256": "07dd83203ff5a951085b2bfc1819b23763ad76b73376f029f9b01ece8ee3ae69"
+    },
+    {
+      "name": "qte-playable-v79.dll",
+      "bytes": 8455680,
+      "sha256": "1b1fab1020f2b3248869b27625fd31c38b2900b818be76f63ea3f5f328abbdb0"
+    },
+    {
+      "name": "dinput8.dll",
+      "bytes": 34769408,
+      "sha256": "f74075060cbc28b6afe550c589f3dbe7cac3cac22804674852709f3fe880470b"
+    },
+    {
+      "name": "marker.pack",
+      "bytes": 870,
+      "sha256": "8b6c378b542d5f11fe63389fd9a5d392b0941a97ffe423a2d3218e512cbbeadd"
+    },
+    {
+      "name": "Shogun2-Possession-Setup.exe",
+      "bytes": 35203072,
+      "sha256": "5c5da9447745cf425b75207d9365669c40147f45cd88b2e847f16e5ee898a766"
+    },
+    {
+      "name": "install_cli.exe",
+      "bytes": 35184128,
+      "sha256": "559d55b20f6aa232690208740b0989a9bb656288f86531968efbba746cbc1c1d"
+    }
+  ],
+  "cache_id": "1a43b7b119ebad8f",
+  "installed": false,
+  "loaded": false,
+  "live_accepted": false,
+  "published": false,
+  "recording_active": false,
+  "recorder_armed": true,
+  "runtime_changes": "Native charge encounters bypass offensive QTE acquisition through original stock prepare/selector/target/update and existing numeric alignment/playback handoff. Native horse jump retains ownership and original movement. Ordinary QTE, Rapid/mode/Q/detachment/fire/camera/HUD retained.",
+  "decoder": {
+    "charge_and_jump_declarations": 103,
+    "assets": 96,
+    "existing_decoder_reused": true,
+    "archive_rebuild_resumed": false
+  },
+  "limits": "Original retail charge/contact and horse-jump factory execute with synthetic records and explicit path/property/eligibility/contact/asset providers. Production QTE dispatch uses supplied native selection/preparation/clip/focus outputs, proves unchanged stock verdicts and no prompt acquisition,12000 updates and alignment/root handoff. Jump eligibility, launch arc, final matched animations and gameplay outcomes require fresh live verification. Native formation charge authority remains required; no guaranteed kill or invented jump radius. POV/Ultra/other crashes remain open.",
+  "remaining_checkpoints": [
+    "Live native charge validation",
+    "T/G abilities using original native icons/buttons",
+    "Variable bow draw"
+  ]
+}

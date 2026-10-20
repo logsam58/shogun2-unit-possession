@@ -12,6 +12,15 @@ static bool root_motion_subject(uintptr_t actor,bool committed){
         (committed||(field<unsigned char>(actor,0xa1)==1&&!field<unsigned char>(actor,0xa2)&&
         !field<unsigned char>(actor,0xa3)&&!field<unsigned char>(actor,0xa4)));
 }
+// The stock jump factory3d9140 installs task16/15e0cec. Preserve its
+// native motion and reciprocal rider ownership; no timer or pose-only grace.
+static bool native_mounted_jump140(uintptr_t actor){
+    return actor&&field<uintptr_t>(actor,0)==base+0x15e8524&&
+        field<unsigned char>(actor,0xf0)==1&&!field<uintptr_t>(actor,0x18)&&
+        field<unsigned>(actor,0x248)==16&&field<unsigned char>(actor,0x2e8)==1&&
+        field<uintptr_t>(actor,0x250)==base+0x15e0cec&&field<uintptr_t>(actor,0x254)==actor&&
+        field<unsigned char>(actor,0x258)==0;
+}
 static bool native_subject(uintptr_t rider,uintptr_t actor_unit,uintptr_t view,bool committed,NativeSubject& subject){
     subject={};
     if(!rider||!actor_unit||!view||field<uintptr_t>(rider,0)!=base+0x15dfec8||
@@ -29,7 +38,7 @@ static bool native_subject(uintptr_t rider,uintptr_t actor_unit,uintptr_t view,b
     auto mount=field<uintptr_t>(rider,0x210);
     if(!mount||mount==rider||field<uintptr_t>(mount,0)!=base+0x15e8524||
        field<uintptr_t>(mount,0x214)!=actor_unit||field<uintptr_t>(mount,0x20c)!=movement||
-       field<uintptr_t>(mount,0x210)||!root_motion_subject(mount,committed))return false;
+       field<uintptr_t>(mount,0x210)||(!root_motion_subject(mount,committed)&&!native_mounted_jump140(mount)))return false;
     // Horse virtual update RVA41fda0 iterates +6cc/+6d0 and updates these
     // exact passengers after integrating itself. Verify that reverse link too.
     auto passengers=field<unsigned>(mount,0x6cc),links=field<uintptr_t>(mount,0x6d0);

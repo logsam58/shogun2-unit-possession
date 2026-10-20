@@ -423,6 +423,9 @@ static bool apply_melee_motion(uintptr_t actor){
     __try{
         bool player,opponent;uintptr_t rider;if(!melee_motion_identity(actor,request,player,opponent,rider))return false;
         observe_melee_handoff78(actor,request,player);
+        // An already-started stock horse jump owns motion even while its
+        // matched pair is aligning. Never replace that launch/arc with a step.
+        if(native_mounted_jump140(actor))return true;
         uintptr_t actor_unit=field<uintptr_t>(actor,0x214);if(!actor_unit)return false;
         // After original combat preparation, native targets own BOTH actors.
         // No WASD intent, facing override, or animation flags are applied then.
@@ -602,6 +605,7 @@ static void equipment_render_reset81(){
 #include "first_person_interface.h"
 #include "rts_camera_native90.h"
 #include "native_commands100.h"
+#include "native_charge139.h"
 static void __fastcall camera_cancel(void* camera,void*) {
     uintptr_t caller=reinterpret_cast<uintptr_t>(_ReturnAddress());
     InterlockedIncrement(reinterpret_cast<volatile LONG*>(&state->camera_cancels));
@@ -728,7 +732,7 @@ static void __fastcall camera_matrix(void* camera,void*,const void* matrix) {
         }
     }__finally {--camera_callback_depth;}
 }
-static void relinquish(){InterlockedExchange(&entry_movement125,0);combat_focus125.reset();combat_pair_reset126();InterlockedExchange(&combat_entry_locked126,0);InterlockedExchange(&animation_look_active104,0);command_reset100();climb_reset97();request_rts_restore90();next_accuracy90=0;publish_accuracy90(nullptr,0,0);InterlockedExchange(&mounted_heading85,-1);equipment_reset81();reset_death_view();InterlockedExchange(&manual_arrow_released,0);state->arrow_visual_hidden=0;possession_lease.release();InterlockedExchange(&state->input,0);InterlockedExchange(&state->aiming,0);state->aim_pose=0;InterlockedExchange(&state->weapon_phase,WEAPON_IDLE);possessed=0;environment=0;unit=0;InterlockedExchange(&state->follow,0);InterlockedExchange(&state->pending_order,0);follow_target=false;InterlockedExchange(&state->fire_request,0);InterlockedExchange(&state->mode,IDLE);}
+static void relinquish(){charge_reset139();InterlockedExchange(&entry_movement125,0);combat_focus125.reset();combat_pair_reset126();InterlockedExchange(&combat_entry_locked126,0);InterlockedExchange(&animation_look_active104,0);command_reset100();climb_reset97();request_rts_restore90();next_accuracy90=0;publish_accuracy90(nullptr,0,0);InterlockedExchange(&mounted_heading85,-1);equipment_reset81();reset_death_view();InterlockedExchange(&manual_arrow_released,0);state->arrow_visual_hidden=0;possession_lease.release();InterlockedExchange(&state->input,0);InterlockedExchange(&state->aiming,0);state->aim_pose=0;InterlockedExchange(&state->weapon_phase,WEAPON_IDLE);possessed=0;environment=0;unit=0;InterlockedExchange(&state->follow,0);InterlockedExchange(&state->pending_order,0);follow_target=false;InterlockedExchange(&state->fire_request,0);InterlockedExchange(&state->mode,IDLE);}
 static void end_death_on_window(){
     if(!InterlockedExchange(&death_return_pending,0))return;
     __try{uintptr_t manager=possession_lease.identity.manager;uintptr_t env=environment;
@@ -744,13 +748,16 @@ static bool prepare(uintptr_t actor) {
         if(!enabled || state->stop || GetTickCount64()-state->heartbeat>500){relinquish();return false;}
         if(InterlockedExchange(&state->release,0)){relinquish();InterlockedExchange(&state->acquire,0);}
         if(state->acquire&&!possessed)adopt_possession97(actor);
-        if(apply_melee_motion(actor)){if(actor==locomotion_actor())InterlockedExchange(&entry_movement125,0);return false;}
+        if(apply_melee_motion(actor)){if(actor==locomotion_actor()){charge_reset139();InterlockedExchange(&entry_movement125,0);}return false;}
         if(actor!=locomotion_actor())return false;
         if(!confirm_follow93(possessed)){note_follow_release93();++state->identity_releases;relinquish();return false;}
         if(dead_view())return false;
-        if(recovery_prepare103(actor)){InterlockedExchange(&entry_movement125,0);return false;}
-        if(climb_prepare97(actor)){InterlockedExchange(&entry_movement125,0);return false;}
-        if(finish_melee_handoff78(actor)){InterlockedExchange(&entry_movement125,0);return false;}
+        // Native horse jumping owns translation/animation through completion.
+        // Manual WASD must not overwrite the stock launch, arc or landing.
+        if(native_mounted_jump140(actor)){charge_reset139();InterlockedExchange(&entry_movement125,0);return false;}
+        if(recovery_prepare103(actor)){charge_reset139();InterlockedExchange(&entry_movement125,0);return false;}
+        if(climb_prepare97(actor)){charge_reset139();InterlockedExchange(&entry_movement125,0);return false;}
+        if(finish_melee_handoff78(actor)){charge_reset139();InterlockedExchange(&entry_movement125,0);return false;}
         // The human request owns mounted combat too. During that commitment
         // WASD cannot override a horse's native matched-combat movement.
         melee60::Request mount_commitment;
@@ -781,6 +788,8 @@ static bool prepare(uintptr_t actor) {
             float magnitude=std::hypot(vx,vz);
             if(magnitude>0){direction.x=vx/magnitude;direction.z=vz/magnitude;}
         }
+        charge_prepare139(actor,movement_input,direction);
+        if(charge_rate139(movement_input,speed))state->effective_speed=speed;
         float modifier=1;
         if(!read_native_speed_modifiers(actor,movement_input,speed,modifier)){
             ++state->speed_modifier_errors;state->error=98;relinquish();return false;
@@ -845,6 +854,7 @@ static void snapshot_log(std::ofstream& log) {
     log<<"{\"event\":\"friendly_fire109\",\"tick_ms\":"<<GetTickCount64()<<",\"hits\":"<<friendly_hits109<<",\"errors\":"<<friendly_errors109<<"}\n";
     nativeoverlay106::log(log);
     command_log100(log);
+    charge_log139(log);
     {static LONG prior=-1,failed=-1;LONG blocked=keyboard_blocked84,errors=keyboard_failures84;
      if(blocked!=prior||errors!=failed){prior=blocked;failed=errors;
       log<<"{\"event\":\"native_keyboard84\",\"tick_ms\":"<<GetTickCount64()

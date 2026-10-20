@@ -131,7 +131,9 @@ static bool refresh_committed_pose(const NativeActor& actor,float* position){
     for(unsigned i=0;i<3;++i)if(!r.get(actor.address+0x48+i*4,position[i])||!std::isfinite(position[i]))return false;
     return true;
 }
+static void stock_charge_heartbeat140();
 static void publish_commitment(){
+    stock_charge_heartbeat140();
     if(commitment.phase==melee60::Off)return;
     observation::PossessionPrefix current93{};if(!possession_snapshot93(current93))return;
     if(current93.stop||current93.release||current93.mode!=2||
@@ -267,6 +269,7 @@ static bool approved(uint32_t address,uint64_t generation){uint64_t lease{};if(!
            !r.get(identity.address+0xf0,alive)||alive>1||!r.get(identity.address+0x688,link)||
            (link!=address&&(alive||link)))return false;
     }return true;}
+#include "native_charge_contact140.h"
 static void retire_authorization(uint32_t address,uint64_t generation){AcquireSRWLockExclusive(&authorization_lock);authorization.removed(address,generation);ReleaseSRWLockExclusive(&authorization_lock);}
 static bool authorize(const WitnessKey& key,uint64_t serial,Result result,const NativeActor& p,const NativeActor& e){
     AcquireSRWLockExclusive(&authorization_lock);bool ok=authorization.permit(key,serial,result,p,e);ReleaseSRWLockExclusive(&authorization_lock);return ok;}
@@ -392,7 +395,7 @@ static void drain_input(){AcquireSRWLockExclusive(&click_lock);Click value;
     session->levels((GetAsyncKeyState(VK_LBUTTON)&0x8000)!=0,(GetAsyncKeyState(VK_RBUTTON)&0x8000)!=0);
 }
 static void drain_removals(){AcquireSRWLockExclusive(&click_lock);
-    while(removal_tail!=removal_head){const auto& value=removal_queue[removal_tail++%128];session->removed(value.address,value.generation);
+    while(removal_tail!=removal_head){const auto& value=removal_queue[removal_tail++%128];stock_charge_removed140(value.address,value.generation);session->removed(value.address,value.generation);
         if(admission.removed(value.address,value.generation,delivery_clock)){InterlockedExchange(&delivery_address,0);clear_commitment();}
         if(value.address==playback.address&&value.generation==playback.generation&&!playback.removed_wall){playback.removed_wall=wall();++playback.revision;}}
     ReleaseSRWLockExclusive(&click_lock);}
@@ -411,6 +414,8 @@ static uint32_t controlled(uint32_t address,uint64_t generation,bool updating){
     drain_removals();
     const bool owned=scoped(address);
     if(owned&&approved(address,generation))return updating?update_port(nullptr,address):prepare_port(nullptr,address);
+    uint32_t stock_answer140{};
+    if(owned&&stock_charge_dispatch140(address,generation,updating,stock_answer140))return stock_answer140;
     if(owned&&session->occupied()&&address!=session->key().address)return reject_melee();
     if(session->occupied()&&address!=session->key().address)
         return updating?update_port(nullptr,address):prepare_port(nullptr,address);
@@ -532,7 +537,7 @@ static void __fastcall remove_hook(void* self,void*,void* witness){InterlockedIn
     uint32_t address=uint32_t(witness);auto generation=lifetimes.get(address);
     retire_authorization(address,generation);
     if(enabled&&!InterlockedCompareExchange(&coordinator,1,0)){
-        drain_removals();session->removed(address,generation);
+        drain_removals();stock_charge_removed140(address,generation);session->removed(address,generation);
         if(admission.removed(address,generation,delivery_clock)){InterlockedExchange(&delivery_address,0);clear_commitment();}
         if(address==playback.address&&generation==playback.generation&&!playback.removed_wall){playback.removed_wall=wall();++playback.revision;}
         publish();InterlockedExchange(&coordinator,0);
@@ -561,7 +566,7 @@ static uint32_t __fastcall target_hook(void* witness,void*,uint32_t actor,uint32
         if(enabled&&reservation::preserve_release(reader(),engine,held,uint32_t(witness),actor,committed_player,committed_enemy)){
             InterlockedIncrement(&conflicts_blocked);return 0;
         }
-        if(enabled&&scoped(uint32_t(witness))&&!approved(uint32_t(witness),lifetimes.get(uint32_t(witness)))&&
+        if(enabled&&scoped(uint32_t(witness))&&!stock_charge_target_scope140(uint32_t(witness))&&!approved(uint32_t(witness),lifetimes.get(uint32_t(witness)))&&
            !(owns_coordinator&&replay_parent==uint32_t(witness)&&session&&session->occupied())){
             InterlockedIncrement(&melee_rejected);return 0;
         }
@@ -903,7 +908,7 @@ static DWORD WINAPI worker(void*){void* targets[10]{};bool hooked=false;HANDLE r
                 <<",\"prompt_serial\":"<<(show?shown.serial:0)<<",\"prompt_action\":"<<(show?uint32_t(shown.action):0)
                 <<",\"player\":"<<player_address<<",\"player_polls\":"<<player_polls<<",\"filtered\":"<<foreign_filtered<<",\"clock_rejected\":"<<clock_rejected
                 <<",\"delivery_witness\":"<<delivery_address<<",\"suppressed_prompts\":"<<suppressed_prompts
-                <<",\"contacts_blocked\":"<<contacts_blocked<<",\"preplay_avoidance_blocked\":"<<preplay_avoidance_blocked<<",\"conflicts_blocked\":"<<conflicts_blocked<<",\"foreign_releases_preserved\":"<<foreign_releases_preserved<<",\"unapproved_melee_rejected\":"<<melee_rejected<<",\"native_score_samples\":"<<native_score_samples
+                <<",\"contacts_blocked\":"<<contacts_blocked<<",\"preplay_avoidance_blocked\":"<<preplay_avoidance_blocked<<",\"conflicts_blocked\":"<<conflicts_blocked<<",\"foreign_releases_preserved\":"<<foreign_releases_preserved<<",\"unapproved_melee_rejected\":"<<melee_rejected<<",\"native_score_samples\":"<<native_score_samples<<",\"stock_charge_prepares140\":"<<stock_charge_prepares140<<",\"stock_charge_updates140\":"<<stock_charge_updates140
                 <<",\"score_capture_rejected\":"<<score_capture_rejected<<",\"effective_score_rejected\":"<<effective_score_rejected
                 <<",\"score_metrics_valid\":"<<metrics_valid<<",\"score_player\":"<<metrics.player<<",\"score_enemy\":"<<metrics.opponent<<",\"score_generation\":"<<metrics.generation
                 <<",\"player_power\":"<<metrics.own<<",\"enemy_power\":"<<metrics.enemy<<",\"player_margin\":"<<metrics.detail.own_margin<<",\"enemy_margin\":"<<metrics.detail.enemy_margin

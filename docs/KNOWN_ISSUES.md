@@ -20,7 +20,7 @@ v0.24 gameplay was accepted, with first-person weapon/arm poses and clipping lef
 
 ## Combat and unit orders
 
-- **Charging:** the possessed infantryman or rider does not yet reliably join the native charge performed by the formation. This is the next development task.
+- **Charging (buggy):** v0.25 improves possessed infantry and cavalry charges, but transitions and contact animations still need polish. Native eligibility decides which attacks and horse jumps can happen; a kill or leap is not guaranteed.
 
 - **Interrupted melee prompts:** another hit, death or a change in the fight can cut a prompt short. INTERRUPTED is there to show that it ended early. Crowded fights still need more testing.
 - **Shots or volleys not releasing:** include the exact unit, weapon and ammo. Bow, gun and other weapon support is broader than the combinations tested so far. Say whether it was your soldier, the rest of the unit, or both.

@@ -56,6 +56,18 @@ public:
         }
         ReleaseSRWLockExclusive(&lock_);
     }
+    // An existing native lifetime proof must NEVER create a registry entry.
+    // In particular, a concurrently removed charge cannot leave a ghost record.
+    bool matches140(uint32_t address,uint64_t generation){
+        if(!address||!generation)return false;
+        AcquireSRWLockShared(&lock_);bool result=false;
+        for(unsigned i=0;i<capacity94;++i){
+            const auto& e=entries_[(bucket(address)+i)&(capacity94-1)];
+            if(!e.state)break;
+            if(e.address==address){result=e.generation==generation;break;}
+        }
+        ReleaseSRWLockShared(&lock_);return result;
+    }
     RegistryMetrics94 metrics94(){AcquireSRWLockShared(&lock_);auto result=metrics_;ReleaseSRWLockShared(&lock_);return result;}
 };
 } }

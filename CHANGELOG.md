@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.25 - 2026-10-20
+
+- Join native infantry and cavalry charges while possessed.
+- Let native charge contact and horse jumps take priority over the ordinary melee prompt.
+- Keep the accepted HUD, unit orders, independent formation firing, native melee toggle and Rapid Advance behavior.
+
+Charging is improved but still buggy; the player accepted it with that caveat. First-person weapon clipping, Ultra crowd slowdowns and other crashes remain open. [Player notes](docs/releases/v0.25.md) - [Technical details](docs/releases/v0.25-technical.md).
+
 ## v0.24 - 2026-10-20
 
 - Match Rapid Advance sprinting to the unit's boosted pace while keeping walking available.

@@ -1,3 +1,15 @@
+## v0.25 / accepted Test140
+
+Promote exact Test140 gameplay with charging marked buggy. Release metadata uses revision140; retain adapter80/QTE47/HUD6 and run fresh loader2, complete installer upgrades/rollback and Python7. See docs/releases/v0.25-technical.md.
+
+## Test140 pending live charge validation
+
+See [Test140](docs/development/Test140.md) for the QTE priority cause, native charge-contact correction and horse-jump ownership boundary. Its receipt records the final actual adapter/QTE/loader/installer/Python results separately from retained HUD. Live animation and gameplay acceptance remain pending; v0.24/Test138 is the accepted baseline.
+
+## Test139 charge candidate
+
+The [Test139 scope](docs/development/Test139.md) separates original native execution from fixture providers and pending live outcomes. Its final receipt records adapter80, loader2, complete installer upgrade/rollback and Python7 results when completed. Exact Test138 HUD/QTE are retained. v0.24/Test138 remains the accepted gameplay baseline; charge contact, bonuses and final animation appearance need fresh live checks.
+
 ## v0.24 release acceptance
 
 The user accepted Test138 after its fresh battle loaded-file/hook/capture gate. First-person POV quality is explicitly deferred. Retain exact adapter79/HUD6/QTE46 evidence; run fresh release loader2, full installer and Python7 checks, recording actual final results in docs/releases/v0.24-validation.json. The release wrapper is not installed/live-tested during publication. User-reported acceptance is separate from measured FPS, full-roster rendering and universal crash safety.
