@@ -1,6 +1,17 @@
 # Changelog
 
-## v0.23 — 2026-10-19
+## v0.24 - 2026-10-20
+
+- Match Rapid Advance sprinting to the unit's boosted pace while keeping walking available.
+- Target enemy units through friendly troops more reliably.
+- Toggle the whole unit's native melee mode with **1**, using the game's own mode indicator. **2** no longer switches weapons.
+- Keep the accepted melee combat presentation and restore ordinary movement animations.
+- Correct one captured crash in a detached soldier's native advance task.
+- Preserve independent formation firing, unit orders, HUD and QTE behavior.
+
+The player accepted this checkpoint after a verified in-battle test. First-person weapon/arm poses and clipping still need work. Other crashes and Ultra crowd slowdowns remain unresolved. [Player notes](docs/releases/v0.24.md) - [Technical details](docs/releases/v0.24-technical.md).
+
+## v0.23 â€” 2026-10-19
 
 - Let the rest of your unit form up and fire while your possessed soldier moves independently. Leaving possession restores normal squad control.
 - Face the soldier's direction on entry and carry walking/running movement into possession.
@@ -8,9 +19,9 @@
 - Stop repeated Follow Me voice acknowledgements as the unit moves and catches up.
 - Retain the HUD, QTE, weapon behavior and crowd optimizations.
 
-The player accepted Test130 gameplay and reported a crash in the same session. Its cause remains unresolved. [Player notes](docs/releases/v0.23.md) · [Technical notes](docs/releases/v0.23-technical.md).
+The player accepted Test130 gameplay and reported a crash in the same session. Its cause remains unresolved. [Player notes](docs/releases/v0.23.md) Â· [Technical notes](docs/releases/v0.23-technical.md).
 
-## v0.22 — 2026-10-19
+## v0.22 â€” 2026-10-19
 
 - Keep the latest crowd-performance improvements, cleaner HUD and friendly-fire callout.
 - Skip more work for unrelated melee encounters while preserving full checks for the player's combat.
@@ -26,7 +37,7 @@ See [release notes](docs/releases/v0.22.md) for controls and installation, and [
 - Packages the exact Test122 gameplay selected after a successful playtest. That session ended in a crash; crash safety remains unresolved.
 - Updated installer with verified upgrades and interrupted-install rollback from v0.20 and Test122.
 
-[Release notes](docs/releases/v0.21.md) · [Technical details](docs/releases/v0.21-technical.md).
+[Release notes](docs/releases/v0.21.md) Â· [Technical details](docs/releases/v0.21-technical.md).
 
 ## v0.20 - 18 October 2026
 
@@ -36,7 +47,7 @@ See [release notes](docs/releases/v0.22.md) for controls and installation, and [
 - Cropped original SHAMEFUL DISPLAY callout when you shoot an ally.
 - Updated installer, with the existing possession, weapons, unit orders, cavalry and siege features.
 
-Crashes, mounted-bow visuals and some clipping remain open problems. [Player release notes](docs/releases/v0.20.md) · [Technical notes and test details](docs/releases/v0.20-technical.md).
+Crashes, mounted-bow visuals and some clipping remain open problems. [Player release notes](docs/releases/v0.20.md) Â· [Technical notes and test details](docs/releases/v0.20-technical.md).
 
 ## v0.19 - 18 October 2026
 
@@ -53,7 +64,7 @@ The player accepted Test109 without sending READY; automatic recording verifies 
 
 Promotes the accepted Test107 gameplay with the full v0.17 possession and unit-control feature set.
 
-- Existing HUD, QTE and death artwork now has native DirectX9/11 presentation, retaining the Windows fallback and 1080p layouts. HUD visibility was accepted in1920×1080 fullscreen DirectX11 play.
+- Existing HUD, QTE and death artwork now has native DirectX9/11 presentation, retaining the Windows fallback and 1080p layouts. HUD visibility was accepted in1920Ã—1080 fullscreen DirectX11 play.
 - Current proven simulation-clock anchors keep the QTE marker moving between combat callbacks. Pause, native authority, response deadlines and submitted-image click judgement are preserved.
 - A shared owned-infantry animation reset correction and consistent current aim identity address reproduced personal firing lifecycle failures while retaining independent unit firing.
 - Exact accepted gameplay binaries/source are retained. Fresh release loader/installer checks include exact Test107 and published-v0.17 upgrades, interruption rollback and repeat-install backup retention.

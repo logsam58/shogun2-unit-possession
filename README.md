@@ -4,9 +4,9 @@ Take control of a soldier in your army and fight your **Total War: SHOGUN 2** ba
 
 Fight on foot or horseback, fire bows and guns, and face enemy soldiers in melee. Your unit fights alongside you, and you can give them orders without leaving first person.
 
-**[Download v0.23](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.23)** · [v0.23 notes](docs/releases/v0.23.md) · [Known problems](docs/KNOWN_ISSUES.md)
+**[Download v0.24](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.24)** · [v0.24 notes](docs/releases/v0.24.md) · [Known problems](docs/KNOWN_ISSUES.md)
 
-The current source is **v0.23**. Your unit can form up and fire while you move freely away from its formation. Follow Me also gives one acknowledgement per order instead of repeating it as the unit catches up.
+**v0.24** improves Rapid Advance and targeting enemies through friendly troops. Press **1** to toggle your unit's native melee mode. Your unit can still form up and fire while you move freely away from its formation. The first-person weapon view still needs some work; see the [known problems](docs/KNOWN_ISSUES.md).
 
 ## Playing the mod
 
@@ -22,7 +22,7 @@ And if you shoot one of your own men, you'll hear **“SHAMEFUL DISPLAY!”**
 
 You'll need the Windows Steam version of **Total War: SHOGUN 2**.
 
-1. Open the [release page](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.23) and download **Shogun2-First-Person-v0.23-Setup.exe**.
+1. Open the [release page](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.24) and download **Shogun2-First-Person-v0.24-Setup.exe**.
 2. Close the game completely, run setup and choose your Shogun 2 folder.
 3. Launch through Steam. In a land battle, select one of your units and press **F9**.
 
@@ -39,7 +39,7 @@ Close the game before installing an update, then start it again afterward.
 | **Mouse** | Look around |
 | **Hold RMB** | Ready or draw your ranged weapon |
 | **LMB** | Fire or release your shot |
-| **1 / 2** | Choose melee / ranged equipment |
+| **1** | Toggle the unit between native melee and ranged mode, when supported |
 | **Tab** | Cycle available ammunition |
 | **Hold Ctrl** | Crouch to fire, where supported |
 | **LMB / RMB prompt** | Click the shown button when the marker reaches the highlighted zone |
@@ -61,13 +61,13 @@ You can't issue these orders while locked in a melee animation, climbing or land
 
 ## Known problems and compatibility
 
-The latest player test was smooth with **Large units, one full army per side and maximum graphics in DX11**. Ultra units with several armies or heavy fighting nearby can still slow down badly. v0.23 retains those optimizations and the guard against one reproduced audio fault. A crash was reported during the successful v0.23 gameplay test; its cause remains unresolved. Mounted bows can look wrong, and some weapon or arm clipping remains. See the [known problems and reporting guide](docs/KNOWN_ISSUES.md).
+**Large units, one full army per side and maximum graphics in DX11** have been reported smooth. Ultra units with several armies or heavy fighting nearby can still slow down badly. v0.24 retains those optimizations, the audio guard and a correction for one captured detached-soldier crash. Other crashes remain unresolved. Mounted bows can look wrong, and some weapon or arm clipping remains. See the [known problems and reporting guide](docs/KNOWN_ISSUES.md).
 
 The mod is intended for single-player land battles and sieges. It supports weapons from the base game, Rise of the Samurai and Fall of the Samurai, though not every unit, ammo type or castle layout has been tested. Multiplayer and overhaul mods haven't been confirmed to work. Ship possession isn't included; artillery uses the game's existing first-person mode.
 
 ## For contributors
 
-The mod is written in C++, with Python build and debugging tools. Start with the [source map](SOURCE_MAP.md), [build guide](BUILD_AND_TEST.md) and [contributing guide](CONTRIBUTING.md). The [architecture](docs/ARCHITECTURE.md), [v0.23 technical notes](docs/releases/v0.23-technical.md) and [validation records](VALIDATION.md) cover implementation, tests and ongoing investigations.
+The mod is written in C++, with Python build and debugging tools. Start with the [source map](SOURCE_MAP.md), [build guide](BUILD_AND_TEST.md) and [contributing guide](CONTRIBUTING.md). The [architecture](docs/ARCHITECTURE.md), [v0.24 technical notes](docs/releases/v0.24-technical.md) and [validation records](VALIDATION.md) cover implementation, tests and ongoing investigations.
 
 Building the full HUD and QTE needs separately prepared game resources; a fresh clone doesn't include them. The optional [crash recorder](tools/diagnostics/README.md) has its own setup and isn't part of the player installer. The source download is for contributors; players should use the setup download above.
 

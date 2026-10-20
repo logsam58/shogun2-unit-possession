@@ -1,0 +1,118 @@
+{
+  "passed": true,
+  "candidate": 136,
+  "development_candidate": true,
+  "version": "0.23",
+  "base_commit": "d6a1655d4d43b187f6b9b0e9fb079f1f79f582d4",
+  "fresh_suites": {
+    "adapter": 77,
+    "loader": 2,
+    "installer": true
+  },
+  "fresh_checks": [
+    {
+      "name": "minhook",
+      "passed": true,
+      "seconds": 2.739,
+      "log": "artifacts\\logs\\minhook.log"
+    },
+    {
+      "name": "adapter",
+      "passed": true,
+      "seconds": 6.461,
+      "log": "artifacts\\logs\\adapter.log"
+    },
+    {
+      "name": "adapter-tests",
+      "passed": true,
+      "seconds": 184.98,
+      "log": "artifacts\\logs\\adapter-tests.log",
+      "executables": 77
+    },
+    {
+      "name": "loader",
+      "passed": true,
+      "seconds": 3.608,
+      "log": "artifacts\\logs\\loader.log"
+    },
+    {
+      "name": "loader-tests",
+      "passed": true,
+      "seconds": 5.752,
+      "log": "artifacts\\logs\\loader-tests.log"
+    },
+    {
+      "name": "installer",
+      "passed": true,
+      "seconds": 7.257,
+      "log": "artifacts\\logs\\installer.log"
+    },
+    {
+      "name": "installer-tests",
+      "passed": true,
+      "seconds": 396.305,
+      "log": "artifacts\\logs\\installer-tests.log"
+    }
+  ],
+  "python_tests": 7,
+  "retained_suites": {
+    "QTE_Test124": 46,
+    "HUD_Test134": 6
+  },
+  "components": [
+    {
+      "name": "possession-v46.dll",
+      "bytes": 556032,
+      "sha256": "1c5954945f9d88c4e4f4805a2cced5a36f6675f3d8de891889f6c85c79a8ec76"
+    },
+    {
+      "name": "possession-hud.exe",
+      "bytes": 25442304,
+      "sha256": "07dd83203ff5a951085b2bfc1819b23763ad76b73376f029f9b01ece8ee3ae69"
+    },
+    {
+      "name": "qte-playable-v79.dll",
+      "bytes": 8451584,
+      "sha256": "cfec68115c0e031179a9fc1a8fcb968b9edd0b05b713a45f54b2756bfd39dd4e"
+    },
+    {
+      "name": "dinput8.dll",
+      "bytes": 34758144,
+      "sha256": "ec6af337983b1ae2dfcd3c4c68e629fb879aa08db6877b0e352f5c04bffc8b64"
+    },
+    {
+      "name": "marker.pack",
+      "bytes": 859,
+      "sha256": "1d533fb98c61a3d2d38fd5dc1383f62414dd099b5a532d3eabfb159feae72a74"
+    },
+    {
+      "name": "Shogun2-Possession-Setup.exe",
+      "bytes": 35190272,
+      "sha256": "db9ab5fcf8ea525d0c075214556b4edfbd862b255eac7f13096ba599f1dc06ef"
+    },
+    {
+      "name": "install_cli.exe",
+      "bytes": 35170304,
+      "sha256": "029e298e7b05662aadab8e18de01badfbe4fa47fe694cf3e85e3c04b3d410985"
+    }
+  ],
+  "cache_id": "e7883d0ca034c160",
+  "installed": false,
+  "loaded": false,
+  "live_accepted": false,
+  "published": false,
+  "recording_active": false,
+  "recorder_armed": true,
+  "runtime_changes": "Only during exact active Rapid Advance, Shift movement has a final native-peer velocity ceiling. Walking and normal Shift outside that ability retain the ordinary native calculation. The previous unit-order gait switch is removed. Up to9 eligible same-unit AI speeds from at most32 roster entries per100ms provide a lower median; numeric observations expire after1second. No usable peer falls back to native walking pace, never theoretical boosted sprint. No native peer/stat/order writes. Ceiling also bounds acceleration carryover. Existing log row includes the numeric reference. Accepted134 toggle, detachment/Q/firing and exact HUD/QTE retained.",
+  "limits": "Native velocity layout and master-roster ownership use indexed original code; fixture velocities are synthetic. Offline production-path checks do not establish actual live AI speed/animation matching. Walking remains native ability-modified walking. A stationary/isolated unit has no moving AI reference and uses the conservative native-walk fallback for Shift. Crash/Ultra crowd/visual issues unresolved. Automatic recorder stays armed onD; no extra profiling.",
+  "remaining_checkpoints": [
+    "Native charging",
+    "T/G abilities using original native icons/buttons",
+    "Variable bow draw"
+  ],
+  "offline_visual_validation_retained_from_Test134": true,
+  "original_mode_artwork_retained": true,
+  "HUD_binary_exact_Test134": true,
+  "retained_native_artwork_entries_verified_Test131": 1371,
+  "earlier_attempts": []
+}

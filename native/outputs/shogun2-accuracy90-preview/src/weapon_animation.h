@@ -285,6 +285,7 @@ static bool __fastcall weapon_task_idle_gate96(void* task,void*){
     if(ranged_subject_owned(field<uintptr_t>(reinterpret_cast<uintptr_t>(task),4))){InterlockedIncrement(&idle_barrier_bypasses96);return true;}
     return original_task_idle_gate96(task);
 }
+#include "melee_presentation137.h"
 static void __fastcall weapon_play_hook(void* actor,void*,unsigned clip,unsigned force,unsigned attached,float speed){
     if(!own_weapon_call&&recovery_clip103(clip)&&weapon_owned(reinterpret_cast<uintptr_t>(actor))){
         state->weapon_phase=WEAPON_IDLE;state->aim_pose=0;InterlockedExchange(&state->aiming,0);InterlockedExchange(&state->fire_request,0);
@@ -304,12 +305,13 @@ static void __fastcall weapon_change_hook(void* actor,void*,unsigned mode,unsign
     if(!own_weapon_call&&weapon_owned(reinterpret_cast<uintptr_t>(actor))){
         if(equipment_slot81==equipment81::Melee){
             if(mode==14||mode==15||mode==16||mode==17||mode==32||mode==33)return;
-            if(mode==8)mode=10;else if(mode==29)mode=30;
+
         }else if(!weapon_mounted()){
             if(equipment_crouched81()){if(mode==8)mode=9;else if(mode==14)mode=15;else if(mode==16)mode=17;}
             else {if(mode==9)mode=8;else if(mode==15)mode=14;else if(mode==17)mode=16;}
         }
     }
+    if(!own_weapon_call)mode=melee_presentation_mode137(reinterpret_cast<uintptr_t>(actor),mode,attached);
     original_change(actor,mode,skip,attached);
 }
 static void begin_weapon_impl(const uint32_t* payload,uintptr_t context){

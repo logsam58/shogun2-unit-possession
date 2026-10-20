@@ -15,6 +15,10 @@ static float fixture_grade=.25f;static bool grade_valid=true,release_during_upda
 static bool sample_native_grade(uintptr_t,Intent,float,float& grade,float& factor,float& distance){
     grade=fixture_grade;factor=1;distance=.35f;return grade_valid;
 }
+// The standalone hook fixture isolates gait selection; the full-adapter Rapid
+// fixture executes the original native unit gait selector itself.
+static int selected_gait135=-1;
+static bool native_sprint_requested133(unsigned input){return selected_gait135<0?(input&RUN)!=0:selected_gait135!=0;}
 #include "native_fatigue.h"
 static unsigned native_updates;
 static void __fastcall synthetic_native_update(void* object,void*){
@@ -93,6 +97,9 @@ int main(){void* memory=nullptr;bool initialized=false;try{
         require(!fatigue_owner,"Fatigue ownership must remain scoped");
     };
     for(unsigned i=0;i<1000;++i){check(0,3,-8);check(FORWARD,-8,0);check(FORWARD|RUN,-8,6);check(FORWARD|RUN,3,6,true);check(FORWARD,8,8,true);}
+    selected_gait135=1;check(FORWARD,-8,6); // Native Rapid order runs without Shift.
+    selected_gait135=0;check(FORWARD|RUN,-8,0); // Shift cannot override native walk.
+    selected_gait135=-1;
     field<float>(unit,0x14)=2.1f;check(FORWARD|RUN,-8,0);field<float>(unit,0x14)=4.25f;
     release_during_update=true;check(FORWARD|RUN,-8,6);release_during_update=false;state->release=0;
     field<unsigned>(possessed,0x1f0)=18;field<int>(possessed,0x400)=8;field<float>(possessed,0x1b8)=-.3f;

@@ -67,7 +67,8 @@ static bool measure(){
     if(!d.unit)return false;
     uintptr_t army=0;d.owner=faction_owner(unit,army);
     if(d.owner){d.faction=d.owner->name;d.mon=d.owner->mon;d.boshin=d.owner->boshin;}
-    d.ranged=read<unsigned>(unit+0xf7c)!=0;d.bow=s.pose_weapon_record==3;
+    d.ranged=read<unsigned>(unit+0xf7c)!=0;auto mode=weaponmode133::from_native(read<unsigned char>(unit+0xead),d.ranged);
+    d.unit_mode_known=mode.known;d.unit_melee=mode.melee;d.bow=s.pose_weapon_record==3;
     d.aim_pose=s.aim_pose;d.weapon_phase=s.weapon_phase;d.aiming=s.aiming!=0;d.following=s.follow!=0;
     if(!commands_shared100&&now>=commands_retry100){
         commands_retry100=now+1000;wchar_t name[120];swprintf_s(name,L"Local\\Shogun2PossessionUnitCommands100-%lu",pid);
@@ -142,18 +143,19 @@ static int preview(int argc,wchar_t** argv){
     bool ranged=wcscmp(argv[3],L"ranged")==0||bomb||gun||single||pending||empty||reload||lowered||drawing||mortar||rocket||fots||unknown||wcscmp(argv[3],L"ammo-qte")==0,combat=wcscmp(argv[3],L"combat")==0,qte_active=wcscmp(argv[3],L"qte")==0||wcsncmp(argv[3],L"qte-",4)==0||wcscmp(argv[3],L"ammo-qte")==0;
     bool command_preset=wcsncmp(argv[3],L"command-",8)==0;
     bool climb_preset=wcsncmp(argv[3],L"climb-",6)==0;
-    require(command_preset||climb_preset||ranged||combat||qte_active||wcscmp(argv[3],L"clean")==0,"Unknown preview preset");
+    require(command_preset||climb_preset||ranged||combat||qte_active||(wcscmp(argv[3],L"clean")==0||wcscmp(argv[3],L"melee")==0),"Unknown preview preset");
     hud80::View v;v.fixture=true;v.unit=hud80::unit_art(ranged?L"Inf_Missile_Bow_Ashigaru":L"Inf_Sword_Katana_Samurai");require(v.unit!=nullptr,"Fixture catalog entry missing");
     v.faction=L"Oda";v.mon=L"ui/clan_mons/data__oda.png";v.men=combat?73:118;v.initial=120;v.morale=combat?5:2;v.fatigue=combat?4:1;v.veterancy=3;
-    v.commands_known=true;v.commands.fire_mode=1;v.equipment_known=true;v.has_ranged=ranged;v.slot=ranged?2:1;v.styles=ranged?3:0;v.ammunition=L"Fire arrows";
+    v.unit_mode_known=true;v.unit_melee=!ranged;v.commands_known=true;v.commands.fire_mode=1;v.equipment_known=true;v.has_ranged=ranged;v.slot=ranged?2:1;v.styles=ranged?3:0;v.ammunition=L"Fire arrows";
     v.climb_mode=wcscmp(argv[3],L"climb-near")==0?1:wcscmp(argv[3],L"climb-top")==0?2:wcscmp(argv[3],L"climb-active")==0?3:wcscmp(argv[3],L"climb-crest")==0?4:0;
+    if(wcscmp(argv[3],L"melee")==0){v.unit=hud80::unit_art(L"Inf_Missile_Bow_Ashigaru");v.unit_mode_known=true;v.unit_melee=true;v.has_ranged=true;v.slot=1;}
     v.ranged=ranged;v.bow=ranged&&!gun&&!bomb&&!mortar&&!rocket&&!fots;v.kind=v.bow?1:gun||fots?2:3;
     v.aiming=ranged&&!lowered;v.aim_pose=drawing?2:lowered?0:1;v.ammo=empty?0:19;v.pending=pending;
     v.accuracy_known=gun||fots;v.cone_half_angle=wcscmp(argv[3],L"gun-accurate")==0?.0025f:wcscmp(argv[3],L"gun-inaccurate")==0?.025f:.009f;v.projection_y=1/std::tan(1.309f*.5f);
     v.reload=reload?2.4f:0;v.weapon_phase=reload?4:0;
     if(gun)v.unit=hud80::unit_art(L"Inf_Missile_Matchlock_Ashigaru");
     if(fots){v.boshin=true;v.unit=hud80::unit_art(L"Boshin_Inf_Militia_Levy_Infantry");}
-    if(unknown){v.kind=0;v.equipment_known=false;}
+    if(unknown){v.kind=0;v.equipment_known=false;v.unit_mode_known=false;}
     if(ranged){v.ammunition_known=true;auto& a=v.ammunition_state;a.count=single||mortar||rocket?1:gun||bomb||fots?2:3;a.current=single||pending||empty?0:1;a.pending=pending;
         for(unsigned i=0;i<a.count;++i){auto& item=a.items[i];item.icon=mortar?ammo83::Mortar:rocket?ammo83::Rocket:(gun||fots)?(i?ammo83::Suppression:ammo83::Bullet):bomb?(i?ammo83::BlindBomb:ammo83::Bomb):i==0?ammo83::Arrow:i==1?ammo83::FireArrow:ammo83::WhistleArrow;
             item.flags=(i==a.current?ammo83::Selected:0)|(i==0?ammo83::Normal:0)|(!empty&&!(gun&&i==1)?ammo83::Available:0);wcscpy_s(item.label,ammo83::label(ammo83::Icon(item.icon)));}}

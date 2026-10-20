@@ -6,7 +6,7 @@ static thread_local unsigned detached_position130[5];
 using NativePose130=uintptr_t(__thiscall*)(void*);
 using NativePair130=void(__thiscall*)(void*,uintptr_t,uintptr_t,unsigned);
 using NativeNearby130=bool(__thiscall*)(void*);
-static UnitTick130 original_personal_idle130,original_personal_move130;
+static UnitTick130 original_personal_idle130,original_personal_move130,original_personal_advance137;
 static NativePose130 original_squad_position130;
 static NativePair130 original_squad_pair130;
 static NativeNearby130 original_squad_nearby130;
@@ -40,6 +40,8 @@ static void personal_task130(void* task,UnitTick130 original){
 }
 static void __fastcall personal_idle130(void* task,void*){personal_task130(task,original_personal_idle130);}
 static void __fastcall personal_move130(void* task,void*){personal_task130(task,original_personal_move130);}
+// Native advance task also reads squad+74c before applying personal motion.
+static void __fastcall personal_advance137(void* task,void*){personal_task130(task,original_personal_advance137);}
 static uintptr_t __fastcall squad_position130(void* context,void*){
     auto caller=reinterpret_cast<uintptr_t>(_ReturnAddress());
     if(reinterpret_cast<uintptr_t>(context)==0x628&&(caller==base+0x3edc90||caller==base+0x3ee73d)&&detached_actor_live130(detached_task_actor130)){
@@ -176,10 +178,15 @@ static void create_detach_combat130(){
     require(!memcmp(reinterpret_cast<void*>(base+0x3ed950),idle_task,sizeof idle_task),"Detached native task signature differs");
     const unsigned char move_task[]={0x83,0xec,0x4c,0x53,0x8b,0xd9,0x56,0x57,0x89,0x5c,0x24,0xc};
     require(!memcmp(reinterpret_cast<void*>(base+0x3ee240),move_task,sizeof move_task),"Detached native task signature differs");
+    const unsigned char advance[]={0x83,0xec,0x54,0xf3,0x0f,0x10,0x25};
+    const unsigned char advance_tail[]={0x0f,0x57,0xc0,0x53,0x56};
+    require(!memcmp(reinterpret_cast<void*>(base+0x3eba00),advance,sizeof advance)&&
+        field<uintptr_t>(base+0x3eba00,7)==base+0x15b183c&&!memcmp(reinterpret_cast<void*>(base+0x3eba0b),advance_tail,sizeof advance_tail),"Detached native advance task differs");
     const unsigned char pair[]={0x83,0xec,0x10,0x56,0x8b,0x74,0x24,0x1c,0x57,0x8b,0xf9,0x83};
     require(!memcmp(reinterpret_cast<void*>(base+0x14ad80),pair,sizeof pair),"Detached native task signature differs");
     heading_idle_resume130=base+0x3edcc1;heading_move_resume130=base+0x3ee76e;
     Site sites[]={
+        {0x3eba00,reinterpret_cast<void*>(&personal_advance137),reinterpret_cast<void**>(&original_personal_advance137)},
         {0x3ed950,reinterpret_cast<void*>(&personal_idle130),reinterpret_cast<void**>(&original_personal_idle130)},
         {0x3ee240,reinterpret_cast<void*>(&personal_move130),reinterpret_cast<void**>(&original_personal_move130)},
         {0x15d5d0,reinterpret_cast<void*>(&squad_position130),reinterpret_cast<void**>(&original_squad_position130)},

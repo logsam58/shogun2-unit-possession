@@ -94,6 +94,7 @@ struct NativeFixture100 {
             cursor+=block->SizeOfBlock;
         }
         jump(0x15cb80,reinterpret_cast<void*>(&native_run102));
+        field<float>(base,0x18d1c80+0x5c)=1;field<float>(base,0x18d1ce0+0x5c)=1;
         jump(0x10ac90,reinterpret_cast<void*>(&copy_vector100));jump(0x1cc200,reinterpret_cast<void*>(&context100));jump(0x1d0d40,reinterpret_cast<void*>(&destroy_context100));jump(0x1d10f0,reinterpret_cast<void*>(&destroy_group100));
         jump(0x342930,reinterpret_cast<void*>(&write_group100));jump(0x285990,reinterpret_cast<void*>(&write_point100));jump(0x2859e0,reinterpret_cast<void*>(&write_uint100));jump(0x285a00,reinterpret_cast<void*>(&write_uint100));
         jump(0x285d00,reinterpret_cast<void*>(&write_byte100));jump(0x285ce0,reinterpret_cast<void*>(&write_short100));jump(0x285a20,reinterpret_cast<void*>(&write_float100));
@@ -235,7 +236,7 @@ int main(){SetUnhandledExceptionFilter(&fault100);try{
         float distance=-2/(point[1]-2);return MovePoint100{{point[0]*distance,0,point[2]*distance},0,0};
     };
     state->yaw=-.2f;state->pitch=-.3f;auto start101=aim_ground101(state->yaw,state->pitch);
-    float old_yaw=state->yaw,old_pitch=state->pitch;mouse_look101(160,-20,0,.008f);
+    mounted_heading85=0;float old_yaw=state->yaw,old_pitch=state->pitch;mouse_look101(160,-20,0,.008f);
     auto end101=aim_ground101(state->yaw,state->pitch);
     auto held101=field<uintptr_t>(cursor,0x28),current101=field<uintptr_t>(cursor,0x24);
     field<uintptr_t>(held101,0xc)=reinterpret_cast<uintptr_t>(&start101);field<uintptr_t>(current101,0xc)=reinterpret_cast<uintptr_t>(&end101);

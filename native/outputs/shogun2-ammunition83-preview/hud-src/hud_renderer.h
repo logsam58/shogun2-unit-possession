@@ -22,6 +22,7 @@
 #include "native_font.h"
 #include "../../shogun2-possession-cleanup-v46/src/hud_layout108.h"
 #include "hud_state89.h"
+#include "weapon_mode133.h"
 #include "accuracy_geometry90.h"
 #include "../../shogun2-accuracy90-preview/src/command_protocol100.h"
 #include "../src/ammunition_protocol83.h"
@@ -36,6 +37,7 @@ struct View {
     bool ranged{},bow{},aiming{},routing{},following{},fixture{},boshin{};
     unsigned aim_pose{},weapon_phase{},kind{},equipment_error{};
     bool equipment_known{},has_ranged{},crouch_supported{},crouched{},pending{};
+    bool unit_mode_known{},unit_melee{};
     unsigned slot{},styles{};std::wstring ammunition;
     bool ammunition_known{};ammo83::Status ammunition_state{};
     float ammo{},reload{},speed{};
@@ -211,6 +213,12 @@ inline void render(Graphics& g,const Assets& a,float width,float height,const Vi
     const wchar_t* icon=v.routing?L"ui/icons/data__status_routing.png":v.ranged&&v.aiming?L"ui/restored/status_firing-hd-v1.png":qte&&qte->active?L"ui/restored/status_melee-hd-v1.png":v.speed>.1f?L"ui/icons/data__status_walk.png":nullptr;
     if(icon)a.image(g,icon,RectF(x+193,y+239,32,32));
     text(g,qte&&qte->active?L"In melee":status,x+235,y+242,190,24,15,muted());
+    // Persistent weapon mode remains visible even when the contextual ammo
+    // panel is hidden. Native unit+ead is read after full actor/unit validation.
+    const auto mode=weaponmode133::resolve(v.unit_mode_known,v.unit_melee);
+    if(mode.icon)a.image(g,mode.icon,RectF(x+193,y+270,22,22));
+    text(g,mode.label,x+225,y+270,181,22,14,v.unit_mode_known?ink():muted());
+    if(mode.key&&v.has_ranged)key_image(g,mode.key,RectF(x+410,y+269,24,22));
     const float middle=width*.5f;
     const auto& context=layout.context;
     const bool contextual=hudlayout108::context_visible({v.equipment_known,v.ranged,v.aiming,v.pending||v.ammunition_state.pending!=0,

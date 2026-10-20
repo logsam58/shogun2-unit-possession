@@ -3,19 +3,26 @@
 #include "equipment_protocol81.h"
 #include "ammunition_mapping83.h"
 static volatile LONG equipment_slot81=equipment81::Ranged,equipment_crouch81,equipment_crouch_supported81,equipment_ammo_inflight81;
-static volatile LONG equipment_ranged81,equipment_lease81;
+static volatile LONG equipment_ranged81,equipment_lease81,equipment_unit_melee134;
 static HANDLE equipment_mapping81;
 static EquipmentStatus81* equipment_status81;
-struct EquipmentRequests81 {unsigned lease{},slot{},tabs{};bool ctrl{};};
+struct EquipmentRequests81 {unsigned lease{},slot{},tabs{};bool ctrl{},toggle{};};
+static void equipment_keys134(EquipmentRequests81& request,unsigned edges,bool ranged){
+    if(!ranged)return;
+    if(edges&1)request.toggle=!request.toggle;
+    if(edges&4)request.tabs=std::min(request.tabs+1,8u);
+}
 static EquipmentRequests81 equipment_requests81;
 static SRWLOCK equipment_input_lock81=SRWLOCK_INIT;
 static equipment81::Edges equipment_edges81;
 static void equipment_render_reset81();
-static bool equipment_ranged_selected81(){return equipment_slot81==equipment81::Ranged&&!equipment_ammo_inflight81;}
+static void equipment_mode_reset131();
+static bool equipment_ranged_selected81(){return equipment_slot81==equipment81::Ranged&&!equipment_ammo_inflight81&&!equipment_unit_melee134;}
 static bool equipment_crouched81(){return equipment_crouch81!=0;}
 static void equipment_reset81(){
+    equipment_mode_reset131();
     AcquireSRWLockExclusive(&equipment_input_lock81);equipment_requests81={};ReleaseSRWLockExclusive(&equipment_input_lock81);
-    InterlockedExchange(&equipment_lease81,0);InterlockedExchange(&equipment_ranged81,0);
+    InterlockedExchange(&equipment_unit_melee134,0);InterlockedExchange(&equipment_lease81,0);InterlockedExchange(&equipment_ranged81,0);
     InterlockedExchange(&equipment_slot81,equipment81::Ranged);InterlockedExchange(&equipment_crouch81,0);
     InterlockedExchange(&equipment_crouch_supported81,0);InterlockedExchange(&equipment_ammo_inflight81,0);
 }
@@ -26,9 +33,9 @@ static void equipment_sample_input81(bool focus){
     AcquireSRWLockExclusive(&equipment_input_lock81);
     if(active&&equipment_lease81&&unsigned(equipment_lease81)==state->lease_generation){
         if(equipment_requests81.lease!=state->lease_generation)equipment_requests81={state->lease_generation};
-        if(edges&1)equipment_requests81.slot=equipment81::Melee;
-        if(edges&2)equipment_requests81.slot=equipment81::Ranged;
-        if(edges&4)equipment_requests81.tabs=std::min(equipment_requests81.tabs+1,8u);
+        // One native melee-mode toggle.2 has no weapon-mode binding.
+        // Melee-only units have no alternative weapon mode to request.
+        equipment_keys134(equipment_requests81,edges,equipment_ranged81!=0);
         equipment_requests81.ctrl=(GetAsyncKeyState(VK_CONTROL)&0x8000)!=0;
     }else equipment_requests81={};
     ReleaseSRWLockExclusive(&equipment_input_lock81);

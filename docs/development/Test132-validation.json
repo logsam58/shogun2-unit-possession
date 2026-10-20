@@ -1,0 +1,117 @@
+{
+  "passed": true,
+  "candidate": 132,
+  "development_candidate": true,
+  "version": "0.23",
+  "base_commit": "d6a1655d4d43b187f6b9b0e9fb079f1f79f582d4",
+  "fresh_suites": {
+    "adapter": 76,
+    "loader": 2,
+    "installer": true
+  },
+  "fresh_checks": [
+    {
+      "name": "minhook",
+      "passed": true,
+      "seconds": 2.742,
+      "log": "artifacts\\logs\\minhook.log"
+    },
+    {
+      "name": "adapter",
+      "passed": true,
+      "seconds": 6.798,
+      "log": "artifacts\\logs\\adapter.log"
+    },
+    {
+      "name": "adapter-tests",
+      "passed": true,
+      "seconds": 185.117,
+      "log": "artifacts\\logs\\adapter-tests.log",
+      "executables": 76
+    },
+    {
+      "name": "loader",
+      "passed": true,
+      "seconds": 3.714,
+      "log": "artifacts\\logs\\loader.log"
+    },
+    {
+      "name": "loader-tests",
+      "passed": true,
+      "seconds": 5.886,
+      "log": "artifacts\\logs\\loader-tests.log"
+    },
+    {
+      "name": "installer",
+      "passed": true,
+      "seconds": 7.643,
+      "log": "artifacts\\logs\\installer.log"
+    },
+    {
+      "name": "installer-tests",
+      "passed": true,
+      "seconds": 369.087,
+      "log": "artifacts\\logs\\installer-tests.log"
+    }
+  ],
+  "python_tests": 7,
+  "retained_suites": {
+    "QTE_Test124": 46,
+    "HUD_Test122": 5
+  },
+  "components": [
+    {
+      "name": "possession-v46.dll",
+      "bytes": 552448,
+      "sha256": "809d69bb8d505204ccf44a9367b15e9ea671c8ac632a7d13f5008140ffcebabd"
+    },
+    {
+      "name": "possession-hud.exe",
+      "bytes": 25441280,
+      "sha256": "2904d8930d536a9d8c0412a662f2aeed969330392e332e5ffe531070d67e67b1"
+    },
+    {
+      "name": "qte-playable-v79.dll",
+      "bytes": 8451584,
+      "sha256": "cfec68115c0e031179a9fc1a8fcb968b9edd0b05b713a45f54b2756bfd39dd4e"
+    },
+    {
+      "name": "dinput8.dll",
+      "bytes": 34753536,
+      "sha256": "49c04eaf3fc9acca0988293553a9683d34c5ad225f1482da57e9f696df55adca"
+    },
+    {
+      "name": "marker.pack",
+      "bytes": 859,
+      "sha256": "8fa4716a678f612e9c5a7f389164b4220ea1c73e928406cbf931183bf28b3b0f"
+    },
+    {
+      "name": "Shogun2-Possession-Setup.exe",
+      "bytes": 35184640,
+      "sha256": "359beeed1bd4a8902f958cb7d4b19198c0b9869717304032699d99e4c168470a"
+    },
+    {
+      "name": "install_cli.exe",
+      "bytes": 35164672,
+      "sha256": "f7313e3c316900e0834b201f8ba27476087b8e0168c320c33a08e8c24b4a607b"
+    }
+  ],
+  "cache_id": "0477e6c83926f368",
+  "installed": false,
+  "loaded": false,
+  "live_accepted": false,
+  "published": false,
+  "recording_active": false,
+  "runtime_changes": "Visible foot yaw follows actual native model bearing through a separate bounded goal; pitch/QTE mouse rate budget removed. Exact active Rapid Advance preserves boosted walk pace for either Shift state, normal sprint resumes on expiry. Accepted Q/detachment/ranged fire and exact HUD/QTE retained.",
+  "limits": "Rapid gait cap is the requested manual-control policy, not a native prohibition on running. Exact native stat addition/hash lookup and synthetic active/expiry cases pass; actual ability state/turn feel await fresh live testing. Test131 Q and independent Q/Z ranged firing user accepted; whole-unit1/2 remains untested. Crash and Ultra crowd limits unresolved. Existing recorder reactivation requested, after deployment.",
+  "remaining_checkpoints": [
+    "Native charging",
+    "T/G abilities using original native icons/buttons",
+    "Variable bow draw"
+  ],
+  "retained_native_artwork_entries_verified_Test131": 1371,
+  "earlier_attempts": [
+    "focused-attempt1.log: new head/Rapid tests passed; old mounted handoff assertion still assumed removed360-degree budget; restored sensitivity expectation and passing repeat preserved",
+    "first installer compile rejected extra braces in newly added predecessor catalog row; packaging-only correction, adapter/loader inputs unchanged; final installer rerun required"
+  ]
+}

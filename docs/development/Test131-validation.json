@@ -1,0 +1,118 @@
+{
+  "passed": true,
+  "candidate": 131,
+  "development_candidate": true,
+  "version": "0.23",
+  "base_commit": "d6a1655d4d43b187f6b9b0e9fb079f1f79f582d4",
+  "fresh_suites": {
+    "adapter": 75,
+    "loader": 2,
+    "installer": true
+  },
+  "fresh_checks": [
+    {
+      "name": "minhook",
+      "passed": true,
+      "seconds": 2.845,
+      "log": "artifacts\\logs\\minhook.log"
+    },
+    {
+      "name": "adapter",
+      "passed": true,
+      "seconds": 6.891,
+      "log": "artifacts\\logs\\adapter.log"
+    },
+    {
+      "name": "adapter-tests",
+      "passed": true,
+      "seconds": 181.109,
+      "log": "artifacts\\logs\\adapter-tests.log",
+      "executables": 75
+    },
+    {
+      "name": "loader",
+      "passed": true,
+      "seconds": 3.939,
+      "log": "artifacts\\logs\\loader.log"
+    },
+    {
+      "name": "loader-tests",
+      "passed": true,
+      "seconds": 5.972,
+      "log": "artifacts\\logs\\loader-tests.log"
+    },
+    {
+      "name": "installer",
+      "passed": true,
+      "seconds": 7.486,
+      "log": "artifacts\\logs\\installer.log"
+    },
+    {
+      "name": "installer-tests",
+      "passed": true,
+      "seconds": 342.846,
+      "log": "artifacts\\logs\\installer-tests.log"
+    }
+  ],
+  "python_tests": 7,
+  "retained_suites": {
+    "QTE_Test124": 46,
+    "HUD_Test122": 5
+  },
+  "components": [
+    {
+      "name": "possession-v46.dll",
+      "bytes": 551424,
+      "sha256": "71c11fb10eed91da61127c0e17648735467023b1293fb6db2985b4c28f37d363"
+    },
+    {
+      "name": "possession-hud.exe",
+      "bytes": 25441280,
+      "sha256": "2904d8930d536a9d8c0412a662f2aeed969330392e332e5ffe531070d67e67b1"
+    },
+    {
+      "name": "qte-playable-v79.dll",
+      "bytes": 8451584,
+      "sha256": "cfec68115c0e031179a9fc1a8fcb968b9edd0b05b713a45f54b2756bfd39dd4e"
+    },
+    {
+      "name": "dinput8.dll",
+      "bytes": 34752512,
+      "sha256": "a807a06e785e755946d265b184b0c72fdb60944695d0d86289d8ee61b632702a"
+    },
+    {
+      "name": "marker.pack",
+      "bytes": 859,
+      "sha256": "7499efa500963730fce516b7967a5174bca078391507055a1e1254307365407b"
+    },
+    {
+      "name": "Shogun2-Possession-Setup.exe",
+      "bytes": 35183104,
+      "sha256": "011ab605e82be283ddd551e1cebf29fd5f6d111dda2d60442810f7639af4e7b7"
+    },
+    {
+      "name": "install_cli.exe",
+      "bytes": 35163136,
+      "sha256": "58717cfd459076619979ec0af1b188e0aa46ce556db599852a3387fd8354bb0e"
+    }
+  ],
+  "cache_id": "1b04cd48c524f93f",
+  "installed": false,
+  "loaded": false,
+  "live_accepted": false,
+  "published": false,
+  "recording_active": false,
+  "runtime_changes": "Native soldier speed coefficient parity; bounded/rate-limited head-look with native body following and retained QTE entry; scoped allied-foreground Q filtering; native whole-unit weapon-mode requests with acceptance/reversal handling. Exact Test130 detachment, HUD and QTE retained.",
+  "limits": "Original native speed comparisons use synthetic squad records and native run-predicate provider. Mode fixtures use original constructor/serializer/unit setter with primitive/eligibility providers. Q scene query is isolated; stock hit-constructor coverage is retained. No live Rapid Advance cause, authored animation, scheduling, enemy-banner or whole-unit feature acceptance established. Prior crash and Ultra crowd limits remain unresolved.",
+  "remaining_checkpoints": [
+    "Native charging",
+    "T/G abilities using original native icons/buttons",
+    "Variable bow draw"
+  ],
+  "native_artwork_entries_verified": 1371,
+  "earlier_attempts": [
+    "focused-attempt1.log: signed heading in new fixture prevented synthetic turn; fixture corrected",
+    "focused-attempt2.log: new targeting fixture omitted required heartbeat; fixture corrected",
+    "focused-attempt3.log and speed-invalid-synthetic-config.log: differing soldier/unit config correctly failed full ownership proof; preserved separate rejection case and restored valid comparison records"
+  ]
+}

@@ -1,4 +1,5 @@
 #pragma once
+#include "rapid_advance132.h"
 // Verified engine functions use ECX=the actor's native unit and x87 float returns.
 using NativeIntent=void(__thiscall*)(void*,const float*,unsigned);
 using UnitSpeed= float(__thiscall*)(void*,unsigned);
@@ -13,21 +14,33 @@ static bool native_movement_signatures(uintptr_t b){
     const unsigned char walk[]={0x8b,0x81,0x9c,0x0f,0,0,0xd9,0x40,0x1c};
     const unsigned char run[]={0x8b,0x81,0x9c,0x0f,0,0,0xd9,0x40,0x20};
     const unsigned char wrapper[]={0x80,0x7c,0x24,4,0,0x56,0x8b,0xf1};
+    const unsigned char gait[]={0x56,0x8b,0xf1,0xe8,0x58,0x0a,0xfd,0xff,0x84,0xc0};
     const unsigned char routing[]={0x8b,0x01,0x8b,0x40,8,0x8b,0x80,0xb4,0,0,0};
     return !memcmp(reinterpret_cast<void*>(b+0x3936f0),intent,sizeof intent)&&
         !memcmp(reinterpret_cast<void*>(b+0x1be960),walk,sizeof walk)&&
         !memcmp(reinterpret_cast<void*>(b+0x1a9da0),run,sizeof run)&&
         !memcmp(reinterpret_cast<void*>(b+0x18b470),wrapper,sizeof wrapper)&&
-        !memcmp(reinterpret_cast<void*>(b+0x1821e0),routing,sizeof routing);
+        !memcmp(reinterpret_cast<void*>(b+0x1821e0),routing,sizeof routing)&&
+        !memcmp(reinterpret_cast<void*>(b+0x18c120),gait,sizeof gait);
 }
+static bool native_sprint_requested133(unsigned input){return (input&RUN)!=0;}
 static bool read_native_movement(unsigned input,float& speed,float& turn_rate){
     __try {
         if(!followed(possessed,false))return false;
-        auto getter=reinterpret_cast<UnitSpeed>(base+0x18b470);
-        // This is the game's own walk/run selector: running is rejected by its
-        // native predicate, and both branches include the unit's live +0x22c factor.
-        float walk=getter(reinterpret_cast<void*>(unit),0);
-        speed=getter(reinterpret_cast<void*>(unit),(input&RUN)?1:0);
+        // Native squad18b310 uses the actual entity configuration, the unit's
+        // live22c multiplier, and the stock global walk/run coefficients. The
+        // unit-only18b470 getters omit that last factor and use unit aggregate
+        // configf9c. A detached player still needs the original locomotion rate,
+        // without the squad's formation-arrival/catch-up modifiers(bb0/2774).
+        // Shift selects running normally. Only exact active Rapid adds a final
+        // native-peer pace ceiling in prepare, after surface/grade modifiers.
+        bool running=native_sprint_requested133(input)&&reinterpret_cast<UnitRunAllowed>(base+0x15cb80)(reinterpret_cast<void*>(unit));
+        auto config=locomotion_config();float factor=field<float>(unit,0x22c);
+        float walk_factor=field<float>(base,0x18d1c80+0x5c),run_factor=field<float>(base,0x18d1ce0+0x5c);
+        float raw_walk=field<float>(config,0x1c),raw_run=field<float>(config,0x20);
+        for(float value:{factor,walk_factor,run_factor,raw_walk,raw_run})if(!std::isfinite(value)||value<0||value>100)return false;
+        float walk=float(raw_walk*factor)*walk_factor;
+        speed=running?float(raw_run*factor)*run_factor:walk;
         if(!std::isfinite(walk)||!std::isfinite(speed)||walk<0||speed<0||walk>100||speed>100)return false;
         // Exact native UTF-16 entity keys and DB values were read back from the
         // current infantry. Config+6c stores turn_speed converted to radians/s.
@@ -40,6 +53,8 @@ static bool read_native_movement(unsigned input,float& speed,float& turn_rate){
         return true;
     }__except(EXCEPTION_EXECUTE_HANDLER){return false;}
 }
+
+#include "rapid_pace136.h"
 
 static bool issue_native_intent(uintptr_t actor,const Intent& intent,unsigned bearing){
     float x=field<float>(actor,0x48),z=field<float>(actor,0x50);

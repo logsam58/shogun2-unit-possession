@@ -786,6 +786,138 @@ int wmain(){try{
     } // End predecessor payload scope.
 
     { // Release this predecessor payload before the next upgrade case.
+    auto previoustest131_loader=read_bytes(L"../autoload-test131-baseline/dinput8.dll"),previoustest131_pack=read_bytes(L"../autoload-test131-baseline/marker.pack");
+    require(!previoustest131_loader.empty()&&!previoustest131_pack.empty(),"Test131 predecessor fixtures missing");
+    for(int interruption=0;interruption<7;++interruption){
+        {flashstartup86::Key key;require(RegOpenKeyExW(flashstartup86::hive,flashstartup86::key_path.c_str(),0,KEY_SET_VALUE|KEY_WOW64_32KEY,&key.value)==ERROR_SUCCESS,"Test131 fixture flag reset");DWORD zero=0;
+         for(auto name:flashstartup86::names)require(RegSetValueExW(key.value,name,0,REG_DWORD,reinterpret_cast<BYTE*>(&zero),4)==ERROR_SUCCESS,"Test131 fixture flag write");}
+        atomic_bytes(dll,previoustest131_loader);atomic_bytes(pack,previoustest131_pack);auto saved_selection=read_bytes(selection),saved_cache=read_bytes(cache);
+        failed=false;try{install_all(game,data,{},interruption,local);}catch(...){failed=true;}
+        require(failed&&read_bytes(dll)==previoustest131_loader&&read_bytes(pack)==previoustest131_pack&&read_bytes(selection)==saved_selection&&read_bytes(cache)==saved_cache,"Test131 interruption failed rollback");
+    }
+    install_all(game,data,{},-1,local);require(hash_file(dll)==SETUP_BOOTSTRAP_SHA&&hash_file(pack)==EMBEDDED_PACK_SHA,"Test131 predecessor upgrade failed");
+    require(read_bytes(dll+L".possession-previous")==previoustest131_loader&&read_bytes(pack+L".possession-previous")==previoustest131_pack,"Test131 rollback backup differs");
+    install_all(game,data,{},-1,local);
+    require(read_bytes(dll+L".possession-previous")==previoustest131_loader&&read_bytes(pack+L".possession-previous")==previoustest131_pack,"Repeat install rotated Test131 backup");
+    std::cout<<"PASS: exact Test131 predecessor upgrade, seven interruption rollbacks and repeat-install backup retention.\n";
+    }
+    { // Release this predecessor payload before the next upgrade case.
+    auto previoustest132_loader=read_bytes(L"../autoload-test132-baseline/dinput8.dll"),previoustest132_pack=read_bytes(L"../autoload-test132-baseline/marker.pack");
+    require(!previoustest132_loader.empty()&&!previoustest132_pack.empty(),"Test132 predecessor fixtures missing");
+    for(int interruption=0;interruption<7;++interruption){
+        {flashstartup86::Key key;require(RegOpenKeyExW(flashstartup86::hive,flashstartup86::key_path.c_str(),0,KEY_SET_VALUE|KEY_WOW64_32KEY,&key.value)==ERROR_SUCCESS,"Test132 fixture flag reset");DWORD zero=0;
+         for(auto name:flashstartup86::names)require(RegSetValueExW(key.value,name,0,REG_DWORD,reinterpret_cast<BYTE*>(&zero),4)==ERROR_SUCCESS,"Test132 fixture flag write");}
+        atomic_bytes(dll,previoustest132_loader);atomic_bytes(pack,previoustest132_pack);auto saved_selection=read_bytes(selection),saved_cache=read_bytes(cache);
+        failed=false;try{install_all(game,data,{},interruption,local);}catch(...){failed=true;}
+        require(failed&&read_bytes(dll)==previoustest132_loader&&read_bytes(pack)==previoustest132_pack&&read_bytes(selection)==saved_selection&&read_bytes(cache)==saved_cache,"Test132 interruption failed rollback");
+    }
+    install_all(game,data,{},-1,local);require(hash_file(dll)==SETUP_BOOTSTRAP_SHA&&hash_file(pack)==EMBEDDED_PACK_SHA,"Test132 predecessor upgrade failed");
+    require(read_bytes(dll+L".possession-previous")==previoustest132_loader&&read_bytes(pack+L".possession-previous")==previoustest132_pack,"Test132 rollback backup differs");
+    install_all(game,data,{},-1,local);
+    require(read_bytes(dll+L".possession-previous")==previoustest132_loader&&read_bytes(pack+L".possession-previous")==previoustest132_pack,"Repeat install rotated Test132 backup");
+    std::cout<<"PASS: exact Test132 predecessor upgrade, seven interruption rollbacks and repeat-install backup retention.\n";
+    }
+    { // Release this predecessor payload before the next upgrade case.
+    auto previoustest133_loader=read_bytes(L"../autoload-test133-baseline/dinput8.dll"),previoustest133_pack=read_bytes(L"../autoload-test133-baseline/marker.pack");
+    require(!previoustest133_loader.empty()&&!previoustest133_pack.empty(),"Test133 predecessor fixtures missing");
+    for(int interruption=0;interruption<7;++interruption){
+        {flashstartup86::Key key;require(RegOpenKeyExW(flashstartup86::hive,flashstartup86::key_path.c_str(),0,KEY_SET_VALUE|KEY_WOW64_32KEY,&key.value)==ERROR_SUCCESS,"Test133 fixture flag reset");DWORD zero=0;
+         for(auto name:flashstartup86::names)require(RegSetValueExW(key.value,name,0,REG_DWORD,reinterpret_cast<BYTE*>(&zero),4)==ERROR_SUCCESS,"Test133 fixture flag write");}
+        atomic_bytes(dll,previoustest133_loader);atomic_bytes(pack,previoustest133_pack);auto saved_selection=read_bytes(selection),saved_cache=read_bytes(cache);
+        failed=false;try{install_all(game,data,{},interruption,local);}catch(...){failed=true;}
+        require(failed&&read_bytes(dll)==previoustest133_loader&&read_bytes(pack)==previoustest133_pack&&read_bytes(selection)==saved_selection&&read_bytes(cache)==saved_cache,"Test133 interruption failed rollback");
+    }
+    install_all(game,data,{},-1,local);require(hash_file(dll)==SETUP_BOOTSTRAP_SHA&&hash_file(pack)==EMBEDDED_PACK_SHA,"Test133 predecessor upgrade failed");
+    require(read_bytes(dll+L".possession-previous")==previoustest133_loader&&read_bytes(pack+L".possession-previous")==previoustest133_pack,"Test133 rollback backup differs");
+    install_all(game,data,{},-1,local);
+    require(read_bytes(dll+L".possession-previous")==previoustest133_loader&&read_bytes(pack+L".possession-previous")==previoustest133_pack,"Repeat install rotated Test133 backup");
+    std::cout<<"PASS: exact Test133 predecessor upgrade, seven interruption rollbacks and repeat-install backup retention.\n";
+    } // End predecessor payload scope.
+    { // Release this predecessor payload before the next upgrade case.
+    auto previoustest134_loader=read_bytes(L"../autoload-test134-baseline/dinput8.dll"),previoustest134_pack=read_bytes(L"../autoload-test134-baseline/marker.pack");
+    require(!previoustest134_loader.empty()&&!previoustest134_pack.empty(),"Test134 predecessor fixtures missing");
+    for(int interruption=0;interruption<7;++interruption){
+        {flashstartup86::Key key;require(RegOpenKeyExW(flashstartup86::hive,flashstartup86::key_path.c_str(),0,KEY_SET_VALUE|KEY_WOW64_32KEY,&key.value)==ERROR_SUCCESS,"Test134 fixture flag reset");DWORD zero=0;
+         for(auto name:flashstartup86::names)require(RegSetValueExW(key.value,name,0,REG_DWORD,reinterpret_cast<BYTE*>(&zero),4)==ERROR_SUCCESS,"Test134 fixture flag write");}
+        atomic_bytes(dll,previoustest134_loader);atomic_bytes(pack,previoustest134_pack);auto saved_selection=read_bytes(selection),saved_cache=read_bytes(cache);
+        failed=false;try{install_all(game,data,{},interruption,local);}catch(...){failed=true;}
+        require(failed&&read_bytes(dll)==previoustest134_loader&&read_bytes(pack)==previoustest134_pack&&read_bytes(selection)==saved_selection&&read_bytes(cache)==saved_cache,"Test134 interruption failed rollback");
+    }
+    install_all(game,data,{},-1,local);require(hash_file(dll)==SETUP_BOOTSTRAP_SHA&&hash_file(pack)==EMBEDDED_PACK_SHA,"Test134 predecessor upgrade failed");
+    require(read_bytes(dll+L".possession-previous")==previoustest134_loader&&read_bytes(pack+L".possession-previous")==previoustest134_pack,"Test134 rollback backup differs");
+    install_all(game,data,{},-1,local);
+    require(read_bytes(dll+L".possession-previous")==previoustest134_loader&&read_bytes(pack+L".possession-previous")==previoustest134_pack,"Repeat install rotated Test134 backup");
+    std::cout<<"PASS: exact Test134 predecessor upgrade, seven interruption rollbacks and repeat-install backup retention.\n";
+    } // End predecessor payload scope.
+    { // Release this predecessor payload before the next upgrade case.
+    auto previoustest135_loader=read_bytes(L"../autoload-test135-baseline/dinput8.dll"),previoustest135_pack=read_bytes(L"../autoload-test135-baseline/marker.pack");
+    require(!previoustest135_loader.empty()&&!previoustest135_pack.empty(),"Test135 predecessor fixtures missing");
+    for(int interruption=0;interruption<7;++interruption){
+        {flashstartup86::Key key;require(RegOpenKeyExW(flashstartup86::hive,flashstartup86::key_path.c_str(),0,KEY_SET_VALUE|KEY_WOW64_32KEY,&key.value)==ERROR_SUCCESS,"Test135 fixture flag reset");DWORD zero=0;
+         for(auto name:flashstartup86::names)require(RegSetValueExW(key.value,name,0,REG_DWORD,reinterpret_cast<BYTE*>(&zero),4)==ERROR_SUCCESS,"Test135 fixture flag write");}
+        atomic_bytes(dll,previoustest135_loader);atomic_bytes(pack,previoustest135_pack);auto saved_selection=read_bytes(selection),saved_cache=read_bytes(cache);
+        failed=false;try{install_all(game,data,{},interruption,local);}catch(...){failed=true;}
+        require(failed&&read_bytes(dll)==previoustest135_loader&&read_bytes(pack)==previoustest135_pack&&read_bytes(selection)==saved_selection&&read_bytes(cache)==saved_cache,"Test135 interruption failed rollback");
+    }
+    install_all(game,data,{},-1,local);require(hash_file(dll)==SETUP_BOOTSTRAP_SHA&&hash_file(pack)==EMBEDDED_PACK_SHA,"Test135 predecessor upgrade failed");
+    require(read_bytes(dll+L".possession-previous")==previoustest135_loader&&read_bytes(pack+L".possession-previous")==previoustest135_pack,"Test135 rollback backup differs");
+    install_all(game,data,{},-1,local);
+    require(read_bytes(dll+L".possession-previous")==previoustest135_loader&&read_bytes(pack+L".possession-previous")==previoustest135_pack,"Repeat install rotated Test135 backup");
+    std::cout<<"PASS: exact Test135 predecessor upgrade, seven interruption rollbacks and repeat-install backup retention.\n";
+    } // End predecessor payload scope.
+
+    { // Release this predecessor payload before the next upgrade case.
+    auto previoustest136_loader=read_bytes(L"../autoload-test136-baseline/dinput8.dll"),previoustest136_pack=read_bytes(L"../autoload-test136-baseline/marker.pack");
+    require(!previoustest136_loader.empty()&&!previoustest136_pack.empty(),"Test136 predecessor fixtures missing");
+    for(int interruption=0;interruption<7;++interruption){
+        {flashstartup86::Key key;require(RegOpenKeyExW(flashstartup86::hive,flashstartup86::key_path.c_str(),0,KEY_SET_VALUE|KEY_WOW64_32KEY,&key.value)==ERROR_SUCCESS,"Test136 fixture flag reset");DWORD zero=0;
+         for(auto name:flashstartup86::names)require(RegSetValueExW(key.value,name,0,REG_DWORD,reinterpret_cast<BYTE*>(&zero),4)==ERROR_SUCCESS,"Test136 fixture flag write");}
+        atomic_bytes(dll,previoustest136_loader);atomic_bytes(pack,previoustest136_pack);auto saved_selection=read_bytes(selection),saved_cache=read_bytes(cache);
+        failed=false;try{install_all(game,data,{},interruption,local);}catch(...){failed=true;}
+        require(failed&&read_bytes(dll)==previoustest136_loader&&read_bytes(pack)==previoustest136_pack&&read_bytes(selection)==saved_selection&&read_bytes(cache)==saved_cache,"Test136 interruption failed rollback");
+    }
+    install_all(game,data,{},-1,local);require(hash_file(dll)==SETUP_BOOTSTRAP_SHA&&hash_file(pack)==EMBEDDED_PACK_SHA,"Test136 predecessor upgrade failed");
+    require(read_bytes(dll+L".possession-previous")==previoustest136_loader&&read_bytes(pack+L".possession-previous")==previoustest136_pack,"Test136 rollback backup differs");
+    install_all(game,data,{},-1,local);
+    require(read_bytes(dll+L".possession-previous")==previoustest136_loader&&read_bytes(pack+L".possession-previous")==previoustest136_pack,"Repeat install rotated Test136 backup");
+    std::cout<<"PASS: exact Test136 predecessor upgrade, seven interruption rollbacks and repeat-install backup retention.\n";
+    } // End predecessor payload scope.
+
+    { // Release this predecessor payload before the next upgrade case.
+    auto previoustest137_loader=read_bytes(L"../autoload-test137-baseline/dinput8.dll"),previoustest137_pack=read_bytes(L"../autoload-test137-baseline/marker.pack");
+    require(!previoustest137_loader.empty()&&!previoustest137_pack.empty(),"Test137 predecessor fixtures missing");
+    for(int interruption=0;interruption<7;++interruption){
+        {flashstartup86::Key key;require(RegOpenKeyExW(flashstartup86::hive,flashstartup86::key_path.c_str(),0,KEY_SET_VALUE|KEY_WOW64_32KEY,&key.value)==ERROR_SUCCESS,"Test137 fixture flag reset");DWORD zero=0;
+         for(auto name:flashstartup86::names)require(RegSetValueExW(key.value,name,0,REG_DWORD,reinterpret_cast<BYTE*>(&zero),4)==ERROR_SUCCESS,"Test137 fixture flag write");}
+        atomic_bytes(dll,previoustest137_loader);atomic_bytes(pack,previoustest137_pack);auto saved_selection=read_bytes(selection),saved_cache=read_bytes(cache);
+        failed=false;try{install_all(game,data,{},interruption,local);}catch(...){failed=true;}
+        require(failed&&read_bytes(dll)==previoustest137_loader&&read_bytes(pack)==previoustest137_pack&&read_bytes(selection)==saved_selection&&read_bytes(cache)==saved_cache,"Test137 interruption failed rollback");
+    }
+    install_all(game,data,{},-1,local);require(hash_file(dll)==SETUP_BOOTSTRAP_SHA&&hash_file(pack)==EMBEDDED_PACK_SHA,"Test137 predecessor upgrade failed");
+    require(read_bytes(dll+L".possession-previous")==previoustest137_loader&&read_bytes(pack+L".possession-previous")==previoustest137_pack,"Test137 rollback backup differs");
+    install_all(game,data,{},-1,local);
+    require(read_bytes(dll+L".possession-previous")==previoustest137_loader&&read_bytes(pack+L".possession-previous")==previoustest137_pack,"Repeat install rotated Test137 backup");
+    std::cout<<"PASS: exact Test137 predecessor upgrade, seven interruption rollbacks and repeat-install backup retention.\n";
+    } // End predecessor payload scope.
+
+    { // Release this predecessor payload before the next upgrade case.
+    auto previoustest138_loader=read_bytes(L"../autoload-test138-baseline/dinput8.dll"),previoustest138_pack=read_bytes(L"../autoload-test138-baseline/marker.pack");
+    require(!previoustest138_loader.empty()&&!previoustest138_pack.empty(),"Test138 predecessor fixtures missing");
+    for(int interruption=0;interruption<7;++interruption){
+        {flashstartup86::Key key;require(RegOpenKeyExW(flashstartup86::hive,flashstartup86::key_path.c_str(),0,KEY_SET_VALUE|KEY_WOW64_32KEY,&key.value)==ERROR_SUCCESS,"Test138 fixture flag reset");DWORD zero=0;
+         for(auto name:flashstartup86::names)require(RegSetValueExW(key.value,name,0,REG_DWORD,reinterpret_cast<BYTE*>(&zero),4)==ERROR_SUCCESS,"Test138 fixture flag write");}
+        atomic_bytes(dll,previoustest138_loader);atomic_bytes(pack,previoustest138_pack);auto saved_selection=read_bytes(selection),saved_cache=read_bytes(cache);
+        failed=false;try{install_all(game,data,{},interruption,local);}catch(...){failed=true;}
+        require(failed&&read_bytes(dll)==previoustest138_loader&&read_bytes(pack)==previoustest138_pack&&read_bytes(selection)==saved_selection&&read_bytes(cache)==saved_cache,"Test138 interruption failed rollback");
+    }
+    install_all(game,data,{},-1,local);require(hash_file(dll)==SETUP_BOOTSTRAP_SHA&&hash_file(pack)==EMBEDDED_PACK_SHA,"Test138 predecessor upgrade failed");
+    require(read_bytes(dll+L".possession-previous")==previoustest138_loader&&read_bytes(pack+L".possession-previous")==previoustest138_pack,"Test138 rollback backup differs");
+    install_all(game,data,{},-1,local);
+    require(read_bytes(dll+L".possession-previous")==previoustest138_loader&&read_bytes(pack+L".possession-previous")==previoustest138_pack,"Repeat install rotated Test138 backup");
+    std::cout<<"PASS: exact Test138 predecessor upgrade, seven interruption rollbacks and repeat-install backup retention.\n";
+    } // End predecessor payload scope.
+
+    { // Release this predecessor payload before the next upgrade case.
     auto previousv022_loader=read_bytes(L"../autoload-v022-baseline/dinput8.dll"),previousv022_pack=read_bytes(L"../autoload-v022-baseline/marker.pack");
     require(!previousv022_loader.empty()&&!previousv022_pack.empty(),"published v0.22 predecessor fixtures missing");
     for(int interruption=0;interruption<7;++interruption){
@@ -800,6 +932,23 @@ int wmain(){try{
     install_all(game,data,{},-1,local);
     require(read_bytes(dll+L".possession-previous")==previousv022_loader&&read_bytes(pack+L".possession-previous")==previousv022_pack,"Repeat install rotated published v0.22 backup");
     std::cout<<"PASS: exact published v0.22 predecessor upgrade, seven interruption rollbacks and repeat-install backup retention.\n";
+    } // End predecessor payload scope.
+
+    { // Release this predecessor payload before the next upgrade case.
+    auto previousv023_loader=read_bytes(L"../autoload-v023-baseline/dinput8.dll"),previousv023_pack=read_bytes(L"../autoload-v023-baseline/marker.pack");
+    require(!previousv023_loader.empty()&&!previousv023_pack.empty(),"published v0.23 predecessor fixtures missing");
+    for(int interruption=0;interruption<7;++interruption){
+        {flashstartup86::Key key;require(RegOpenKeyExW(flashstartup86::hive,flashstartup86::key_path.c_str(),0,KEY_SET_VALUE|KEY_WOW64_32KEY,&key.value)==ERROR_SUCCESS,"published v0.23 fixture flag reset");DWORD zero=0;
+         for(auto name:flashstartup86::names)require(RegSetValueExW(key.value,name,0,REG_DWORD,reinterpret_cast<BYTE*>(&zero),4)==ERROR_SUCCESS,"published v0.23 fixture flag write");}
+        atomic_bytes(dll,previousv023_loader);atomic_bytes(pack,previousv023_pack);auto saved_selection=read_bytes(selection),saved_cache=read_bytes(cache);
+        failed=false;try{install_all(game,data,{},interruption,local);}catch(...){failed=true;}
+        require(failed&&read_bytes(dll)==previousv023_loader&&read_bytes(pack)==previousv023_pack&&read_bytes(selection)==saved_selection&&read_bytes(cache)==saved_cache,"published v0.23 interruption failed rollback");
+    }
+    install_all(game,data,{},-1,local);require(hash_file(dll)==SETUP_BOOTSTRAP_SHA&&hash_file(pack)==EMBEDDED_PACK_SHA,"published v0.23 predecessor upgrade failed");
+    require(read_bytes(dll+L".possession-previous")==previousv023_loader&&read_bytes(pack+L".possession-previous")==previousv023_pack,"published v0.23 rollback backup differs");
+    install_all(game,data,{},-1,local);
+    require(read_bytes(dll+L".possession-previous")==previousv023_loader&&read_bytes(pack+L".possession-previous")==previousv023_pack,"Repeat install rotated published v0.23 backup");
+    std::cout<<"PASS: exact published v0.23 predecessor upgrade, seven interruption rollbacks and repeat-install backup retention.\n";
     } // End predecessor payload scope.
 
     failed=false;try{launcher_selection("{\"unknown\":true}",game);}catch(...){failed=true;}require(failed,"Unknown cache accepted");

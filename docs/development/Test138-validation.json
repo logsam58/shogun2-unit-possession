@@ -1,0 +1,137 @@
+{
+  "passed": true,
+  "candidate": 138,
+  "development_candidate": true,
+  "version": "0.24",
+  "base_commit": "d6a1655d4d43b187f6b9b0e9fb079f1f79f582d4",
+  "fresh_suites": {
+    "adapter": 79,
+    "loader": 2,
+    "installer": true
+  },
+  "fresh_checks": [
+    {
+      "name": "minhook",
+      "passed": true,
+      "seconds": 2.763,
+      "log": "artifacts\\logs\\minhook.log"
+    },
+    {
+      "name": "adapter",
+      "passed": true,
+      "seconds": 6.628,
+      "log": "artifacts\\logs\\adapter.log"
+    },
+    {
+      "name": "adapter-tests",
+      "passed": true,
+      "seconds": 193.465,
+      "log": "artifacts\\logs\\adapter-tests.log",
+      "executables": 79
+    },
+    {
+      "name": "loader",
+      "passed": true,
+      "seconds": 3.708,
+      "log": "artifacts\\logs\\loader.log"
+    },
+    {
+      "name": "loader-tests",
+      "passed": true,
+      "seconds": 5.836,
+      "log": "artifacts\\logs\\loader-tests.log"
+    },
+    {
+      "name": "installer",
+      "passed": true,
+      "seconds": 7.393,
+      "log": "artifacts\\logs\\installer.log"
+    },
+    {
+      "name": "installer-tests",
+      "passed": true,
+      "seconds": 385.418,
+      "log": "artifacts\\logs\\installer-tests.log"
+    }
+  ],
+  "python_tests": 7,
+  "retained_suites": {
+    "QTE_Test124": 46,
+    "HUD_Test134": 6
+  },
+  "components": [
+    {
+      "name": "possession-v46.dll",
+      "bytes": 557056,
+      "sha256": "df4b075e6880e4a8b7a5c7610a0088c4a98aa3554a34780c842db069baa2062d"
+    },
+    {
+      "name": "possession-hud.exe",
+      "bytes": 25442304,
+      "sha256": "07dd83203ff5a951085b2bfc1819b23763ad76b73376f029f9b01ece8ee3ae69"
+    },
+    {
+      "name": "qte-playable-v79.dll",
+      "bytes": 8451584,
+      "sha256": "cfec68115c0e031179a9fc1a8fcb968b9edd0b05b713a45f54b2756bfd39dd4e"
+    },
+    {
+      "name": "dinput8.dll",
+      "bytes": 34759168,
+      "sha256": "863bed6f5dbbc65d836fdd209ed52a9a0f53058397ca07fdd48982479eab8f0e"
+    },
+    {
+      "name": "marker.pack",
+      "bytes": 870,
+      "sha256": "30c265bce66450bbd5ff8de9fd086c81185f334e524c9164fd9194c0016c36c6"
+    },
+    {
+      "name": "Shogun2-Possession-Setup.exe",
+      "bytes": 35191808,
+      "sha256": "e497b9eed6254466ac1bf1f3a15ea3e294aa3a32d43f22e40868bf52cb3f4e24"
+    },
+    {
+      "name": "install_cli.exe",
+      "bytes": 35172352,
+      "sha256": "2d4bb81f4de10a4c5320b74c2883ed803c458d91d8acc3e37d6a2385b9c1d23b"
+    }
+  ],
+  "cache_id": "de3ded28a7598e56",
+  "installed": false,
+  "loaded": false,
+  "live_accepted": false,
+  "published": false,
+  "recording_active": false,
+  "recorder_armed": true,
+  "runtime_changes": "Remove the rejected ordinary locomotion overrides at animation and equipment boundaries; native modes0/4 pass unchanged. Retain accepted melee readiness/combat handling, the Test137 detached-advance crash guard and exact Rapid136/native1 toggle/HUD/QTE.",
+  "limits": "Native state/availability, moving-pose and turn selectors execute original code with synthetic actor records; projectile getter and transition lookup are explicit providers. Final renderer/blend/mesh appearance and full game asset coverage require live validation. Crash fixture reproduces both exact missing-squad blocks and verifies scoped behavior; remaining task body is a provider. This fixes a concrete detached-actor coverage gap, not all historical crashes. Ultra crowd and other visual limits remain unresolved.",
+  "remaining_checkpoints": [
+    "Native charging",
+    "T/G abilities using original native icons/buttons",
+    "Variable bow draw"
+  ],
+  "offline_visual_validation_retained_from_Test134": true,
+  "original_mode_artwork_retained": true,
+  "HUD_binary_exact_Test134": true,
+  "retained_native_artwork_entries_verified_Test131": 1371,
+  "earlier_attempts": [
+    {
+      "stage": "focused",
+      "attempt": 1,
+      "passed": true,
+      "fixtures": 6,
+      "log": "focused138-attempt1.log",
+      "unix": 1792501171.1657686
+    },
+    {
+      "stage": "full-final",
+      "attempt": 1,
+      "passed": true,
+      "adapter": 79,
+      "loader": 2,
+      "installer": "exact Test137 plus all prior upgrades, all seven interruptions, repeat backups",
+      "python": 7,
+      "unix": 1792501810.768299
+    }
+  ]
+}

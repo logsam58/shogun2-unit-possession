@@ -2,7 +2,7 @@ from pathlib import Path
 import argparse,hashlib,json,struct,re
 here=Path(__file__).resolve().parent
 root=here.parents[1]
-parser=argparse.ArgumentParser();mode=parser.add_mutually_exclusive_group();mode.add_argument('--candidate',type=int,default=130);mode.add_argument('--release',action='store_true',help='Release metadata for Test130 gameplay');args=parser.parse_args()
+parser=argparse.ArgumentParser();mode=parser.add_mutually_exclusive_group();mode.add_argument('--candidate',type=int,default=138);mode.add_argument('--release',action='store_true',help='Release metadata for Test138 gameplay');args=parser.parse_args()
 if args.candidate is not None:assert args.candidate>=100, 'Candidate must be 100 or later'
 version=(root.parent/'VERSION').read_text().strip()
 development=not args.release
@@ -14,7 +14,7 @@ qte=root/'outputs/shogun2-siege99-preview/qte-playable-v79.dll'
 sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
 assert adapter.exists()
 assert hud.exists()
-payload=json.dumps({'title':title,'version':version,'revision':args.candidate,'development_candidate':development,'hud':83,'requires':'Integrated DINPUT8.dll included with this mod; possession engine and HUD are embedded and start automatically','controls':'F9 FPS mode; F climb wall; W ascend; S descend; release W/S hold; F10 RTS mode; Q single walk/double run contextual move or attack; hold Q drag formation; E stop; Z single walk/double run hold here; C follow with native pace/catch-up; R hold fire/fire at will/fire on command; 1 melee; 2 ranged; RMB ready; LMB fire; TAB native ammo; hold Ctrl kneeling fire where unlocked; WASD locked while kneeling; F12 disable','adapter_sha256':sha(adapter)},indent=2).encode('utf-8')
+payload=json.dumps({'title':title,'version':version,'revision':args.candidate,'development_candidate':development,'hud':83,'requires':'Integrated DINPUT8.dll included with this mod; possession engine and HUD are embedded and start automatically','controls':'F9 FPS mode; F climb wall; W ascend; S descend; release W/S hold; F10 RTS mode; Q single walk/double run contextual move or attack; hold Q drag formation; E stop; Z single walk/double run hold here; C follow with native pace/catch-up; R hold fire/fire at will/fire on command; 1 native melee/ranged toggle; RMB ready; LMB fire; TAB native ammo; hold Ctrl kneeling fire where unlocked; WASD locked while kneeling; F12 disable','adapter_sha256':sha(adapter)},indent=2).encode('utf-8')
 index=struct.pack('<I',len(payload))+b'possession\\checkpoint45.json\0'
 pack=here/'marker.pack'
 pack.write_bytes(struct.pack('<4s5IQ',b'PFH3',3,0,0,1,len(index),0)+index+payload)

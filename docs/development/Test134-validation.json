@@ -1,0 +1,135 @@
+{
+  "passed": true,
+  "candidate": 134,
+  "development_candidate": true,
+  "version": "0.23",
+  "base_commit": "d6a1655d4d43b187f6b9b0e9fb079f1f79f582d4",
+  "fresh_suites": {
+    "adapter": 76,
+    "hud": 6,
+    "loader": 2,
+    "installer": true
+  },
+  "fresh_checks": [
+    {
+      "name": "minhook",
+      "passed": true,
+      "seconds": 2.756,
+      "log": "artifacts\\logs\\minhook.log"
+    },
+    {
+      "name": "adapter",
+      "passed": true,
+      "seconds": 6.664,
+      "log": "artifacts\\logs\\adapter.log"
+    },
+    {
+      "name": "adapter-tests",
+      "passed": true,
+      "seconds": 183.182,
+      "log": "artifacts\\logs\\adapter-tests.log",
+      "executables": 76
+    },
+    {
+      "name": "hud",
+      "passed": true,
+      "seconds": 3.793,
+      "log": "artifacts\\logs\\hud.log"
+    },
+    {
+      "name": "hud-tests",
+      "passed": true,
+      "seconds": 7.811,
+      "log": "artifacts\\logs\\hud-tests.log",
+      "executables": 6
+    },
+    {
+      "name": "loader",
+      "passed": true,
+      "seconds": 3.748,
+      "log": "artifacts\\logs\\loader.log"
+    },
+    {
+      "name": "loader-tests",
+      "passed": true,
+      "seconds": 5.976,
+      "log": "artifacts\\logs\\loader-tests.log"
+    },
+    {
+      "name": "installer",
+      "passed": true,
+      "seconds": 7.472,
+      "log": "artifacts\\logs\\installer.log"
+    },
+    {
+      "name": "installer-tests",
+      "passed": true,
+      "seconds": 363.435,
+      "log": "artifacts\\logs\\installer-tests.log"
+    }
+  ],
+  "python_tests": 7,
+  "retained_suites": {
+    "QTE_Test124": 46
+  },
+  "components": [
+    {
+      "name": "possession-v46.dll",
+      "bytes": 551424,
+      "sha256": "47ad733a62541ae8b4278a1124268100a24c14e3fc0053bd46087914192a560f"
+    },
+    {
+      "name": "possession-hud.exe",
+      "bytes": 25442304,
+      "sha256": "07dd83203ff5a951085b2bfc1819b23763ad76b73376f029f9b01ece8ee3ae69"
+    },
+    {
+      "name": "qte-playable-v79.dll",
+      "bytes": 8451584,
+      "sha256": "cfec68115c0e031179a9fc1a8fcb968b9edd0b05b713a45f54b2756bfd39dd4e"
+    },
+    {
+      "name": "dinput8.dll",
+      "bytes": 34753536,
+      "sha256": "77bf8f9ef8e1b9b2e6debf59314561123ff1366ae17645f6128401d1a23a9523"
+    },
+    {
+      "name": "marker.pack",
+      "bytes": 859,
+      "sha256": "749d02977881e95c6d73a043f715066b334bacca3378a6f7920c576d19a5becd"
+    },
+    {
+      "name": "Shogun2-Possession-Setup.exe",
+      "bytes": 35185152,
+      "sha256": "83d8ad8d8530357e7c2837a9f40f8aa4fdc6cc82d36fbfce54d9438aa793ffc2"
+    },
+    {
+      "name": "install_cli.exe",
+      "bytes": 35165184,
+      "sha256": "70fc81a67b68013533fb34ffcdcec0f4196a655b8e141e51148a0236ff0a138b"
+    }
+  ],
+  "cache_id": "084ffe009fe1fa70",
+  "installed": false,
+  "loaded": false,
+  "live_accepted": false,
+  "published": false,
+  "recording_active": false,
+  "recorder_armed": true,
+  "runtime_changes": "1 toggles the original native unit melee-mode UI action;2 no longer switches weapons. Invalid/no-alternate requests clear. Unit orders are independent of personal draw/reload, and personal weapon state follows the actual native unit flag at its existing safe simulation boundary. Original mode icons retained; toggle hint hidden for melee-only units. Accepted Rapid/camera/Q/detachment and exact QTE retained.",
+  "limits": "Focused original UI wrapper/controller/selection predicates/queue producer/serializer execute with descriptor and primitive providers. Native unit scheduling and authored animations need fresh live acceptance. Rapid is user confirmed and exact; looking is restored but not explicitly confirmed. Crash and Ultra crowd limits remain unresolved. Existing recorder stays armed on D: with no extra profiling.",
+  "remaining_checkpoints": [
+    "Native charging",
+    "T/G abilities using original native icons/buttons",
+    "Variable bow draw"
+  ],
+  "offline_visual_validation": true,
+  "original_mode_artwork_retained_from_Test133": true,
+  "HUD_atlases_exact_Test133": true,
+  "retained_native_artwork_entries_verified_Test131": 1371,
+  "earlier_attempts": [
+    "before-hidden-ui-gate-correction: intentionally stopped full run to remove redundant outer RTS input gate; native action runs with panels hidden; INCOMPLETE not final evidence",
+    "before-lock-scope-correction: intentionally stopped full run for review of native read inside input lock; moved read before lock and added failed-read lock check; INCOMPLETE older run not used as final evidence",
+    "Focused fixtures passed after lock correction and native-state synchronization; final full run required"
+  ]
+}

@@ -4,19 +4,23 @@ The mod is still being worked on. These are the main things to watch for.
 
 ## Crashes and slowdowns
 
-The accepted v0.23 gameplay test also ended in a crash. Its cause has not been established. Crashes can happen during battles, including with blood turned off. We've captured several different failures, but haven't pinned down what starts them or whether they share a cause.
+Crashes can still happen during battles, including with blood turned off. v0.24 corrects one captured fault where a detached soldier's native advance task expected a squad. Other captured failures remain unresolved, and this does not establish a shared cause for every crash.
 
 v0.22 was reported smooth with Large units, one massive army per side and maximum graphics in DX11. Ultra units with substantial army presence can still become very slow. The audio guard covers one reproduced fault; it does not resolve all crashes. It can happen without a QTE showing, and sometimes the QTE stays smooth while the battle slows down. Some fights recover on their own. Leaving and re-entering possession isn't a confirmed fix.
 
-If you hit either problem, include the unit, map and what was happening nearby. The [technical notes](releases/v0.23-technical.md#remaining-limits) contain the crash details and investigation limits.
+If you hit either problem, include the unit, map and what was happening nearby. The [technical notes](releases/v0.24-technical.md#remaining-limits) contain the crash details and investigation limits.
 
 ## Visual problems
+
+v0.24 gameplay was accepted, with first-person weapon/arm poses and clipping left for later work. Melee combat presentation was reported good; ordinary walking and running keep their original movement states.
 
 - **Mounted bows:** the weapon can look wrong while aiming. This is still an open issue.
 - **Arms and weapons clipping:** first-person visibility has improved, but some weapons and animations still let you see through parts of the model. Looking sharply up/down can expose it.
 - **Missing HUD or odd timing:** include resolution, fullscreen/windowed mode, Windows scaling, monitor refresh rate, battle speed and whether the whole game slowed down. Not every display/overlay combination has been tested.
 
 ## Combat and unit orders
+
+- **Charging:** the possessed infantryman or rider does not yet reliably join the native charge performed by the formation. This is the next development task.
 
 - **Interrupted melee prompts:** another hit, death or a change in the fight can cut a prompt short. INTERRUPTED is there to show that it ended early. Crowded fights still need more testing.
 - **Shots or volleys not releasing:** include the exact unit, weapon and ammo. Bow, gun and other weapon support is broader than the combinations tested so far. Say whether it was your soldier, the rest of the unit, or both.

@@ -1,0 +1,124 @@
+{
+  "passed": true,
+  "candidate": 135,
+  "development_candidate": true,
+  "version": "0.23",
+  "base_commit": "d6a1655d4d43b187f6b9b0e9fb079f1f79f582d4",
+  "fresh_suites": {
+    "adapter": 76,
+    "loader": 2,
+    "installer": true
+  },
+  "fresh_checks": [
+    {
+      "name": "minhook",
+      "passed": true,
+      "seconds": 2.78,
+      "log": "artifacts\\logs\\minhook.log"
+    },
+    {
+      "name": "adapter",
+      "passed": true,
+      "seconds": 6.519,
+      "log": "artifacts\\logs\\adapter.log"
+    },
+    {
+      "name": "adapter-tests",
+      "passed": true,
+      "seconds": 182.455,
+      "log": "artifacts\\logs\\adapter-tests.log",
+      "executables": 76
+    },
+    {
+      "name": "loader",
+      "passed": true,
+      "seconds": 3.692,
+      "log": "artifacts\\logs\\loader.log"
+    },
+    {
+      "name": "loader-tests",
+      "passed": true,
+      "seconds": 5.931,
+      "log": "artifacts\\logs\\loader-tests.log"
+    },
+    {
+      "name": "installer",
+      "passed": true,
+      "seconds": 7.579,
+      "log": "artifacts\\logs\\installer.log"
+    },
+    {
+      "name": "installer-tests",
+      "passed": true,
+      "seconds": 371.114,
+      "log": "artifacts\\logs\\installer-tests.log"
+    }
+  ],
+  "python_tests": 7,
+  "retained_suites": {
+    "QTE_Test124": 46,
+    "HUD_Test134": 6
+  },
+  "components": [
+    {
+      "name": "possession-v46.dll",
+      "bytes": 551936,
+      "sha256": "4d7f687ea0922e56e68e73c4b8026b95d5e3115559581032608d74c514cf33f6"
+    },
+    {
+      "name": "possession-hud.exe",
+      "bytes": 25442304,
+      "sha256": "07dd83203ff5a951085b2bfc1819b23763ad76b73376f029f9b01ece8ee3ae69"
+    },
+    {
+      "name": "qte-playable-v79.dll",
+      "bytes": 8451584,
+      "sha256": "cfec68115c0e031179a9fc1a8fcb968b9edd0b05b713a45f54b2756bfd39dd4e"
+    },
+    {
+      "name": "dinput8.dll",
+      "bytes": 34754048,
+      "sha256": "fba6f03463994832f19a33782fad59dda8ec7b00268bdc64b2edf80144c87477"
+    },
+    {
+      "name": "marker.pack",
+      "bytes": 859,
+      "sha256": "86c780de05ba8dc41f2f53601f8840915c01dbdb9a39222bff374a0fe5981981"
+    },
+    {
+      "name": "Shogun2-Possession-Setup.exe",
+      "bytes": 35185664,
+      "sha256": "f2d73e7eeb932d242903b1e90f470ffeaf825fdfa2f86030efffd96572435e81"
+    },
+    {
+      "name": "install_cli.exe",
+      "bytes": 35166208,
+      "sha256": "435173c2df4f1a8875d58e9a4cd93368ee6107d79f152c0d380d9bc8bf012d9a"
+    }
+  ],
+  "cache_id": "b877c4d6a736515b",
+  "installed": false,
+  "loaded": false,
+  "live_accepted": false,
+  "published": false,
+  "recording_active": false,
+  "recorder_armed": true,
+  "runtime_changes": "During exact active Rapid Advance, possession and Follow Me read the original native unit gait18c120 instead of forcing walk. Shift adds no separate sprint. The existing native speed multiplier is applied once, and fatigue uses the same selected gait. Native unit stats/orders are untouched. Test134 native1 melee toggle, Test130 look/detachment, Q targeting and independent firing retained; HUD/QTE exact.",
+  "limits": "Original18c120 and18b310 execute in the fixture with task predicate/run-permission/routing providers. Native peer movement/animation and live acceptance still need a fresh test. User accepted134 melee toggle, but no134 loaded gate was consumed. Crash/Ultra crowd/visual limits unresolved. Existing recorder stays armed on D:; no extra profiling.",
+  "remaining_checkpoints": [
+    "Native charging",
+    "T/G abilities using original native icons/buttons",
+    "Variable bow draw"
+  ],
+  "offline_visual_validation_retained_from_Test134": true,
+  "original_mode_artwork_retained": true,
+  "HUD_binary_exact_Test134": true,
+  "retained_native_artwork_entries_verified_Test131": 1371,
+  "earlier_attempts": [
+    {
+      "attempt": "focused135-attempt1",
+      "passed": false,
+      "reason": "Standalone fatigue fixture lacked the newly shared gait selector provider; Rapid/native speed/commands passed before this compile error. No installed game change."
+    }
+  ]
+}

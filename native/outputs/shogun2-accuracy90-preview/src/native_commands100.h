@@ -393,12 +393,12 @@ static void process_orders(uintptr_t camera){
             float initial=field<unsigned short>(possessed,0x64)*command100::tau/65536.f;
             if(frame.tick>=command_follow100.next){
                 if(command_formation_gap102(camera,frame.position,command_gap102)){
-                    // Match the same native Shift walk/run selection as personal
+                    // Match the same native walk/run selection as personal
                     // locomotion. Catch-up can request run even while stationary;
                     // the stock order consumer still applies native run permission.
                     unsigned input=equipment81::movement_input(unsigned(state->input),equipment_crouch81!=0);
                     bool translating=bool(input&FORWARD)!=bool(input&BACKWARD)||(!possession_lease.identity.mount&&(bool(input&LEFT)!=bool(input&RIGHT)));
-                    bool leader_running=(input&RUN)&&translating&&
+                    bool leader_running=native_sprint_requested133(input)&&translating&&
                         reinterpret_cast<UnitRunAllowed>(base+0x15cb80)(reinterpret_cast<void*>(unit));
                     bool running=command_pace102.update(command_gap102,leader_running);
                     if(command_follow100.changed(frame.position,frame.tick,running)){

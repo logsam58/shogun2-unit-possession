@@ -31,6 +31,10 @@ static bool command_draw_permitted100(void*){return true;}
 static void command_draw_started100(void*){}
 static bool command_release_managed100(void*){return false;}
 static void command_on_shot100(){}
+// Standalone firing fixture: presentation eligibility is an external provider.
+// Full native projectile presentation is covered by verify_melee_presentation137.
+#include "personal_weapon_catalog.h"
+static PersonalWeaponKind native_personal_kind(uintptr_t){return PersonalWeaponKind::Unsupported;}
 #include "weapon_animation.h"
 
 static unsigned stops,clocks;

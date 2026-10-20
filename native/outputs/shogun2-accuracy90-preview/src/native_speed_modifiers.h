@@ -48,9 +48,9 @@ static bool read_native_speed_modifiers(uintptr_t actor,unsigned input,float bas
         }
         auto fatigue=reinterpret_cast<NativeFatigueRow>(base+0x3d1b90);
         uintptr_t fatigue_row=fatigue(reinterpret_cast<void*>(actor));
-        // Manual Shift uses the verified unit run selector, rather than the AI's
-        // +244 locomotion mode. A rejected native run request has no run penalty.
-        if(fatigue_row&&(input&RUN)&&base_speed>state->native_walk_speed)
+        // Match manual Shift, including the ability-scoped final pace ceiling.
+        // A rejected native run request has no run penalty.
+        if(fatigue_row&&native_sprint_requested133(input)&&base_speed>state->native_walk_speed)
             state->fatigue_speed_factor=field<float>(fatigue_row,0x10);
         float surface_factor=state->surface_speed_factor,fatigue_factor=state->fatigue_speed_factor;
         if(!std::isfinite(surface_factor)||!std::isfinite(fatigue_factor)||surface_factor<0||

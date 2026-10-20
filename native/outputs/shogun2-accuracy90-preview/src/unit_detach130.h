@@ -188,7 +188,7 @@ static MH_STATUS disable_control_hooks130(){
     }
     // Pending native rejoin keeps both its callback and read-only personal
     // combat compatibility resident. No off-thread native actor writes.
-    if(!detached_count130)for(unsigned rva:{0x1b7ed0u,0x3ed950u,0x3ee240u,0x15d5d0u,0x14ad80u,0x17bee0u,0x3edcbau,0x3ee767u}){
+    if(!detached_count130)for(unsigned rva:{0x1b7ed0u,0x3eba00u,0x3ed950u,0x3ee240u,0x15d5d0u,0x14ad80u,0x17bee0u,0x3edcbau,0x3ee767u}){
         auto status=MH_DisableHook(reinterpret_cast<void*>(base+rva));
         if(status!=MH_OK&&status!=MH_ERROR_DISABLED)result=MH_UNKNOWN;
     }

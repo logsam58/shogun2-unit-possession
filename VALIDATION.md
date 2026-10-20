@@ -1,4 +1,19 @@
+## v0.24 release acceptance
+
+The user accepted Test138 after its fresh battle loaded-file/hook/capture gate. First-person POV quality is explicitly deferred. Retain exact adapter79/HUD6/QTE46 evidence; run fresh release loader2, full installer and Python7 checks, recording actual final results in docs/releases/v0.24-validation.json. The release wrapper is not installed/live-tested during publication. User-reported acceptance is separate from measured FPS, full-roster rendering and universal crash safety.
+
+## Checkpoint1 acceptance / v0.24
+
+The user closes checkpoint1 with a first-person POV caveat, accepts Test137 combat presentation and rejects its ordinary locomotion override. Test138 removes that override; its validation receipt separately records actual offline checks. The Test137 battle gate established loaded identity and active capture, not all-unit visual acceptance. Charging is checkpoint2 and remains unimplemented here.
+
+[Test137](docs/development/Test137.md) covers native personal melee state and the captured detached-actor advance-task crash path. Original-code fixtures include all supported projectile definitions; final rendered sprint/combat appearance remains a live check. The full final validation receipt distinguishes fresh adapter/loader/installer checks from exact retained HUD/QTE.
+
 # Validation and evidence
+
+[Test132](docs/development/Test132.md) revises the two rejected Test131 behaviors. Q targeting and Q/Z independent ranged fire have user confirmation;1/2 remains untested. Test132 live acceptance is pending; its offline checks must not be labeled live Rapid Advance proof.
+
+
+Unpublished [Test131](docs/development/Test131.md) is the first movement/look/targeting/weapon-mode checkpoint after accepted v0.23. Its [candidate receipt](docs/development/Test131-validation.json) separates fresh adapter/packaging checks from the retained byte-identical HUD/QTE. Live acceptance is pending; native speed parity is not proof that the reported Rapid Advance symptom is resolved. Charges, T/G abilities and variable bow draw are later checkpoints. T/G must reuse original Shogun ability icons/button states, with no placeholder artwork.
 
 The current release is [v0.23](docs/releases/v0.23-validation.json). Historical candidate receipts below preserve their original scope; the discarded Test116/117 experiments are excluded from the current build.
 
@@ -87,3 +102,7 @@ The player reported smooth Large-unit 1v1 play at maximum graphics in DX11 and e
 ## v0.23 acceptance
 
 The user accepted Test130's independent soldier/unit behavior after its exact loaded-build battle gate and reported a crash in the same session. Diagnostics were off. This accepts gameplay, not crash safety or a crash cause. [v0.23 validation](docs/releases/v0.23-validation.json) separates fresh packaging checks from retained gameplay evidence.
+
+Unpublished Test133: restored Test130 looking, explicit Rapid Shift disable including Follow Me leader matching, and original-art actual-unit mode display. See docs/development/Test133.md and the candidate validation receipt after offline checks. No new live acceptance or crash fix is inferred.
+
+Unpublished Test134 native melee-mode toggle: verify the actual native UI producer/controller in addition to packet fields, invalid/no-alternate requests, personal-draw separation and post-ack readiness. See docs/development/Test134.md and its offline validation receipt; live acceptance remains pending.

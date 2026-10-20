@@ -1,15 +1,25 @@
 # Contributor instructions
 
-This is a native C++ Total War: SHOGUN 2 possession mod. Read README.md, BUILD_AND_TEST.md, SOURCE_MAP.md and VALIDATION.md before changing it.
+This is a native C++ first-person possession mod for Total War: SHOGUN 2. Read README.md, BUILD_AND_TEST.md, SOURCE_MAP.md and VALIDATION.md before changing it. Use the preserved native sources and existing indexed decoding.
 
-v0.23 retains exact accepted Test130 gameplay, including reversible squad detachment, Test127 voice and Test126 camera/entry, with the prior audio guard, HUD and QTE improvements. Test116 clock and Test117 render-copy experiments are retained in Git history and excluded from this release. Do not reintroduce them accidentally.
+## Current baseline
 
-Preserve native unit AI, formations, ranged fire, melee outcomes, camera control and siege behaviour. Identity filters may reject unrelated actors; they must never grant possession or reservation authority without fresh full proof. Preserve individual-read fallbacks.
+v0.24 retains the exact user-accepted Test138 gameplay binaries and native output source. The accepted result followed a fresh loaded-build and recording check. Preserve Test136 Rapid Advance, the native1 melee toggle, Q targeting, reversible squad detachment, independent formation firing, camera, HUD and QTE.
 
-Use existing indexed decoding and preserved sources. Keep dumps, raw input logs, game assets, local paths and credentials out of published source. Required local resources are documented in docs/LOCAL_DEPENDENCIES.md.
+Ordinary native locomotion states0/4 pass unchanged. The accepted melee readiness handling and scoped advance-task detached-actor compatibility remain. This acceptance does not certify all animation assets, measured FPS or universal crash safety. First-person weapon/arm quality is deferred. Ultra crowd slowdowns and other crashes remain open.
 
-Run the relevant offline fixtures. Close the game before replacing native DLLs and preserve an exact rollback. Live tests require the user's READY cue and fresh loaded-file hashes before formal play. Honor explicit recorder/debugger-off instructions; otherwise verify authorized capture. Automatic recording runs independently of READY; preserve an existing watcher. Do not launch the game, start extra live profiling or change graphics settings without authorization.
+The next checkpoint is native infantry/cavalry charging; docs/development/Checkpoint2.md is a preparation plan, not implemented charging. T/G abilities and variable bow draw follow later. Use native ability definitions, restrictions and original game icons/button artwork; no placeholders.
 
-Release packaging must retain the selected gameplay binaries, pin the complete source closure, verify payloads and pass installer upgrade/rollback tests. Publication requires an explicit user request. Distinguish user-reported performance improvement from measured FPS and from crash safety. v0.22 acceptance covers the user-reported smooth Large-unit 1v1/max-DX11 configuration. Ultra crowd slowdown and other crashes remain unresolved; no universal hardware limit or absence of mod overhead is established.
+## Changes and validation
 
-Test130 gameplay was accepted after its loaded battle gate, but that session also crashed. Keep its cause unresolved. Preserve exact gameplay during v0.23 promotion.
+Preserve native unit AI, formations, ranged fire, melee outcomes, movement and siege behavior. Ownership filters must never grant authority without current full actor/unit/lease proof. Keep individual-read fallbacks. Do not reintroduce discarded Test116/117 experiments; their source remains in Git history.
+
+Run the relevant offline fixtures. Keep work light while the user plays. Close the game before replacing native DLLs and preserve an exact rollback. Live tests require a fresh user READY/IN BATTLE cue, loaded-file hashes and actual authorized capture verification before formal play. Do not launch the game, start extra profiling or change graphics/CPU/affinity settings without authorization.
+
+Ordinary recording starts independently of READY; preserve the existing watcher and its configuration. Honor explicit recorder-off instructions. Recording health and loaded identity do not establish gameplay acceptance.
+
+## Releases
+
+Retain accepted gameplay binaries during promotion; rebuild only release loader/installer metadata. Pin the complete native/tool source closure, verify embedded resources and run full installer upgrade/rollback checks, including the exact immediate predecessor, all interruption stages and repeat backups. Verify VERSION, marker and PE versions together.
+
+Publication requires an explicit user request. Keep raw dumps/input logs, game assets, absolute local paths and credentials out of Git. Local requirements are in docs/LOCAL_DEPENDENCIES.md. Historical candidate notes describe their own scope; use the latest accepted baseline above.

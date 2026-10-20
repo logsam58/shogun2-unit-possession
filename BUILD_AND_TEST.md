@@ -1,4 +1,43 @@
+## v0.24 release baseline
+
+The release retains exact accepted Test138 gameplay. `--release` now labels revision138 as v0.24 with no development suffix. Run loader2, the complete installer suite (exact Test138 plus all earlier predecessors, seven interruptions/repeat backups), and Python7. Retain adapter79/HUD6/QTE46 rather than rebuilding gameplay. Pin all tracked native/tool inputs and verify embedded payloads/PE/marker before packaging. See docs/releases/v0.24-technical.md and its receipt. Candidate sections below are historical build records.
+
+## Test138 / v0.24 locomotion rollback
+
+Use explicit --candidate 138: adapter79, exact retained HUD6/QTE46, loader2, full installer including exact Test137 and all prior upgrades/seven interruptions/repeat backups, Python7. Verify VERSION/PE/marker0.24 together. Preserve exact137 rollback and existing armed recorder; require closed-game replacement and fresh loaded/capture cue afterward.
+
+## Test137 personal melee presentation
+
+Use explicit --candidate 137: adapter79, retained exact HUD6/QTE46, loader2 and complete installer including exact Test136 upgrades/all7 interruptions/repeat backup, plus Python7. New fixtures execute original state/pose/turn and missing-squad read blocks with documented provider limits. Keep the existing recorder armed; install only under the closed-game guard.
+
+## Test136 Rapid Shift ceiling
+
+Use explicit --candidate 136: adapter77, loader2, full installer including exact Test135 upgrades/all7 interruptions/repeat-backup retention, and Python7. Retain exact HUD6/QTE46. verify_rapid136 exercises the production scoped cap with synthetic native peers; verify_rapid132 retains original effect/hash/stat coverage. Keep automatic recorder armed; installation requires the closed-game guard.
+
+## Test135 Rapid gait correction
+
+Use explicit --candidate 135: adapter76, loader2 and the complete installer suite including exact Test134 through seven interruptions/repeated backup retention. Retain exact Test134 HUD6 and QTE46 evidence/binaries. Expanded verify_rapid132 executes original18c120 and18b310; standalone fatigue provider covers selected native gait. Ordinary recorder remains armed; game/session must be closed for installation.
+
 # Build and test
+
+## Test134 native mode toggle
+
+Use explicit `--candidate 134`: adapter76, HUD6, loader2 and complete installer suite, including exact installed Test133 with seven interruptions/repeat backup. Run Python7 and retain exact QTE. Keep the existing recorder armed with no game/session during replacement. See docs/development/Test134.md.
+
+## Test133 correction
+
+Use explicit `--candidate 133` for adapter76, HUD6, loader2 and complete installer regression, including exact Test132,131,130 and published v0.23 predecessors with all seven interruptions and repeat backups. Retain exact QTE. Keep the existing watcher armed, with no active game/session during replacement; do not stop ordinary recording. See docs/development/Test133.md.
+
+## Test132 revision
+
+Use explicit `--candidate 132`. Run adapter76, loader2 and the complete installer suite including the exact installed Test131 predecessor, all seven interruptions and repeat-install backup retention. Retain exact HUD/QTE. See docs/development/Test132.md; diagnostics stay stopped through deployment and are then re-armed as requested.
+
+
+## Test131 development checkpoint
+
+Use explicit `--candidate 131` for adapter, loader and installer builds. Retain the exact accepted Test130 HUD/QTE; they are not rebuilt for this checkpoint. New adapter fixtures compare the production speed reader with original native18b310, exercise bounded mouse/body turning, filter overlapping native Q hits, and serialize/acknowledge the native whole-unit melee-mode order.
+
+The complete installer suite additionally needs the published v0.23 loader/marker in ignored `native/work/autoload-v023-baseline/`, extracted as data from verified v0.23 setup resources201/202. Exact Test130 and prior fixtures remain required. Both predecessors must complete all seven interrupted rollback stages and repeat-install retention before installation. Keep diagnostics off. See [Test131](docs/development/Test131.md) for this checkpoint and the remaining charging/ability/bow work.
 
 ## Requirements
 

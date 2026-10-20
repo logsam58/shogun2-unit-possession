@@ -1,4 +1,21 @@
+## v0.24 release
+
+The current gameplay is exact accepted Test138, including Rapid136, the native1 unit toggle, enemy-priority Q targeting, mode artwork, ordinary native locomotion and scoped detached-advance compatibility. Promotion changes only native/work packaging and tools metadata. See docs/releases/v0.24-technical.md. Native charging is a separate prepared checkpoint; historical candidate entries below do not supersede the current baseline.
+
+## Test138 / v0.24
+
+`melee_presentation137.h` now limits synchronization to native readiness requests; ordinary locomotion0/4 passes unchanged through the animation hook and equipment boundary. `verify_melee_presentation137.cpp` compares original native calls with the hook. The retained advance-task compatibility is independent. See docs/development/Test138.md and Checkpoint2.md.
+
+Test137: melee_presentation137.h preserves native personal melee state across generic task resets for supported projectile families; equipment_native81.h also synchronizes entry into an already-melee unit. unit_detach_combat130.h scopes native advance-task context and unit_detach130.h retains it until rejoin. Two new original-code fixtures record the boundaries. Rapid136, native toggle134 and HUD/QTE remain exact.
+
+Test136 adds adapter rapid_pace136.h: bounded read-only same-unit native velocity reference and exact-active-Rapid Shift ceiling. adapter.cpp invokes it after terrain and clamps acceleration carryover; existing log rows publish numeric reference. native_movement.h restores direct manual Shift selection, removing135 order-gait selection. verify_rapid136.cpp covers cap/normal/other-ability/ownership/expiry/failure cases. See docs/development/Test136.md.
+
+Test135 keeps compatibility filenames: native_movement.h selects original18c120 unit gait during exact Rapid; native_commands100.h and native_fatigue.h/native_speed_modifiers.h share it. verify_rapid132.cpp compares original gait/speed; verify_fatigue.cpp isolates gait selection for hook costs. See docs/development/Test135.md.
+
 # Source map
+
+Test132 adds body_look132.h (bounded numeric turn goal) and rapid_advance132.h (read-only exact active-effect lookup), with the production integration in adapter.cpp/native_movement.h. verify_rapid132.cpp executes original native modifier/lookup and the requested Shift policy. The revised verify_head131.cpp now checks model-led visible yaw and restored pitch/QTE responsiveness.
+
 
 The discarded Test117 render-copy experiment is retained in Git history, not the active build. See [Test117](docs/development/Test117.md) for its historical scope and limits.
 
@@ -23,6 +40,8 @@ The mod is native C++ with Python build and diagnostic tools. VERSION is the pro
 | Diagnostic format tests | tests/test_minidump.py | Synthetic dump-layout cases |
 
 ## Starting points
+
+Unpublished Test131 adds `head_look131.h` for mouse rotation limits and `unit_weapon131.h` for native unit weapon orders with acknowledgment. Existing movement, context and equipment files contain their integration. The four `verify_*131.cpp` fixtures cover speed parity, head-look, Q targeting and weapon-mode requests. Charges, T/G abilities and variable bow draw are later checkpoints.
 
 Read adapter.cpp for hook setup, input service and lifecycle coordination. Follow native_bow.h and manual_dispersion.h for projectile launch/accuracy, the equipment headers for weapon selection/ammunition/crouch, and the siege/climb headers for wall state and ownership. Fixture names identify the corresponding behavior under test.
 
@@ -74,3 +93,7 @@ Active gameplay source matches Test124. Adapter `miles_zero123.h`, its integrati
 ## v0.23
 
 Active native output source and exact runtime binaries match accepted Test130. `possession_entry125.h`, `combat_focus125.h` and `combat_turn126.h` implement entry facing/gait and animation-led look. `follow_voice125.h` contains accepted Test127 acknowledgements. `unit_detach130.h` separates squad participation from unit/stat ownership; `unit_detach_combat130.h` preserves personal combat reads and deferred rejoin. Earlier readiness headers remain complementary. New fixtures describe original-code/provider boundaries. See [technical notes](docs/releases/v0.23-technical.md).
+
+Test133 restores Test130 adapter camera source and its mounted/animation helpers. `native_movement.h` owns the shared Rapid sprint decision also used by `native_commands100.h`; `hud-src/weapon_mode133.h` selects original stock mode art from the validated native unit flag read in `hud.cpp`. See docs/development/Test133.md.
+
+Test134: `unit_weapon131.h` now delegates the original native UI action10dfb80/cases18-19, while `equipment_input81.h` binds1 as the single toggle. `equipment_native81.h` separates unit action from personal animation readiness. No custom mode packet or native mode-flag writes. See docs/development/Test134.md.

@@ -789,9 +789,11 @@ static bool prepare(uintptr_t actor) {
         if(!apply_native_terrain(actor,direction,dt,speed)){
             ++state->terrain_errors;state->error=97;relinquish();return false;
         }
+        float rapid_ceiling136=cap_rapid_pace136(movement_input,speed);
         if(!apply_native_speed_step(actor,direction,requested,dt,modifier*state->terrain_speed_factor,speed)){
             ++state->speed_modifier_errors;state->error=99;relinquish();return false;
         }
+        if(rapid_ceiling136>=0){speed=std::min(speed,rapid_ceiling136);state->effective_speed=speed;}
         if(crouch_locked){
             // A kneeling firing posture has no walking locomotion. Stop owned
             // horizontal intent and residual velocity; retain vertical physics.
@@ -870,7 +872,7 @@ static void snapshot_log(std::ofstream& log) {
     for(int i=0;i<4;++i){LONG seq=state->sequence;if(seq&1)continue;MemoryBarrier();memcpy(&s,state,sizeof(s));MemoryBarrier();if(seq==state->sequence){ok=true;break;}}
     if(!ok)return;
     log<<"{\"event\":\"control_metrics\",\"tick_ms\":"<<GetTickCount64()<<",\"mode\":"<<s.mode;
-    control_metrics(log,s);accuracy_log90(log);climb_log97(log);
+    control_metrics(log,s);accuracy_log90(log);climb_log97(log);rapid_pace_log136(log);
     log<<",\"context103\":1,\"camera_cycle_blocks103\":"<<camera_cycle_blocks103<<",\"camera_input_blocks103\":"<<camera_input_blocks103<<",\"cursor_self_hits103\":"<<cursor_self_hits103<<",\"cursor_queries103\":"<<cursor_queries103<<",\"cursor_errors103\":"<<cursor_errors103<<",\"command_target_samples103\":"<<command_target_samples103<<",\"command_target_kind103\":"<<command_target_kind103<<",\"command_target_unit103\":"<<command_target_unit103<<",\"recovery103\":1,\"recovery_blocks103\":"<<recovery_blocks103<<",\"recovery_active103\":"<<recovery_active103;
     log<<",\"ranged_barrier96\":1,\"lower_barrier_bypasses96\":"<<lower_barrier_bypasses96<<",\"idle_barrier_bypasses96\":"<<idle_barrier_bypasses96<<",\"look_pitch96\":1,\"ranged_barrier95\":1,\"animation_barrier_bypasses95\":"<<animation_barrier_bypasses95<<",\"same_unit_ai_draws95\":"<<same_unit_ai_draws95<<",\"same_unit_ai_releases95\":"<<same_unit_ai_releases95;
     log<<",\"release_stage93\":"<<release_stage93<<",\"release_confirmed93\":"<<release_confirmed93<<",\"release_recovered93\":"<<release_recovered93<<",\"release_tick93\":"<<InterlockedCompareExchange64(&release_tick93,0,0)<<",\"release_flags93\":"<<release_flags93;

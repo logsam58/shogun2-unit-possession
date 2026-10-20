@@ -33,7 +33,9 @@ static void __fastcall cursor_filter103(void* object,void*,void* vector,unsigned
            command_native_lease100!=possession_lease.generation||!command_native_ready100(input_window)||!command_native_context100(root))return;
         auto v=reinterpret_cast<uintptr_t>(vector);unsigned count=field<unsigned>(v,4),capacity=field<unsigned>(v,0);auto data=field<uintptr_t>(v,8);
         if(!data||count>capacity||count>4096)return;
-        unsigned char retain[4096]{};unsigned kept=0;InterlockedIncrement(&cursor_queries103);
+        unsigned char retain[4096]{};unsigned kept=0;bool hostile=false;InterlockedIncrement(&cursor_queries103);
+        auto own_side=field<uintptr_t>(possessed,0x44);
+        unsigned own_team=own_side?field<unsigned>(own_side,0x10):0xffffffffu;
         for(unsigned i=0;i<count;++i){auto hit=data+i*28,shape=field<uintptr_t>(hit,0);bool self=false;
             if(shape&&field<unsigned>(shape,0)==8){auto physical=field<uintptr_t>(shape,12);
                 if(physical){using Actor=uintptr_t(__thiscall*)(void*);auto vt=field<uintptr_t>(physical,0);
@@ -44,8 +46,24 @@ static void __fastcall cursor_filter103(void* object,void*,void* vector,unsigned
                 }
             }
             retain[i]=self?0:1;
+            // Other allied armies are not the possessed unit. Only deprioritize
+            // them when this native ray also contains a proven hostile soldier
+            // or banner. Unknown shapes and world occluders retain native order.
+            if(!self&&own_team<=31&&shape&&field<unsigned>(shape,0)==8){
+                auto physical=field<uintptr_t>(shape,12);
+                if(physical){using Actor=uintptr_t(__thiscall*)(void*);
+                    auto vt=field<uintptr_t>(physical,0);
+                    auto actor=reinterpret_cast<Actor>(field<uintptr_t>(vt,0x18))(reinterpret_cast<void*>(physical));
+                    if(actor&&field<uintptr_t>(actor,0x28)==environment){
+                        auto side=field<uintptr_t>(actor,0x44);
+                        if(side){unsigned team=field<unsigned>(side,0x10);
+                            if(team<=31){if(team==own_team)retain[i]=2;else hostile=true;}
+                        }
+                    }
+                }
+            }
         }
-        for(unsigned i=0;i<count;++i){if(!retain[i]){InterlockedIncrement(&cursor_self_hits103);continue;}
+        for(unsigned i=0;i<count;++i){if(!retain[i]||(hostile&&retain[i]==2)){InterlockedIncrement(&cursor_self_hits103);continue;}
             if(kept!=i)memmove(reinterpret_cast<void*>(data+kept*28),reinterpret_cast<void*>(data+i*28),28);++kept;
         }
         field<unsigned>(v,4)=kept; // Native owner retains the allocation/capacity.

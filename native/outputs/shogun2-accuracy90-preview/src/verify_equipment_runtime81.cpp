@@ -35,8 +35,12 @@ int main(){void* memory=nullptr;try{
     melee_handoff78.observe(possessed,42,923,9,7);changes=fixture_changes81;
     require(!equipment_prepare_motion81()&&fixture_changes81==changes,"Crouching interrupted melee handoff");melee_handoff78.reset();
     require(equipment_prepare_motion81(),"Crouching did not resume at safe boundary");
-    equipment_requests81.slot=equipment81::Melee;require(!equipment_prepare_motion81()&&equipment_slot81==equipment81::Melee&&fixture_mode81==10,"Melee switching failed to stand and equip native melee pose");
-    equipment_requests81.ctrl=false;equipment_requests81.slot=equipment81::Ranged;require(!equipment_prepare_motion81()&&equipment_slot81==equipment81::Ranged&&fixture_mode81==8,"Ranged switching failed");
+    equipment_requests81.slot=equipment81::Melee;field<unsigned char>(unit,0xead)=1;equipment_mode_poll131(equipment_requests81,true);require(!equipment_prepare_motion81()&&equipment_slot81==equipment81::Melee&&fixture_mode81==10,"Melee switching failed to stand and equip native melee pose");
+    equipment_requests81.ctrl=false;equipment_requests81.slot=equipment81::Ranged;field<unsigned char>(unit,0xead)=0;equipment_mode_poll131(equipment_requests81,true);require(!equipment_prepare_motion81()&&equipment_slot81==equipment81::Ranged&&fixture_mode81==8,"Ranged switching failed");
+    equipment_requests81.slot=0;field<unsigned char>(unit,0xead)=1;
+    require(!equipment_prepare_motion81()&&equipment_slot81==equipment81::Melee&&fixture_mode81==10,"Actual native melee mode without private request was ignored");
+    field<unsigned char>(unit,0xead)=0;
+    require(!equipment_prepare_motion81()&&equipment_slot81==equipment81::Ranged&&fixture_mode81==8,"Actual native ranged mode without private request was ignored");
     possession_lease.identity.mount=1;equipment_requests81.ctrl=true;changes=fixture_changes81;require(!equipment_prepare_motion81()&&!equipment_crouch_supported81&&fixture_changes81==changes,"Mounted soldier crouched");possession_lease.identity.mount=0;
     equipment_reset81();require(!equipment_crouch81&&!equipment_crouch_supported81&&!equipment_lease81&&!equipment_requests81.ctrl&&!equipment_requests81.slot&&!equipment_requests81.tabs,"Release retained equipment requests");
     VirtualFree(memory,0,MEM_RELEASE);memory=nullptr;
