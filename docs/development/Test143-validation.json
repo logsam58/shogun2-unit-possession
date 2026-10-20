@@ -1,0 +1,160 @@
+{
+  "passed": true,
+  "candidate": 143,
+  "version": "0.25",
+  "development_candidate": true,
+  "base_commit": "f2d55cc9651f7c5ea8600dd35c36bd9b404000be",
+  "fresh_suites": {
+    "adapter": 86,
+    "hud": 7,
+    "loader": 2,
+    "installer": true
+  },
+  "fresh_checks": [
+    {
+      "name": "minhook",
+      "passed": true,
+      "seconds": 2.749,
+      "log": "artifacts\\logs\\minhook.log"
+    },
+    {
+      "name": "adapter",
+      "passed": true,
+      "seconds": 6.66,
+      "log": "artifacts\\logs\\adapter.log"
+    },
+    {
+      "name": "adapter-tests",
+      "passed": true,
+      "seconds": 227.513,
+      "log": "artifacts\\logs\\adapter-tests.log",
+      "executables": 86
+    },
+    {
+      "name": "hud",
+      "passed": true,
+      "seconds": 3.787,
+      "log": "artifacts\\logs\\hud.log"
+    },
+    {
+      "name": "hud-tests",
+      "passed": true,
+      "seconds": 8.743,
+      "log": "artifacts\\logs\\hud-tests.log",
+      "executables": 7
+    },
+    {
+      "name": "loader",
+      "passed": true,
+      "seconds": 3.817,
+      "log": "artifacts\\logs\\loader.log"
+    },
+    {
+      "name": "loader-tests",
+      "passed": true,
+      "seconds": 5.878,
+      "log": "artifacts\\logs\\loader-tests.log"
+    },
+    {
+      "name": "installer",
+      "passed": true,
+      "seconds": 7.419,
+      "log": "artifacts\\logs\\installer.log"
+    },
+    {
+      "name": "installer-tests",
+      "passed": true,
+      "seconds": 444.138,
+      "log": "artifacts\\logs\\installer-tests.log"
+    }
+  ],
+  "python_tests": 7,
+  "retained_suites": {
+    "QTE_Test140": 47
+  },
+  "components": [
+    {
+      "name": "possession-v46.dll",
+      "bytes": 584192,
+      "sha256": "ef73acc5828122db0eddf82ea7f56608a52c7e276652016a817f68e631a6980e"
+    },
+    {
+      "name": "possession-hud.exe",
+      "bytes": 25465344,
+      "sha256": "23f2a8ced82391a8c9347fc567d7514db620a4b62feabc60c1855ced45b85e6d"
+    },
+    {
+      "name": "qte-playable-v79.dll",
+      "bytes": 8455680,
+      "sha256": "1b1fab1020f2b3248869b27625fd31c38b2900b818be76f63ea3f5f328abbdb0"
+    },
+    {
+      "name": "dinput8.dll",
+      "bytes": 34813440,
+      "sha256": "a568ffe9bb5ab6bc8668df2ff1ec5f225210711bf9eff746bbe9b63d4c5d4497"
+    },
+    {
+      "name": "marker.pack",
+      "bytes": 1001,
+      "sha256": "5349af9f4e4a55ce9ee42668477e916a9a27baf87cfdb8f818b9f3422ff4f429"
+    },
+    {
+      "name": "Shogun2-Possession-Setup.exe",
+      "bytes": 35248128,
+      "sha256": "691449d02b98cabe9fa4d5d0f5eb4b60d6ce386131b5552d0b4aaeb33a346770"
+    },
+    {
+      "name": "install_cli.exe",
+      "bytes": 35229184,
+      "sha256": "e72fc701b5cc847410364c9c298b4e9ff56070406c51b447996152edffff143d"
+    }
+  ],
+  "cache_id": "2f2c4c94ade24e28",
+  "installed": false,
+  "loaded": false,
+  "live_accepted": false,
+  "published": false,
+  "recording_active": false,
+  "recorder_armed": true,
+  "checkpoint3": "Native T/G whole-unit abilities; original targeted Inspire packet/crosshair; shared same-rider dismount continuity; native per-ability sound selector; centered stock artwork/CUF text",
+  "checkpoint4": "Bow window/worker unified release edge; correct native frame duration or mounted release marker; LMB draw sound handle stopped on release, native release cue once; RMB animation unchanged; guns/thrown click unchanged",
+  "decoder": {
+    "preserved_on_demand_tool_reused": true,
+    "tables": {
+      "unit_abilities": 71,
+      "unit_special_abilities": 43,
+      "ability_effects": 83,
+      "projectiles": 114
+    },
+    "bow_declarations": 242,
+    "bow_assets_decoded": 98,
+    "indexed_native_functions_byte_verified": 13,
+    "archive_rebuild_resumed": false
+  },
+  "limits": "Unaccepted Test143 correction after rejected/partial Test142. Native effect scheduling, actual audible output, visual bow/ability behavior and all mounted dismount animations still require live play. Native stock bow AIM/FIRE assets are reused; no new power-specific deformation or clips. Original release marker still releases the arrow, while LMB release drives its sound. Strength curve35%-100% is explicit input policy. No universal crash, POV or Ultra performance claim; charging remains buggy.",
+  "provider_boundaries": "Original native ability lookup, unlock, cooldown, constructors, unit-reference writers and target consumer execute; final ability effect scheduler is a provider. Original launch constructor/direct solver execute. Native positional sound callback and per-ability selector execute against explicit audio-device providers; the same native Play/Playing/Stop ABI is tested without real device output. Scene, primitive, input and unavailable animation scheduling providers remain explicit; no battle simulated.",
+  "game_launched": false,
+  "new_trace": false,
+  "recorder_settings_CPU_affinity_unchanged": true,
+  "installer_only_correction": {
+    "only_changed_inputs": [
+      "native/work/installer-siege99/install.h",
+      "native/work/installer-siege99/previous_cache_catalog.h",
+      "native/work/installer-siege99/verify.cpp"
+    ],
+    "other_native_tools_byte_exact": true,
+    "completed_component_suites": {
+      "adapter": 86,
+      "HUD": 7,
+      "loader": 2
+    },
+    "retained_binaries": {
+      "possession-v46.dll": "ef73acc5828122db0eddf82ea7f56608a52c7e276652016a817f68e631a6980e",
+      "possession-hud.exe": "23f2a8ced82391a8c9347fc567d7514db620a4b62feabc60c1855ced45b85e6d",
+      "dinput8.dll": "a568ffe9bb5ab6bc8668df2ff1ec5f225210711bf9eff746bbe9b63d4c5d4497",
+      "marker.pack": "5349af9f4e4a55ce9ee42668477e916a9a27baf87cfdb8f818b9f3422ff4f429"
+    },
+    "reason": "One extra brace level in new142 predecessor row. Other two installer files only normalize CRLF to repository LF. No gameplay or loader source/binary changed.",
+    "unix": 1792529791.6321704
+  }
+}

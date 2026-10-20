@@ -90,6 +90,17 @@ static uintptr_t bow_record(uintptr_t actor_unit){
     return record;
 }
 static bool is_bow_projectile(uintptr_t record){return native_personal_kind(record)==PersonalWeaponKind::Bow;}
+#include "bow_input142.h"
+// Both window and worker observations share the locked edge sampler. No bow
+// path may emit a full-power request on mouse-down. Unknown families wait.
+static void weapon_mouse143(UINT message,bool active){
+    if(bow_family142==1)bow_sample142(message!=WM_LBUTTONUP,active);
+    else if(message==WM_LBUTTONDOWN){
+        if(active&&bow_family142==0)InterlockedExchange(&state->fire_request,1);
+        else if(!active)++state->shots_blocked;
+    }
+}
+#include "native_audio143.h"
 static uintptr_t database(uintptr_t env){
     uintptr_t owner=field<uintptr_t>(env,0x2804c);if(!owner)return 0;
     uintptr_t data=field<uintptr_t>(owner,0x10);if(!data)return 0;
@@ -135,7 +146,7 @@ static void manual_bow_apply(const uint32_t* payload,uintptr_t context){
         // The native arrow record still supplies gravity during projectile flight.
         bool direct=personal_direct_projectile(record);
         parameters[0x44]=direct?1:0;state->direct_fire=direct?1:0;
-        reinterpret_cast<Launch>(base+0x40e9d0)(launch,reinterpret_cast<void*>(context),reinterpret_cast<void*>(record),parameters,field<float>(record,0x6c));
+        reinterpret_cast<Launch>(base+0x40e9d0)(launch,reinterpret_cast<void*>(context),reinterpret_cast<void*>(record),parameters,bow_speed142(record,field<float>(record,0x6c)));
         if(!reinterpret_cast<Ballistic>(base+0x420050)(launch,aim)){state->shot_error=76;return;}
         float solved_velocity[3];memcpy(solved_velocity,launch+0x50,sizeof(solved_velocity));
         uint32_t accuracy_lease=state->lease_generation;accuracy90::Envelope accuracy{};
@@ -226,7 +237,10 @@ static void process_bow(uintptr_t camera){
     if(InterlockedCompareExchange(&fire_busy,1,0))return;
     __try {
         InterlockedExchange(&state->fire_request,0);
-        if(followed(possessed,false)&&selected_possessed_group())queue_bow(camera);
+        if(followed(possessed,false)&&selected_possessed_group()){
+            if(bow_bind142(record,weapon_mounted()))queue_bow(camera);
+            else {state->shot_error=106;++state->shots_canceled;} // No unbound full-power bow shot.
+        }
     }__except(EXCEPTION_EXECUTE_HANDLER){state->shot_error=85;InterlockedExchange(&state->release,1);}
     InterlockedExchange(&fire_busy,0);
 }

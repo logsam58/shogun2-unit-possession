@@ -1,3 +1,19 @@
+# v0.26
+
+v0.26/Test145: fresh adapter86, release loader2, complete installer including exact144/all prior predecessors/seven interruptions/repeat backups, Python7. Retain byte-exact HUD144/7 and QTE140/47. The strict runner rejects all nonzero native exits. Actual results belong in docs/releases/v0.26-validation.json.
+
+# Test144
+
+Test144: expanded original animation-audio fixture, adapter86/HUD7/loader2/full installer exact143+allprior/seven interruptions/repeat backup/Python7, exact QTE140 retained. Completed results in Test144-validation.json; closed install, exact143 rollback and fresh READY mandatory.
+
+# Test143 validation
+
+The correction candidate runs adapter86/HUD7/loader2/full installer exact142+140+published025+allprior/seven interruptions/repeatbackup and Python7, with exact QTE140 retained. Consult docs/development/Test143-validation.json and local artifacts/Test143 for completed results and deployment status. Closed-game replacement, exact142 rollback and fresh READY/loaded/capture verification remain mandatory. No live success inferred from offline fixtures.
+
+## Test142 development
+
+Use explicit --candidate142. Run adapter82, HUD7, loader2, the full installer suite including exact Test140 and published v0.25, seven interruptions/repeat backups, and Python7. Retain exact QTE140/47. See docs/development/Test142.md.
+
 ## v0.25 / accepted Test140
 
 Promote exact Test140 gameplay with charging marked buggy. Release metadata uses revision140; retain adapter80/QTE47/HUD6 and run fresh loader2, complete installer upgrades/rollback and Python7. See docs/releases/v0.25-technical.md.
@@ -55,7 +71,7 @@ The complete installer suite additionally needs the published v0.23 loader/marke
 
 - Windows, Python 3.10+ and Visual Studio 2022 / Build Tools with MSVC x86 C++ tools and the Windows SDK.
 - The supported retail SHOGUN 2 engine for exact-native fixtures. Empire.Retail.dll SHA256: `022fae2e2da92b59b8b1b8ee52887003c624e3c8eca060b209f5d792a7f874f5`.
-- For styled QTE/HUD: 24 separately prepared UI inputs matching tools/local-assets.json. They are not bundled with source.
+- For styled QTE/HUD: 26 separately prepared UI inputs matching tools/local-assets.json. They are not bundled with source.
 - For the full installer upgrade/rollback suite: separately retained exact predecessor loader/marker/runtime fixture files.
 
 A game SDK is not required. The adapter can compile without the UI closure. A fresh clone cannot build the complete styled runtime until those local resources are supplied; the repository does not currently include a standalone extraction pipeline. See [local dependencies](docs/LOCAL_DEPENDENCIES.md).

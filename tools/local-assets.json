@@ -144,6 +144,18 @@
       "source_relative": "outputs/shogun2-authentic-hud80-preview/ui_reference/original/local_en/font/boshin/bardi_38.cuf",
       "bytes": 659975,
       "sha256": "f16c66ae9c621ce57eb7b26420fb9272f5615b5ba22aa9aad966abe714c2deba"
+    },
+    {
+      "path": "native/outputs/shogun2-ammunition83-preview/hud-src/private/ability141-30.png",
+      "source_relative": "outputs/shogun2-ammunition83-preview/hud-src/private/ability141-30.png",
+      "bytes": 7070,
+      "sha256": "6a6e6de593190f35a67906117cd060b73799641c06f711fa4d79344e74f458da"
+    },
+    {
+      "path": "native/outputs/shogun2-ammunition83-preview/hud-src/private/ability141-31.png",
+      "source_relative": "outputs/shogun2-ammunition83-preview/hud-src/private/ability141-31.png",
+      "bytes": 6820,
+      "sha256": "d8e42bcbbafc09a9863ea8a4a7b0c4334a39862857431b8667d4fe2c0c9b5570"
     }
   ]
 }

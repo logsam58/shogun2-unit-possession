@@ -20,6 +20,8 @@ v0.24 gameplay was accepted, with first-person weapon/arm poses and clipping lef
 
 ## Combat and unit orders
 
+- **Bow draw and sound:** bow strength depends on holding LMB, but the native draw animation and sound begin with RMB. Separating sound timing from that animation is deferred.
+
 - **Charging (buggy):** v0.25 improves possessed infantry and cavalry charges, but transitions and contact animations still need polish. Native eligibility decides which attacks and horse jumps can happen; a kill or leap is not guaranteed.
 
 - **Interrupted melee prompts:** another hit, death or a change in the fight can cut a prompt short. INTERRUPTED is there to show that it ended early. Crowded fights still need more testing.

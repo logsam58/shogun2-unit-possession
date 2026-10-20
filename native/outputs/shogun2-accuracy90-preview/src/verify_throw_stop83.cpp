@@ -35,6 +35,7 @@ static void command_on_shot100(){}
 // Full native projectile presentation is covered by verify_melee_presentation137.
 #include "personal_weapon_catalog.h"
 static PersonalWeaponKind native_personal_kind(uintptr_t){return PersonalWeaponKind::Unsupported;}
+#include "fixture_weapon_edges143.h"
 #include "weapon_animation.h"
 
 

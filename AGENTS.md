@@ -1,3 +1,19 @@
+# v0.26
+
+v0.26/Test145 restores native animation-linked bow audio and retains user-confirmed bow strength, T/G abilities, friendly targeting, melee aiming dot, shared dismount continuity and Z corrections. Sound decoupling is deferred. Preserve exact HUD144 and QTE140 during this release; rebuild only the changed adapter and release wrapper. See docs/releases/v0.26-technical.md. Fresh closed-game checks, full exact144 installer rollback and post-install READY remain required.
+
+# Test144
+
+Test144 correction: user confirmed143 bow strength and friendly ability targeting; preserve. Bow audio rejected, melee dot requested; fresh CLOSED authorized offline fix/install. See docs/development/Test144.md and local receipts. Fresh READY/loaded144/capture gate required after installation. Published025 exact140 unchanged.
+
+# Test143 correction candidate
+
+Test142 was played without a formal loaded gate and rejected/partial: bow power, Inspire target/sound/layout, dismount possession and Z failed. User CLOSED authorized correction and install; added all-mounted dismount scope, RMB animation/LMB draw sound and release-time stop/release cue. Read docs/development/Test143.md and actual local artifacts/Test143 receipts. Preserve accepted Rapid/native1/Q/detachment/fire/camera/movement/siege and exact QTE140. Published v0.25 remains exact Test140; no publication requested. Fresh READY plus exact143 loaded hooks and actual recorder checks are required after installation.
+
+# Test142 development (checkpoints3/4)
+
+Published v0.25 retains accepted Test140, with charging marked buggy. Test142 adds native whole-unit T/G abilities and special ammunition, removes Tab ammo cycling, and adds bow-only LMB hold/release strength. It is not live-accepted. Read docs/development/Test142.md and both checkpoint notes. Preserve exact QTE140 and accepted140 rollback. Final validation/deployment status is in the local Test142 receipts. No automatic game launch or live trace; fresh READY and loaded/capture checks are still required for formal play.
+
 # Contributor instructions
 
 This is a native C++ first-person possession mod for Total War: SHOGUN 2. Read README.md, BUILD_AND_TEST.md, SOURCE_MAP.md and VALIDATION.md before changing it. Use the preserved native sources and existing indexed decoding.
@@ -8,7 +24,7 @@ v0.25 retains the exact Test140 gameplay, accepted by the user with charging exp
 
 Ordinary native locomotion states0/4 pass unchanged. The accepted melee readiness handling and scoped advance-task detached-actor compatibility remain. This acceptance does not certify all animation assets, measured FPS or universal crash safety. First-person weapon/arm quality is deferred. Ultra crowd slowdowns and other crashes remain open.
 
-Checkpoint2 is native infantry/cavalry charging. Test140 is an unpublished charge-contact correction after Test139 locomotion worked but contact became a QTE; its exact check/install status is in the local artifacts/Test140 receipts. The user accepted it with a charging caveat. Read docs/development/Checkpoint2.md and docs/development/Test140.md before extending it. T/G abilities and variable bow draw follow later. Use native ability definitions, restrictions and original game icons/button artwork; no placeholders.
+Checkpoint2 is native infantry/cavalry charging. Published v0.25 retains Test140 charge-contact handling after Test139 locomotion worked but contact became a QTE. The user accepted it with a charging caveat. Read docs/development/Checkpoint2.md and docs/development/Test140.md before extending it. T/G abilities and variable bow draw are now the unaccepted Test143 correction candidate. Use native ability definitions, restrictions and original game icons/button artwork; no placeholders.
 
 ## Changes and validation
 

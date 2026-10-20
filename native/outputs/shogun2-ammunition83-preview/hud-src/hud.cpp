@@ -12,6 +12,7 @@
 static_assert(sizeof(void*)==4,"Build x86 for the game's telemetry");
 static DWORD pid;static uintptr_t base;static HANDLE process;static Status* shared;
 static EquipmentStatus81* equipment_shared;
+static ability141::Status* abilities_shared141;
 static ammo83::Status* ammunition_shared83;
 static accuracy90::Status* accuracy_shared90;
 static climb97::Status* climb_shared97;
@@ -90,6 +91,10 @@ static bool measure(){
             e.ammunition[63]=0;d.ammunition=e.ammunition;
         }break;
     }}
+    if(abilities_shared141)for(unsigned retry=0;retry<4;++retry){LONG seq=abilities_shared141->sequence;if(seq&1)continue;
+        ability141::Status a{};MemoryBarrier();memcpy(&a,abilities_shared141,sizeof a);MemoryBarrier();if(seq!=abilities_shared141->sequence)continue;
+        if(ability141::valid(a,pid,s.lease_generation,s.actor_id,s.unit_id,now)){d.abilities_known=true;d.abilities=a;}break;
+    }
     if(ammunition_shared83){for(unsigned retry=0;retry<4;++retry){LONG seq=ammunition_shared83->sequence;if(seq&1)continue;
         ammo83::Status a{};MemoryBarrier();memcpy(&a,ammunition_shared83,sizeof a);MemoryBarrier();if(seq!=ammunition_shared83->sequence)continue;
         if(ammo83::valid(a,pid,s.lease_generation,s.actor_id,s.unit_id,now)){d.ammunition_known=true;d.ammunition_state=a;}break;
@@ -145,6 +150,10 @@ static int preview(int argc,wchar_t** argv){
     bool climb_preset=wcsncmp(argv[3],L"climb-",6)==0;
     require(command_preset||climb_preset||ranged||combat||qte_active||(wcscmp(argv[3],L"clean")==0||wcscmp(argv[3],L"melee")==0),"Unknown preview preset");
     hud80::View v;v.fixture=true;v.unit=hud80::unit_art(ranged?L"Inf_Missile_Bow_Ashigaru":L"Inf_Sword_Katana_Samurai");require(v.unit!=nullptr,"Fixture catalog entry missing");
+    v.abilities_known=true;v.abilities.count=1;v.abilities.selected=0;v.abilities.items[0]={argc>=7?unsigned(_wtoi(argv[6])):39,ability141::Available,0};
+    require(ability141::art(v.abilities.items[0].id)!=nullptr,"Unknown ability preview");
+    if(v.abilities.items[0].id==35)v.abilities.items[0].flags|=ability141::Targeted;
+    if(argc>=8)v.abilities.error=unsigned(_wtoi(argv[7]));
     v.faction=L"Oda";v.mon=L"ui/clan_mons/data__oda.png";v.men=combat?73:118;v.initial=120;v.morale=combat?5:2;v.fatigue=combat?4:1;v.veterancy=3;
     v.unit_mode_known=true;v.unit_melee=!ranged;v.commands_known=true;v.commands.fire_mode=1;v.equipment_known=true;v.has_ranged=ranged;v.slot=ranged?2:1;v.styles=ranged?3:0;v.ammunition=L"Fire arrows";
     v.climb_mode=wcscmp(argv[3],L"climb-near")==0?1:wcscmp(argv[3],L"climb-top")==0?2:wcscmp(argv[3],L"climb-active")==0?3:wcscmp(argv[3],L"climb-crest")==0?4:0;
@@ -183,6 +192,8 @@ int wmain(int argc,wchar_t** argv){Gdiplus::GdiplusStartupInput input;ULONG_PTR 
             shared=static_cast<Status*>(MapViewOfFile(mapping.h,FILE_MAP_READ,0,0,sizeof(Status)));require(shared!=nullptr,"HUD mapping failed");
             wchar_t equipment_name[96];equipment_mapping_name81(equipment_name,pid);Handle equipment_map(OpenFileMappingW(FILE_MAP_READ,FALSE,equipment_name));
             if(equipment_map.h)equipment_shared=static_cast<EquipmentStatus81*>(MapViewOfFile(equipment_map.h,FILE_MAP_READ,0,0,sizeof(EquipmentStatus81)));
+            wchar_t ability_name141[96];ability141::mapping(ability_name141,pid);Handle ability_map141(OpenFileMappingW(FILE_MAP_READ,FALSE,ability_name141));
+            if(ability_map141.h)abilities_shared141=static_cast<ability141::Status*>(MapViewOfFile(ability_map141.h,FILE_MAP_READ,0,0,sizeof(ability141::Status)));
             wchar_t ammo_name83[96];ammo83::mapping_name(ammo_name83,pid);Handle ammo_map83(OpenFileMappingW(FILE_MAP_READ,FALSE,ammo_name83));
             if(ammo_map83.h)ammunition_shared83=static_cast<ammo83::Status*>(MapViewOfFile(ammo_map83.h,FILE_MAP_READ,0,0,sizeof(ammo83::Status)));
             wchar_t accuracy_name90[96];accuracy90::mapping_name(accuracy_name90,pid);Handle accuracy_map90(OpenFileMappingW(FILE_MAP_READ,FALSE,accuracy_name90));

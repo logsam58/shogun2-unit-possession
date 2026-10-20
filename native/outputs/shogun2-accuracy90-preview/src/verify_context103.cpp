@@ -135,6 +135,22 @@ int main(){SetUnhandledExceptionFilter(&fault100);try{
     physical103[3][1]=possessed;++command_native_lease100;
     cursor_filter103(reinterpret_cast<void*>(cursor),nullptr,vector103,0);require(vector103[1]==4&&!memcmp(untouched,hits103,sizeof hits103),"Stale lease filtered scene hits");--command_native_lease100;
     command_native_root100=0;cursor_filter103(reinterpret_cast<void*>(cursor),nullptr,vector103,0);require(vector103[1]==4&&!memcmp(untouched,hits103,sizeof hits103),"RTS query was filtered");
+    // An ability query keeps allied foreground hits even with an enemy behind
+    // them; Q still gives proven enemies priority. Own models stay excluded.
+    std::vector<unsigned char> ally143(0x700);unsigned sides143[2][8]{};
+    sides143[0][4]=1;sides143[1][4]=2;
+    field<uintptr_t>(possessed,0x44)=reinterpret_cast<uintptr_t>(sides143[0]);
+    field<uintptr_t>(P::ptr(ally143),0)=base+0x15dfec8;field<uintptr_t>(P::ptr(ally143),0x214)=unit+32;
+    field<uintptr_t>(P::ptr(ally143),0x28)=environment;field<uintptr_t>(P::ptr(ally143),0x44)=reinterpret_cast<uintptr_t>(sides143[0]);
+    field<uintptr_t>(P::ptr(enemy),0x28)=environment;field<uintptr_t>(P::ptr(enemy),0x44)=reinterpret_cast<uintptr_t>(sides143[1]);
+    for(unsigned i=0;i<4;++i)shapes103[i][0]=8;
+    physical103[0][1]=possessed;physical103[1][1]=P::ptr(ally143);physical103[2][1]=P::ptr(enemy);physical103[3][1]=possessed;
+    auto restore143=[&](){vector103[1]=4;for(unsigned i=0;i<4;++i)field<uintptr_t>(reinterpret_cast<uintptr_t>(hits103),i*28)=reinterpret_cast<uintptr_t>(shapes103[i]);};
+    command_native_root100=root;restore143();cursor_filter103(reinterpret_cast<void*>(cursor),nullptr,vector103,0);
+    require(vector103[1]==1&&field<uintptr_t>(reinterpret_cast<uintptr_t>(hits103),0)==reinterpret_cast<uintptr_t>(shapes103[2]),"Q lost hostile priority");
+    command_native_root100=0;ability_target_query143=possession_lease.generation;restore143();cursor_filter103(reinterpret_cast<void*>(cursor),nullptr,vector103,0);
+    require(vector103[1]==2&&field<uintptr_t>(reinterpret_cast<uintptr_t>(hits103),0)==reinterpret_cast<uintptr_t>(shapes103[1])&&field<uintptr_t>(reinterpret_cast<uintptr_t>(hits103),28)==reinterpret_cast<uintptr_t>(shapes103[2]),"Ability query removed ally or kept own models");
+    ++ability_target_query143;restore143();cursor_filter103(reinterpret_cast<void*>(cursor),nullptr,vector103,0);require(vector103[1]==4,"Stale ability scope filtered scene");ability_target_query143=0;
     command_native_lease100=0;command_native_environment100=0;
     require(MH_DisableHook(MH_ALL_HOOKS)==MH_OK,"Context hooks disable");
     const unsigned char cycle_original103[]={0x83,0xec,0x0c,0x56,0x8b,0xf1,0x8b,0x8e},filter_original103[]={0x57,0x8b,0xf9,0x8b,0x8f,0xf0,0x0b,0};

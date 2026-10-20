@@ -29,8 +29,9 @@ static void __fastcall cursor_filter103(void* object,void*,void* vector,unsigned
     original_cursor_filter103(object,vector,flags);
     __try{
         auto cursor=reinterpret_cast<uintptr_t>(object),root=field<uintptr_t>(base,0x1bc8180);
-        if(!command_native_root100||root!=command_native_root100||cursor!=root+0x10c||
-           command_native_lease100!=possession_lease.generation||!command_native_ready100(input_window)||!command_native_context100(root))return;
+        bool friendly_ability=ability_target_query143&&ability_target_query143==possession_lease.generation;
+        if((!friendly_ability&&(!command_native_root100||root!=command_native_root100||command_native_lease100!=possession_lease.generation))||
+           cursor!=root+0x10c||!command_native_ready100(input_window)||!command_native_context100(root))return;
         auto v=reinterpret_cast<uintptr_t>(vector);unsigned count=field<unsigned>(v,4),capacity=field<unsigned>(v,0);auto data=field<uintptr_t>(v,8);
         if(!data||count>capacity||count>4096)return;
         unsigned char retain[4096]{};unsigned kept=0;bool hostile=false;InterlockedIncrement(&cursor_queries103);
@@ -63,7 +64,7 @@ static void __fastcall cursor_filter103(void* object,void*,void* vector,unsigned
                 }
             }
         }
-        for(unsigned i=0;i<count;++i){if(!retain[i]||(hostile&&retain[i]==2)){InterlockedIncrement(&cursor_self_hits103);continue;}
+        for(unsigned i=0;i<count;++i){if(!retain[i]||(hostile&&!friendly_ability&&retain[i]==2)){InterlockedIncrement(&cursor_self_hits103);continue;}
             if(kept!=i)memmove(reinterpret_cast<void*>(data+kept*28),reinterpret_cast<void*>(data+i*28),28);++kept;
         }
         field<unsigned>(v,4)=kept; // Native owner retains the allocation/capacity.

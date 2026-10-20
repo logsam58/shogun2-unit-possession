@@ -1,3 +1,19 @@
+# v0.26
+
+v0.26/Test145 removes experimental bow-sound hooks, actor audio TLS and LMB cue/handle bookkeeping. native_audio143.h retains only original per-ability sound selection. bow_input142.h retains hold/release strength. weapon_animation.h/native_bow.h keep the native animation/projectile paths. Exact HUD144 aiming dot and QTE140 are retained.
+
+# Test144
+
+Test144: native_audio143.h adds narrow292620 authored-note hook and correctd3/d4 cue IDs. verify_audio143.cpp executes original292620/cd56e0 with explicit providers. hud_renderer.h adds discreet melee center dot; bow input/power and ally targeting code unchanged.
+
+# Test143 source additions
+
+See ability_target143.h for native ally-targeted Inspire, dismount143.h for same-human mounted-to-foot continuity, native_audio143.h for native ability sound selection and owned LMB draw/stop/release audio. bow_input142.h and the real window handler share release edges and verified asset timing. verify_input143/ability143/dismount143/audio143 plus expanded verify_context103 exercise the production boundaries. Existing charge140, Rapid136, native mode134, detachment130 and QTE140 remain.
+
+## Test142 development
+
+Ability input/catalog/protocol/native141 and bow draw/input142 extend the accepted adapter; the HUD reads separate ability telemetry and reuses native art. Native charge/QTE source remains unchanged. See docs/development/Test142.md.
+
 ## v0.25 / accepted Test140
 
 Promote exact Test140 gameplay with charging marked buggy. Release metadata uses revision140; retain adapter80/QTE47/HUD6 and run fresh loader2, complete installer upgrades/rollback and Python7. See docs/releases/v0.25-technical.md.

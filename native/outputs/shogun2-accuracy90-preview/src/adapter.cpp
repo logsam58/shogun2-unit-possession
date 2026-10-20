@@ -64,6 +64,7 @@ static WNDPROC native_window_proc;
 #include "raw_mouse.h"
 #include "melee_control.h"
 #include "equipment_input81.h"
+static void weapon_mouse143(UINT message,bool active);
 #include "native_keyboard84.h"
 static constexpr UINT RESTORE_INTERFACE_MESSAGE=WM_APP+0x539;
 static constexpr UINT RETURN_RTS_MESSAGE90=WM_APP+0x53b;
@@ -116,7 +117,7 @@ static LRESULT CALLBACK weapon_window_proc(HWND window,UINT message,WPARAM w,LPA
         // Consume owned movement/order keys so they do not also become Total War
         // camera or unit commands. Release/menu keys continue to the native window.
         if(message==WM_KEYDOWN||message==WM_KEYUP||message==WM_SYSKEYDOWN||message==WM_SYSKEYUP){
-            switch(w){case 'W':case 'A':case 'S':case 'D':case 'Q':case 'E':case 'Z':case 'C':case 'R':case 'F':
+            switch(w){case 'W':case 'A':case 'S':case 'D':case 'Q':case 'E':case 'Z':case 'C':case 'R':case 'F':case 'T':case 'G':
                 case VK_SHIFT:case VK_CONTROL:case VK_LCONTROL:case VK_RCONTROL:case VK_TAB:
                 case '0':case '1':case '2':case '3':case '4':case '5':case '6':case '7':case '8':case '9':case VK_F5:case VK_F6:case VK_F7:case VK_F9:return 0;}
         }
@@ -130,10 +131,9 @@ static LRESULT CALLBACK weapon_window_proc(HWND window,UINT message,WPARAM w,LPA
         if(message==WM_LBUTTONDOWN||message==WM_LBUTTONUP||message==WM_LBUTTONDBLCLK){
             melee60::Request active;if(dead_view()||melee_request(active))return 0;
             ++state->weapon_mouse_captured;
-            if(message==WM_LBUTTONDOWN){
-                if(GetAsyncKeyState(VK_RBUTTON)&0x8000)InterlockedExchange(&state->fire_request,1);
-                else ++state->shots_blocked;
-            }
+            weapon_mouse143(message,(GetAsyncKeyState(VK_RBUTTON)&0x8000)&&
+                equipment_ranged_selected81()&&!command_placing100&&!state->weapon_phase&&
+                !state->fire_ticket&&state->weapon_reload_remaining<=0);
             return 0;
         }
     }
@@ -165,6 +165,7 @@ static const unsigned char signature[16]={0x55,0x8b,0xec,0x83,0xe4,0xf0,0x83,0xe
 template<class T>static T& field(uintptr_t p,unsigned off){return *reinterpret_cast<T*>(p+off);}
 #include "native_wall97.h"
 #include "native_subject.h"
+#include "dismount143.h"
 #include "native_recovery103.h"
 static volatile LONG recovery_blocks103,recovery_active103;
 static volatile LONG animation_look_active104,animation_look_updates104;
@@ -270,13 +271,33 @@ static bool followed(uintptr_t actor,bool acquire,bool commit=true) {
         uintptr_t members=field<uintptr_t>(group,0x18);if(!members||field<uintptr_t>(members,0)!=actor_unit)return reject_follow93(22);
         PossessionIdentity candidate{env,common,phase,manager,cam,view,actor_holder,actor,actor_unit,
             field<uintptr_t>(actor,0x20c),field<unsigned>(actor,0x1c8),field<unsigned>(actor_unit,4)};
-        NativeSubject motion;if(!native_subject(actor,actor_unit,view,committed,motion))return reject_follow93(23);
+        if(!acquire&&commit&&camera_callback_depth&&GetCurrentThreadId()==state->window_thread)dismount_observe143(candidate);
+        NativeSubject motion;if(!native_subject(actor,actor_unit,view,committed,motion)){
+            // During a proved native dismount, retain the SAME live human's
+            // camera only. Every manual-motion/weapon path yields below.
+            if(!acquire&&dismount_pending143(candidate))return true;
+            return reject_follow93(23);
+        }
         if(motion.actor){
             if(field<uintptr_t>(actor,0x28)!=env||field<uintptr_t>(motion.actor,0x28)!=env)return reject_follow93(24);
             candidate.mount=motion.actor;candidate.mount_holder=motion.holder;
             candidate.mount_config=motion.config;candidate.mount_id=motion.serial;
         }
-        if(!acquire){if(!possession_lease.owns(candidate))return reject_follow93(29);return true;}
+        if(!acquire){
+            if(possession_lease.owns(candidate))return true;
+            if(dismount_finished143(candidate)){
+                // Only the current camera/window callback may publish a new
+                // subject generation. Guard-only reads cannot mutate a lease.
+                if(commit&&camera_callback_depth&&GetCurrentThreadId()==state->window_thread){
+                    if(!possession_lease.acquire(candidate))return reject_follow93(27);
+                    state->actor_index=idx;state->lease_generation=possession_lease.generation;
+                    InterlockedExchange(&dismount_cleanup143,1);InterlockedIncrement(&dismount_transitions143);
+                }
+                return true;
+            }
+            if(dismount_pending143(candidate))return true;
+            return reject_follow93(29);
+        }
         if(!candidate.config||!candidate.unit_id)return reject_follow93(25);
         // Finish an already-playing stock exchange before taking its actor.
         // Rewinding it would risk duplicating a casualty already committed.
@@ -651,6 +672,7 @@ static void adjust_eye(uintptr_t camera) {
             auto refresh=reinterpret_cast<Cancel>(field<uintptr_t>(field<uintptr_t>(camera,0),0xf4));
             refresh(reinterpret_cast<void*>(camera));return;
         }
+        if(dismount_native_motion143()){remember_owned_eye(camera);return;}
         float yaw=state->yaw,pitch=state->pitch;
         melee60::Request committed;bool commitment=melee_request(committed);
         if(commitment||(possession_lease.active&&melee_handoff78.matches(locomotion_actor(),possession_lease.generation,
@@ -720,6 +742,14 @@ static void __fastcall camera_matrix(void* camera,void*,const void* matrix) {
     __try {
         if(InterlockedExchange(&state->release,0)){relinquish();InterlockedExchange(&state->acquire,0);}
         if(possessed&&!confirm_follow93(possessed)){note_follow_release93();++state->identity_releases;relinquish();}
+        if(InterlockedExchange(&dismount_cleanup143,0)){
+            auto selected_ability143=ability_selected141;
+            charge_reset139();equipment_reset81();ability_lease141=state->lease_generation;ability_selected141=selected_ability143;mounted_draw={};weapon_actor=weapon_context=0;
+            InterlockedExchange(&state->fire_ticket,0);InterlockedExchange(&state->fire_request,0);
+            InterlockedExchange(&state->weapon_phase,WEAPON_IDLE);state->aim_pose=0;
+            InterlockedExchange(&mounted_heading85,-1);InterlockedExchange(&entry_movement125,0);
+            combat_focus125.reset();combat_pair_reset126();command_reset100();
+        }
         original_matrix(camera,matrix);if(possessed&&!dead_view())climb_observe98(possessed);remember_native_eye78(reinterpret_cast<uintptr_t>(camera));adjust_eye(reinterpret_cast<uintptr_t>(camera));interface_update(reinterpret_cast<uintptr_t>(camera));
         if(!dead_view()){
             capture_aim_frame(reinterpret_cast<uintptr_t>(camera));
@@ -732,7 +762,7 @@ static void __fastcall camera_matrix(void* camera,void*,const void* matrix) {
         }
     }__finally {--camera_callback_depth;}
 }
-static void relinquish(){charge_reset139();InterlockedExchange(&entry_movement125,0);combat_focus125.reset();combat_pair_reset126();InterlockedExchange(&combat_entry_locked126,0);InterlockedExchange(&animation_look_active104,0);command_reset100();climb_reset97();request_rts_restore90();next_accuracy90=0;publish_accuracy90(nullptr,0,0);InterlockedExchange(&mounted_heading85,-1);equipment_reset81();reset_death_view();InterlockedExchange(&manual_arrow_released,0);state->arrow_visual_hidden=0;possession_lease.release();InterlockedExchange(&state->input,0);InterlockedExchange(&state->aiming,0);state->aim_pose=0;InterlockedExchange(&state->weapon_phase,WEAPON_IDLE);possessed=0;environment=0;unit=0;InterlockedExchange(&state->follow,0);InterlockedExchange(&state->pending_order,0);follow_target=false;InterlockedExchange(&state->fire_request,0);InterlockedExchange(&state->mode,IDLE);}
+static void relinquish(){InterlockedExchange(&dismount_cleanup143,0);charge_reset139();InterlockedExchange(&entry_movement125,0);combat_focus125.reset();combat_pair_reset126();InterlockedExchange(&combat_entry_locked126,0);InterlockedExchange(&animation_look_active104,0);command_reset100();climb_reset97();request_rts_restore90();next_accuracy90=0;publish_accuracy90(nullptr,0,0);InterlockedExchange(&mounted_heading85,-1);equipment_reset81();reset_death_view();InterlockedExchange(&manual_arrow_released,0);state->arrow_visual_hidden=0;possession_lease.release();InterlockedExchange(&state->input,0);InterlockedExchange(&state->aiming,0);state->aim_pose=0;InterlockedExchange(&state->weapon_phase,WEAPON_IDLE);possessed=0;environment=0;unit=0;InterlockedExchange(&state->follow,0);InterlockedExchange(&state->pending_order,0);follow_target=false;InterlockedExchange(&state->fire_request,0);InterlockedExchange(&state->mode,IDLE);}
 static void end_death_on_window(){
     if(!InterlockedExchange(&death_return_pending,0))return;
     __try{uintptr_t manager=possession_lease.identity.manager;uintptr_t env=environment;
@@ -748,6 +778,7 @@ static bool prepare(uintptr_t actor) {
         if(!enabled || state->stop || GetTickCount64()-state->heartbeat>500){relinquish();return false;}
         if(InterlockedExchange(&state->release,0)){relinquish();InterlockedExchange(&state->acquire,0);}
         if(state->acquire&&!possessed)adopt_possession97(actor);
+        if((actor==possessed||actor==possession_lease.identity.mount)&&dismount_native_motion143())return false; // Original dismount owns movement/animation.
         if(apply_melee_motion(actor)){if(actor==locomotion_actor()){charge_reset139();InterlockedExchange(&entry_movement125,0);}return false;}
         if(actor!=locomotion_actor())return false;
         if(!confirm_follow93(possessed)){note_follow_release93();++state->identity_releases;relinquish();return false;}
@@ -855,6 +886,7 @@ static void snapshot_log(std::ofstream& log) {
     nativeoverlay106::log(log);
     command_log100(log);
     charge_log139(log);
+    log<<"{\"event\":\"native_input143\",\"tick_ms\":"<<GetTickCount64()<<",\"dismount_transitions\":"<<dismount_transitions143<<",\"native_bow_audio145\":1,\"ability_sound_requests\":"<<ability_sound_played143<<",\"audio_errors\":"<<audio_errors143<<"}\n";
     {static LONG prior=-1,failed=-1;LONG blocked=keyboard_blocked84,errors=keyboard_failures84;
      if(blocked!=prior||errors!=failed){prior=blocked;failed=errors;
       log<<"{\"event\":\"native_keyboard84\",\"tick_ms\":"<<GetTickCount64()
@@ -995,12 +1027,15 @@ static DWORD WINAPI worker(void*) {
         while(!state->stop) {
             DWORD foreground_pid=0;DWORD foreground_thread=GetWindowThreadProcessId(GetForegroundWindow(),&foreground_pid);bool focus=foreground_pid==GetCurrentProcessId();
             state->heartbeat=GetTickCount64();unsigned input=0;
-            equipment_sample_input81(focus);
+            equipment_sample_input81(focus);ability_sample141(focus);
+            if(!focus)bow_sample142(down(VK_LBUTTON),false);
             if(focus){
                 capture_weapon_mouse(GetForegroundWindow());
                 bool click=down(VK_LBUTTON);
                 melee60::Request active_melee;bool melee_locked=melee_request(active_melee);
-                if(click&&!left_mouse&&state->mode==POSSESSED&&!dead_view()&&!melee_locked&&!command_placing100&&down(VK_RBUTTON))InterlockedExchange(&state->fire_request,1);
+                bool firing142=state->mode==POSSESSED&&!dead_view()&&!melee_locked&&!command_placing100&&down(VK_RBUTTON)&&equipment_ranged_selected81();
+                bow_sample142(click,firing142&&!state->weapon_phase&&!state->fire_ticket&&state->weapon_reload_remaining<=0);
+                if(click&&!left_mouse&&firing142&&bow_family142==0)InterlockedExchange(&state->fire_request,1);
                 left_mouse=click;
                 InterlockedExchange(&state->aiming,state->mode==POSSESSED&&!dead_view()&&!melee_locked&&!command_placing100&&down(VK_RBUTTON)?1:0);
                 state->window_thread=foreground_thread;

@@ -1,0 +1,139 @@
+{
+  "passed": true,
+  "candidate": 142,
+  "version": "0.25",
+  "development_candidate": true,
+  "base_commit": "f2d55cc9651f7c5ea8600dd35c36bd9b404000be",
+  "fresh_suites": {
+    "adapter": 82,
+    "hud": 7,
+    "loader": 2,
+    "installer": true
+  },
+  "fresh_checks": [
+    {
+      "name": "minhook",
+      "passed": true,
+      "seconds": 2.76,
+      "log": "artifacts\\logs\\minhook.log"
+    },
+    {
+      "name": "adapter",
+      "passed": true,
+      "seconds": 6.673,
+      "log": "artifacts\\logs\\adapter.log"
+    },
+    {
+      "name": "adapter-tests",
+      "passed": true,
+      "seconds": 207.962,
+      "log": "artifacts\\logs\\adapter-tests.log",
+      "executables": 82
+    },
+    {
+      "name": "hud",
+      "passed": true,
+      "seconds": 3.749,
+      "log": "artifacts\\logs\\hud.log"
+    },
+    {
+      "name": "hud-tests",
+      "passed": true,
+      "seconds": 8.674,
+      "log": "artifacts\\logs\\hud-tests.log",
+      "executables": 7
+    },
+    {
+      "name": "loader",
+      "passed": true,
+      "seconds": 3.628,
+      "log": "artifacts\\logs\\loader.log"
+    },
+    {
+      "name": "loader-tests",
+      "passed": true,
+      "seconds": 5.856,
+      "log": "artifacts\\logs\\loader-tests.log"
+    },
+    {
+      "name": "installer",
+      "passed": true,
+      "seconds": 7.38,
+      "log": "artifacts\\logs\\installer.log"
+    },
+    {
+      "name": "installer-tests",
+      "passed": true,
+      "seconds": 446.022,
+      "log": "artifacts\\logs\\installer-tests.log"
+    }
+  ],
+  "python_tests": 7,
+  "retained_suites": {
+    "QTE_Test140": 47
+  },
+  "components": [
+    {
+      "name": "possession-v46.dll",
+      "bytes": 577024,
+      "sha256": "2da2b7b34d5b77d1f756ae46f7ef4ea6425660fb45b87fee4760c24a7863f1a7"
+    },
+    {
+      "name": "possession-hud.exe",
+      "bytes": 25464832,
+      "sha256": "be330b73f3c868cf53a18d78ee18e5d621bc9e1a363347eecc7d80df485d2e1c"
+    },
+    {
+      "name": "qte-playable-v79.dll",
+      "bytes": 8455680,
+      "sha256": "1b1fab1020f2b3248869b27625fd31c38b2900b818be76f63ea3f5f328abbdb0"
+    },
+    {
+      "name": "dinput8.dll",
+      "bytes": 34805760,
+      "sha256": "8b86fe7548a11ab7eaf5ed308ebbcbe425ed01c80cf7292cc6e43a69e2161556"
+    },
+    {
+      "name": "marker.pack",
+      "bytes": 1001,
+      "sha256": "9084f81e8c4980313f137a083577e2321468863a4b31e83e17d2a6a9cdc326fc"
+    },
+    {
+      "name": "Shogun2-Possession-Setup.exe",
+      "bytes": 35240448,
+      "sha256": "dfe34a4732fb2601b266d9381f67bc83259d605983df4d56314733fa3ec659f7"
+    },
+    {
+      "name": "install_cli.exe",
+      "bytes": 35220992,
+      "sha256": "69a34ae6685c8d0ba822015a77634b816058fc6887d9dbc362c1379f5e1526f1"
+    }
+  ],
+  "cache_id": "42a29f50d3dd7d38",
+  "installed": false,
+  "loaded": false,
+  "live_accepted": false,
+  "published": false,
+  "recording_active": false,
+  "recorder_armed": true,
+  "checkpoint3": "T next/G use/end native whole-unit abilities; special ammo included; Tab removed; original icons only",
+  "checkpoint4": "Bow-only LMB hold/release; per-shot native speed35%-100%; original ballistic solve/release marker; other weapons unchanged",
+  "decoder": {
+    "preserved_on_demand_tool_reused": true,
+    "tables": {
+      "unit_abilities": 71,
+      "unit_special_abilities": 43,
+      "ability_effects": 83,
+      "projectiles": 114
+    },
+    "bow_declarations": 19,
+    "bow_assets_decoded": 10,
+    "indexed_native_functions_byte_verified": 9,
+    "archive_rebuild_resumed": false
+  },
+  "limits": "Native effect scheduler/whole-unit ability visuals and foot/mounted bow input feel await live play.42 native presentation entries; non-player tower reload omitted because no stock player button. Bow strength curve35%-100% is explicit new input policy; full native draw asset and release marker retained. No universal crash/POV/Ultra claim. Charging remains accepted with bugs.",
+  "provider_boundaries": "Original native ability lookup/unlock/cooldown/constructor/serializer and original launch constructor/full direct ballistic solver execute. Native phase/movement/primitive/scene/scheduling providers are explicit; no complete battle simulated.",
+  "game_launched": false,
+  "new_trace": false,
+  "recorder_settings_CPU_affinity_unchanged": true
+}

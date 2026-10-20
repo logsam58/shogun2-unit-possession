@@ -147,7 +147,7 @@ static bool valid_weapon_clip(uintptr_t actor,unsigned clip_id){
     return clip&&field<unsigned>(clip,0)==clip_id&&field<uintptr_t>(clip,4);
 }
 static bool weapon_owned(uintptr_t actor){
-    __try {return enabled&&!state->stop&&!state->release&&state->mode==POSSESSED&&actor==possessed&&field<unsigned char>(actor,0xf0)==1&&!native_airborne_subject99(actor)&&followed(actor,false)&&personal_weapon_mode(field<unsigned>(actor,0x1f0),weapon_mounted())&&bow_record(unit)!=0;}
+    __try {return enabled&&!state->stop&&!state->release&&state->mode==POSSESSED&&actor==possessed&&!dismount_native_motion143()&&field<unsigned char>(actor,0xf0)==1&&!native_airborne_subject99(actor)&&followed(actor,false)&&personal_weapon_mode(field<unsigned>(actor,0x1f0),weapon_mounted())&&bow_record(unit)!=0;}
     __except(EXCEPTION_EXECUTE_HANDLER){return false;}
 }
 // RMB arrives on the window thread before the next native actor boundary.

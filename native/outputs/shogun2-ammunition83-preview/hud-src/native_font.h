@@ -44,7 +44,7 @@ public:
         return true;
     }
     float width(const std::wstring& value)const{float x=0;for(size_t i=0;i<value.size();++i)x+=advance(value[i],i+1<value.size()?value[i+1]:65535);return x;}
-    void paint(Gdiplus::Graphics& g,std::wstring value,Gdiplus::RectF rect,Gdiplus::Color color)const{
+    void paint(Gdiplus::Graphics& g,std::wstring value,Gdiplus::RectF rect,Gdiplus::Color color,bool center=false)const{
         if(value.empty())return;
         Gdiplus::Matrix world;g.GetTransform(&world);Gdiplus::PointF corners[2]={{rect.X,rect.Y},{rect.GetRight(),rect.GetBottom()}};world.TransformPoints(corners,2);
         float available=corners[1].X-corners[0].X;
@@ -52,7 +52,7 @@ public:
         int upper=9999,lower=-9999;
         for(auto c:value){const BYTE* d=dimensions(glyph(c));if(!d[2]||!d[3])continue;int top=-int(static_cast<signed char>(d[0]));upper=std::min(upper,top);lower=std::max(lower,top+d[3]);}
         if(lower<upper)return;
-        int x=int(std::lround(corners[0].X)),baseline=int(std::lround(corners[0].Y+(corners[1].Y-corners[0].Y-float(lower-upper))*.5f-upper));
+        int x=int(std::lround(corners[0].X+(center?std::max(0.f,(available-width(value))*.5f):0))),baseline=int(std::lround(corners[0].Y+(corners[1].Y-corners[0].Y-float(lower-upper))*.5f-upper));
         auto saved=g.Save();g.ResetTransform();g.SetClip(Gdiplus::RectF(corners[0].X,corners[0].Y,available,corners[1].Y-corners[0].Y),Gdiplus::CombineModeIntersect);
         g.SetInterpolationMode(Gdiplus::InterpolationModeNearestNeighbor);g.SetPixelOffsetMode(Gdiplus::PixelOffsetModeNone);
         Gdiplus::ColorMatrix matrix={{{color.GetR()/255.f,0,0,0,0},{0,color.GetG()/255.f,0,0,0},{0,0,color.GetB()/255.f,0,0},{0,0,0,color.GetA()/255.f,0},{0,0,0,0,1}}};
@@ -70,10 +70,10 @@ public:
     bool load(HMODULE module){if(!sizes.empty())return true;unsigned values[]={12,14,16,18,20,22,24,28,32,38};
         for(unsigned i=0;i<20;++i){auto font=std::make_unique<NativeFont>();if(!font->load(module,201+i,values[i%10])){clear();return false;}sizes.push_back(std::move(font));}return true;}
     void clear(){sizes.clear();}
-    void paint(Gdiplus::Graphics& g,const std::wstring& value,Gdiplus::RectF rect,float size,Gdiplus::Color color)const{
+    void paint(Gdiplus::Graphics& g,const std::wstring& value,Gdiplus::RectF rect,float size,Gdiplus::Color color,bool center=false)const{
         if(sizes.empty())return;Gdiplus::Matrix world;g.GetTransform(&world);float matrix[6];world.GetElements(matrix);float physical=size*std::hypot(matrix[0],matrix[1]);
         unsigned offset=boshin?10:0;const NativeFont* font=sizes[offset].get();for(unsigned i=offset;i<offset+10;++i){const auto& candidate=sizes[i];if(std::abs(float(candidate->nominal)-physical)<std::abs(float(font->nominal)-physical))font=candidate.get();}
-        font->paint(g,value,rect,color);
+        font->paint(g,value,rect,color,center);
     }
 };
 inline NativeFonts native_fonts;

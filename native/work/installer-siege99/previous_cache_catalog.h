@@ -2,6 +2,11 @@
 struct CacheFileIdentity { const wchar_t* name; const char* sha; };
 struct CacheIdentity { const wchar_t* build; CacheFileIdentity files[3]; };
 static const CacheIdentity CACHE_CATALOG[]={
+{L"2f2c4c94ade24e28",{{L"possession-v46.dll","ef73acc5828122db0eddf82ea7f56608a52c7e276652016a817f68e631a6980e"},{L"possession-hud.exe","23f2a8ced82391a8c9347fc567d7514db620a4b62feabc60c1855ced45b85e6d"},{L"qte-playable-v79.dll","1b1fab1020f2b3248869b27625fd31c38b2900b818be76f63ea3f5f328abbdb0"}}},
+{L"9b2e93c7f3af257d",{{L"possession-v46.dll","438f3ce850f0b3f82fb5a5f18a9fbf9e7d6e7ac19ff0b4d98ab6762b37899c0b"},{L"possession-hud.exe","3d007c31f447dc63f74b4c172f3e1a8dfbb0032246c3577e8acf2f26b85ae321"},{L"qte-playable-v79.dll","1b1fab1020f2b3248869b27625fd31c38b2900b818be76f63ea3f5f328abbdb0"}}},
+
+{L"42a29f50d3dd7d38",{{L"possession-v46.dll","2da2b7b34d5b77d1f756ae46f7ef4ea6425660fb45b87fee4760c24a7863f1a7"},{L"possession-hud.exe","be330b73f3c868cf53a18d78ee18e5d621bc9e1a363347eecc7d80df485d2e1c"},{L"qte-playable-v79.dll","1b1fab1020f2b3248869b27625fd31c38b2900b818be76f63ea3f5f328abbdb0"}}},
+
  {L"071c3744cb5c902d",{{L"possession-v46.dll","66ea581352a33f774631959cf4222c9f4b3ef0c1c46311347af78b934ba3f2e4"},{L"possession-hud.exe","14b5711727152d87ca8bfe328408ae6865089e2c1ef5bd6072ef5b1201fdd9f1"},{L"qte-playable-v79.dll","78ff5a76d260e97bb175c33179114e0688371adbea8ee399e2e7ccea5363a40c"}}},
  {L"0bbea67037454e9f",{{L"possession-v46.dll","12c83da87f85305e36cd88295a43b267d08fdeb4d1c1b9c68418926423492272"},{L"possession-hud.exe","14b5711727152d87ca8bfe328408ae6865089e2c1ef5bd6072ef5b1201fdd9f1"},{L"qte-playable-v63.dll","7c2660357c995531f3fa1f979320078b1a7caec81c7e1225bd2e6c453a2ff4a3"}}},
  {L"0e4bf6b77f8ef98e",{{L"possession-v46.dll","db06e7aa1a555d2cdc7f5b66c550091fd186ffb5890ac4b66ae94f9f44531d23"},{L"possession-hud.exe","14b5711727152d87ca8bfe328408ae6865089e2c1ef5bd6072ef5b1201fdd9f1"},{L"qte-playable-v63.dll","7c2660357c995531f3fa1f979320078b1a7caec81c7e1225bd2e6c453a2ff4a3"}}},
@@ -86,4 +91,5 @@ static const CacheIdentity CACHE_CATALOG[]={
 {L"de3ded28a7598e56",{{L"possession-v46.dll","df4b075e6880e4a8b7a5c7610a0088c4a98aa3554a34780c842db069baa2062d"},{L"possession-hud.exe","07dd83203ff5a951085b2bfc1819b23763ad76b73376f029f9b01ece8ee3ae69"},{L"qte-playable-v79.dll","cfec68115c0e031179a9fc1a8fcb968b9edd0b05b713a45f54b2756bfd39dd4e"}}},
 {L"76f6babfd17c6803",{{L"possession-v46.dll","34cf229c7e3ea0087bdc0c98f3c4d7d071988a7667c76dd70d113d1a377ba4cb"},{L"possession-hud.exe","07dd83203ff5a951085b2bfc1819b23763ad76b73376f029f9b01ece8ee3ae69"},{L"qte-playable-v79.dll","cfec68115c0e031179a9fc1a8fcb968b9edd0b05b713a45f54b2756bfd39dd4e"}}},
 {L"1a43b7b119ebad8f",{{L"possession-v46.dll","2133370ec7b3e8fb4d50552c807a5e3f72b9edd2db54f2609c9728c44c149efc"},{L"possession-hud.exe","07dd83203ff5a951085b2bfc1819b23763ad76b73376f029f9b01ece8ee3ae69"},{L"qte-playable-v79.dll","1b1fab1020f2b3248869b27625fd31c38b2900b818be76f63ea3f5f328abbdb0"}}},
+{L"3da93c8c74e40099",{{L"possession-v46.dll","2133370ec7b3e8fb4d50552c807a5e3f72b9edd2db54f2609c9728c44c149efc"},{L"possession-hud.exe","07dd83203ff5a951085b2bfc1819b23763ad76b73376f029f9b01ece8ee3ae69"},{L"qte-playable-v79.dll","1b1fab1020f2b3248869b27625fd31c38b2900b818be76f63ea3f5f328abbdb0"}}},
 };

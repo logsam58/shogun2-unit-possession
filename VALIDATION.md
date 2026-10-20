@@ -1,3 +1,19 @@
+# v0.26
+
+v0.26/Test145 restores original bow audio: the focused fixture executes original292620/cd56e0 for player and AI and proves LMB emits no manual sound, alongside42 original ability selectors. Fresh full adapter/release loader/installer/Python checks are required. User feedback confirms bow strength and friendly targeting; Test144 was played without a formal loaded gate. No universal live sound, crash or roster claim.
+
+# Test144
+
+Test144 corrects the Test143 audio path/adjacent enum-ID mistake. Expanded original dispatcher/enum fixture and full component/installer checks required. User accepted143 power and ally aiming; actual144 audible output/dot appearance await fresh loaded gate and feedback.
+
+# Test143 candidate evidence
+
+Test142 was not accepted. Test143 correction scope and provider boundaries are in docs/development/Test143.md; actual full-suite results are recorded in Test143-validation.json and private artifacts/Test143 receipts. RMB retains native animation; LMB owns draw sound lifetime and one release cue. Final audible/visual/native-effect behavior and mounted dismounts need a fresh exact143 loaded gate and user feedback. No universal crash or performance claim.
+
+## Test142 development
+
+Test141 checkpoint3 adapter81/HUD7 passed. Test142 combines native T/G abilities and bow hold/release; final results and provider boundaries are in docs/development/Test142-validation.json after validation. See docs/development/Test142.md.
+
 ## v0.25 / accepted Test140
 
 Promote exact Test140 gameplay with charging marked buggy. Release metadata uses revision140; retain adapter80/QTE47/HUD6 and run fresh loader2, complete installer upgrades/rollback and Python7. See docs/releases/v0.25-technical.md.

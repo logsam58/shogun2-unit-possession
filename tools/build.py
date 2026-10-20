@@ -11,14 +11,15 @@ def quote(command):
   if any(c in str(x) for c in '\r\n%&|<>^!'):raise ValueError('Unsupported command path/argument')
  return subprocess.list2cmdline([str(x) for x in command])
 def run(label,commands,cwd=ROOT):
- batch=LOG/(label+'.cmd');log=LOG/(label+'.log');lines=['@echo off','setlocal','call '+quote([VCVARS]),'if errorlevel 1 exit /b %errorlevel%']
- for command in commands:lines.extend([quote(command),'if errorlevel 1 exit /b %errorlevel%'])
+ batch=LOG/(label+'.cmd');log=LOG/(label+'.log');lines=['@echo off','setlocal','call '+quote([VCVARS]),'if not "%errorlevel%"=="0" exit /b %errorlevel%']
+ for command in commands:lines.extend([quote(command),'if not "%errorlevel%"=="0" exit /b %errorlevel%'])
  lines.append('exit /b 0');batch.write_text('\r\n'.join(lines)+'\r\n');started=time.time();print('Running '+label+' ...',flush=True)
  with log.open('w') as stream:r=subprocess.run([os.environ.get('COMSPEC','cmd.exe'),'/d','/c',str(batch)],cwd=cwd,stdout=stream,stderr=subprocess.STDOUT)
- receipt={'name':label,'passed':r.returncode==0,'seconds':round(time.time()-started,3),'log':str(log.relative_to(ROOT))};receipts.append(receipt)
+ fault='Fixture fault code=' in log.read_text(errors='replace')
+ receipt={'name':label,'passed':r.returncode==0 and not fault,'seconds':round(time.time()-started,3),'log':str(log.relative_to(ROOT))};receipts.append(receipt)
  (OUT/'build-results.json').write_text(json.dumps({'results':receipts,'game_installed_or_launched':False},indent=2)+'\n')
- if r.returncode:
-  print(log.read_text(errors='replace')[-6500:]);raise SystemExit(r.returncode)
+ if r.returncode or fault:
+  print(log.read_text(errors='replace')[-6500:]);raise SystemExit(r.returncode or 1)
  print('PASS '+label,flush=True)
 def compile_cpp(source,target,extra=(),libs=(),options=()):
  return ['cl',*COMMON,*options,str(source),*map(str,extra),'/Fo'+str(OBJ/(target.stem+'.obj')),'/Fe'+str(target),'/link',*libs]
@@ -93,7 +94,7 @@ def find_vcvars():
  raise SystemExit('Set SHOGUN2_VCVARS to vcvars32.bat or run tools/configure.py --vcvars <path>.')
 def main():
  global VCVARS,CANDIDATE,RELEASE
- parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('target',choices=['adapter','qte','hud','loader','installer','all']);parser.add_argument('--tests',action='store_true');mode=parser.add_mutually_exclusive_group();mode.add_argument('--candidate',type=int,default=140,help='Distinct unpublished Test number (100 or later)');mode.add_argument('--release',action='store_true',help='Package Test140 gameplay with release metadata; does not publish or install');args=parser.parse_args();CANDIDATE=args.candidate;RELEASE=args.release
+ parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('target',choices=['adapter','qte','hud','loader','installer','all']);parser.add_argument('--tests',action='store_true');mode=parser.add_mutually_exclusive_group();mode.add_argument('--candidate',type=int,default=145,help='Distinct unpublished Test number (100 or later)');mode.add_argument('--release',action='store_true',help='Package v0.26/Test145 gameplay with release metadata; does not publish or install');args=parser.parse_args();CANDIDATE=args.candidate;RELEASE=args.release
  if CANDIDATE is not None and CANDIDATE<100:parser.error('--candidate must be 100 or later')
  VCVARS=find_vcvars()
  for p in [BIN,OBJ,TEST,LOG]:p.mkdir(parents=True,exist_ok=True)

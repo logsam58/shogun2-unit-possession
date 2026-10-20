@@ -1,0 +1,5 @@
+# Test142: checkpoints3 and4 combined
+
+Based on published v0.25 and exact accepted Test140 gameplay. [Native abilities](Checkpoint3.md) were implemented and checked first; [variable bow draw](Checkpoint4.md) follows in the combined candidate. T cycles native whole-unit abilities; G activates/ends the selection, including special ammo. Tab no longer changes ammo. Bow shots release after an LMB hold while RMB stays held; other projectile families keep click-to-fire.
+
+Retain Rapid136, native1 melee mode, targeting, independent formation firing/detachment, charging140, movement, camera, ordinary QTE and audio guard. The QTE DLL is retained exactly from140. New adapter/HUD, loader and full installer regressions are required before closed-game deployment; exact Test140 and published v0.25 upgrade/rollback fixtures are included. Preserve a verified Test140 rollback, recorder configuration and game settings. No game launch or extra trace is part of offline validation. Test142 is not a new published release or live-accepted build.

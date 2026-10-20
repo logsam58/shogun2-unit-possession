@@ -123,6 +123,7 @@ static void publish_equipment81(){
     memcpy(&equipment_status81->lease,&sample.lease,sizeof(sample)-offsetof(EquipmentStatus81,lease));
     MemoryBarrier();InterlockedIncrement(&equipment_status81->sequence);ReleaseSRWLockExclusive(&equipment_publish_lock81);
 }
+#include "ability_native141.h"
 static void process_equipment_commands81(uintptr_t camera){
     if(!enabled||state->stop||state->release||state->mode!=POSSESSED||dead_view()||!camera_owned(camera)||
        GetCurrentThreadId()!=state->window_thread||equipment_generation81!=state->lease_generation)return;
@@ -141,7 +142,7 @@ static void process_equipment_commands81(uintptr_t camera){
            equipment_boundary81().safe()&&GetTickCount64()-state->last_motion_tick<=250&&!state->aim_pose){
             cycle_ammunition81();equipment_consume81(request.lease,0,true);
         }
-        publish_equipment81();
+        ability_process141(camera);publish_equipment81();
     }__except(EXCEPTION_EXECUTE_HANDLER){equipment_error81=6;InterlockedExchange(&state->release,1);}
 }
 static bool equipment_prepare_motion81(){
@@ -153,7 +154,8 @@ static bool equipment_prepare_motion81(){
         InterlockedExchange(&equipment_slot81,ranged&&!melee?equipment81::Ranged:equipment81::Melee);
         InterlockedExchange(&equipment_crouch81,0);InterlockedExchange(&equipment_ammo_inflight81,0);equipment_error81=0;
     }
-    bool firearm=native_personal_kind(bow_record(unit))==PersonalWeaponKind::Firearm;
+    auto kind142=native_personal_kind(bow_record(unit));InterlockedExchange(&bow_family142,kind142==PersonalWeaponKind::Bow?1:0);
+    bool firearm=kind142==PersonalWeaponKind::Firearm;
     bool supported=equipment81::crouch_supported(weapon_mounted(),firearm,equipment_unit_ability81(57,false),
         valid_weapon_clip(possessed,106),valid_weapon_clip(possessed,127),valid_weapon_clip(possessed,132),valid_weapon_clip(possessed,138));
     InterlockedExchange(&equipment_crouch_supported81,supported?1:0);

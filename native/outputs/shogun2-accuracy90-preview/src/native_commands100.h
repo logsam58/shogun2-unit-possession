@@ -367,8 +367,11 @@ static void process_orders(uintptr_t camera){
                 }else command_feedback_set100(command100::Feedback::Unavailable,state->order_error);
             }else if(event.input==command100::Input::Hold){
                 MovePoint100 point{};
-                ViewRay down{};down.origin[0]=event.frame.position.x;down.origin[1]=event.frame.position.y+.15f;down.origin[2]=event.frame.position.z;down.direction[1]=-1;
-                if(command_pick100(down,point)&&std::abs(point.position[1]-event.frame.position.y)<.3f&&command_hold_here100(point,command100::bearing(event.frame.yaw),event.running102)){
+                // Project the captured position through the same native surface
+                // resolver as Follow Me. A rider origin or sloping ground need
+                // not be within 30cm of the terrain ray intersection.
+                bool projected=command_actor_point100(event.frame.position,point);if(!projected)command_error100=66;
+                if(projected&&command_hold_here100(point,command100::bearing(event.frame.yaw),event.running102)){
                     InterlockedExchange(&command_placing100,0);InterlockedExchange(&command_recenter100,1);
                     if(event.running102)InterlockedIncrement(&command_hold_runs102);else InterlockedIncrement(&command_hold_walks102);
                     command_mode100=command100::MoveMode::Hold;InterlockedExchange(&state->follow,0);command_follow100.reset();command_feedback_set100(command100::Feedback::Holding);

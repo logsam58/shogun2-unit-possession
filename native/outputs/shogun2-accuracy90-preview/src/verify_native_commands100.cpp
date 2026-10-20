@@ -304,17 +304,20 @@ int main(){SetUnhandledExceptionFilter(&fault100);try{
     require(field<unsigned char>(base,0x1b31169)==0&&!command_placing100,"Native double-click flag leaked after Q release");
     command_window100(window,WM_KEYDOWN,'Q',0);command_window100(window,WM_KEYUP,'Q',0);require(native_events100[native_events100.size()-2]==5,"Third Q incorrectly inherited double");
     command_q_tap102.reset();command_window100(window,WM_KEYDOWN,'Q',0);command_window100(window,WM_KILLFOCUS,0,0);require(!command_q_tap102.armed,"Focus cancellation retained double tap");command_key_held100=0;
+    // Hold Here uses the original current-position surface projection, not the
+    // old crosshair ray. Check the serialized terrain height and unchanged query
+    // count as well as the double-tap anchor.
     // First Z is immediate walk. Second is run to the same captured anchor and
     // facing, even if the player moved/looked between taps. Repeat cannot upgrade.
+    const auto hold_queries144=queries100;
     fixture.clear_queue();command_z_tap102.reset();field<float>(possessed,0x48)=10;field<float>(possessed,0x4c)=5;state->yaw=.25f;service102();
     require(command_window100(window,WM_KEYDOWN,'Z',0),"Z single press");process_orders(P::ptr(fixture.camera));
     require(packets100.size()==2&&packets100[0].bytes[0]==0,"Single Z did not immediately walk with guard");
     require(command_window100(window,WM_KEYDOWN,'Z',1L<<30),"Z repeat");process_orders(P::ptr(fixture.camera));require(packets100.size()==2,"Held Z autorepeat issued run");
     command_window100(window,WM_KEYUP,'Z',0);field<float>(possessed,0x48)=14;state->yaw=1.5f;service102();
     command_window100(window,WM_KEYDOWN,'Z',0);process_orders(P::ptr(fixture.camera));
-    require(packets100.size()==4&&packets100[2].bytes[0]==1&&packets100[2].shorts[0]==command100::bearing(.25f)&&packets100[2].point.position[0]==10&&scene_origin102[0]==10,"Double Z lost original Hold Here anchor/facing or run flag");
+    require(packets100.size()==4&&packets100[2].bytes[0]==1&&packets100[2].shorts[0]==command100::bearing(.25f)&&packets100[2].point.position[0]==10&&packets100[2].point.position[1]==10*.1f+packets100[2].point.position[2]*.2f&&queries100==hold_queries144,"Double Z lost original Hold Here anchor/facing or run flag");
     command_window100(window,WM_KEYUP,'Z',0);command_window100(window,WM_KILLFOCUS,0,0);command_key_held100=0;
-
     std::array<unsigned char,32> controller101{},crosshair101{};
     interface_root=P::ptr(fixture.root);interface_environment=environment;
     interface_controller=reinterpret_cast<uintptr_t>(controller101.data());interface_crosshair=reinterpret_cast<uintptr_t>(crosshair101.data());

@@ -12,6 +12,9 @@ static bool formation_owned129(uintptr_t actor){
         if(!actor||!possessed||!possession_lease.active)return false;
         auto principal=possession_lease.identity.mount;
         if(actor!=possessed&&(!principal||actor!=principal))return false;
+        // A dismount camera continuation never grants the old horse manual
+        // movement/formation authority. Native dismount owns this interval.
+        if(dismount_native_motion143())return false;
         if(!state||!enabled||state->stop||state->release||state->mode!=POSSESSED||
            GetTickCount64()-state->heartbeat>500||dead_view()||
            field<unsigned char>(possessed,0xf0)!=1)return false;

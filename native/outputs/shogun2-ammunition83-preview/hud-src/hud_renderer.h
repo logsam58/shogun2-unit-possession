@@ -23,6 +23,8 @@
 #include "../../shogun2-possession-cleanup-v46/src/hud_layout108.h"
 #include "hud_state89.h"
 #include "weapon_mode133.h"
+#include "../../shogun2-accuracy90-preview/src/ability_protocol141.h"
+#include "../../shogun2-accuracy90-preview/src/ability_catalog141.h"
 #include "accuracy_geometry90.h"
 #include "../../shogun2-accuracy90-preview/src/command_protocol100.h"
 #include "../src/ammunition_protocol83.h"
@@ -44,6 +46,7 @@ struct View {
     bool accuracy_known{};float cone_half_angle{},projection_y{};
     unsigned climb_mode{};
     bool commands_known{};command100::Status commands{};
+    bool abilities_known{};ability141::Status abilities{};
 };
 class Assets {
     std::vector<IStream*> streams;
@@ -64,7 +67,18 @@ public:
             streams.push_back(stream);auto bitmap=std::make_unique<Bitmap>(stream);
             if(bitmap->GetLastStatus()!=Ok)return false;
             atlases.push_back(std::move(bitmap));
-        }return true;
+        }
+#ifndef HUD80_QTE_ONLY
+        for(unsigned id:{30u,31u}){
+            HRSRC r=FindResourceW(module,MAKEINTRESOURCEW(400+id),MAKEINTRESOURCEW(10));if(!r)return false;
+            auto size=SizeofResource(module,r);auto bytes=LockResource(LoadResource(module,r));HGLOBAL memory=GlobalAlloc(GMEM_MOVEABLE,size);if(!memory)return false;
+            auto copy=GlobalLock(memory);if(!copy){GlobalFree(memory);return false;}memcpy(copy,bytes,size);GlobalUnlock(memory);
+            IStream* stream=nullptr;if(CreateStreamOnHGlobal(memory,TRUE,&stream)!=S_OK){GlobalFree(memory);return false;}streams.push_back(stream);
+            auto bitmap=std::make_unique<Bitmap>(stream);if(bitmap->GetLastStatus()!=Ok)return false;
+            tiles.emplace(L"native-ability141-"+std::to_wstring(id),std::move(bitmap));
+        }
+#endif
+        return true;
     }
     void clear(){tiles.clear();atlases.clear();for(auto stream:streams)stream->Release();streams.clear();native_fonts.clear();}
     ~Assets(){clear();}
@@ -81,7 +95,7 @@ public:
         return found->second.get();
     }
     void image(Graphics& g,const wchar_t* key,RectF target,float opacity=1.f,bool isolated=false)const{
-        const Sprite* s=sprite(key);if(!s)return;
+        const Sprite* s=sprite(key);if(!s){auto extra=tiles.find(key);if(extra!=tiles.end())g.DrawImage(extra->second.get(),target);return;}
         float sx=target.Width/s->logical_w,sy=target.Height/s->logical_h;
         RectF bounds(target.X+s->offset_x*sx,target.Y+s->offset_y*sy,s->w*sx,s->h*sy);
         ImageAttributes attributes;ColorMatrix alpha={1,0,0,0,0, 0,1,0,0,0, 0,0,1,0,0, 0,0,0,std::clamp(opacity,0.f,1.f),0, 0,0,0,0,1};
@@ -176,6 +190,9 @@ inline void drop_reticle89(Graphics& g,float x,float y,bool ready){
     for(unsigned i=0;i<4;++i){float half=hudstate89::drop_width[i]*.5f,top=y+hudstate89::drop_y[i];
         g.DrawLine(&shadow,x-half,top,x+half,top);g.DrawLine(&stroke,x-half,top,x+half,top);}
 }
+inline bool melee_dot144(const View& v){
+    return v.unit_mode_known&&v.unit_melee&&v.equipment_known&&v.slot==1&&!v.pending&&!v.equipment_error;
+}
 inline void firearm_reticle90(Graphics& g,float x,float y,float radius,bool ready){
     float gap=std::max(3.f,radius),length=7.f;
     Pen shadow(Color(215,30,26,20),3.f),stroke(ready?Color(245,243,232,202):Color(180,207,198,173),1.2f);
@@ -241,8 +258,8 @@ inline void render(Graphics& g,const Assets& a,float width,float height,const Vi
             wchar_t amount[64];swprintf_s(amount,L"Unit ammo: %.0f",v.ammo);text(g,amount,cx+251,cy+18,114,24,14,muted());
             auto personal=weapon_state89(v);std::wstring state=personal.label;
             if(v.reload>.05f){wchar_t reload[64];swprintf_s(reload,L"Reloading %.1fs",v.reload);state=reload;}
-            text(g,state,cx+29,cy+46,181,23,14,personal.fire_prompt?ink():muted());
-            if(known&&v.ammunition_state.count>1){key_image(g,L"Tab",RectF(cx+214,cy+44,40,24));text(g,L"Change ammo",cx+265,cy+47,100,23,13,muted());}
+            text(g,v.bow&&personal.fire_prompt?L"LMB: hold / release":state.c_str(),cx+29,cy+46,190,23,14,personal.fire_prompt?ink():muted());
+
         }else text(g,v.pending?L"Switching weapon...":v.crouched?L"Kneeling":L"Melee",cx+29,cy+26,332,28,18,muted());
     }
     const auto& command=layout.commands;const float right=command.x,top=command.y;
@@ -264,7 +281,25 @@ inline void render(Graphics& g,const Assets& a,float width,float height,const Vi
         text(g,labels[i],right+65,row+2,137,25,14,active?red():ink());
     }
     key_image(g,L"F10",RectF(right+24,top+235,42,23));text(g,L"RTS view",right+78,top+237,124,23,13,muted());
+    if(v.abilities_known&&v.abilities.count&&v.abilities.selected<v.abilities.count){
+        const auto& item=v.abilities.items[v.abilities.selected];auto art=ability141::art(item.id);
+        if(art){float ax=right,ay=top-110;panel(g,a,RectF(ax,ay,command.w,100));
+            a.image(g,art->icon,RectF(ax+20,ay+17,36,36),(item.flags&ability141::Available)?1.f:.45f);
+            native_fonts.paint(g,art->label,RectF(ax+68,ay+14,command.w-88,26),14,ink(),true);
+            wchar_t status[64];if(v.abilities.error)wcscpy_s(status,item.flags&ability141::Targeted?L"Aim at an ally":L"Unavailable");else if(v.abilities.pending)wcscpy_s(status,L"Ordered");
+            else if(item.cooldown>.05f)swprintf_s(status,L"Ready in %.0fs",std::ceil(item.cooldown));
+            else wcscpy_s(status,item.flags&ability141::Active?L"Active":item.flags&ability141::Available?(item.flags&ability141::Targeted?L"Aim at an ally":L"Ready"):L"Unavailable");
+            native_fonts.paint(g,status,RectF(ax+68,ay+39,command.w-88,21),12,v.abilities.error?red():muted(),true);
+            key_image(g,L"T",RectF(ax+24,ay+66,28,24));text(g,L"Next",ax+60,ay+66,48,24,12,muted());
+            key_image(g,L"G",RectF(ax+124,ay+66,28,24));text(g,item.flags&ability141::Active?L"End":L"Use",ax+160,ay+66,40,24,12,muted());
+        }
+    }
     auto reticle=weapon_state89(v);
+    if(!placing&&!v.climb_mode&&!(qte&&qte->active)&&melee_dot144(v)){
+        float x=width*.5f,y=height*.5f,r=2.f/scale;
+        SolidBrush edge(Color(210,30,26,20)),core(Color(235,243,232,202));
+        g.FillEllipse(&edge,x-r,y-r,r*2,r*2);r=1.f/scale;g.FillEllipse(&core,x-r,y-r,r*2,r*2);
+    }
     if(!placing&&!v.climb_mode&&!(qte&&qte->active)&&reticle.reticle==hudstate89::Reticle::Drop)drop_reticle89(g,width*.5f,height*.5f,reticle.fire_prompt);
     if(!placing&&!v.climb_mode&&!(qte&&qte->active)&&reticle.reticle==hudstate89::Reticle::Firearm&&v.accuracy_known){float radius=0;
         if(accuracy90::projected_radius(v.cone_half_angle,v.projection_y,physical_height,radius))firearm_reticle90(g,width*.5f,height*.5f,radius/scale,reticle.fire_prompt);}

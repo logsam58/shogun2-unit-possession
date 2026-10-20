@@ -24,6 +24,7 @@ static bool member_owned130(uintptr_t actor){
     __try{
         if(!actor||!possessed||!possession_lease.active)return false;
         if(actor!=possessed&&actor!=possession_lease.identity.mount)return false;
+        if(dismount_native_motion143())return false;
         return enabled&&state&&!state->stop&&!state->release&&state->mode==POSSESSED&&
             GetTickCount64()-state->heartbeat<=500&&!dead_view()&&field<unsigned char>(possessed,0xf0)==1&&
             followed(possessed,false,false);
