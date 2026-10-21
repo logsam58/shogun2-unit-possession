@@ -1,34 +1,35 @@
-# Crash diagnostics
+# Optional crash diagnostics
 
-The Python and native source in source/ supports automatic capture of SHOGUN 2 sessions and offline dump inspection. It is a developer/investigation tool, separate from the player installer.
+Diagnostics is separate from the player installer. Normal build/configuration/import/help commands do not start a watcher, attach a debugger or change autorun. Existing installed recording is untouched by this branch.
 
-## Available capture
+Use the public Python/MSVC prerequisites from the main build guide. Build into a new directory:
 
-The watcher detects game launches and starts core capture immediately, independent of pause, battle state, mod availability or a READY message. It remains waiting between launches. Available channels include process CPU/memory/handles/address-space resources, GPU/VRAM counters, game-focused OS input and optional native actor/input/mod telemetry. Coverage depends on OS/provider availability; this is not an instruction-by-instruction trace, physical display-latency measurement or video recorder.
+    py -3.12 tools/diagnostics/build111.py --vcvars 'C:\BuildTools\VC\Auxiliary\Build\vcvars32.bat' --output-dir 'D:\Build\diagnostics'
 
-The x86 external debugger preserves normal native exception handling apart from the attach break and exact legacy thread-naming case. Severe first-chance faults and unhandled exceptions can produce full dumps. A recovered first-chance event must not be labeled a final crash. The debugger can detach without terminating the game.
+Default binaries are capture-only. Experimental processor tracing is compiled only when explicitly requested for fingerprint-locked toy fixtures; it is not a supported game-debugging mode.
 
-Diagnostics110 adds bounded lifecycle sampling from launch and native phase/selected-unit/actor/command/effects history. Its experimental processor breakpoints caused two real startup single-step crashes and are withdrawn. A verified capture-only debugger is installed; read-only capture remains. Source permits hardware tracing only for toy fixtures. Diagnostics111 adds stricter build and deployment isolation as described below. See [startup recovery](../../docs/development/Diagnostics110-startup-recovery.md) and [Diagnostics110](../../docs/development/Diagnostics110.md). These tools are separate from the pinned v0.19 player release and do not claim a fix for the longstanding native battle crashes.
+Stage into another new directory with explicit paths:
 
-## Setup limitations
+    py -3.12 tools/diagnostics/source/install.py --game 'D:\Steam Library\Total War SHOGUN 2' --output-dir 'D:\Diagnostics Staged' --recordings 'D:\Recordings' --debugger 'D:\Build\diagnostics\crash-recorder.exe'
+    py -3.12 tools/diagnostics/check_stage.py --stage 'D:\Diagnostics Staged'
 
-Diagnostics112 adds independent pre-dump fault reports and bounded, explicitly labeled readable/minimal dump fallbacks. It addresses observed evidence loss when DbgHelp cannot read process memory; it does not fix the underlying game fault. See [Diagnostics112](../../docs/development/Diagnostics112.md) for verified coverage and limits.
+Staging checks the engine, capture-only binary and local import closure; includes accuracy_read90.py and shared role constants; writes hashes/config/baseline/Python receipt; and does not start anything or enable autorun. An optional baseline can pin additional expected loaded-module hashes. Actual native telemetry needs compatible mod channels and discovered module cache; absent/unknown channels stay explicit. Specialist telemetry now follows the same final-human policy as adapter/HUD.
 
-Diagnostics111 separates the default capture-only executable from fingerprint-locked toy tracing. Its installer/deployment gate checks the compiled capability and PE imports before mutation. The offline build and failure-injection workflow is described in [Diagnostics111](../../docs/development/Diagnostics111.md). The active installation is not changed merely by building these tools.
+Only after separate authorization may an operator arm the staged watcher with watcher.py --run or control.py start. Avoid duplicate watchers. No autorun installer is provided. A READY reply gates formal testing, not automatic ordinary capture. Verify actual worker/debugger attachment and fresh input/resources/native samples before claiming recording.
 
-A portable diagnostics installer is not supplied. Source includes deployment helpers with machine-specific path assumptions that must be reviewed/configured before use on another computer. Supply a local Python runtime, build the x86 debugger and configure output paths/baseline component hashes separately. Runtime/config/baseline files are not tracked. Do not run source/install.py unchanged as a general-purpose installer.
+## Offline checks
 
-Do not start duplicate watchers or core recorders. Check both the actual watcher process and fresh armed health, then actual debugger/resource/input/native samples before claiming capture is running. Optional mod telemetry can arrive after core recording starts. An unavailable mod channel must not prevent crash capture.
+    py -3.12 -m unittest discover -s tests -v
+    py -3.12 tools/diagnostics/source/verify_lifecycle110.py
+    & 'D:\Build\diagnostics\verify-ownership111.exe'
+    py -3.12 tools/diagnostics/source/verify_capture112.py --build-dir 'D:\Build\diagnostics' --support-root 'D:\Diagnostics Staged' --output-dir 'D:\Build\capture checks'
 
-## Inspect a dump
+Capture checks create toy processes with a generic fixture name. They test normal exit, handled and unhandled exceptions, safe detach, eight dump/cache fallback cases and toy loader corruption. They do not use the real game or its watcher. Never rename a toy as shogun2.exe to test detection against an active installation.
 
-```powershell
-py tools/diagnostics/source/inspect_minidump.py C:\path\to\local.dmp --output artifacts/dump-report.json
-py -m unittest discover -s tests -v
-```
+The recorder can sample available CPU/memory/address-space/GPU/input/native/lifecycle channels. This is not instruction-by-instruction capture, video or physical display-latency measurement. Missing providers do not mean zero load. Dump fallback quality is explicitly labeled.
 
-The reader supports FullMemory Memory64, MemoryList and embedded ThreadList stack storage, including a zero ThreadList stack RVA when memory exists in another stream. Exception context takes precedence for the faulting thread. Missing stacks are explicit. Use a new output path to retain original reports.
+Inspect a private dump:
 
-Stack-word address candidates are not an unwound call stack. Loaded backing-file hashes do not prove patched runtime pages equal stock; use runtime bytes in a dump for that comparison. An exception inside a native module does not determine who caused the earlier corrupt state.
+    py -3.12 tools/diagnostics/source/inspect_minidump.py 'D:\Private\crash.dmp' --output 'D:\Private\report.json'
 
-Full dumps and raw input/session records may contain private data. Keep them outside Git and sanitize reports before sharing. The seven synthetic format cases run without private game dumps; real captured dumps are not test fixtures in this repository.
+Stack-word candidates are not an unwound call stack. A native-module fault is not attribution of root cause. Full dumps/input logs can contain private information and stay out of Git. Historical watcher-integration/deployment helpers are excluded from the public kit; do not run legacy machine-specific scripts as current setup.

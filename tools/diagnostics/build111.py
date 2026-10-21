@@ -6,7 +6,8 @@ SOURCE=Path(__file__).resolve().parent/'source/native'
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 def main():
  p=argparse.ArgumentParser();p.add_argument('--vcvars',type=Path,required=True);p.add_argument('--output-dir',type=Path,required=True);p.add_argument('--experimental',action='store_true');o=p.parse_args()
- out=o.output_dir.resolve();assert out.is_relative_to(ROOT/'artifacts'),'Build into this project artifacts directory'
+ out=o.output_dir.resolve()
+ if out==ROOT or ROOT.is_relative_to(out) or out.is_relative_to(SOURCE):p.error('Use a new separate build directory, outside diagnostic source')
  assert o.vcvars.is_file();out.mkdir(parents=True,exist_ok=False)
  def build(name,source,extra=(),libs=()):
   args=['cl','/nologo','/std:c++17','/EHsc','/O2','/MT','/W4','/I'+str(SOURCE),*extra,str(SOURCE/source),'/Fo'+str(out/(name+'.obj')),'/Fe'+str(out/(name+'.exe'))]

@@ -6,6 +6,7 @@ import argparse, json, struct, time
 from pathlib import Path
 from process_memory import sample as memory_sample
 from accuracy_read90 import decode_accuracy90
+from actor_roles import human, combat_actor
 
 args=argparse.ArgumentParser(description=__doc__)
 args.add_argument('--pid',type=int,help='Pin the recording to this game process.')
@@ -99,7 +100,7 @@ def snapshot(raw):
     a=p.read(actor,0x700)
     word=lambda off:struct.unpack_from('<I',a,off)[0]
     flt=lambda off:struct.unpack_from('<f',a,off)[0]
-    if word(0)!=base+0x15dfec8 or word(0x1c8)!=struct.unpack_from('<I',raw,72)[0]:return {'actor_valid':False,**view}
+    if not human(base,word(0)) or word(0x1c8)!=struct.unpack_from('<I',raw,72)[0]:return {'actor_valid':False,**view}
     result={'actor':actor,'alive':a[0xf0],'unit':word(0x214),'witness':word(0x688),'state':word(0x1d0),'planned_clip':word(0x1d4),'current_mode':word(0x1f0),'render_record':word(0x474),'position':[flt(0x48+i*4) for i in range(3)],'velocity':[flt(0x8c+i*4) for i in range(3)],'bearing':struct.unpack_from('<H',a,0x64)[0], 'native_alignment_target':list(struct.unpack_from('<3f',a,0x69c)), 'native_alignment_bearing':struct.unpack_from('<H',a,0x6a8)[0], 'native_motion_task':word(0x68c)}
     result['animation_frame']=word(0x1d8)
     result['simulation_tick']=p.u32(p.u32(env+8)+0x50)
@@ -133,7 +134,7 @@ def snapshot(raw):
         if q(0x38)==2 and principal in (q(0x30),q(0x34)):
             other=q(0x34) if q(0x30)==principal else q(0x30)
             b=p.read(other,0x700)
-            if struct.unpack_from('<I',b,0)[0] in (base+0x15dfec8,base+0x15e8524) and struct.unpack_from('<I',b,0x688)[0]==witness:
+            if combat_actor(base,struct.unpack_from('<I',b,0)[0]) and struct.unpack_from('<I',b,0x688)[0]==witness:
                 result['opponent']={'actor':other,'actor_id':struct.unpack_from('<I',b,0x1c8)[0],'alive':b[0xf0],'position':list(struct.unpack_from('<3f',b,0x48)),'native_alignment_target':list(struct.unpack_from('<3f',b,0x69c)),'bearing':struct.unpack_from('<H',b,0x64)[0], 'native_alignment_bearing':struct.unpack_from('<H',b,0x6a8)[0], 'native_motion_task':struct.unpack_from('<I',b,0x68c)[0], 'state':struct.unpack_from('<I',b,0x1d0)[0], 'planned_clip':struct.unpack_from('<I',b,0x1d4)[0]}
     return result
 try:

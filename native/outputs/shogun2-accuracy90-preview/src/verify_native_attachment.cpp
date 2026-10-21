@@ -1,3 +1,4 @@
+#include "../../../common/fixture_paths.h"
 #include "identity.h"
 #include "../vendor/include/MinHook.h"
 using Predicate=bool(__thiscall*)(void*);
@@ -6,7 +7,7 @@ static unsigned hooked,actor_calls;static void* last_actor;static bool force_rel
 static bool __fastcall actor_fixture(void* actor,void*){++actor_calls;last_actor=actor;return actor&&*static_cast<unsigned*>(actor)!=0;}
 static bool __fastcall predicate_fixture(void* object,void*){++hooked;bool result=original_predicate(object);return force_release||result;}
 int main(){void* memory=nullptr;try{
-    const std::wstring path=L"C:\\Program Files (x86)\\Steam\\steamapps\\common\\Total War SHOGUN 2\\empire.retail.dll";
+    const std::wstring path=fixture_paths::engine();
     require(hash_file(path)==EXPECTED_HASH,"Attachment fixture engine differs");
     std::ifstream in(path,std::ios::binary);std::vector<unsigned char> raw((std::istreambuf_iterator<char>(in)),{});
     auto dos=reinterpret_cast<const IMAGE_DOS_HEADER*>(raw.data());auto nt=reinterpret_cast<const IMAGE_NT_HEADERS32*>(raw.data()+dos->e_lfanew);

@@ -1,6 +1,7 @@
 // Read-only authentic HUD candidate. Never writes game memory or handles gameplay input.
 #include "../../shogun2-possession-cleanup-v46/src/identity.h"
 #include "../../shogun2-possession-cleanup-v46/src/protocol.h"
+#include "../../shogun2-possession-cleanup-v46/src/actor_types152.h"
 #include "../../shogun2-possession-cleanup-v46/src/game_window105.h"
 #include "../../shogun2-possession-cleanup-v46/src/overlay_surface106.h"
 #include "hud_renderer.h"
@@ -61,7 +62,8 @@ static bool measure(){
     uintptr_t manager=read<uintptr_t>(env+0x281fc),camera=read<uintptr_t>(manager+0x8e0);
     if(read<uintptr_t>(camera)!=base+0x15d22e8)return false;
     uintptr_t actor=read<uintptr_t>(camera+0x188);
-    if(read<uintptr_t>(actor)!=base+0x15dfec8||read<unsigned>(actor+0x1c8)!=s.actor_id)return false;
+    const uintptr_t actor_table=read<uintptr_t>(actor);
+    if(!actor152::human(base,actor_table)||read<unsigned>(actor+0x1c8)!=s.actor_id)return false;
     uintptr_t unit=read<uintptr_t>(actor+0x214);
     if(read<unsigned>(unit+4)!=s.unit_id||read<unsigned char>(actor+0xf0)!=1)return false;
     hud80::View d{};
@@ -122,7 +124,8 @@ static bool measure(){
     d.speed=std::hypot(read<float>(actor+0x8c),read<float>(actor+0x94));
     if(d.fatigue>5||d.morale>7||!d.initial||d.initial>100000||d.men>d.initial||
         !std::isfinite(d.ammo)||d.ammo<0||!std::isfinite(d.reload)||!std::isfinite(d.speed))return false;
-    if(read<uintptr_t>(manager+0x8e0)!=camera||read<uintptr_t>(camera+0x188)!=actor||read<unsigned>(actor+0x1c8)!=s.actor_id||
+    if(read<uintptr_t>(manager+0x8e0)!=camera||read<uintptr_t>(camera+0x188)!=actor||read<uintptr_t>(actor)!=actor_table||
+        read<unsigned char>(actor+0xf0)!=1||read<unsigned>(actor+0x1c8)!=s.actor_id||
         read<uintptr_t>(actor+0x214)!=unit||read<uintptr_t>(unit+0x1c)!=definition||read<uintptr_t>(unit+0x2a4)!=army||read<unsigned>(unit+4)!=s.unit_id)return false;
     Status final{};if(!snapshot(final)||final.lease_generation!=s.lease_generation||final.actor_id!=s.actor_id||final.unit_id!=s.unit_id||final.mode!=POSSESSED)return false;
     display=d;display_key106={s.lease_generation,s.actor_id,s.unit_id};return true;

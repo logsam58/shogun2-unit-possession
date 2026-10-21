@@ -4,7 +4,9 @@ Take control of a soldier in your army and fight your **Total War: SHOGUN 2** ba
 
 Fight in first or third person, on foot or horseback, fire bows and guns, and face enemy soldiers in melee. Your unit fights alongside you, and you can give them orders without leaving first person.
 
-**[Download v0.28](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.28)** · [v0.28 notes](docs/releases/v0.28.md) · [Known problems](docs/KNOWN_ISSUES.md)
+**Public-release preparation branch:** this is a source/local-resource build kit, based on accepted v0.28. It is not installed or live accepted. See [build instructions](BUILD_AND_TEST.md).
+
+**[Download v0.28](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.28)** · [v0.28 notes](https://github.com/logsam58/shogun2-first-person/blob/v0.28/docs/releases/v0.28.md) · [Known problems](docs/KNOWN_ISSUES.md)
 
 **v0.28** adds third-person play. Press **P** to switch views, scroll to change the distance, and hold the **middle mouse button** to look around your soldier while moving.
 
@@ -79,8 +81,8 @@ The mod is intended for single-player land battles and sieges. It supports weapo
 
 ## For contributors
 
-The mod is written in C++, with Python build and debugging tools. Start with the [source map](SOURCE_MAP.md), [build guide](BUILD_AND_TEST.md) and [contributing guide](CONTRIBUTING.md). The [architecture](docs/ARCHITECTURE.md), [v0.28 technical notes](docs/releases/v0.28-technical.md) and [validation records](VALIDATION.md) cover implementation, tests and ongoing investigations.
+The mod is written in C++, with Python build and debugging tools. Start with the [source map](SOURCE_MAP.md), [build guide](BUILD_AND_TEST.md) and [contributing guide](CONTRIBUTING.md). The [architecture](docs/ARCHITECTURE.md), [v0.28 technical notes](https://github.com/logsam58/shogun2-first-person/blob/v0.28/docs/releases/v0.28-technical.md) and [validation records](VALIDATION.md) cover implementation, tests and ongoing investigations.
 
-Building the full HUD and QTE needs separately prepared game resources; a fresh clone doesn't include them. The optional [crash recorder](tools/diagnostics/README.md) has its own setup and isn't part of the player installer. The source download is for contributors; players should use the setup download above.
+The [local resource pipeline](docs/public-release/RESOURCES.md) recreates the HUD/QTE fonts, artwork and cropped voice from your owned supported game using declared public tools. The optional [crash recorder](tools/diagnostics/README.md) is separate from the player installer. Public kits contain source and recipes, not game assets or resource-containing binaries.
 
-There is no project-wide license yet. MinHook's license is included; see [third-party notices](THIRD_PARTY_NOTICES.md). This is an unofficial Shogun 2 mod.
+First-party code uses the [MIT license](LICENSE). Game material and vendored code retain their own rights; see [provenance](docs/public-release/PROVENANCE.md) and [third-party notices](THIRD_PARTY_NOTICES.md). This is an unofficial Shogun 2 mod.

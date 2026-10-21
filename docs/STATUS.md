@@ -1,22 +1,11 @@
 # Current status
 
-v0.22 preserves Test124. The player accepted Large unit size, one massive army per side and maximum graphics in DX11 as smooth throughout. Ultra-size crowded battles still slow down; general crash safety remains unproven. The release retains the crowd optimizations and adds the specific Miles zero-count guard. See [release notes](releases/v0.22.md), [technical notes](releases/v0.22-technical.md) and [validation](releases/v0.22-validation.json).
+[current-release.json](current-release.json) is authoritative.
 
-| Area | Implemented behavior | Coverage / limitation |
-| --- | --- | --- |
-| Foot soldiers | Native movement, camera, equipment and personal combat | Exact engine build required; roster-wide validation incomplete |
-| Ranged weapons | Recognized bow, firearm and thrown/projectile records; native reload/ammo; accuracy cone | Specialty animations/ammo and every unit firing path need further testing |
-| Independent AI | Other soldiers continue normal orders, weapon tasks and combat | Report stalled volleys with the exact unit and ammunition |
-| Melee QTE | Native pair preparation, timed input, full-cycle minimum, interruption feedback | Native combat/ownership changes can interrupt; crowds need continued coverage |
-| Cavalry | Rider/horse possession, steering and bounded free-look | Mounted-bow presentation remains problematic |
-| Sieges | F entry, W/S/hold climbing, native speed, crest and landing camera continuity | Traversal exercised in live play; every castle/layout/lifecycle not verified |
-| Camera / death | Saved RTS view restored; native model-following death sequence | Battle/camera identity changes intentionally invalidate stale saved state |
-| HUD | Native-style unit, personal weapon/ammo, reticle and action prompts | Check alternate display sizes/scaling and nonstandard unit resources |
-| Base game / expansions | Native content catalog includes SHOGUN 2, Rise and Fall weapon records | Catalog coverage is broader than confirmed live roster coverage |
-| Naval / artillery | Stock artillery first-person behavior retained | Naval possession, ship commands and crew possession not implemented |
-| Multiplayer / overhauls | No compatibility certification | Require separate investigation and testing |
-| Stability | Crash capture and diagnostic tools available | Native effects and audio-thread crashes unresolved |
+Accepted baseline: v0.28/Test157, commit 24d31a2f5e5c2cf84a42c459a69bdcd9bd86c600. Published tag/assets and installed accepted build stay unchanged.
 
-Offline fixtures cover important native forwarding, identity, cleanup, geometry, timing and installation cases. They do not simulate every battle. [VALIDATION.md](../VALIDATION.md) and the release receipt distinguish freshly run checks from retained component evidence.
+This branch prepares Test158 as a source/local-resource kit. Shared roles, durable setup recovery, deployment closure and resource regeneration are implemented. See [validation](../VALIDATION.md) and [acceptance](public-release/PLAN.md).
 
-Current development priorities are intermittent crowded-battle slowdown, the unresolved native effects/audio crashes, mounted-bow presentation, broader ranged-unit/animation coverage, crowded-combat interruptions and siege-map lifecycle testing. Known limitations and reporting guidance are in [KNOWN_ISSUES.md](KNOWN_ISSUES.md) and [CONTRIBUTING.md](../CONTRIBUTING.md).
+Test158 is not installed or live accepted. Push/publication awaits owner approval. Prebuilt resource-containing binaries remain blocked by unresolved redistribution permission. The owner approved MIT for first-party code, local resource preparation and original native status icons in this public profile.
+
+Crashes, Ultra multi-army slowdown, clipping and isolated enemy acquisition remain open. Acceptance does not imply universal unit, naval or castle coverage.

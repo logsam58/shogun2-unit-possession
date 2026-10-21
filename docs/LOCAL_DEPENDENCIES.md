@@ -1,24 +1,18 @@
-# Local build dependencies
+# Dependencies
 
-A source clone contains mod code and fixtures, not a complete game/resource distribution.
+Windows x86 native code is built on Windows x64. Tested public prerequisites:
 
-| Dependency | Needed for | How it is supplied |
+| Tool | Version | Obtain separately |
 | --- | --- | --- |
-| Python 3.10+ | Build/configuration, diagnostics and format tests | Local Python installation |
-| MSVC x86 and Windows SDK | Native DLLs, HUD, loader and setup | Visual Studio / Build Tools; configure vcvars32.bat or automatic discovery |
-| Supported Empire.Retail.dll | Exact native fixture execution and installation compatibility | Licensed local SHOGUN 2 installation; fingerprint in README |
-| 26 UI input files | Styled QTE/HUD resources | Separately prepared resource tree matching tools/local-assets.json |
-| Prior loader/marker/runtime files | Full installer upgrade/rollback regression suite | Separately retained historical fixture inputs; the immediate predecessor pair and later development predecessors |
-| Indexed native decoding | Research of native functions and structures | Optional read-only local database/exports; not required for ordinary compilation |
-| Diagnostic runtime/configuration | Automatic crash capture | Separate local setup of recorder source and x86 debugger |
+| CPython | 3.12.10 x64, standard library | https://www.python.org/downloads/release/python-31210/ |
+| MSVC / SDK | VS 2022 17.14, x86 toolset 14.44, Windows SDK | https://visualstudio.microsoft.com/downloads/ |
+| ImageMagick | 7.1.2-24 Q16-HDRI x64 | https://imagemagick.org/script/download.php |
+| Node / npm | 24.16.0 / 11.13.0 | https://nodejs.org/en/download |
+| Free Texture Packer CLI / core | 0.3.0 / 0.3.5 | tools/assets/package-lock.json; npm ci --ignore-scripts |
+| FFmpeg | 9.0.2 essentials | https://ffmpeg.org/download.html |
 
-`tools/configure.py` writes ignored tools/local.json and verifies resource hashes before copying inputs into ignored native paths. The asset source must have the relative structure described by `source_relative` in tools/local-assets.json. It is a prepared UI resource closure, not the plain Steam game folder. The helper does not extract arbitrary packs or download proprietary assets. A fresh contributor currently needs that prepared input closure to build the full UI; a standalone extraction pipeline is not included.
+No tools/runtimes are bundled. Python requires 3.11+ for file_digest; 3.12.10 is tested. ImageMagick's exact version is checked; npm transitive versions are locked and scripts disabled. Compiler drift can change binary bytes.
 
-The adapter target can be built without the UI inputs. Exact-native fixtures still need the supported engine. The full installer suite additionally needs historical fixture binaries; normal source browsing and building the adapter do not require those archived installer inputs.
+Supply legitimate supported Empire.Retail.dll, mss32.dll, installscript.vdf and data/data_fots/local_en packs. DLC/language differences can fail exact resource checks and need review before support. See [resources](public-release/RESOURCES.md).
 
-Keep absolute paths and machine settings in ignored tools/local.json. Do not commit game binaries, fonts/artwork, complete research exports, local runtimes, raw recordings or dumps. See [BUILD_AND_TEST.md](../BUILD_AND_TEST.md) for commands and current path assumptions.
-
-
-Test109 HUD audio also needs the original English advisor entry in local_en.pack and FFmpeg at build time. `tools/prepare_audio109.py` verifies and crops that one entry using `tools/audio109.json`. The resulting WAV stays in the ignored HUD private directory and is embedded by the HUD resource compiler. Game installation and users do not need FFmpeg.
-
-The Test142 development HUD additionally uses two original artillery ability button PNGs, bringing the prepared UI closure to26 files. Their original pack paths and pixel hashes are retained locally; the PNGs remain excluded from Git. Ordinary supported abilities reuse the established atlas.
+Recorder providers include Windows performance counters and PowerShell; NVIDIA GPU detail additionally uses nvidia-smi on PATH/System32. Missing providers are explicit, not zero usage. Optional history/decompiler research is not required for current build/tests. No private runtime, prepared resource archive or real dump is required.

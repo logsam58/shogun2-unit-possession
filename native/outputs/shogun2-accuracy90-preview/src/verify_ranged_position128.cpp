@@ -1,3 +1,4 @@
+#include "../../../common/fixture_paths.h"
 // Runs the original unit aggregate, actor predicate, personal fire wait and
 // fire-permission routine. Synthetic rosters/task vtable stand in for the game;
 // native order scheduling, projectile dispatch and a live battle are not mocked
@@ -8,7 +9,7 @@
 static unsigned advances128;
 static unsigned __fastcall advance128(void*,void*){++advances128;return 0x128;}
 int main(){unsigned char* mapped=nullptr;try{
- std::wstring path=L"C:\\Program Files (x86)\\Steam\\steamapps\\common\\Total War SHOGUN 2\\Empire.Retail.dll";
+ std::wstring path=fixture_paths::engine();
  require(hash_file(path)==EXPECTED_HASH,"Exact native engine");
  std::ifstream in(path,std::ios::binary);std::vector<unsigned char> image((std::istreambuf_iterator<char>(in)),{});
  auto dos=reinterpret_cast<IMAGE_DOS_HEADER*>(image.data());auto nt=reinterpret_cast<IMAGE_NT_HEADERS32*>(image.data()+dos->e_lfanew);

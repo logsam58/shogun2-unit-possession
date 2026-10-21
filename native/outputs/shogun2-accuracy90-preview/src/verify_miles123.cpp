@@ -1,3 +1,4 @@
+#include "../../../common/fixture_paths.h"
 
 #include "identity.h"
 #include "../vendor/include/MinHook.h"
@@ -33,7 +34,7 @@ static Result run(void* fn,uint32_t count,uint32_t phase,uint32_t mode,bool guar
  memcpy(r.data,buffer,256);VirtualFree(allocation,0,MEM_RELEASE);return r;
 }
 int wmain(int argc,wchar_t** argv){
- SetErrorMode(SEM_FAILCRITICALERRORS|SEM_NOGPFAULTERRORBOX);if(argc==1){static wchar_t path[]=L"C:/Program Files (x86)/Steam/steamapps/common/Total War SHOGUN 2/mss32.dll";static wchar_t* paths[]={nullptr,path};argv=paths;}else if(argc!=2)return 2;
+ SetErrorMode(SEM_FAILCRITICALERRORS|SEM_NOGPFAULTERRORBOX);if(argc==1){static std::wstring path=fixture_paths::miles();static wchar_t* paths[]={nullptr,path.data()};argv=paths;}else if(argc!=2)return 2;
  HMODULE m=LoadLibraryExW(argv[1],nullptr,LOAD_WITH_ALTERED_SEARCH_PATH);if(!m){printf("load_error=%lu\n",GetLastError());return 3;}module_base=(uintptr_t)m;void* fn=(void*)(module_base+0x16bf0);
  const uint8_t start[]={0x83,0xec,0x44,0x53,0x55,0x8b,0x6c,0x24,0x50};if(memcmp(fn,start,sizeof start))return 4;
  Result bad=run(fn,0,15,1,false);if(bad.ok||fault_code!=EXCEPTION_ACCESS_VIOLATION||fault_rva!=0x16eb9)return 5;

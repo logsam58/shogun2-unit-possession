@@ -1,0 +1,21 @@
+# License scope and provenance
+
+The owner explicitly selected MIT for first-party mod code on 2026-10-21. The root LICENSE applies to that code and its first-party documentation. It does not grant rights over the game or change a dependency's license. Contributors must have permission to submit their work under the same first-party terms and identify any third-party content.
+
+| Material | Origin and transformation | Terms / distribution status |
+| --- | --- | --- |
+| Mod C++, Python, tests and contributor documentation | First-party project implementation; native addresses and recovered observations are documented as evidence, not original engine source | MIT, except material separately identified below |
+| MinHook and HDE sources under vendor directories | Vendored upstream source, with existing copyright/license files | Retain the upstream BSD-style notices, including binary-distribution notices; not relicensed |
+| Original engine, Miles library, packs and decoded game code | User-supplied legitimate supported game installation; used read-only for exact-native fixtures and resource preparation | Not included in public source/payloads; no redistribution permission asserted |
+| CUF fonts, UI sprites, ability icons and cropped advisor voice | Original local game packs; decoded/trimmed/packed or cropped for local use | Game-derived; outside MIT; public binary redistribution remains unresolved |
+| Sprite placement, unit-art and native palette/animation tables | Generated observations/data from original game material and prior preparation | Outside the first-party license grant to the extent they contain third-party material; regeneration and distribution must be documented individually |
+| Two historical restored status icons | Prior AI-assisted reconstructions used by the accepted HUD, named status_firing-hd-v1 and status_melee-hd-v1 | Originals/manifests recovered; owner approved original native icon aliases for this public kit only. Historical restored pixels remain private and unchanged; excluded from public resources |
+| Offline fixture providers and test-generated data | First-party synthetic layouts; original instructions are loaded from the user's fingerprint-checked engine where required | Synthetic first-party code MIT; do not bundle the original engine or private dumps |
+| Public build tools | Python, MSVC/Windows SDK, ImageMagick, Node/npm, texture packer and FFmpeg obtained separately | Tool licenses remain their own; record exact tested versions and keep notices if ever redistributing tools |
+| Private session logs, dumps, profiles, recorder baselines and historical local payload archives | Operator evidence | Excluded from public source/payloads; not prerequisites for mandatory current tests |
+
+MIT was selected for straightforward community reuse, including permissive reuse with notices. See the [MIT text](https://opensource.org/license/mit) and [GitHub's license summary](https://choosealicense.com/licenses/mit/). No project-wide relicensing of third-party/game material is intended.
+
+Public packaging must exclude unresolved derived resources, even when they are embedded in an executable rather than present as loose files. Local reproduction and authorization to redistribute are separate questions. This branch is not yet an approved open-source release or a grant from Creative Assembly/SEGA.
+
+Owner approved local-resource source kit and native status icon profile on 2026-10-21. No public prebuilt resource redistribution is approved or inferred. The prepared native aliases deliberately differ from the private restored status artwork; all other native sprite geometry is checked.

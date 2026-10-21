@@ -8,7 +8,7 @@ Crashes can still happen during battles, including with blood turned off. The ac
 
 v0.22 was reported smooth with Large units, one massive army per side and maximum graphics in DX11. Ultra units with substantial army presence can still become very slow. The audio guard covers one reproduced fault; it does not resolve all crashes. It can happen without a QTE showing, and sometimes the QTE stays smooth while the battle slows down. Some fights recover on their own. Leaving and re-entering possession isn't a confirmed fix.
 
-If you hit either problem, include the unit, map and what was happening nearby. The [technical notes](releases/v0.24-technical.md#remaining-limits) contain the crash details and investigation limits.
+If you hit either problem, include the unit, map and what was happening nearby. The [technical notes](https://github.com/logsam58/shogun2-first-person/blob/v0.28/docs/releases/v0.24-technical.md#remaining-limits) contain the crash details and investigation limits.
 
 ## Visual problems
 

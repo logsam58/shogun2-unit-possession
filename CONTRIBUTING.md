@@ -1,26 +1,11 @@
 # Contributing
 
-This project modifies SHOGUN 2's native battle behavior. Start with the [README](README.md), [source map](SOURCE_MAP.md), [architecture](docs/ARCHITECTURE.md) and [build guide](BUILD_AND_TEST.md). The game remains responsible for the battle simulation; changes should preserve that relationship and the independent behavior of unpossessed soldiers.
+Start with the [build guide](BUILD_AND_TEST.md), [source map](SOURCE_MAP.md) and [native contracts](docs/public-release/NATIVE_CONTRACTS.md). Work on a branch; describe the trigger, change, meaningful checks, untested boundaries and gameplay risks.
 
-## Development workflow
+First-party contributions use the root MIT license. Submit only work you may license that way. Identify borrowed material and preserve notices. Do not add game binaries, extracted art/fonts/audio, full decompilations, private dumps, credentials or personal configuration. MIT does not cover game material or replace dependency licenses.
 
-1. Create a focused branch from main and configure local build dependencies.
-2. Find the active component in SOURCE_MAP.md. Versioned directory names do not mean a component is obsolete.
-3. Make the smallest coherent change. Preserve ownership/lifetime validation, native forwarding for unrelated actors and compatible numeric protocols.
-4. Build and run the affected offline fixtures. For hook changes, include original-native forwarding, invalid identity, cleanup and restoration cases where relevant.
-5. Review the diff, then run `py tools/audit_repository.py` against the staged files before pushing.
-6. Open a pull request explaining the observable behavior, why it changes, checks actually run and unresolved limitations.
+Preserve native mechanics and ownership guards. Record image hash, RVA, ABI, bytes and evidence for native changes; never infer a structure merely from a similar class. Forward unrelated native calls.
 
-Keep generated binaries, extracted game resources, local configuration and raw recordings/dumps out of Git. Do not update docs/source-import.json to make intentional edits appear byte-identical to the original import. No project-wide license has been declared; preserve existing third-party notices.
+Protocol changes require coordinated producers/consumers and negative identity tests. Role changes require adapter/HUD/diagnostic coverage. Installer changes require killed-process recovery tests. Run relevant current checks; unavailable optional history is a skip.
 
-## Useful bug reports
-
-Include the mod version, game/expansion, battle type and map, unit and weapon/ammunition, other mods, reproduction steps, expected behavior and actual behavior. For possession or combat problems, describe whether the soldier was mounted, climbing, reloading, routing, dying or entering a paired animation. For timing issues, include battle speed, pause state, refresh rate and whether the game itself slowed down.
-
-For a crash, provide the exception code/module/offset if available and distinguish recovered exceptions from the final unhandled crash. Native module attribution alone does not prove a game-only cause. Start with a small sanitized report; a full dump can contain private data and should not be attached publicly without review. See the [diagnostics guide](tools/diagnostics/README.md).
-
-## Live testing
-
-A new native DLL needs a closed-game installation and a fresh launch. Keep an exact rollback of managed files. Record the built and loaded component hashes, engine hash, unit/map and tested transitions. When coordinating an instrumented session, confirm capture and loaded state before directing gameplay. Do not gate automatic capture on pause, READY or mod availability.
-
-Record scoped results such as 'climbed and landed on this map with this infantry unit.' Avoid treating one successful session or synthetic fixture as proof of universal compatibility. Existing known issues remain open until evidence addresses them.
+Imports, help, configuration and builds must not install, launch or activate recording. Real gameplay, installation and publication remain explicit operator steps. See [releasing](docs/public-release/RELEASING.md). Contributors need no private archives or original operator machine.

@@ -1,39 +1,34 @@
-"""Configure local build inputs; never install or launch Shogun 2."""
-import argparse,hashlib,json,shutil
+"""Configure explicit local inputs; never install, launch or copy private archives."""
+import argparse
+import json
 from pathlib import Path
+import sys
 ROOT=Path(__file__).resolve().parents[1]
-def sha(path):return hashlib.sha256(path.read_bytes()).hexdigest()
+sys.path.insert(0,str(ROOT/'tools'))
+from game_packs import require_game
+from build_frontend import resource_inputs
+
 def main():
- p=argparse.ArgumentParser(description=__doc__);p.add_argument('--asset-source',type=Path);p.add_argument('--legacy-fixtures',type=Path);p.add_argument('--vcvars',type=Path);a=p.parse_args()
- config=ROOT/'tools/local.json';settings=json.loads(config.read_text()) if config.exists() else {}
- if a.vcvars:
-  if not a.vcvars.is_file():p.error('vcvars32.bat does not exist')
-  settings['vcvars']=str(a.vcvars.resolve())
- source=a.asset_source or (Path(settings['asset_source']) if 'asset_source' in settings else None);copied=0
- if source:
-  for item in json.loads((ROOT/'tools/local-assets.json').read_text())['files']:
-   original=source/item['source_relative'];dest=ROOT/item['path']
-   if not original.is_file() or sha(original)!=item['sha256']:raise SystemExit('Missing/different local UI input: '+str(original))
-   if dest.exists() and sha(dest)!=item['sha256']:raise SystemExit('Existing local UI input differs; preserved: '+str(dest))
-   dest.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(original,dest);copied+=1
-  settings['asset_source']=str(source.resolve())
- legacy=a.legacy_fixtures;fixtures=0
- if legacy:
-  for directory in (legacy/'work').glob('autoload*'):
-   if not directory.is_dir() or directory.name=='autoload99-preview':continue
-   for name in ['dinput8.dll','marker.pack']:
-    original=directory/name
-    if original.is_file():
-     dest=ROOT/'native/work'/directory.name/name;dest.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(original,dest);fixtures+=1
-  for relative in ['outputs/shogun2-melee-meter78-preview/possession-v46.dll','outputs/shogun2-melee-meter78-preview/qte-playable-v78.dll','outputs/shogun2-possession-hud-v12/possession-hud.exe']:
-   original=legacy/relative
-   if not original.is_file():raise SystemExit('Missing historical runtime fixture: '+str(original))
-   dest=ROOT/'native'/relative;dest.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(original,dest);fixtures+=1
-  for name in ['dinput8.dll','marker.pack']:
-   original=legacy/'work/autoload99-preview'/name
-   expected={'dinput8.dll':'d18e70424a90eca1545b4bd157e90443d51a3308c57eca5aadb69cf8ad1ecf30','marker.pack':'5086260202764f77752a578319e8748bed1d8057f2afd9e3415f9e0213ec9ec5'}[name]
-   if not original.is_file() or sha(original)!=expected:raise SystemExit('Different installed Test99 predecessor fixture: '+str(original))
-   dest=ROOT/'native/work/autoload-test99-baseline'/name;dest.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(original,dest);fixtures+=1
-  settings['legacy_fixture_source']=str(legacy.resolve())
- config.write_text(json.dumps(settings,indent=2)+'\n');print(json.dumps({'local_UI_inputs':copied,'local_legacy_fixture_files':fixtures,'configuration':str(config),'game_changed':False}))
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--game',type=Path)
+    parser.add_argument('--resources',type=Path)
+    parser.add_argument('--vcvars',type=Path)
+    args=parser.parse_args()
+    target=ROOT/'tools/local.json'
+    settings=json.loads(target.read_text(encoding='utf-8')) if target.is_file() else {}
+    if args.game:
+        require_game(args.game)
+        settings['game']=str(args.game.resolve())
+    if args.resources:
+        resource_inputs(args.resources.resolve())
+        settings['resources']=str(args.resources.resolve())
+    if args.vcvars:
+        if not args.vcvars.is_file() or args.vcvars.name.lower()!='vcvars32.bat':
+            parser.error('--vcvars must name an existing vcvars32.bat')
+        settings['vcvars']=str(args.vcvars.resolve())
+    # Purge obsolete import settings without touching old input files.
+    settings={key:value for key,value in settings.items() if key in ('game','resources','vcvars')}
+    target.write_text(json.dumps(settings,indent=2)+'\n',encoding='utf-8')
+    print(json.dumps({'configuration':'tools/local.json','game_changed':False,'installed':False}))
+
 if __name__=='__main__':main()

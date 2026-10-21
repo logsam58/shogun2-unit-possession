@@ -1,3 +1,4 @@
+#include "../../../common/fixture_paths.h"
 #define main previous_scope96
 #include "verify_ranged_scope.cpp"
 #undef main
@@ -5,7 +6,7 @@ static unsigned advances96;
 static unsigned __fastcall advance96(void*,void*){++advances96;return 0x96;}
 int main(){unsigned char* mapped=nullptr;try{
  std::ostringstream mute;auto* output=std::cout.rdbuf(mute.rdbuf());int prior=previous_scope96();std::cout.rdbuf(output);require(prior==0,"Production family/scope regression");
- std::wstring path=L"C:\\Program Files (x86)\\Steam\\steamapps\\common\\Total War SHOGUN 2\\Empire.Retail.dll";require(hash_file(path)==EXPECTED_HASH,"Exact native image");
+ std::wstring path=fixture_paths::engine();require(hash_file(path)==EXPECTED_HASH,"Exact native image");
  std::ifstream in(path,std::ios::binary);std::vector<unsigned char> image((std::istreambuf_iterator<char>(in)),{});auto dos=reinterpret_cast<IMAGE_DOS_HEADER*>(image.data());auto nt=reinterpret_cast<IMAGE_NT_HEADERS32*>(image.data()+dos->e_lfanew);
  mapped=static_cast<unsigned char*>(VirtualAlloc(nullptr,nt->OptionalHeader.SizeOfImage,MEM_COMMIT|MEM_RESERVE,PAGE_READWRITE));require(mapped!=nullptr,"Fixture image allocation");memcpy(mapped,image.data(),nt->OptionalHeader.SizeOfHeaders);
  auto sections=IMAGE_FIRST_SECTION(nt);for(unsigned i=0;i<nt->FileHeader.NumberOfSections;++i){auto&s=sections[i];if(s.SizeOfRawData)memcpy(mapped+s.VirtualAddress,image.data()+s.PointerToRawData,s.SizeOfRawData);}

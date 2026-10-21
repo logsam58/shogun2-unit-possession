@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include "../../../common/soldier_roles.h"
 namespace actor152 {
 // Final soldier classes from native14da10 and constructors rooted at3596e0.
 // These share the human actor layout but carry their OWN config/actions.
@@ -20,6 +21,6 @@ inline bool individual(uintptr_t engine,uintptr_t table){
     default:return false;
     }
 }
-inline bool human(uintptr_t engine,uintptr_t table){return table==engine+0x15dfec8||individual(engine,table);}
-inline bool kind(uintptr_t engine,uintptr_t table,unsigned k){return k==0?human(engine,table):k==1&&table==engine+0x15e8524;}
+inline bool human(uintptr_t engine,uintptr_t table){return soldier_roles::human(engine,table);}
+inline bool kind(uintptr_t engine,uintptr_t table,unsigned k){return k==0?human(engine,table):k==1&&table>=engine&&table-engine==soldier_roles::horse_table;}
 }

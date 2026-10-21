@@ -1,3 +1,4 @@
+#include "../../../common/fixture_paths.h"
 #include "identity.h"
 #include "ranged_task_completion.h"
 #include "../vendor/include/MinHook.h"
@@ -18,7 +19,7 @@ int main(){try{
     require(MH_DisableHook(entry)==MH_OK&&memcmp(entry,code,16)==0,"Gate bytes not restored");
     std::array<unsigned char,0x100> task;task.fill(0xa5);auto before=task;acknowledge_skipped_ranged_draw(task.data());
     for(unsigned i=0;i<task.size();++i)require(task[i]==((i==0x84||i==0x6c||i==0x6d||i==0x6e)?1:before[i]),"Task acknowledgement changed unrelated bytes");
-    auto engine=L"C:\\Program Files (x86)\\Steam\\steamapps\\common\\Total War SHOGUN 2\\Empire.Retail.dll";require(hash_file(engine)==EXPECTED_HASH,"Engine identity differs");
+    auto engine=fixture_paths::engine();require(hash_file(engine)==EXPECTED_HASH,"Engine identity differs");
     HMODULE image=LoadLibraryExW(engine,nullptr,LOAD_LIBRARY_AS_IMAGE_RESOURCE|LOAD_LIBRARY_AS_DATAFILE_EXCLUSIVE);require(image!=nullptr,"Read-only image mapping failed");auto b=reinterpret_cast<uintptr_t>(image)&~uintptr_t(3);
     struct Check{unsigned rva;std::vector<unsigned char> bytes;};std::vector<Check> checks={{0x3d3ce0,{0x56,0x8b,0xf1,0x8b,0x4e,4,0x80,0xb9,0x1f,1,0,0,0}},{0x3d33f0,{0x51,0x56,0x8b,0xf1,0x80,0x7e,0x7c,1}},{0x3d3d40,{0x56,0x8b,0xf1,0x8b,0x46,0x44,0x83,0xf8,7}},{0x3d3de0,{0x80,0x79,0x6e,0,0x74}}};
     for(auto& c:checks){require(!memcmp(reinterpret_cast<void*>(b+c.rva),c.bytes.data(),c.bytes.size()),"Native gate signature differs");

@@ -1,3 +1,4 @@
+#include "../../../common/fixture_paths.h"
 #include "identity.h"
 #include <array>
 static void* __fastcall copy_vector81(void* destination,void*,const void* source){memcpy(destination,source,12);return destination;}
@@ -12,7 +13,7 @@ static std::vector<unsigned char> native_code81(const std::vector<unsigned char>
 }
 static void jump81(unsigned char* where,const void* target){where[0]=0xe9;uint32_t relative=uint32_t(reinterpret_cast<uintptr_t>(target)-reinterpret_cast<uintptr_t>(where)-5);memcpy(where+1,&relative,4);}
 int main(){void* memory=nullptr;try{
-    std::wstring path=L"C:\\Program Files (x86)\\Steam\\steamapps\\common\\Total War SHOGUN 2\\Empire.Retail.dll";require(hash_file(path)==EXPECTED_HASH,"Native order fixture requires exact engine");
+    std::wstring path=fixture_paths::engine();require(hash_file(path)==EXPECTED_HASH,"Native order fixture requires exact engine");
     std::ifstream f(path,std::ios::binary);std::vector<unsigned char> image((std::istreambuf_iterator<char>(f)),{});
     memory=VirtualAlloc(nullptr,0x350000,MEM_COMMIT|MEM_RESERVE,PAGE_READWRITE);require(memory!=nullptr,"Fixture allocation");auto code=static_cast<unsigned char*>(memory);
     auto constructor=native_code81(image,0x255290,0x73),serializer=native_code81(image,0x2e6cd0,0x38);

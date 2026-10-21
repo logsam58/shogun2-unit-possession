@@ -16,7 +16,9 @@ def stop():
 def start():
     (ROOT/'watcher.stop').unlink(missing_ok=True)
     with (ROOT/'bootstrap.log').open('a') as output:
-        child=hidden([ROOT/'runtime'/'pythonw.exe',ROOT/'watcher.py'],output)
+        receipt=json.loads((ROOT/'installation.json').read_text(encoding='utf-8'))
+        python=Path(receipt.get('python',str(ROOT/'runtime'/'pythonw.exe')))
+        child=hidden([python,ROOT/'watcher.py','--run'],output)
     for _ in range(80):
         try:
             data=json.loads((ROOT/'watcher-health.json').read_text())
@@ -31,11 +33,16 @@ if __name__=='__main__':
     elif o.action=='status':print((ROOT/'watcher-health.json').read_text())
     else:
         state=stop();receipt=json.loads((ROOT/'installation.json').read_text())
-        with winreg.CreateKey(winreg.HKEY_CURRENT_USER,RUN) as key:
-            try:current,_=winreg.QueryValueEx(key,NAME)
-            except FileNotFoundError:current=None
-            if current==receipt['autorun_command']:
-                old=receipt.get('prior_autorun')
-                if old:winreg.SetValueEx(key,NAME,0,old['type'],old['value'])
-                else:winreg.DeleteValue(key,NAME)
-        print(json.dumps({'autorun_removed':True,'watcher':state,'evidence_retained':True},indent=2))
+        removed=False;owned_command=receipt.get('autorun_command')
+        if owned_command:
+            try:
+                with winreg.OpenKey(winreg.HKEY_CURRENT_USER,RUN,0,winreg.KEY_QUERY_VALUE|winreg.KEY_SET_VALUE) as key:
+                    try:current,_=winreg.QueryValueEx(key,NAME)
+                    except FileNotFoundError:current=None
+                    if current==owned_command:
+                        old=receipt.get('prior_autorun')
+                        if old:winreg.SetValueEx(key,NAME,0,old['type'],old['value'])
+                        else:winreg.DeleteValue(key,NAME)
+                        removed=True
+            except FileNotFoundError:pass
+        print(json.dumps({'autorun_removed':removed,'watcher':state,'evidence_retained':True},indent=2))

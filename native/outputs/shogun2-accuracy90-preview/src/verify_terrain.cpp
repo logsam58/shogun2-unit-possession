@@ -1,3 +1,4 @@
+#include "../../../common/fixture_paths.h"
 #include "identity.h"
 #include "terrain_math.h"
 #include <array>
@@ -14,7 +15,7 @@ static float __fastcall synthetic_heightfield(void* object,void*,const float*){
     return *reinterpret_cast<float*>(object);
 }
 int main(){void* memory=nullptr;try{
-    std::wstring path=L"C:\\Program Files (x86)\\Steam\\steamapps\\common\\Total War SHOGUN 2\\empire.retail.dll";
+    std::wstring path=fixture_paths::engine();
     require(hash_file(path)==EXPECTED_HASH,"Native terrain fixture requires verified engine");
     std::ifstream stream(path,std::ios::binary);std::vector<unsigned char> image((std::istreambuf_iterator<char>(stream)),{});
     auto native=code_at(image,0x3aa602,0x57),height=code_at(image,0x17c0a0,0x53);

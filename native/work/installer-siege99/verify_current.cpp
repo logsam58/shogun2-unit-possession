@@ -1,0 +1,34 @@
+#include "../../common/fixture_paths.h"
+#define VERIFY_FIXTURE
+#include "install.h"
+int wmain(){try{
+    wchar_t exe[MAX_PATH];GetModuleFileNameW(nullptr,exe,MAX_PATH);wchar_t temporary[MAX_PATH];require(GetTempPathW(MAX_PATH,temporary)>0,"Fixture temporary directory");std::wstring root=std::wstring(temporary)+L"s2fp current "+transaction_nonce();auto game=root+L"\\game",data=root+L"\\user";require(SHCreateDirectoryExW(nullptr,(game+L"\\data").c_str(),nullptr)==ERROR_SUCCESS,"Fixture creation failed");
+    auto original_engine=fixture_paths::game()+L"\\Empire.Retail.dll";require(CopyFileW(original_engine.c_str(),(game+L"\\Empire.Retail.dll").c_str(),TRUE)!=0,"Cannot prepare engine fixture");
+    require(CopyFileW((fixture_paths::game()+L"\\installscript.vdf").c_str(),(game+L"\\installscript.vdf").c_str(),TRUE)!=0,"Cannot prepare signed startup script fixture");
+    std::wstring selection=data+L"\\The Creative Assembly\\Shogun2\\scripts\\user.script.txt",cache=data+L"\\The Creative Assembly\\Launcher\\20190104-moddata.dat";
+    std::string original="// keep\r\nmod another.pack;\r\n",other="[{\"uuid\":\"other.pack\",\"active\":false,\"game\":\"shogun2\",\"extra\":{\"quoted\":\"brace }\\\"\"}}]";
+    atomic_bytes(selection,original);atomic_bytes(cache,other);bool failed=false;for(int interruption=0;interruption<7;++interruption){failed=false;try{install_all(game,data,{},interruption);}catch(...){failed=true;}require(failed,"Interruption did not fail");require(read_bytes(selection)==original&&read_bytes(cache)==other&&GetFileAttributesW((game+L"\\DINPUT8.dll").c_str())==INVALID_FILE_ATTRIBUTES&&GetFileAttributesW((game+L"\\data\\"+PACK).c_str())==INVALID_FILE_ATTRIBUTES,"Interrupted install did not fully restore state");}
+
+    auto flash_backup=game+L"\\possession-flash-startup-restore.reg";
+    {flashstartup86::Key key;require(RegCreateKeyExW(flashstartup86::hive,flashstartup86::key_path.c_str(),0,nullptr,0,KEY_ALL_ACCESS|KEY_WOW64_32KEY,nullptr,&key.value,nullptr)==ERROR_SUCCESS,"Fixture registry key");DWORD value=77;require(RegSetValueExW(key.value,L"DirectX",0,REG_DWORD,reinterpret_cast<BYTE*>(&value),4)==ERROR_SUCCESS,"Fixture unrelated prerequisite");}
+    auto original_vdf=read_bytes(game+L"\\installscript.vdf");
+    for(int interruption:{4,5,6}){failed=false;try{install_all(game,data,{},interruption);}catch(...){failed=true;}
+        auto flags=flashstartup86::Snapshot{};
+        require(failed&&!flags.before[0].exists&&!flags.before[1].exists&&read_bytes(selection)==original&&read_bytes(cache)==other&&GetFileAttributesW(flash_backup.c_str())==INVALID_FILE_ATTRIBUTES&&GetFileAttributesW((game+L"\\DINPUT8.dll").c_str())==INVALID_FILE_ATTRIBUTES,"Flash/file interrupted upgrade failed rollback");}
+    install_all(game,data);require(flashstartup86::Snapshot{}.skipped(),"Flash setup steps not skipped");
+    auto original_flash_backup=read_bytes(flash_backup);require(original_flash_backup.size()>100,"Flash restore file missing");
+    install_all(game,data);require(read_bytes(flash_backup)==original_flash_backup&&read_bytes(game+L"\\installscript.vdf")==original_vdf,"Repeated install changed restore snapshot or signed script");
+    {flashstartup86::Key key;require(RegOpenKeyExW(flashstartup86::hive,flashstartup86::key_path.c_str(),0,KEY_QUERY_VALUE|KEY_WOW64_32KEY,&key.value)==ERROR_SUCCESS,"Fixture registry reopen");DWORD value{},size=4,type{};require(RegQueryValueExW(key.value,L"DirectX",nullptr,&type,reinterpret_cast<BYTE*>(&value),&size)==ERROR_SUCCESS&&type==REG_DWORD&&value==77,"Other prerequisites changed");}
+    {flashstartup86::Key key;require(RegOpenKeyExW(flashstartup86::hive,flashstartup86::key_path.c_str(),0,KEY_SET_VALUE|KEY_WOW64_32KEY,&key.value)==ERROR_SUCCESS,"Fixture malformed flag");const wchar_t text[]=L"foreign value";require(RegSetValueExW(key.value,flashstartup86::names[0],0,REG_SZ,reinterpret_cast<const BYTE*>(text),sizeof text)==ERROR_SUCCESS,"Fixture malformed write");}
+    failed=false;try{install_all(game,data);}catch(...){failed=true;}require(failed&&read_bytes(flash_backup)==original_flash_backup,"Malformed prerequisite flag not rejected");
+    {flashstartup86::Key key;RegOpenKeyExW(flashstartup86::hive,flashstartup86::key_path.c_str(),0,KEY_SET_VALUE|KEY_WOW64_32KEY,&key.value);DWORD one=1;RegSetValueExW(key.value,flashstartup86::names[0],0,REG_DWORD,reinterpret_cast<BYTE*>(&one),4);}
+    std::cout<<"PASS: Flash-only HasRunKey updates; signed startup script and other prerequisite preservation; persistent restore snapshot; idempotency; partial registry/post-registry/file rollback; malformed flag refusal. HKCU fixture only.\n";
+    install_all(game,data);auto after=read_bytes(cache);require(after.find(other.substr(1,other.size()-2))!=std::string::npos,"Other launcher entry changed");auto j=JsonReader{after}.document();require(j.items.size()==2&&j.items[1].fields.at("active").value=="true","Launcher activation failed");require(read_bytes(selection).substr(0,original.size())==original,"Existing selection changed");auto selection_after=read_bytes(selection);install_all(game,data);require(after==read_bytes(cache)&&selection_after==read_bytes(selection),"Repeated install changed selection");
+    auto disabled=after;auto active=j.items[1].fields.at("active");disabled.replace(active.begin,active.end-active.begin,"false");atomic_bytes(cache,disabled);install_all(game,data);require(read_bytes(cache)==after,"Existing launcher entry not enabled");
+    auto dll=game+L"\\DINPUT8.dll";atomic_bytes(dll,"unrelated mod");failed=false;try{install_all(game,data);}catch(...){failed=true;}require(failed&&read_bytes(dll)=="unrelated mod"&&read_bytes(cache)==after,"Unrelated DLL was overwritten");
+    std::vector<std::string> encodings={original,std::string("\xef\xbb\xbf")+original};for(bool be:{false,true}){std::string encoded=be?"\xfe\xff":"\xff\xfe";for(char c:original){if(be){encoded+='\0';encoded+=c;}else{encoded+=c;encoded+='\0';}}encodings.push_back(encoded);}unsigned index=0;
+    for(auto& bytes:encodings){auto path=root+L"\\encoding-"+std::to_wstring(index++);atomic_bytes(path,bytes);activate_path(path);require(read_bytes(path).substr(0,bytes.size())==bytes&&selected_text(read_text(path)),"Encoded selection failed");auto first=read_bytes(path);activate_path(path);require(first==read_bytes(path),"Encoded selection duplicated");}
+    failed=false;try{launcher_selection("{\"unknown\":true}",game);}catch(...){failed=true;}require(failed,"Unknown launcher schema accepted");
+    std::cout<<"PASS: current payload integrity, install/update/idempotency, file/registry exception rollback, original script and unknown DLL/launcher preservation, UTF8/UTF16 selection. No historical archive used.\n";
+    return 0;
+}catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}}

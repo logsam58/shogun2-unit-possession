@@ -1,3 +1,4 @@
+#include "../../../common/fixture_paths.h"
 #include "identity.h"
 #include "camera_entry_gate.h"
 using ToggleFixture=void(__thiscall*)(void*,unsigned);
@@ -19,7 +20,7 @@ static std::vector<unsigned char> native_code(const std::vector<unsigned char>& 
     throw std::runtime_error("Camera fixture section absent");
 }
 static void native_toggle_fixture(){
-    std::wstring path=L"C:\\Program Files (x86)\\Steam\\steamapps\\common\\Total War SHOGUN 2\\empire.retail.dll";
+    std::wstring path=fixture_paths::engine();
     require(hash_file(path)==EXPECTED_HASH,"Camera fixture requires exact native build");
     std::ifstream stream(path,std::ios::binary);std::vector<unsigned char> image((std::istreambuf_iterator<char>(stream)),{});
     auto toggle=native_code(image,0x319dd0,104),restore=native_code(image,0x2d5fc0,13);

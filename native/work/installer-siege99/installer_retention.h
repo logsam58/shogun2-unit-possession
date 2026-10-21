@@ -4,26 +4,7 @@
 // Only installer-owned paths are considered. Reparse points are never followed.
 struct RetentionReport { unsigned caches_removed{}, backups_removed{}, deferred{}; };
 static RetentionReport retention_report;
-static bool plain_path(const std::wstring& path, bool directory) {
-    DWORD a=GetFileAttributesW(path.c_str());
-    return a!=INVALID_FILE_ATTRIBUTES && !(a&FILE_ATTRIBUTE_REPARSE_POINT) && bool(a&FILE_ATTRIBUTE_DIRECTORY)==directory;
-}
-static bool plain_ancestors(std::wstring path) {
-    wchar_t absolute[32768];DWORD n=GetFullPathNameW(path.c_str(),32768,absolute,nullptr);
-    if(!n||n>=32768)return false;path=absolute;
-    if(path.size()<3||path[1]!=L':'||path[2]!=L'\\')return false;
-    for(size_t end=3;end<=path.size();++end)if(end==path.size()||path[end]==L'\\') {
-        auto prefix=path.substr(0,end);if(!plain_path(prefix,true))return false;
-    }
-    return true;
-}
-static std::vector<std::wstring> children(const std::wstring& folder) {
-    std::vector<std::wstring> names;WIN32_FIND_DATAW data{};
-    HANDLE h=FindFirstFileW((folder+L"\\*").c_str(),&data);
-    if(h==INVALID_HANDLE_VALUE)return names;
-    do {std::wstring name=data.cFileName;if(name!=L"."&&name!=L"..")names.push_back(name);}while(FindNextFileW(h,&data));
-    FindClose(h);return names;
-}
+#include "installer_filesystem.h"
 static bool numeric_suffix(const std::wstring& name,const std::wstring& prefix) {
     return name.size()>prefix.size()&&name.compare(0,prefix.size(),prefix)==0 &&
         std::all_of(name.begin()+prefix.size(),name.end(),[](wchar_t c){return c>=L'0'&&c<=L'9';});

@@ -1,9 +1,10 @@
+#include "../../common/fixture_paths.h"
 #define VERIFY_FIXTURE
 #include "install.h"
 int wmain(){try{
     wchar_t exe[MAX_PATH];GetModuleFileNameW(nullptr,exe,MAX_PATH);std::wstring root=exe;root=root.substr(0,root.find_last_of(L'\\'))+L"\\fixture-"+std::to_wstring(GetTickCount64());auto game=root+L"\\game",data=root+L"\\user";require(SHCreateDirectoryExW(nullptr,(game+L"\\data").c_str(),nullptr)==ERROR_SUCCESS,"Fixture creation failed");
-    auto original_engine=locate()+L"\\Empire.Retail.dll";require(CopyFileW(original_engine.c_str(),(game+L"\\Empire.Retail.dll").c_str(),TRUE)!=0,"Cannot prepare engine fixture");
-    require(CopyFileW((locate()+L"\\installscript.vdf").c_str(),(game+L"\\installscript.vdf").c_str(),TRUE)!=0,"Cannot prepare signed startup script fixture");
+    auto original_engine=fixture_paths::game()+L"\\Empire.Retail.dll";require(CopyFileW(original_engine.c_str(),(game+L"\\Empire.Retail.dll").c_str(),TRUE)!=0,"Cannot prepare engine fixture");
+    require(CopyFileW((fixture_paths::game()+L"\\installscript.vdf").c_str(),(game+L"\\installscript.vdf").c_str(),TRUE)!=0,"Cannot prepare signed startup script fixture");
     std::wstring selection=data+L"\\The Creative Assembly\\Shogun2\\scripts\\user.script.txt",cache=data+L"\\The Creative Assembly\\Launcher\\20190104-moddata.dat";
     std::string original="// keep\r\nmod another.pack;\r\n",other="[{\"uuid\":\"other.pack\",\"active\":false,\"game\":\"shogun2\",\"extra\":{\"quoted\":\"brace }\\\"\"}}]";
     atomic_bytes(selection,original);atomic_bytes(cache,other);bool failed=false;try{install_all(game,data,{},2);}catch(...){failed=true;}require(failed,"Interruption did not fail");require(read_bytes(selection)==original&&read_bytes(cache)==other&&GetFileAttributesW((game+L"\\DINPUT8.dll").c_str())==INVALID_FILE_ATTRIBUTES&&GetFileAttributesW((game+L"\\data\\"+PACK).c_str())==INVALID_FILE_ATTRIBUTES,"Interrupted install did not fully restore state");

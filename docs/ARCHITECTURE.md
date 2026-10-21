@@ -36,6 +36,6 @@ The optional external recorder is independent of mod readiness. It watches launc
 
 ## Setup and release
 
-The installer verifies the retail engine and payload, refuses unrelated same-name injection files, updates managed files and mod selection transactionally, and retains one previous managed snapshot. Interrupted stages restore prior files and registry state. Cache cleanup removes only recognized unchanged caches; locked, modified and unknown items are deferred.
+The installer verifies the retail engine and payload, refuses unrelated same-name injection files, updates managed files and mod selection transactionally, and records flushed identified snapshots before mutation. Uncommitted killed-process recovery restores prior files and registry; committed recovery completes backup retention. Unknown edits stop recovery. Cache cleanup removes only recognized unchanged caches; locked, modified and unknown items are deferred.
 
-Build artifacts, proprietary inputs and real recordings stay outside Git. Release packaging pins the reviewed source commit and component hashes, checks embedded resources and versions, then assembles player downloads. Publication uploads a draft, downloads and verifies every asset, and only then publishes the requested version. It does not install or launch the game.
+Builds use explicit inputs and isolated output snapshots. Game resources are prepared locally; public packaging is source-only while binary redistribution permission is unresolved. See [current release procedure](public-release/RELEASING.md) and [native contracts](public-release/NATIVE_CONTRACTS.md). No publication or installation is implied by a build.

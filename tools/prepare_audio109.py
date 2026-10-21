@@ -3,7 +3,7 @@ import argparse,hashlib,json,struct,subprocess,tempfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 def main():
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--game',type=Path,required=True);p.add_argument('--ffmpeg',type=Path,required=True);a=p.parse_args()
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--game',type=Path,required=True);p.add_argument('--ffmpeg',type=Path,required=True);p.add_argument('--output-root',type=Path,default=ROOT);a=p.parse_args()
     spec=json.loads((ROOT/'tools/audio109.json').read_text());pack=a.game/'data'/spec['pack']
     with pack.open('rb') as f:
         header=f.read(32);magic,flags,deps,dep_size,count,index_size,stamp=struct.unpack('<4s5IQ',header)
@@ -16,7 +16,7 @@ def main():
                 f.seek(offset);source=f.read(size)
             offset+=size
     if source is None or hashlib.sha256(source).hexdigest()!=spec['source_sha256']:raise RuntimeError('Original voice source differs')
-    target=ROOT/spec['wave_path'];target.parent.mkdir(parents=True,exist_ok=True)
+    target=a.output_root/spec['wave_path'];target.parent.mkdir(parents=True,exist_ok=True)
     with tempfile.TemporaryDirectory(prefix='shogun-voice109-') as temp:
         original=Path(temp)/'voice.mp3';original.write_bytes(source);cropped=Path(temp)/'cropped.wav';start,end=spec['trim_seconds']
         subprocess.run([str(a.ffmpeg),'-hide_banner','-loglevel','error','-y','-i',str(original),'-af',f'atrim=start={start}:end={end},asetpts=PTS-STARTPTS','-ac','1','-ar','44100','-c:a','pcm_s16le','-fflags','+bitexact','-flags:a','+bitexact','-map_metadata','-1',str(cropped)],check=True)

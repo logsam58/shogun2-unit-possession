@@ -1,3 +1,4 @@
+#include "../../../common/fixture_paths.h"
 #include "../../shogun2-possession-cleanup-v46/src/identity.h"
 #include "../../shogun2-possession-cleanup-v46/vendor/include/MinHook.h"
 #include "native_observer.h"
@@ -87,7 +88,7 @@ int main(){try{
     require(MH_Uninitialize()==MH_OK,"Fixture uninitialize failed");
     // Decode/patch COPIES of the original entry bytes, never execute engine
     // functions. AS_IMAGE_RESOURCE maps PE data without imports or DllMain.
-    const wchar_t* engine_path=L"C:\\Program Files (x86)\\Steam\\steamapps\\common\\Total War SHOGUN 2\\Empire.Retail.dll";
+    const wchar_t* engine_path=fixture_paths::engine();
     require(hash_file(engine_path)==EXPECTED_HASH,"Original engine differs");
     HMODULE data=LoadLibraryExW(engine_path,nullptr,LOAD_LIBRARY_AS_IMAGE_RESOURCE|LOAD_LIBRARY_AS_DATAFILE_EXCLUSIVE);
     require(data!=nullptr,"Original PE data mapping failed");

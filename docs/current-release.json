@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "published": {
+    "version": "0.28",
+    "test": 157,
+    "commit": "24d31a2f5e5c2cf84a42c459a69bdcd9bd86c600",
+    "immutable": true
+  },
+  "development": {
+    "branch": "public-release",
+    "candidate": 158,
+    "format": "source/local-resource-kit",
+    "installed": false,
+    "live_accepted": false,
+    "pushed": false,
+    "published": false
+  },
+  "owner_decisions": {
+    "first_party_license": "MIT",
+    "resource_format": "prepare from each owned game",
+    "status_icons": "original native icons in public profile"
+  },
+  "open": [
+    "unresolved game crashes",
+    "Ultra multi-army slowdown",
+    "some first-person clipping",
+    "isolated enemy acquisition",
+    "candidate live validation",
+    "permission for resource-containing public binaries"
+  ]
+}

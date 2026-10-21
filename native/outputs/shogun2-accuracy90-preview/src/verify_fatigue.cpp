@@ -1,3 +1,4 @@
+#include "../../../common/fixture_paths.h"
 #include "identity.h"
 #include "steering.h"
 #include "possession_lease.h"
@@ -39,7 +40,7 @@ static std::vector<unsigned char> code_at(const std::vector<unsigned char>& imag
     throw std::runtime_error("Native fixture section absent");
 }
 int main(){void* memory=nullptr;bool initialized=false;try{
-    std::wstring path=L"C:\\Program Files (x86)\\Steam\\steamapps\\common\\Total War SHOGUN 2\\empire.retail.dll";
+    std::wstring path=fixture_paths::engine();
     require(hash_file(path)==EXPECTED_HASH,"Fatigue fixture requires verified engine");
     std::ifstream stream(path,std::ios::binary);std::vector<unsigned char> image((std::istreambuf_iterator<char>(stream)),{});
     memory=VirtualAlloc(nullptr,0x1bc9000,MEM_COMMIT|MEM_RESERVE,PAGE_READWRITE);require(memory!=nullptr,"Fixture allocation");

@@ -1,3 +1,4 @@
+#include "../../../common/fixture_paths.h"
 #include "identity.h"
 #include "camera_entry_gate.h"
 #include "../vendor/include/MinHook.h"
@@ -16,7 +17,7 @@ static DWORD WINAPI unrelated_worker(void* param){
 int main(){void* memory=nullptr;try{
     // Exact native dispatcher prologue plus a fixture tail with its verified RET8.
     // The full dispatcher and real input lifecycle are not emulated here.
-    std::wstring path=L"C:\\Program Files (x86)\\Steam\\steamapps\\common\\Total War SHOGUN 2\\empire.retail.dll";
+    std::wstring path=fixture_paths::engine();
     require(hash_file(path)==EXPECTED_HASH,"Input fixture engine differs");
     std::ifstream in(path,std::ios::binary);std::vector<unsigned char> raw((std::istreambuf_iterator<char>(in)),{});
     auto dos=reinterpret_cast<const IMAGE_DOS_HEADER*>(raw.data());

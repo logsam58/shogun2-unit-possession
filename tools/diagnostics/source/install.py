@@ -1,38 +1,29 @@
-"""Install a self-contained, hidden per-user recorder and enable it at logon."""
-import hashlib,json,os,shutil,subprocess,sys,time,winreg
+"""Stage diagnostics explicitly; no autorun, watcher, collection or game changes."""
+import argparse
+import json
+import sys
 from pathlib import Path
-from binary_policy111 import require_capture_only111
-root=Path(__file__).resolve().parent
-if hashlib.sha256((root/'native'/'crash-recorder.exe').read_bytes()).hexdigest()=='8a02b3af8db7f911202782b9195b72fd537870cfa40af03240d7c654128d3779':
-    raise RuntimeError('Withdrawn Diagnostics110 debugger caused startup crashes; rebuild the capture-only binary with tools/diagnostics/build111.py.')
-require_capture_only111(root/'native'/'crash-recorder.exe')
-install=Path(r'C:\Users\logsa\Documents\Codex\Shogun2Diagnostics')
-if install.exists() and not (install/'installation.json').exists():raise RuntimeError('Refusing to overwrite an unrelated installation directory')
-install.mkdir(parents=True,exist_ok=True)
-for name in ('process_probe.py','process_memory.py','native_input.py','inspect_minidump.py','sensors.py','events.ps1','session.py','lifecycle110.py','watcher.py','control.py','config.json','baseline.json'):
-    shutil.copy2(root/name,install/name)
-(install/'native').mkdir(exist_ok=True);shutil.copy2(root/'native'/'crash-recorder.exe',install/'native'/'crash-recorder.exe')
-# Private standard-library runtime survives updates/removal of the Codex dependency cache.
-python=Path(sys.executable).parent;runtime=install/'runtime';runtime.mkdir(exist_ok=True)
-for pattern in ('python*.exe','python*.dll','vcruntime*.dll','LICENSE.txt'):
-    for p in python.glob(pattern):shutil.copy2(p,runtime/p.name)
-ignore=shutil.ignore_patterns('site-packages','__pycache__','test','tests','idlelib','tkinter','turtledemo','ensurepip')
-shutil.copytree(python/'Lib',runtime/'Lib',dirs_exist_ok=True,ignore=ignore)
-shutil.copytree(python/'DLLs',runtime/'DLLs',dirs_exist_ok=True)
-(runtime/'python312._pth').write_text('Lib\nDLLs\n..\n',encoding='ascii')
-check=subprocess.run([str(runtime/'python.exe'),'-c','import ctypes,json,hashlib,subprocess,threading,session,sensors; print("Standalone runtime PASS")'],capture_output=True,text=True,creationflags=0x08000000)
-if check.returncode:raise RuntimeError(check.stderr)
-command='"'+str(runtime/'pythonw.exe')+'" "'+str(install/'watcher.py')+'"'
-assert len(command)<260
-run=r'Software\Microsoft\Windows\CurrentVersion\Run';name='Shogun2CrashRecorder';prior=None
-with winreg.CreateKey(winreg.HKEY_CURRENT_USER,run) as key:
-    try:old,kind=winreg.QueryValueEx(key,name);prior={'value':old,'type':kind}
-    except FileNotFoundError:pass
-    if prior and (install/'installation.json').exists():prior=json.loads((install/'installation.json').read_text()).get('prior_autorun')
-    winreg.SetValueEx(key,name,0,winreg.REG_SZ,command)
-    assert winreg.QueryValueEx(key,name)[0]==command
-receipt={'installed_unix':time.time(),'root':str(install),'autorun_key':'HKCU\\'+run,'autorun_name':name,'autorun_command':command,'prior_autorun':prior,'self_contained_runtime':True,'game_files_changed':False,'game_launched':False,'crash_recorder_sha256':hashlib.sha256((install/'native'/'crash-recorder.exe').read_bytes()).hexdigest()}
-(install/'installation.json').write_text(json.dumps(receipt,indent=2))
-result=subprocess.run([str(runtime/'python.exe'),str(install/'control.py'),'start'],capture_output=True,text=True,creationflags=0x08000000,timeout=15)
-if result.returncode:raise RuntimeError(result.stderr)
-receipt['watcher_start']=json.loads(result.stdout);(install/'installation.json').write_text(json.dumps(receipt,indent=2));print(json.dumps(receipt,indent=2))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from deployment import dependency_closure, stage
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--output-dir', type=Path, required=True)
+    parser.add_argument('--game', type=Path, required=True)
+    parser.add_argument('--recordings', type=Path, required=True)
+    parser.add_argument('--debugger', type=Path, required=True)
+    parser.add_argument('--python', type=Path, default=Path(sys.executable))
+    parser.add_argument('--baseline', type=Path)
+    parser.add_argument('--dry-run', action='store_true')
+    args = parser.parse_args()
+    if args.dry_run:
+        print(json.dumps({'closure': dependency_closure(Path(__file__).parent),
+                          'game_changed': False, 'watcher_started': False, 'staged': False}))
+        return
+    baseline = json.loads(args.baseline.read_text(encoding='utf-8')) if args.baseline else None
+    receipt = stage(Path(__file__).parent, args.output_dir, args.debugger,
+                    args.game, args.recordings, args.python, baseline)
+    print(json.dumps(receipt, indent=2))
+
+if __name__ == '__main__':
+    main()

@@ -1,3 +1,4 @@
+#include "../../../common/fixture_paths.h"
 // Executes production adapter guards/handlers with bounded original native
 // constructors, serializers, scene-query glue and skin cache code. Geometry,
 // allocation/vector primitives and event providers are isolated fixture stubs.
@@ -85,7 +86,7 @@ struct NativeFixture100 {
     static uintptr_t ptr(std::vector<unsigned char>& v){return reinterpret_cast<uintptr_t>(v.data());}
     void jump(unsigned address,void* destination){auto code=reinterpret_cast<unsigned char*>(base+address);code[0]=0xe9;unsigned delta=unsigned(reinterpret_cast<uintptr_t>(destination)-base-address-5);memcpy(code+1,&delta,4);}
     NativeFixture100(){
-        const std::wstring path=L"C:\\Program Files (x86)\\Steam\\steamapps\\common\\Total War SHOGUN 2\\Empire.Retail.dll";require(hash_file(path)==EXPECTED_HASH,"Exact engine required");
+        const std::wstring path=fixture_paths::engine();require(hash_file(path)==EXPECTED_HASH,"Exact engine required");
         std::ifstream file(path,std::ios::binary);std::vector<unsigned char> bytes((std::istreambuf_iterator<char>(file)),{});
         auto dos=reinterpret_cast<const IMAGE_DOS_HEADER*>(bytes.data());auto nt=reinterpret_cast<const IMAGE_NT_HEADERS32*>(bytes.data()+dos->e_lfanew);
         image=VirtualAlloc(nullptr,nt->OptionalHeader.SizeOfImage,MEM_COMMIT|MEM_RESERVE,PAGE_READWRITE);require(image!=nullptr,"Private native fixture allocation");base=reinterpret_cast<uintptr_t>(image);

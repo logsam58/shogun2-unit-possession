@@ -1,3 +1,4 @@
+#include "../../../common/fixture_paths.h"
 #include "identity.h"
 #include "movement_math.h"
 #include <array>
@@ -17,7 +18,7 @@ static void relocate(unsigned char* bytes,unsigned size,unsigned original,uintpt
     require(count>0,"Native fixture relocation absent");
 }
 int main(){void* memory=nullptr;try{
-    std::wstring path=L"C:\\Program Files (x86)\\Steam\\steamapps\\common\\Total War SHOGUN 2\\empire.retail.dll";
+    std::wstring path=fixture_paths::engine();
     require(hash_file(path)==EXPECTED_HASH,"Native movement fixture requires verified engine");
     std::ifstream stream(path,std::ios::binary);std::vector<unsigned char> image((std::istreambuf_iterator<char>(stream)),{});
     memory=VirtualAlloc(nullptr,4096,MEM_COMMIT|MEM_RESERVE,PAGE_READWRITE);require(memory!=nullptr,"Fixture allocation");

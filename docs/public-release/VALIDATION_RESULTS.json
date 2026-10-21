@@ -1,0 +1,67 @@
+{
+  "schema": 1,
+  "baseline": "24d31a2f5e5c2cf84a42c459a69bdcd9bd86c600",
+  "candidate": 158,
+  "scope": "Offline repository/source-kit validation only",
+  "native_development": {
+    "adapter": 96,
+    "qte": 50,
+    "hud": 8,
+    "loader": 2,
+    "installer_executables": 2,
+    "child_kill_boundaries": 15,
+    "passed": true
+  },
+  "python": {
+    "tests": 15,
+    "passed": true
+  },
+  "diagnostics": {
+    "lifecycle_tests": 11,
+    "ownership_assertions": 84,
+    "dump_cases": 8,
+    "full_core_session_cases": 4,
+    "entry_points": 5,
+    "passed": true
+  },
+  "resources": {
+    "original_UI_entries": 592,
+    "raw_and_trimmed_PNGs": 594,
+    "atlas_pairs": 4,
+    "fonts": 20,
+    "artillery_images": 2,
+    "prepared_files": 32,
+    "independent_byte_identical_files": 32,
+    "skips": [],
+    "errors": []
+  },
+  "fresh_source_validation": {
+    "resources": "passed",
+    "native": "in progress",
+    "diagnostics": "in progress"
+  },
+  "historical": {
+    "status": "skipped",
+    "expected_files": 169,
+    "reason": "Optional unpublished historical payload archive is excluded; current tests do not need it"
+  },
+  "live": {
+    "status": "not performed",
+    "installed": false,
+    "game_launched": false,
+    "active_recorder_changed": false
+  },
+  "publication": {
+    "status": "not authorized",
+    "pushed": false,
+    "published": false
+  },
+  "limits": [
+    "No real game stability/crash/performance claim",
+    "Finite native/synthetic providers",
+    "No physical power-loss test",
+    "Canonical historical palette formatting, not fresh original sampling",
+    "Normal Windows path limits",
+    "No permission asserted for game-derived binary distribution"
+  ]
+}

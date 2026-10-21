@@ -9,6 +9,7 @@
 !/SOURCE_MAP.md
 !/VALIDATION.md
 !/THIRD_PARTY_NOTICES.md
+!/LICENSE
 !/docs/
 !/native/
 !/tools/
@@ -24,6 +25,7 @@
 **/fixture-*/
 **/embedded-fixture-*/
 **/__pycache__/
+**/node_modules/
 **/.vs/
 *.pyc
 *.pyo

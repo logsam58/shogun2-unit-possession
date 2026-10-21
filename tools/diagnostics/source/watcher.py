@@ -44,4 +44,10 @@ def run():
             emit('watcher_stopping')
             for item in children.values():Path(item['folder'],'session.stop').touch()
             write_json(ROOT/'watcher-health.json',{'pid':os.getpid(),**stamp(),'state':'stopped','active_sessions':[]});k.CloseHandle(mutex)
-if __name__=='__main__':run()
+if __name__=='__main__':
+    import argparse
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--run',action='store_true',help='Explicitly arm automatic recording')
+    options=parser.parse_args()
+    if not options.run:parser.error('Use --run to arm recording explicitly')
+    run()

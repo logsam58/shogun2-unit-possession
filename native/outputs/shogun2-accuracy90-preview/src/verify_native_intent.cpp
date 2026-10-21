@@ -1,3 +1,4 @@
+#include "../../../common/fixture_paths.h"
 #include "identity.h"
 // Offline exact-byte fixture. This never calls or writes into the game process.
 using IntentSetter=void(__thiscall*)(void*,const float*,unsigned);
@@ -13,7 +14,7 @@ static std::vector<unsigned char> code_at(const std::vector<unsigned char>& imag
     throw std::runtime_error("Native intent section absent");
 }
 int main(){void* memory=nullptr;try{
-    std::wstring path=L"C:\\Program Files (x86)\\Steam\\steamapps\\common\\Total War SHOGUN 2\\empire.retail.dll";
+    std::wstring path=fixture_paths::engine();
     require(hash_file(path)==EXPECTED_HASH,"Native intent requires verified engine build");
     std::ifstream stream(path,std::ios::binary);
     std::vector<unsigned char> image((std::istreambuf_iterator<char>(stream)),{});

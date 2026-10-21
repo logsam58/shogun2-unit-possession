@@ -4,6 +4,7 @@
 // obsolete prerequisite entries. No Adobe runtime, system policy or native
 // engine imports are modified. Keep the publisher-signed installscript intact.
 namespace flashstartup86 {
+inline std::function<void(int)> checkpoint=[](int){};
 static constexpr const wchar_t* names[2]={L"Flash Player 11",L"Flash security exception"};
 #ifdef VERIFY_FIXTURE
 static HKEY hive=HKEY_CURRENT_USER;
@@ -30,7 +31,9 @@ struct Snapshot {
             "Cannot disable the obsolete Flash setup steps. Run this installer as administrator.");
         for(unsigned i=0;i<2;++i){DWORD one=before[i].exists&&before[i].value>=1?before[i].value:1;
             require(RegSetValueExW(key.value,names[i],0,REG_DWORD,reinterpret_cast<const BYTE*>(&one),sizeof one)==ERROR_SUCCESS,"Cannot update Steam Flash prerequisite flag");
+            require(RegFlushKey(key.value)==ERROR_SUCCESS,"Cannot flush Steam prerequisite flag");
             changed=true;
+            checkpoint(12+int(i));
             require(fail_after!=int(i),"Simulated Flash flag interruption");}
         require(Snapshot{}.skipped(),"Steam Flash prerequisite verification failed");}
     void restore(){Key key;
@@ -40,6 +43,7 @@ struct Snapshot {
         require(r==ERROR_SUCCESS,"Cannot restore Steam Flash prerequisite flags");
         for(unsigned i=0;i<2;++i){r=before[i].exists?RegSetValueExW(key.value,names[i],0,REG_DWORD,reinterpret_cast<const BYTE*>(&before[i].value),sizeof(DWORD)):RegDeleteValueW(key.value,names[i]);
             require(r==ERROR_SUCCESS||(!before[i].exists&&r==ERROR_FILE_NOT_FOUND),"Cannot restore previous Steam Flash prerequisite flag");}
+        require(RegFlushKey(key.value)==ERROR_SUCCESS,"Cannot flush restored Steam prerequisite flags");
         DWORD subkeys{},values{};
         if(!key_existed&&RegQueryInfoKeyW(key.value,nullptr,nullptr,nullptr,&subkeys,nullptr,nullptr,&values,nullptr,nullptr,nullptr,nullptr)==ERROR_SUCCESS&&!subkeys&&!values){
             RegCloseKey(key.value);key.value=nullptr;RegDeleteKeyExW(hive,key_path.c_str(),KEY_WOW64_32KEY,0);}}

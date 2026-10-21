@@ -1,3 +1,4 @@
+#include "../../../common/fixture_paths.h"
 #include "identity.h"
 #include <array>
 using Speed=float(__thiscall*)(void*,unsigned);
@@ -12,7 +13,7 @@ static std::vector<unsigned char> code_at(const std::vector<unsigned char>& imag
     throw std::runtime_error("Native function section absent");
 }
 int main(){void* memory=nullptr;try{
-    std::wstring path=L"C:\\Program Files (x86)\\Steam\\steamapps\\common\\Total War SHOGUN 2\\empire.retail.dll";
+    std::wstring path=fixture_paths::engine();
     require(hash_file(path)==EXPECTED_HASH,"Native movement fixture requires verified game build");
     std::ifstream stream(path,std::ios::binary);std::vector<unsigned char> image((std::istreambuf_iterator<char>(stream)),{});
     auto walk=code_at(image,0x1be960,16),run=code_at(image,0x1a9da0,16),selector=code_at(image,0x18b470,39);

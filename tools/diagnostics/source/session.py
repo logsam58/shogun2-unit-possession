@@ -82,14 +82,14 @@ def hidden(cmd,output):
 def event_export(folder,start,inventory=False):
     dest=folder/('hardware-inventory.json' if inventory else 'windows-events.json')
     with (folder/('inventory-export.log' if inventory else 'event-export.log')).open('a') as log:
-        cmd=[r'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe','-NoProfile','-ExecutionPolicy','Bypass','-File',ROOT/'events.ps1','-Output',dest,'-StartUnix',str(int(start))]
+        cmd=[Path(os.environ['SystemRoot'])/'System32/WindowsPowerShell/v1.0/powershell.exe','-NoProfile','-ExecutionPolicy','Bypass','-File',ROOT/'events.ps1','-Output',dest,'-StartUnix',str(int(start))]
         if inventory:cmd+=['-Inventory']
         try:hidden(cmd,log).wait(timeout=90)
         except Exception as e:log.write(str(e)+'\n')
 
 def gpu_loop(folder,done,emit):
     fields=['timestamp','index','name','driver_version','memory.total','memory.used','memory.free','utilization.gpu','utilization.memory','temperature.gpu','power.draw','clocks.current.graphics','clocks.current.memory','pstate']
-    exe=Path(r'C:\Windows\System32\nvidia-smi.exe')
+    exe=Path(shutil.which('nvidia-smi.exe') or str(Path(os.environ['SystemRoot'])/'System32/nvidia-smi.exe'))
     if not exe.exists():emit('gpu_unavailable',reason='nvidia-smi absent');return
     err=(folder/'nvidia-smi-stderr.log').open('a');child=None
     try:
@@ -163,7 +163,7 @@ def session(pid,folder,fixture=False):
     folder=Path(folder);folder.mkdir(parents=True,exist_ok=True);start=time.time();done=threading.Event();lock=threading.Lock();events=(folder/'session-events.jsonl').open('a',buffering=1)
     def emit(event,**items):
         with lock:events.write(json.dumps({'event':event,**stamp(),**items})+'\n')
-    lifecycle=None;native=None;native_out=None;debug=None;debug_out=(folder/'debugger.log').open('a');gpu=None;sensors=None;process=None
+    lifecycle=None;native=None;native_out=None;debug=None;debug_out=(folder/'debugger.log').open('a');gpu=None;sensors=None;process=None;cache_dirs=set()
     status={'pid':pid,'started_unix':start,'fixture':fixture,'folder':str(folder),'debugger_attached':False,'native_input_active':False}
     try:
         # Attach before hardware discovery or battle/mod checks. No pause/READY gate.
@@ -229,7 +229,7 @@ def session(pid,folder,fixture=False):
                         signature=tuple((r['base'],r['path'],r['sha256']) for r in recorded)
                         if seen_modules.get('signature')!=signature:inventory.write(json.dumps({'event':'module_inventory',**stamp(),'modules':recorded,'note':'Toolhelp loaded module addresses plus backing-file SHA256; no claim disk bytes equal patched runtime pages'})+'\n');seen_modules['signature']=signature
                         cache_dirs={Path(m['path']).parent for m in current if m['name'].lower() in ('possession-v46.dll','qte-playable-v79.dll')}
-                        cache_dirs.add(Path(baseline['cache_dir']))
+                        if baseline.get('cache_dir'):cache_dirs.add(Path(baseline['cache_dir']))
                         for cache in cache_dirs:
                             for path in native_log_paths(cache,pid):
                                 if path.suffix.lower() not in ('.log','.jsonl'):continue
@@ -243,13 +243,14 @@ def session(pid,folder,fixture=False):
                         for hud in huds:
                             hm=modules(hud['pid'])[0];path=Path(hm['path']);st=path.stat();key=(str(path).lower(),st.st_size,st.st_mtime_ns)
                             if key not in hashes:hashes[key]=sha(path)
-                            record={'pid':hud['pid'],'path':str(path),'sha256':hashes[key],'expected_sha256':baseline['hud_sha256']};record['match']=record['sha256']==record['expected_sha256']
+                            record={'pid':hud['pid'],'path':str(path),'sha256':hashes[key],'expected_sha256':baseline.get('hud_sha256')};record['match']=(record['sha256']==record['expected_sha256']) if record['expected_sha256'] else None
                             if seen_modules.get('hud')!=record:inventory.write(json.dumps({'event':'hud_process',**stamp(),'modules':[record]})+'\n');seen_modules['hud']=record
                         known_engine=any(r['name'].lower()=='empire.retail.dll' and r.get('match') for r in recorded)
-                        if not fixture and known_engine and now>=next_native and (native is None or native.poll() is not None):
+                        if not fixture and known_engine and cache_dirs and now>=next_native and (native is None or native.poll() is not None):
                             if native:emit('native_input_ended',returncode=native.returncode)
                             if native_out:native_out.close()
-                            native_out=(folder/'native-input-collector.log').open('a');native=hidden([sys.executable,ROOT/'native_input.py','--pid',pid,'--qte-version',79,'--output-dir',folder,'--native-log',Path(baseline['cache_dir'])/'private'/f'qte-playable79-{pid}.jsonl'],native_out);next_native=now+15
+                            cache=sorted(cache_dirs)[0]
+                            native_out=(folder/'native-input-collector.log').open('a');native=hidden([sys.executable,ROOT/'native_input.py','--pid',pid,'--qte-version',79,'--output-dir',folder,'--native-log',cache/'private'/f'qte-playable79-{pid}.jsonl'],native_out);next_native=now+15
                     except Exception as e:emit('inventory_error',error=str(e))
                     next_inventory=now+5
                 time.sleep(.02)
@@ -275,15 +276,16 @@ def session(pid,folder,fixture=False):
         try:
             baseline=json.loads((ROOT/'baseline.json').read_text())
             if not fixture:game_files(folder,baseline)
-            cache=Path(baseline['cache_dir'])
-            for path in native_log_paths(cache,pid):
-                if path.suffix.lower() in ('.log','.jsonl'):
-                    dest=folder/'native-logs'/path.relative_to(cache);dest.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(path,dest)
+            for cache in cache_dirs:
+                for path in native_log_paths(cache,pid):
+                    if path.suffix.lower() in ('.log','.jsonl'):
+                        dest=folder/'native-logs'/path.relative_to(cache);dest.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(path,dest)
         except Exception as e:emit('native_tail_copy_error',error=str(e))
         event_export(folder,start)
         # Preserve new WER reports and Steam/LocalDumps files left by this session.
         try:
-            roots=[Path(os.environ['LOCALAPPDATA'])/'CrashDumps',Path(r'C:\Program Files (x86)\Steam\dumps'),Path(r'C:\ProgramData\Microsoft\Windows\WER\ReportArchive'),Path(r'C:\ProgramData\Microsoft\Windows\WER\ReportQueue')]
+            roots=[Path(os.environ['LOCALAPPDATA'])/'CrashDumps',Path(os.environ['ProgramData'])/'Microsoft/Windows/WER/ReportArchive',Path(os.environ['ProgramData'])/'Microsoft/Windows/WER/ReportQueue']
+            if baseline.get('steam_dir'):roots.append(Path(baseline['steam_dir'])/'dumps')
             for root in roots:
                 if not root.exists():continue
                 for path in root.glob('**/*'):

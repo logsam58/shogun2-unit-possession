@@ -1,3 +1,4 @@
+#include "../../../common/fixture_paths.h"
 #include "adapter.cpp"
 static unsigned forwarded_index97,forwarded_actor97,path_requests153,task_forwards153;
 static uintptr_t portal_surface153;
@@ -32,7 +33,7 @@ static unsigned __fastcall fake_index97(void*,void*){++forwarded_index97;return 
 static uintptr_t __fastcall fake_actor97(void*,void*,unsigned){++forwarded_actor97;return 0;}
 static LONG WINAPI fault_siege155(EXCEPTION_POINTERS* p){std::cerr<<"siege155 fault "<<std::hex<<p->ExceptionRecord->ExceptionCode<<" at "<<uintptr_t(p->ExceptionRecord->ExceptionAddress)-base<<" address "<<p->ExceptionRecord->ExceptionInformation[1]<<"\n";return EXCEPTION_EXECUTE_HANDLER;}
 int main(){SetUnhandledExceptionFilter(fault_siege155);unsigned char* mapped=nullptr;try{
- std::wstring path=L"C:\\Program Files (x86)\\Steam\\steamapps\\common\\Total War SHOGUN 2\\Empire.Retail.dll";require(hash_file(path)==EXPECTED_HASH,"Exact native fixture image");
+ std::wstring path=fixture_paths::engine();require(hash_file(path)==EXPECTED_HASH,"Exact native fixture image");
  std::ifstream in(path,std::ios::binary);std::vector<unsigned char> image((std::istreambuf_iterator<char>(in)),{});auto dos=reinterpret_cast<IMAGE_DOS_HEADER*>(image.data());auto nt=reinterpret_cast<IMAGE_NT_HEADERS32*>(image.data()+dos->e_lfanew);
  mapped=static_cast<unsigned char*>(VirtualAlloc(nullptr,nt->OptionalHeader.SizeOfImage,MEM_COMMIT|MEM_RESERVE,PAGE_READWRITE));require(mapped!=nullptr,"Native fixture allocation");memcpy(mapped,image.data(),nt->OptionalHeader.SizeOfHeaders);
  auto sections=IMAGE_FIRST_SECTION(nt);for(unsigned i=0;i<nt->FileHeader.NumberOfSections;++i){auto&s=sections[i];if(s.SizeOfRawData){require(s.PointerToRawData+s.SizeOfRawData<=image.size(),"Native section bounds");memcpy(mapped+s.VirtualAddress,image.data()+s.PointerToRawData,s.SizeOfRawData);}}
