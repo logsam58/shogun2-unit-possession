@@ -44,5 +44,11 @@ int main(){try{
         check(retarget::at<uint32_t>(a,0x1d0)==20&&retarget::at<uint32_t>(a,0x1d4)==250,"Horse native planner output overwritten");
     }
     expected_plans[0].kind=Human;
+    for(auto role152:{0x15dfec8u,0x15dbd68u,0x15dbfb4u}){
+        reset(0);desired={5,b,a};retarget::at<uint32_t>(a,0)=ports.engine+role152;
+        check(retarget::rebuild(w,desired,expected_plans,ports,stage)==1&&!prepares&&!releases,"Ordinary QTE accepted swapped roles");
+        check(retarget::rebuild(w,desired,expected_plans,ports,stage,true)==0&&stage==6&&prepares==1&&releases==2&&retarget::at<uint32_t>(w,0x88)==a,"Routing-only original pair role reversal failed");
+    }
+
     std::cout<<"PASS: native retarget production transaction, ECX/RET4 ABI, cleanup ordering, human and verified single-rider horse outcome variants, captured plans restored, playing/dead/extra/foreign participant guards and full native rejection return. Local synthetic objects only.\n";return 0;
 }catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}}

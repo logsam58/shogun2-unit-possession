@@ -52,14 +52,16 @@ int main(){void* image=nullptr;try{
     // the already-presented result again or mutate the paired actors.
     memcpy(reinterpret_cast<void*>(ptr(cam)+8),eye.view,sizeof eye.view);memcpy(reinterpret_cast<void*>(ptr(cam)+0x58),eye.up,sizeof eye.up);
     adjust_eye(ptr(cam));memcpy(actual_eye.view,reinterpret_cast<void*>(ptr(cam)+8),sizeof actual_eye.view);memcpy(actual_eye.up,reinterpret_cast<void*>(ptr(cam)+0x58),sizeof actual_eye.up);
-    require(animationview::angles(actual_eye,actual_yaw,actual_pitch)&&std::abs(std::remainder(actual_yaw-yaw_before104-.3f,6.283185307f))<.0001f&&std::abs(actual_pitch-(native_pitch104-.1f))<.0001f,"Committed camera did not apply production mouse head-look");
+    deathpose::Eye expected152{};float expected_y152{},expected_p152{};require(view152::eye(eye,.3f,-.1f,expected152)&&animationview::angles(expected152,expected_y152,expected_p152),"Rolled face-relative expected basis");
+    require(animationview::angles(actual_eye,actual_yaw,actual_pitch)&&std::abs(std::remainder(actual_yaw-expected_y152,6.283185307f))<.0001f&&std::abs(actual_pitch-expected_p152)<.0001f,"Committed camera did not apply local eye look relative to current rolled face");
     require(body_before104==actor&&horse_before104==horse,"Head-look changed native combat body/horse state");
     melee60::Request off;PossessionMeleeCommitment63(&off);
     // The authored kill/get-away motion continues after the prompt is gone.
     melee_handoff78.observe(h,possession_lease.generation,32,7,1,true);
     float handoff_yaw104=state->yaw;mouse_look101(40,0,0,.008f);
     memcpy(reinterpret_cast<void*>(ptr(cam)+8),eye.view,sizeof eye.view);memcpy(reinterpret_cast<void*>(ptr(cam)+0x58),eye.up,sizeof eye.up);adjust_eye(ptr(cam));
-    require(animation_view_active78&&std::abs(std::remainder(state->yaw-handoff_yaw104-.1f,6.283185307f))<.0001f&&body_before104==actor&&horse_before104==horse,"Post-QTE native animation handoff lost head freedom or changed combat actors");
+    require(view152::eye(eye,.4f,-.1f,expected152)&&animationview::angles(expected152,expected_y152,expected_p152),"Handoff local eye basis");
+    require(animation_view_active78&&std::abs(std::remainder(state->yaw-expected_y152,6.283185307f))<.0001f&&std::abs(state->pitch-expected_p152)<.0001f&&body_before104==actor&&horse_before104==horse,"Native animation handoff lost face-relative eye freedom or changed combat actors");
     melee_handoff78.reset();
     
     field<unsigned short>(h,0x64)=65000;state->yaw=mountedlook85::heading(65000)+2.5f;state->pitch=.2f;

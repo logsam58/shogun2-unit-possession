@@ -1,6 +1,7 @@
 #include "native_air99.h"
 #include "native_recovery103.h"
 #pragma once
+#include "view152.h"
 #include "ranged_task_completion.h"
 #include "personal_weapon_profile.h"
 // Owned weapon sequencing runs at the controlled actor's native motion update.
@@ -449,7 +450,7 @@ static void weapon_tick(uintptr_t actor){
             if(phase>=release_time){
                 float origin[3]{};
                 reinterpret_cast<WeaponOrigin>(base+0x3e0b10)(reinterpret_cast<void*>(actor),origin,weapon_clip,0);
-                if(is_bow_projectile(bow_record(unit))){
+                if(is_bow_projectile(bow_record(unit))&&!third_person152){
                     float previous[3];memcpy(previous,origin,sizeof previous);
                     if(!posed_arrow_origin(origin)){
                         ++state->bow_attachment_misses;state->shot_error=96;

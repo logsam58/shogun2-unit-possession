@@ -1,4 +1,5 @@
 #pragma once
+#include "../../shogun2-possession-cleanup-v46/src/actor_types152.h"
 static bool command_native_ready100(HWND);
 static bool command_native_context100(uintptr_t,uintptr_t);
 static LPARAM command_native_point100(HWND,RECT&);
@@ -18,7 +19,7 @@ static bool ability_friendly143(uintptr_t target){
   for(unsigned i=0;i<std::min(count,32u);++i){
    __try {
     auto actor=field<uintptr_t>(array,i*4);
-    if(!actor||field<uintptr_t>(actor,0)!=base+0x15dfec8||field<uintptr_t>(actor,0x214)!=target||
+    if(!actor||!actor152::human(base,field<uintptr_t>(actor,0))||field<uintptr_t>(actor,0x214)!=target||
        field<uintptr_t>(actor,0x28)!=environment||field<unsigned char>(actor,0xf0)!=1)continue;
     auto side=field<uintptr_t>(actor,0x44);if(side)return field<unsigned>(side,0x10)==team;
    }__except(EXCEPTION_EXECUTE_HANDLER){continue;}

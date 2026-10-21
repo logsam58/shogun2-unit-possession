@@ -1,4 +1,5 @@
 #pragma once
+#include "../../shogun2-possession-cleanup-v46/src/actor_types152.h"
 // Indexed native pipe constructor359770/registration385b20 and live siege trace.
 // Discovery caching stores only an index; every use proves CURRENT membership.
 struct Wall97 {uintptr_t pipe{},definition{},nodes{},phase{};unsigned id{},count{},kind{};};
@@ -22,7 +23,7 @@ static bool read_wall97(uintptr_t actor,uintptr_t pipe,Wall97& w,unsigned hint=~
     // establish the live resource; a present source must still be reciprocal.
     if(!field<uintptr_t>(pipe,0x14)||(source&&(field<uintptr_t>(source,0x30)!=pipe||field<unsigned>(source,0x40)!=kind))||kind<11||kind>14||!definition||field<uintptr_t>(definition,0)!=base+0x15dd88c)return false;
     unsigned n=field<unsigned>(definition,0x14);auto nodes=field<uintptr_t>(definition,0x18);
-    if(!nodes||n<4||n>64||field<unsigned>(definition,0x10)<n)return false;
+    if(!nodes||n<1||n>64||field<unsigned>(definition,0x10)<n)return false;
     float length=0;for(unsigned i=0;i<n;++i){auto node=nodes+i*72;unsigned mode=field<unsigned>(node,0x3c);
         float speed=field<float>(node,0x40);if(mode<68||mode>71||!std::isfinite(speed)||speed<=0||speed>100)return false;
         float distance2=0;for(unsigned k=0;k<3;++k){float a=field<float>(node,0x24+k*4),b=field<float>(node,0x30+k*4);
@@ -44,7 +45,7 @@ static bool crest_subject97(uintptr_t actor){
 }
 static bool wall_subject97(uintptr_t actor){
     auto unit97=field<uintptr_t>(actor,0x214),config97=field<uintptr_t>(actor,0x20c);
-    if(!unit97||!config97||config97!=field<uintptr_t>(unit97,0xf9c)||field<uintptr_t>(actor,0x210)||field<unsigned char>(actor,0xf0)!=1)return false;
+    if(!actor152::human(base,field<uintptr_t>(actor,0))||!unit97||!config97||(config97!=field<uintptr_t>(unit97,0xf9c)&&!actor152::individual(base,field<uintptr_t>(actor,0)))||field<uintptr_t>(actor,0x210)||field<unsigned char>(actor,0xf0)!=1)return false;
     if(crest_subject97(actor))return true;
     auto pipe=field<uintptr_t>(actor,0x18);if(!pipe)return false;Wall97 w;
     float p=field<float>(actor,0x20);

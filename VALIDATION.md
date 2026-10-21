@@ -1,3 +1,41 @@
+# v0.28 release promotion
+
+User accepted all Test157 gameplay after formal157 loaded/capture gate, then reported a crash. v0.28 retains exact gameplay and rebuilds release wrappers only. Crash remains unresolved; release wrapper live testing and universal unit/castle coverage are not claimed. See docs/releases/v0.28-validation.json and development/Test157-validation.json.
+
+# Test157 development candidate
+
+Test157 development validation is recorded in docs/development/Test157-validation.json after full tests. Native role constructors/vtable bytes and decoder receipts, three behavioral negative controls, exact Test156 rollback and independent installed readback are preserved privately in artifacts/Test157. Gameplay needs a fresh loaded-build/capture gate and user feedback; no live acceptance is inferred.
+
+# Test156 boundaries
+
+Camera corrections are offline verified until fresh loaded-build/actual capture checks and user feedback. Original325ca0/134fad0/134fe50 execute in private fixtures; world/animation/render/UI providers remain explicit. Routed camera selection loss is reproduced; no blanket claim covers every possession exit. Accepted155 wall/dismount and154 orbit/scroll are retained. Published v0.27 immutable; no launch/extra profiling/settings/CPU/recorder changes/publication. See docs/development/Test156.md.
+
+# Test155 validation status
+
+Candidate155 addresses recorded22472 wall/type and mount/count faults. Orbit/scroll154 accepted by user. Full results and fixture boundaries in docs/development/Test155-validation.json; do not infer live wall/mount acceptance from offline checks. Published v0.27 immutable.
+
+# Test153 boundaries
+
+User accepted152 leaders/general possession, limited QTE eye movement and broken/shattered possession. Third person and wall entry remain correction work. Camera negative control reproduces ordinary pitched-view fallback; 75 original camera matrix/refresh cases pass after basis correction. Native F entry test fails with exact152 code and passes original frame/parameter/path-order calls. Actual navigation/async path geometry/surface transforms and rendering providers are explicit; route choice/positioning/facing/mounting/crest require real play after a fresh loaded/capture gate. No new hook/Status ABI/assets/settings/CPU/recorder changes/publication.
+
+# Test152 boundaries
+
+New leader, wall-entry, face-relative look, P/wheel camera and routing-combat behavior is offline verified only until fresh loaded verification and user feedback. Original native queries/intent/task dispatch run in private fixtures, with explicit geometry/allocation/render/native animation providers; those do not prove live clips, audio, visibility or every unit pairing. Preserve native ownership/lifetime/clock checks and ordinary outcomes. No new hook/status ABI/assets/settings/CPU/recorder changes or public release. Test151 K/castle QTE was reported working by the user; no formal151 loaded gate is inferred.
+
+# Test151 scope and limits
+
+Test150's saved session/dump proves the QTE timeline retained tick13669 while the next native battle delivered4386 with identical env/phase addresses. This caused a frozen1319.6 anchor and stage1 admission rejection. Test151 creates validated clock lifetime epochs without relaxing stale-frame, owner, timing, native outcome or charge checks. It also uses the actual RTS cursor for close-up F9 and one authoritative native HUD visibility state across RTS/FPS. QTE/button prompts remain independent.
+
+Offline providers explicitly replace render device, geometry, allocation and UI tree primitives. They prove dispatch, guards and state transitions; actual pointer choice, K transitions and multi-battle siege QTE behavior remain unaccepted until fresh loaded verification and user play. No general crash/POV/Ultra/enemy isolated-player acquisition fix is claimed. Published v0.27 remains unchanged.
+
+# Test150 scope
+
+Test150 adds precise F9 selection at the stock RTS camera minimum zoom. It performs one native sorted center-ray query at entry; high camera retains the exact prior selection policy. The ray uses original342a40 render-service/virtual18 context and13660f0 unprojection, including cached matrices. Original29a450/a0b60 reads the live minimum, matching293cd0 camera+180 clamp. Original158970 mask30b includes actors and world occluders. The first physical hit wins; an eligible current selected-unit human or proved reciprocal horse maps to the exact existing holder. Foreign/dead/unsupported hits and missing/invalid context retain prior selection. Existing selection/identity/thread/heartbeat/roster guards and native camera constructor remain. No input/cursor/selection order mutation, shared ABI, hook, recurring crowd scan or new asset.
+
+The focused production entry fixture passes 1000 repeated calls, native getter/unprojection/query dispatch, original high view, live minimum changes, world occluders, dead/foreign hits, bounded results, cached matrices/nonfinite input, reciprocal horse and broken links. Geometry/render device/sorting/allocation/camera construction are explicit providers. Negative control fails without the hit preference. Twelve indexed exports are instruction-byte verified. The first private fixture had swapped actor-grid provider argument labels and lacked a valid custom camera aspect; fixed only providers, failures retained. A preliminary pose-based ray was replaced before source freeze by the original render unprojection path.
+
+Exact accepted Test149 charge/K/order/movement/weapon/ability source is retained except the F9 entry call/preference. Exact HUD148 and QTE146 source/binaries remain. v0.27/433815b release/tag/main and six published assets stay unchanged. Full fresh adapter89/loader2/full installer exact149+published027+allprior/seven interruptions/repeatbackup/Python7 required. Test150 is development0.27 and not accepted/published. Install only under actual closed/armed guard with exact149 rollback; then fresh READY/menu or IN BATTLE and exact150 loaded hashes plus actual crash/input/memory/CPU/GPU recording before formal play. No automatic launch or extra profiling. Enemy acquisition/POV/Ultra/other crashes remain open.
+
 # v0.27 / charging checkpoint complete
 
 Checkpoint 2 is complete by explicit user-reported Test149 acceptance on 2026-10-21. No formal Test149 loaded-hash gate was completed before feedback. v0.27 retains exact gameplay and rebuilds release metadata/loader/installer only; wrapper live validation is not claimed. See docs/releases/v0.27-validation.json. Enemy autonomous acquisition while separated, POV, Ultra crowd limits and other crashes remain open.

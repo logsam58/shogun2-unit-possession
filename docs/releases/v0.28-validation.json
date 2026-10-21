@@ -1,0 +1,2470 @@
+{
+  "version": "0.28",
+  "candidate": 157,
+  "development_candidate": false,
+  "date": "2026-10-21",
+  "passed": true,
+  "offline_passed": true,
+  "engine_sha256": "022fae2e2da92b59b8b1b8ee52887003c624e3c8eca060b209f5d792a7f874f5",
+  "cache_id": "6c1bb280348b30ef",
+  "fresh_checks": [
+    {
+      "name": "loader",
+      "passed": true,
+      "seconds": 4.472,
+      "log": "artifacts\\logs\\loader.log"
+    },
+    {
+      "name": "loader-tests",
+      "passed": true,
+      "seconds": 5.872,
+      "log": "artifacts\\logs\\loader-tests.log"
+    },
+    {
+      "name": "installer",
+      "passed": true,
+      "seconds": 7.346,
+      "log": "artifacts\\logs\\installer.log"
+    },
+    {
+      "name": "installer-tests",
+      "passed": true,
+      "seconds": 562.435,
+      "log": "artifacts\\logs\\installer-tests.log"
+    },
+    {
+      "name": "python-dump-reader",
+      "passed": true,
+      "executables": 7
+    }
+  ],
+  "fresh_suites": {
+    "loader": 2,
+    "installer": true
+  },
+  "retained_suites": {
+    "adapter_Test157": 96,
+    "QTE_Test157": 50,
+    "HUD_Test148": 7
+  },
+  "python_tests": 7,
+  "build_inputs": [
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/ability_catalog141.h",
+      "bytes": 4277,
+      "sha256": "403a1c287156ca6ff2c2112855b5beff7a3c495964549bc3bade4fe403282d58"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/ability_input141.h",
+      "bytes": 2260,
+      "sha256": "ca45d7f5bf6d25776bbaf5ab924309ed8fbb1388c201b59fef3e4c19b9370b62"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/ability_native141.h",
+      "bytes": 5443,
+      "sha256": "3a60d371700427877ca96ff5fdb55481de94fbd9235560f0b3d92e6f3bb71efa"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/ability_protocol141.h",
+      "bytes": 1015,
+      "sha256": "4202a1b0a3d25ffd17b45970e7432fbc8cbbf59267c704047ebbf71eeab96988"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/ability_target143.h",
+      "bytes": 4276,
+      "sha256": "6d9693ccb9c299a214e141549359b11598252d4127414957ce579f806fee3543"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/accuracy_geometry90.h",
+      "bytes": 1282,
+      "sha256": "5673022f01e4ee9f01c898b684993ef6fc215624f8061f182eb454a0d7cafcad"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/accuracy_protocol90.h",
+      "bytes": 1090,
+      "sha256": "3638afd2116e4f15defaac0259137873fdeee0e801cef4133d373069c2f40c01"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
+      "bytes": 95611,
+      "sha256": "60717d600d55e91411e6484433f0b01b37904e9187462949ea1fd93ed27658b1"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/aim_geometry.h",
+      "bytes": 2462,
+      "sha256": "43db980409c92a967a376d9d0763bfa5cbdf4cc18d5b3a6c762fd3e7f14cdf33"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/ammunition_mapping83.h",
+      "bytes": 957,
+      "sha256": "665b865cc700b90ad07ab02414d4498b29655e3d5bf92c3faa28f7516f4b0be7"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/ammunition_protocol83.h",
+      "bytes": 2807,
+      "sha256": "7b0962975b377a3a24fd6c27cbea55a36c1078eaf371ae48e12293654116db2b"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/ammunition_publish83.h",
+      "bytes": 1801,
+      "sha256": "91b64f35d020ae12862d1df68ece6b45e43099bb98a0121d4dd55a27232cdf36"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/animation_look104.h",
+      "bytes": 1082,
+      "sha256": "a7e5dc8263316980656da4a88a9b1b474766feb03a9c0c2569d8e7cb87158521"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/animation_view.h",
+      "bytes": 1590,
+      "sha256": "d3831b0d3f92faf78ac0c66a966c87c3405cb7cc8ab738056a3f3841e7280733"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/arrow_attachment.h",
+      "bytes": 1932,
+      "sha256": "ca4cb4038c9ebc8d05208bef0ea174e5fd1006238005fd2963bdaa6066018a16"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/arrow_render_geometry.h",
+      "bytes": 1511,
+      "sha256": "506e1940661b23226d4f78c854892142de82f7dbbfdbe686e70ffce34cb6a061"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/body_look132.h",
+      "bytes": 585,
+      "sha256": "de9c2477f765af9f9b93a905a0a2d08a0c43113ed6f30aae351310b4fbc7737f"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/bow_draw142.h",
+      "bytes": 1347,
+      "sha256": "a6f3750daa4ba66e43bee27827775e3bfd4e87aae68bbb8ccc972c01ab385469"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/bow_input142.h",
+      "bytes": 2917,
+      "sha256": "ffa5d353666c95868e2aa580913133aef82228f170113ef09c7116c8525c60b8"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/camera_choice97.h",
+      "bytes": 7241,
+      "sha256": "ee28f2195931c85d6ecd31f0c8bc5f5340110646706ede2404a0ebee2ac3c9d8"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/camera_entry_gate.h",
+      "bytes": 710,
+      "sha256": "7555f2d401fd9f3846c8d3aa6c608eb2113d72cc7c8100c070ac38227f62c1fc"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/camera_pick150.h",
+      "bytes": 4271,
+      "sha256": "7c72fd088e10f2d8c28ded43b90eeb80f5f3706cdcf6b37157295e6f49019b6b"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/captured_gun_fixture69.h",
+      "bytes": 1093,
+      "sha256": "2ff32ae626178bc7957bc9eeaf2c449aaaed48570378f20bfded623176c8297d"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/climb_control97.h",
+      "bytes": 22701,
+      "sha256": "fdd6f9eaba0abdda36a78bd583f15f20a683c9eb9b95c3042096c13f22f5e4ba"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/climb_protocol97.h",
+      "bytes": 1064,
+      "sha256": "8a1ee1aecda9907829d12924ca063b0046aff620610fab08a7a5eed67c7569ad"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/combat_focus125.h",
+      "bytes": 2219,
+      "sha256": "1b7a6da9e43516740e370a0220d4cb9f789ccf130cfa1517e0dfd25737046dbf"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/combat_turn126.h",
+      "bytes": 2029,
+      "sha256": "5a33b7a5981f82ded4362fb97d8f7e94ff2754b5e6179af7a1fcf7c0fb1badea"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/command_input100.h",
+      "bytes": 1955,
+      "sha256": "a2c77dee4da1d48da9c4495b39119b9bf6c721b1037c1aadb6555fa09db60c9b"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/command_policy100.h",
+      "bytes": 5412,
+      "sha256": "a88bad36a4a32c14e47b984c0368e69fbfcb3d4821988a1245987eba451b7ff3"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/command_protocol100.h",
+      "bytes": 861,
+      "sha256": "22fa0ac260f596bc074ac37b5ed5a1a0f882731a5a1efa231acac45f14dfbcde"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/cone_geometry.h",
+      "bytes": 1698,
+      "sha256": "f5a1e2fff0628c851629e3980f05a5e57b2eb6d25d38fbb5695253803f2e6bb8"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/control_metrics.h",
+      "bytes": 3499,
+      "sha256": "0014136b2e20cf1cfa197f0383bd0f26871c9d30ebe815416acb6753092b1892"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/death_pose_geometry.h",
+      "bytes": 2650,
+      "sha256": "ce182b2ef06e870bff2d6d0e7317b2c2cbe3c1c4dd545d023f7955af63f88dcd"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/decoded_rig_profiles89.h",
+      "bytes": 4265,
+      "sha256": "aada78960fe73af38cc7fe7dfadf3cbe0bd976fe81857c43b942ab503da03501"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/dismount143.h",
+      "bytes": 5651,
+      "sha256": "d44da7eb1bf34c7c36adb33701011dbfc96e65142347c21a721aa8bb330b0e7a"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/equipment_input81.h",
+      "bytes": 4356,
+      "sha256": "60bbfb25ff2b9373a0d77536792f43d77cf4ff39b6cb7f855ee0649196a8adb9"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/equipment_native81.h",
+      "bytes": 15510,
+      "sha256": "9d52d319a82c2a04ecec6b97219425f6465ad92182d52bbfaf7eb7865d8b566c"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/equipment_policy81.h",
+      "bytes": 1645,
+      "sha256": "624f46ba9c012788adc3f3cc03a4dddf1a0ce78dbbe019a65dadebf26e56676e"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/equipment_protocol81.h",
+      "bytes": 619,
+      "sha256": "15ed360d3799d6fab398732d12d1be3757eb9011904e2aee2d5b2409be266ff9"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/fatigue_action.h",
+      "bytes": 410,
+      "sha256": "c38227dc9d9df57610fe27d19915c020be5ae1c11d1e0e9ae85d0dbc7bf4c5d2"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/first_person_interface.h",
+      "bytes": 13982,
+      "sha256": "a17104dc1d5487abf04f6fcd2c68febfd8bd0884fba08b8dcf7be60df17ef48d"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/first_person_presentation101.h",
+      "bytes": 1508,
+      "sha256": "427120d450688fe8e193c64c8bc0595535075b03d3bbdfcdc96ecc017a533f2d"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/fixture_weapon_edges143.h",
+      "bytes": 434,
+      "sha256": "621642bcf30b3e6511fa02973b252138eb370d9e86cc376600c8847bdfb75b2c"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/follow_voice125.h",
+      "bytes": 3484,
+      "sha256": "228bf8d4828a1d442eef29141b52a300cbcf65b8d6f563e6a7305d9cb944008d"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/formation_arrival129.h",
+      "bytes": 2480,
+      "sha256": "ab332081d8a6dcb4452774f5b846d17911957e0e1586908dd252c5ff0cdaf45c"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/friendly_fire109.h",
+      "bytes": 10189,
+      "sha256": "2f7ba82e6323cbaad1a067fdadc29601df68ae1d836826e50c81306ca1dabdf4"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/head_look131.h",
+      "bytes": 1048,
+      "sha256": "24809b3d8b1e5402eaf0932e7699724a2fd47e11019f8f6906eba9c518993ade"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/hud_visibility148.h",
+      "bytes": 1956,
+      "sha256": "8968c096c7c268293ffbb2bc6c2165b6a5fde744d0dcb3d6d9ded4b1093478e4"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/identity.h",
+      "bytes": 4109,
+      "sha256": "5ceb7b14c711ae732612e6294d2d0b87d1d8f71c6630a04a3f695845afd4af29"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/keyboard_policy84.h",
+      "bytes": 1212,
+      "sha256": "4297a0312ab64b3fe82df4516bb7b9871c32e0864bea370a25a9d221a1d68001"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/launcher.cpp",
+      "bytes": 12099,
+      "sha256": "c52eedebb3d250d6d797761853b6711fc2ea8b35b2db19c9c47c1dff743a615f"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/legacy_v34.h",
+      "bytes": 2774,
+      "sha256": "342d9b5f07373373947f7701efe9f4830a390159c9607ac420199e0171d10e2e"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/legacy_v35.h",
+      "bytes": 2792,
+      "sha256": "d28a70110902fa3ea7e14d5058fed9b2668d301ecb428910c9e9ddc0ae04cf34"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/legacy_v36.h",
+      "bytes": 2792,
+      "sha256": "80deb6d876cab3dae86c4e5a81bbfb008419d092f39fe448ef151f2230321136"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/legacy_v37.h",
+      "bytes": 2958,
+      "sha256": "dc77d0659f106c1b47ab8ee0bf7234fe612fe61e27f8b48f0296eef0606610d9"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/legacy_v38.h",
+      "bytes": 2958,
+      "sha256": "f2f230b515b315a9dd8d6cd488f4dde989d8ab63f1310f40bf4a7182d7a5acd4"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/legacy_v39.h",
+      "bytes": 2958,
+      "sha256": "0cd1c6dac94d10b81d757547d86732a77ad4b6de051b53af2898a2098f0bf7a1"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/legacy_v40.h",
+      "bytes": 3018,
+      "sha256": "6d40684ba8671d858c52d1bc57e3572292050ce2aa8db068849acc05652a3d44"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/legacy_v41.h",
+      "bytes": 3092,
+      "sha256": "c883fa5fc3dba17ec6799f00f95e1c7eb7fda2aa522edcd3f3a2922f2d04bc84"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/legacy_v42.h",
+      "bytes": 3189,
+      "sha256": "8918b8681ffaf736be1f3a110038067f5a0d186a3dfc6f8be32dfd7728892d59"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/legacy_v44.h",
+      "bytes": 3555,
+      "sha256": "db9e8f369174c4293b9c381fc3e02923a245ba34687ee3c9bf581f00bcf359e2"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/look_pitch96.h",
+      "bytes": 1267,
+      "sha256": "fc125d61faa0f49ed1c03b4a0c858454a03a2f2604a30b688569c40472fd8b26"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/manual_dispersion.h",
+      "bytes": 2144,
+      "sha256": "092b281733ceba4679be1027a509de7c11461dde5b5d7a8931ed22cf7e5f68cf"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/melee_control.h",
+      "bytes": 9161,
+      "sha256": "cac48d33b066828ed18c773cad2b332207d54f0cd7ad9ea2800eb8d3287e6d09"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/melee_presentation137.h",
+      "bytes": 1765,
+      "sha256": "b0a235dff05d7e2bf5d7bcf384e5ce05ced8fb0b67ed7cac598a852e499c69ef"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/miles_zero123.h",
+      "bytes": 2187,
+      "sha256": "171b36abea51e86cb4a91585cecfa70c933be4c599ba1a89bee34a9715677247"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/mount154.h",
+      "bytes": 2117,
+      "sha256": "b19bbdbec5057d987635647bca0f7bfd30311ab682baaaefe02f15548dcc7678"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/mounted_blend_clock88.h",
+      "bytes": 1176,
+      "sha256": "1bdba49296f6795ea559f9ec488e413c5d19bdeeb730f71821c6cc54f7463f1f"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/mounted_carbine_asset.h",
+      "bytes": 637,
+      "sha256": "65de86bf99e2a56121ed37b8ab69323f77064c1ab2764027443c84fd2543ef36"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/mounted_firearm_geometry.h",
+      "bytes": 6096,
+      "sha256": "cb3fb8cb677a9bad53e6d144ca7c0e941720cd79361805221dc7e9bba00d1584"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/mounted_hold_geometry.h",
+      "bytes": 2595,
+      "sha256": "040c82cefea694a4fcfcf1799283e1c0bc787bc959e6ef7f501ed9fddff387b6"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/mounted_look85.h",
+      "bytes": 972,
+      "sha256": "23aa9f918a31252435a69c6c9c21d2fecdf4582a1607fc4b07509dc0f49dc56b"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/mounted_muzzle_calibration.h",
+      "bytes": 829,
+      "sha256": "18a6a850f128ea0d9d98b0cbc5d58e5e3edecda30680803adca3a656ba4f3e26"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/mounted_render_clock.h",
+      "bytes": 5368,
+      "sha256": "977fe8998a32d94905cbc772b4e426ab908aab11496c482c5716793c742d2400"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/mounted_settle_geometry88.h",
+      "bytes": 2352,
+      "sha256": "301342e76121f1d5bc6f97ffdbf089b8874f028a445d69a45b6a62da51ad366e"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/mounted_shot87.h",
+      "bytes": 2019,
+      "sha256": "c862e6441d9e0d3d371d49a80cded31760f375677a31dff053906b789fef862d"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/mounted_transition_geometry.h",
+      "bytes": 4874,
+      "sha256": "31c81e591dfacc6a87782ef41928c7854b33cffc657c12eedf6603f41c85f3d8"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/movement_math.h",
+      "bytes": 1344,
+      "sha256": "149bc209bf28f9b1fd280e16c7980e855c24c6cdcf03ab46a2dcb355e808ed9b"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/native_accuracy90.h",
+      "bytes": 9726,
+      "sha256": "a652a17f0773814767cde8ff7bff2293e1fcf6f21d79db065d27927f3a6a5acb"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/native_advance100.h",
+      "bytes": 9272,
+      "sha256": "38345a4be766d8e8a0fbd3db6f712d10dbdd2d5f6f0ad62b896c52bb3bec1932"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/native_air99.h",
+      "bytes": 919,
+      "sha256": "7547e243db013ad70dfdfa216d7afe0a65a06e854171bde8e2cf13ebff27b064"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/native_audio143.h",
+      "bytes": 1694,
+      "sha256": "589de89c391736ed45829b644a5eb687f68d2654329e05bb45509997e166e484"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/native_bow.h",
+      "bytes": 19547,
+      "sha256": "8d73b2fa86bff36727eb1a392b9c069fa14ae6a18d9b3ac9c24baea0632b7b4b"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/native_charge139.h",
+      "bytes": 6939,
+      "sha256": "6458f1fdfa5167923f867e5da9feb897d5654fc376ed2132813f5452f4ebd65d"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/native_charge146.h",
+      "bytes": 129,
+      "sha256": "e6f00244582adb874b3e4d279ee161a265c0169f721eca23b44a6019ad736b3e"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/native_charge147.h",
+      "bytes": 14110,
+      "sha256": "ab4563b113d89f7c0240c8b09da51dc47c242ef23445480f77bb6d486cf678d5"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/native_charge148.h",
+      "bytes": 20409,
+      "sha256": "81b0eae86bdf9f6ee486cc0daf9419db5098916edc833e2b7eea8225b3fe3457"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/native_commands100.h",
+      "bytes": 34377,
+      "sha256": "3912b92232f9bf0a8acabc8c115b97361ee014982f57cdc1014c28a09b97702a"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/native_context103.h",
+      "bytes": 6290,
+      "sha256": "ec5784414a41c4fe8320a530260a1af552c9be8f3f018fdeaf8d38121ffb3916"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/native_fatigue.h",
+      "bytes": 7074,
+      "sha256": "f92ef74aa5de201004cb065c972f2928cf343a6d161ae9a12df42237c61c8baf"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/native_gate_fixture87.h",
+      "bytes": 2421,
+      "sha256": "1c70a2754beb116f60d317c2a71e2e8a698d64d9e85fc1a457947b2c2ae442b9"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/native_group_fixture148.h",
+      "bytes": 904,
+      "sha256": "bcef8e9a3c292c7561123b4a1a66c570273d9d455ba7ffa425bb276605d96111"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/native_keyboard84.h",
+      "bytes": 4292,
+      "sha256": "f6b6247bdb903cee0d28c5cf298d65d05d5d438d2b8069e267924968001bfaa3"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/native_movement.h",
+      "bytes": 4972,
+      "sha256": "e9ecefc205ed60495cd4c062c001f175a8a9d2ad942650426ce1cf68d87b77ae"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/native_orders.h",
+      "bytes": 5603,
+      "sha256": "abc355ae5816427304428ca386d3c8ee8a42d032f1a6d49a127f4fb7f9891a08"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/native_overlay106.h",
+      "bytes": 19318,
+      "sha256": "68cbbd75d86c09df32dd63a22be3ff9bebc2fb928c241762271c67a1359a2c0e"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/native_palettes89.generated.h",
+      "bytes": 830084,
+      "sha256": "ed0d5ac0db595504ace6f04a9b2dea13660694392a4c2714275dc2403622ce30"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/native_recovery103.h",
+      "bytes": 740,
+      "sha256": "8347ecacff37946fb8acf04d4143adde58fea7b270fe030966b002aa64ac387d"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/native_speed_modifiers.h",
+      "bytes": 5600,
+      "sha256": "18b936e2c346a54d53d30fe9544dc0c41c1477e6ffa15edca63b258cdfbfbcc6"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/native_subject.h",
+      "bytes": 4445,
+      "sha256": "5a3ee1fd8dbc6180fe975926a24ea03f87b6d6aa6ce2b04d9b79d0513c5bc973"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/native_terrain.h",
+      "bytes": 3603,
+      "sha256": "24ccd74488ceedfea5a0f6bc3743b4e1e62e0d17de063216853d7ede69098b60"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/native_wall97.h",
+      "bytes": 4280,
+      "sha256": "bb6aaee7f82c1151fab552ea7222eebd619eb96b38c726febed5efb64e0b17b3"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/order_signatures.h",
+      "bytes": 1499,
+      "sha256": "ca6c2577d7a5192d8d293ddbc3a940c8b2dccc882064ac185db78f01b4dfcdfa"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/orders.h",
+      "bytes": 925,
+      "sha256": "8f949ba3cead997f883827596357c5339b57ad14415721e85396605edce5d2ef"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/personal_weapon_catalog.h",
+      "bytes": 3164,
+      "sha256": "632d7731a72178c4380d377ab7e41fc2323256cdbb370c8f9d6e889439dfb168"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/personal_weapon_profile.h",
+      "bytes": 1015,
+      "sha256": "65a34afa3bfbf9fca0d64c7c5d6ef8828d59b6d79cd9773884dcca697a6b62a8"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/pose_geometry.h",
+      "bytes": 5200,
+      "sha256": "75df7d25376a3b072bdd2b53be986b1a8c7c29ef4230f3b9f486b641d443a3a9"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/possession_entry125.h",
+      "bytes": 560,
+      "sha256": "150f0889a7940e245b52c86bbe2b46b07a2527db184b7ab1a9c1c032439f7548"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/possession_lease.h",
+      "bytes": 2175,
+      "sha256": "24c5a138fb18f54e6341c2a3944e83b77c731c1ac6d28fd6bd1cdb8238b23e1b"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/protocol.h",
+      "bytes": 4035,
+      "sha256": "4491892ab8a40f3aa757258f40c3d2f204ddb2d12b480ac6aae0888a617fb02b"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/proximity147.h",
+      "bytes": 13484,
+      "sha256": "56a10b4d4eccbbc3ceb96b978c54cdcd8e2ff7c2e777f5d337266a00a0cb88f5"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/ranged_position128.h",
+      "bytes": 3168,
+      "sha256": "b5285f7cac07b7f54be8a7c02344f64f4168cc6287d4ed8442765eebf07bda32"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/ranged_task_completion.h",
+      "bytes": 808,
+      "sha256": "94f96b613e34cd8d7ecf401a18422874d94a25a6616c4361d496c187e4999e86"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/rapid_advance132.h",
+      "bytes": 1503,
+      "sha256": "9d2205c518d577754d8d07a4c2325ec9e22d00f4d9107955d29ba0dc8b0113cf"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/rapid_pace136.h",
+      "bytes": 6206,
+      "sha256": "7024fc72b2e818accb760e7e3fe8de76488ddff908ad39aa03e54c1749b98715"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/raw_mouse.h",
+      "bytes": 2304,
+      "sha256": "cd9b1f6aba2c803283851cd47662cb3dcd6db9ffeeb2d225a74e31c9d9d41520"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/replace_v34.h",
+      "bytes": 9856,
+      "sha256": "21283200e5d1fcc053485bbb2ec3cc8bc8edc4c33f1ee2e544867978270a34e7"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/rts_camera90.h",
+      "bytes": 1014,
+      "sha256": "a986d90c2d8e8bc0ec021e0b1e14dfd7478789770edaaca39a1e50a49e7bba8f"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/rts_camera_native90.h",
+      "bytes": 5095,
+      "sha256": "d86a9e3cb76454b7d764ce13b0773cd94fdbe10ea610f6ebbe8db63a16d6472b"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/seated_bow_asset.h",
+      "bytes": 8148,
+      "sha256": "d141758690d2b1f83d9b70329d2e43d10d1e65bc8ee7cc37cf57bf763e2c425a"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/seated_weapon_geometry.h",
+      "bytes": 4180,
+      "sha256": "e8e02bc7c307864450aab06d50f88a7d5badd7d1175e5be3e5e2db9c5ce63a1c"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/self_visibility100.h",
+      "bytes": 1883,
+      "sha256": "1673e69075250761a6d2e1974586ed61cff152ab288e751f455ba89bc728173b"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/shot_capture87.h",
+      "bytes": 876,
+      "sha256": "5500d9b36cc9d0ebd36c68fe5cd3824964568c42b22dfc6001f5af5a97b6601f"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/soldier_pose.h",
+      "bytes": 33395,
+      "sha256": "2809e09c118692dc53f2f94990b3d760e1489ed4d1938ef34e159e429e46e89a"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/steering.h",
+      "bytes": 2855,
+      "sha256": "0d5e3fda4ef44df669d3c652b09f1a768a8743dcf3f9eee4d73a125e1586d7fe"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/terrain_math.h",
+      "bytes": 608,
+      "sha256": "f3ea1893e176e93604d841d79301cb4bf5b53699b34e9bac152ec44590e9b9f9"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/third_person152.h",
+      "bytes": 4562,
+      "sha256": "3c117b675cade35ad610a0f2c6744948180090c7b7f03318c534720373d2f864"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/throw_stop_scope83.h",
+      "bytes": 1876,
+      "sha256": "fad5b532bf29a24cf9c41449c7680b5202e0769e1428c6d0057616a065bf38a6"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/unit_detach130.h",
+      "bytes": 14139,
+      "sha256": "264e3ecf78ac54dde8dffbb311b34dc4bb81b54aee5828d43433114012b43c66"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/unit_detach_combat130.h",
+      "bytes": 10045,
+      "sha256": "ef299b3b59eed4cd2b7a96d5f34501e604167db911a2e3f4b720350d7c135226"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/unit_weapon131.h",
+      "bytes": 5287,
+      "sha256": "8ee8852f1928df14ceeadaf4adf57554b0ac1c50ff22e9bab631f0a5af3dc1c0"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify.cpp",
+      "bytes": 6257,
+      "sha256": "89a61900a100da21cfd3dc9fe74d1355d20d3382729c5a3e0fafaade62751eff"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_ability141.cpp",
+      "bytes": 6660,
+      "sha256": "4bd7b31ebeca068e626bf04921352071e71e08584eb6fa3863893a72c994aa0b"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_ability143.cpp",
+      "bytes": 5706,
+      "sha256": "d6aad6223d039c0f960892214a1406d93b02f63149818742a3a2c6b374b2bf18"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_accuracy90.cpp",
+      "bytes": 5372,
+      "sha256": "017fa33f5343d6f345504274e90b50088c59ca063b83648c40bb2d0c27cfb8ca"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_aim.cpp",
+      "bytes": 6049,
+      "sha256": "94dc6a4bddc80aa7166a38095b68e610729b2e33a6607844ec644c5372828d53"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_ammunition83.cpp",
+      "bytes": 3437,
+      "sha256": "ca1fdefd22b4ab8f3a48c4cf9f65367e5792e04584024e167216e862ee3641cf"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_animation.cpp",
+      "bytes": 3189,
+      "sha256": "1ed24c45f45b0c08feb623361b464bb37679faf1ac7f342905d5a63a1ee97859"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_animation_ownership105.cpp",
+      "bytes": 8197,
+      "sha256": "68e524f3f8130a76457bc2194028f6dfd1cc4440565b82ff5473293681419edc"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_animation_view.cpp",
+      "bytes": 2984,
+      "sha256": "6bff14376b51828daf90524490af8d0c4b4746d052f827caa469d4e731a302df"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_arrival_ownership129.cpp",
+      "bytes": 5333,
+      "sha256": "bb1fdc4be3a2801a4dd031dcdfdc358818b55e49d61e634a3d05c9eff614ccad"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_arrow_render.cpp",
+      "bytes": 3497,
+      "sha256": "80fbcb1f77357b8c954e0d2ec1c7c80920d45b6bc16b9e4ef7625e17a5b7cd04"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_audio143.cpp",
+      "bytes": 5859,
+      "sha256": "b96e6fc77bc35c0a30649696d1d83b1574db78d45edd5325ff7ce4741cf892ef"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_bow.cpp",
+      "bytes": 2530,
+      "sha256": "0fc62f7d5ccbedcebfb9eb91664493cefb8fdb2b18a7ad24278359a6574ecccf"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_bow_draw142.cpp",
+      "bytes": 5541,
+      "sha256": "c4467880fdc6de1d84ea2ea36ed245f14ac4d10f692ebea135ac53b8f413b0f3"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_camera_entry.cpp",
+      "bytes": 6168,
+      "sha256": "fe699c347e7aad5163732ef8627bc6a0553af726462bf297cc7507ce760df38e"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_camera_input.cpp",
+      "bytes": 4643,
+      "sha256": "57e0eecbaf53c700ddc155d31b4250627c8a575e935ac5977381e16247bca78c"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_camera_pick150.cpp",
+      "bytes": 12900,
+      "sha256": "dfe06e9eb6a9a76e4e6725ac3fb1e6622407c1c7fd6f6eaa20fbf59ae3724a8d"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_charge139.cpp",
+      "bytes": 12240,
+      "sha256": "c133901133f02f85180da72bdd7d468247846c3ff28a88ed695205bf9b858a57"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_charge148.cpp",
+      "bytes": 19528,
+      "sha256": "819f4a8358e49802868cd230475467aa2d1c02934e683de163f89fd4997aa9a1"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_combat_turn126.cpp",
+      "bytes": 2868,
+      "sha256": "95a9104a140931d5ab58f1181dd3dce546226fd9777438597a0ce82078866512"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_command_policy100.cpp",
+      "bytes": 6119,
+      "sha256": "0f4556190ae7aa4116f871be88634d9d517ab2e55a85d1662cc73992ea27d56d"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_cone.cpp",
+      "bytes": 1791,
+      "sha256": "d6ca16af50070350a40ecc0c6d71290bb6e52056fe671cc5cf1e886fb2861bc5"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_context103.cpp",
+      "bytes": 19015,
+      "sha256": "a3570d17d91b49f9af94438f5074d4c47011ea2dc9661d112fdac60f4e6eb5cd"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_decoded_rigs89.cpp",
+      "bytes": 2628,
+      "sha256": "d502ac504a99623f1460e719a99681eed47d2104f1810c06b47757e5b35f75b2"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_detach_advance137.cpp",
+      "bytes": 5051,
+      "sha256": "bdce31cf4663fcc6f791b6f41e1783b9adfbfd6d84c2d54387178312db774e9f"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_detach_combat130.cpp",
+      "bytes": 9229,
+      "sha256": "1c0cb89f05844d6822ffa2c6953f6c667fbff94515e017731998d25e553d0770"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_detach_lifetime130.cpp",
+      "bytes": 11800,
+      "sha256": "f9f0c37301184870d917294966df7d0cb0e587f8366f8894a5548949f067dbce"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_directx106.cpp",
+      "bytes": 13285,
+      "sha256": "b7c226c8dffed7c040fc612deb7ae7e16b470be58de7b88440d0b13635f9565a"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_dismount143.cpp",
+      "bytes": 9328,
+      "sha256": "72017f1b203b661f30fb031be867b37a86a414a9599e9d298c89f975b7275595"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_equipment81.cpp",
+      "bytes": 2492,
+      "sha256": "210825f868a97256968ef065cad58b69349cd6dbee19b4b671ab64d94fe30cd0"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_equipment_order81.cpp",
+      "bytes": 4077,
+      "sha256": "8a2931927114716447d954fd33272e8998cc1cae11d9c597ba29a47b415bcc6e"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_equipment_runtime81.cpp",
+      "bytes": 6425,
+      "sha256": "d068acc0779d2e1830a31e995362fa12bacd83833f1df4fe21813f5933adb2c4"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_fatigue.cpp",
+      "bytes": 11008,
+      "sha256": "cb2a7a8e9169645473c4eaa081b8d129e933bcdd87bbe7810852864c7a28fdf7"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_formation_arrival129.cpp",
+      "bytes": 7510,
+      "sha256": "20937a4b43de8b47049d3b358c7f20854aa2c784fa73b6593f0503460aed105f"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_friendly_fire109.cpp",
+      "bytes": 5767,
+      "sha256": "c9efb37601c548ea67483e368b4dae2e2d0eebe5dcfbfd241b08e49ed79488b7"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_head131.cpp",
+      "bytes": 1578,
+      "sha256": "949c8561d2e4b41bb71ac9679ce868db7609bf1c8e0d5bbee08ce477fa8d13b5"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_independent_fire.cpp",
+      "bytes": 3946,
+      "sha256": "17e349983c59f387c6691be6370637759e02716bdb6cabfff84a17536bbfbd22"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_input143.cpp",
+      "bytes": 4505,
+      "sha256": "38a643fe21da8959d6fef408235ad86dba3e8ef9dd83d53ed2b2c72e4bd25452"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_keyboard84.cpp",
+      "bytes": 9574,
+      "sha256": "d0acb0dac1b0579a1cddaefcc4234adfab4a5828b71b664b9be4ff164f0b9de6"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_leaders152.cpp",
+      "bytes": 4209,
+      "sha256": "8e210c2ed6cf2b9fa826b09878552dab81e82693bcca7edee8af9299bce78919"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_look104.cpp",
+      "bytes": 2261,
+      "sha256": "2465ab626f975ec142eb33e96ebe889de432fcb4be2a8fe9576c758f4c630338"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_look96.cpp",
+      "bytes": 2148,
+      "sha256": "20f15dc00c60d1c443e1b30ac6b6ed78c6a6ea0d764198a846666bded43f8086"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_melee_control.cpp",
+      "bytes": 9764,
+      "sha256": "8cd045cb5815c40feb6e26fbecf0897a4d04da1f0a1b46e059cc6a89f8853c51"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_melee_presentation137.cpp",
+      "bytes": 9471,
+      "sha256": "96da6068e083613c70ce237e2c1856f652ad07d9e80dfdd55455538ee627a9c1"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_miles123.cpp",
+      "bytes": 3825,
+      "sha256": "d2f07ca31c16c77dfd0e02f43e1a6408636261e917f7e9995c8b025e0b016b3a"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_mount154.cpp",
+      "bytes": 4058,
+      "sha256": "cbd227e11f6acc7447504151e5a840214f3723398d8c1db8f42841197f7b43a8"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_mounted.cpp",
+      "bytes": 6328,
+      "sha256": "eb1db7524436d36c3c1bbc0418b7274fb27ab04b32597ab5508070a8ab383b6a"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_mounted_bow.cpp",
+      "bytes": 2043,
+      "sha256": "558f394726c7b5f6d155fa47515d1bcf5248f7183ad54efe8c516ad07c072bca"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_mounted_camera.cpp",
+      "bytes": 13782,
+      "sha256": "140d081858c8947683ed3d977e43944fc4bd33719fc95d35da407daaf301f435"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_mounted_firearm.cpp",
+      "bytes": 5896,
+      "sha256": "a65e5c2cc0f9d1a00894096c8350e9409324aeccf04438d829be17ce92397036"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_mounted_hold.cpp",
+      "bytes": 3269,
+      "sha256": "2a12ea3fb1121d6e379195bf9cf839e063a973f8ad78951c90fc9a5fce0c277a"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_mounted_look85.cpp",
+      "bytes": 3761,
+      "sha256": "1f75596e7e5b6cf89a509ca99a42423e89fae8dd84f46c8f6cb42a1be7404526"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_mounted_qte.cpp",
+      "bytes": 2983,
+      "sha256": "69ea34437c96dbf21a7b58a5f1d4e8c01233fb81909959e244f6fbc9ad1ab650"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_mounted_render.cpp",
+      "bytes": 7514,
+      "sha256": "58cfb0e9b2d4ec05d98641820e0eeab1867541303c7c9f87f2d2f251e7b1ba20"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_mounted_settle88.cpp",
+      "bytes": 4514,
+      "sha256": "0734360c1ebbf28468ee3bdf88e090c1720199d91fba2d40bb3d7a53187c4a7c"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_mounted_shot87.cpp",
+      "bytes": 4825,
+      "sha256": "4413a266464fc2d6e4c9b674a293fd7ff80dcddabcbfcc07e5e37d6b7820ddd0"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_mounted_transition.cpp",
+      "bytes": 5313,
+      "sha256": "169cafae8c2aca71c53c917324e05a3c22f34695d9995a969f28d9a4d8c28808"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_native_accuracy90.cpp",
+      "bytes": 7469,
+      "sha256": "438aa303647953b4636db2250f75c8a46bca6435ff33abae770edeef5f4a1698"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_native_attachment.cpp",
+      "bytes": 3937,
+      "sha256": "f8eceacc5076c1e5f187f016e9b3b35d2e2820af56d86eafa6a70edf7a930f7c"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_native_barrier95.cpp",
+      "bytes": 5448,
+      "sha256": "6b09f7387d7b1d3b69223e1e05e319862a0fa8d47223dece8fdd2fa897bbb2ff"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_native_barrier96.cpp",
+      "bytes": 4889,
+      "sha256": "87d9c90339078afd7f35e0de44691a10cce2572c2446b4f64977df28ac0ab334"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_native_camera98.cpp",
+      "bytes": 17890,
+      "sha256": "a077a490f1c7f746827579838c5f066a1157bf711c5c78b34ec2d38b509fc822"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_native_commands100.cpp",
+      "bytes": 44132,
+      "sha256": "72ba13d8cecff0cb3ff97e490d4289d341088b884879109202768bb1aea06ca0"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_native_intent.cpp",
+      "bytes": 4175,
+      "sha256": "2e8b15e4ba559a40babe163890686521dcb94a38024bbbd0efeada2b22c5601c"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_native_landing99.cpp",
+      "bytes": 17560,
+      "sha256": "a9992194ed8432bb26391219c5e19effc05d39f48816c3f434c9559bb2cacb0c"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_native_movement.cpp",
+      "bytes": 3504,
+      "sha256": "be617ee668ed08c2d20982de506d37d3184541de25863f4e85cadbb5e4c36e51"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_native_rider.cpp",
+      "bytes": 17506,
+      "sha256": "22ab7752f04f3fc5c5f1bb6936a50174bd07131c405e0be625026c86271dcd9f"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_overlay106.cpp",
+      "bytes": 3841,
+      "sha256": "89fd89bf9edabca0dab6ed503de9a89dc473cbdd5176b0deef6662363d5e61d3"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_overlay_identity106.cpp",
+      "bytes": 1733,
+      "sha256": "6ebff78b3e8a261ac5af546b9c483c1c5990fea9dc7be37faf5e307226b399a4"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_pose.cpp",
+      "bytes": 4232,
+      "sha256": "1f9018565f6d6bcbf1d48209ccf037b4b56a25023740cb67b257ccc7f525a499"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_position_ownership128.cpp",
+      "bytes": 4386,
+      "sha256": "cd08d241fe14b92ac0c8fbfed1a578a3634d07c29c8e4f84d60a8b64509e2902"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_possession.cpp",
+      "bytes": 1964,
+      "sha256": "3d3213d7e6afa1c6cca4af7586dd3ba52d5e53f089f3d84e5008e0814d7a4dd4"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_possession125.cpp",
+      "bytes": 17039,
+      "sha256": "760dbb72cea361b0e07b0b04464921344126f7c2b314ba182288abfd721d285b"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_presentation101.cpp",
+      "bytes": 3609,
+      "sha256": "72d4c55c9d13d5de9c21cfb84ce3cd6e6b03be80d5be5c818add91b7868abdd0"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
+      "bytes": 17270,
+      "sha256": "1a2ce6c4ab670feffb0b0f028a38135b83acf7196cf8a3cff1e46397faf3605a"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_ranged64.cpp",
+      "bytes": 4116,
+      "sha256": "9b34f7d0fb955f59815d1ef4d40f52d478b6357df7919334a933de352b9f9cc8"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_ranged_position128.cpp",
+      "bytes": 9492,
+      "sha256": "0f2cf687608d5a5f6ae5076de7bf67138882361670135428e5164459ad908384"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_ranged_scope.cpp",
+      "bytes": 15809,
+      "sha256": "293bb43da5c24066941762eaeec8da2a5cd9a343a3efec5ae11ad408b4ef9840"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_rapid132.cpp",
+      "bytes": 4716,
+      "sha256": "4ae642ea6c30e1ee69efc1b4dd42d22c794c992ccf80c9391e017638a6aae8aa"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_rapid136.cpp",
+      "bytes": 5971,
+      "sha256": "4adfafe6e7752d5332034aed65423e15cebf0dc5650f8c4bc854d1fc26a4a79d"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_roles157.cpp",
+      "bytes": 4938,
+      "sha256": "aba423783d1db16e4230a64acf8a497cfc58b1b41623dde57e77495e1d25f1f8"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_routing154.cpp",
+      "bytes": 2121,
+      "sha256": "337669c6c6f98fac7ee226b4673925b8dc85fbef7ce214e9d49ea135d78b3666"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_rts_camera90.cpp",
+      "bytes": 5374,
+      "sha256": "618032ba6115a4e44614d02b543edd1df8ccc6af0f95398bfcc57317aa3056e0"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_selection104.cpp",
+      "bytes": 5328,
+      "sha256": "669b4ff0dd977fbe8c42bd6c952e3b2e7b1d75eeb83843e3a10ead1844609abd"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_siege97.cpp",
+      "bytes": 27790,
+      "sha256": "5dad79cddf5adff7cd46185c10d12941d0766dd81802e6f8fb8506bee7fb9923"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_speed131.cpp",
+      "bytes": 3227,
+      "sha256": "b19015cea7956ffca0243c7133c8f5aeb733cfd2b3ff2f40e45caf11bcc2e2cc"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_speed_modifiers.cpp",
+      "bytes": 6316,
+      "sha256": "807c1f8955f044aa040ee3dc7ee6038804e2cad81205aba7ab9130694ce9c0be"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_target131.cpp",
+      "bytes": 4183,
+      "sha256": "b71659a710b7613772607beeac043f12ee2ba402460113884da66be4238470e3"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_terrain.cpp",
+      "bytes": 5040,
+      "sha256": "2fafd2390b8c6e5cee32c75e7ae9a381f2c61c5474e9c1f952f43fa7340bd02d"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_throw_stop83.cpp",
+      "bytes": 6780,
+      "sha256": "80d67fb97273137b26dd68e4e1655bd22b4f30a7e51a5f6206010a082b045333"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_unit_detach130.cpp",
+      "bytes": 8457,
+      "sha256": "c6a7c73e2c3d1e95425a5fc4258fa31edea62826737fab1cb3008018fd1fd34e"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_unit_weapon131.cpp",
+      "bytes": 9775,
+      "sha256": "720421fc932901cdca515f1a70473962b79711612a1e4658a8673055579ce199"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_view152.cpp",
+      "bytes": 4694,
+      "sha256": "1d5635a6e0e09f88b0a4b7a36221fe1986ccf1b1484d05a5c26bb58cd28c143f"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_view153.cpp",
+      "bytes": 4485,
+      "sha256": "fcc219f5ff8f0d215c2129c097d186d8fb59abcfdb079cd40a775d7232f28564"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_view156.cpp",
+      "bytes": 5849,
+      "sha256": "671eef9e674caa0e1efe2380d1a2e558ab463318b35bc851c2489eac2ed157ae"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/verify_weapon_observation82.cpp",
+      "bytes": 6703,
+      "sha256": "4e5e8646b23c5e70904a9ac667ad650197516291f4e840fa4db69e033bb0fa05"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/view152.h",
+      "bytes": 4476,
+      "sha256": "a74f8b77c1919e9610e4a6866bd8d0efd470c01cdd4e84302834aafbda805558"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
+      "bytes": 40103,
+      "sha256": "a34c29287a25dbbf98614aeb5585c66ae5f8a3ee0839124fc4794c6e56302458"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/weapon_observation82.h",
+      "bytes": 3989,
+      "sha256": "25053d0a3034b8c9006e90860377e10b3a78712adf2b027092e387d41ac87237"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/src/weapon_rig.h",
+      "bytes": 3439,
+      "sha256": "ef836f1abc85e6b329fbccba2c197a14d02a0b181f11bdcea1ca6d562a608b3a"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/vendor/AUTHORS.txt",
+      "bytes": 214,
+      "sha256": "073b4e8b0a5a0cd9f4dfa838369f4fc7a4f47151d930b4e1fd891644060a897f"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/vendor/CMakeLists.txt",
+      "bytes": 4204,
+      "sha256": "ff59c571f60eb3f8fdee11b199cbe0ffd7477386f0e145da87691b1233e3cdc6"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/vendor/LICENSE.txt",
+      "bytes": 4365,
+      "sha256": "d5c2224982b0b95a16b098a561335fa93f3eaf4d0aa964b7843edb986df78dc8"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/vendor/README.md",
+      "bytes": 4489,
+      "sha256": "66f55334357ca5e76ffb2fa5075ef839346981b4ed6137730bda8c65e8c38d7b"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/vendor/cmake/minhook-config.cmake.in",
+      "bytes": 1883,
+      "sha256": "0aa1f5c2a987966763dc518875d16b23ff360c2134fb1b0643b8638d49d5bec7"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/vendor/dll_resources/MinHook.def",
+      "bytes": 252,
+      "sha256": "6f7c105459a8739899a78371a9e962a5b8979170e2a51c06534417e6a04198f6"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/vendor/dll_resources/MinHook.rc",
+      "bytes": 879,
+      "sha256": "7bf72847f2c3559d9f4dd45ece24454e9352295d3f5be457bac364cbf1bd7012"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/vendor/include/MinHook.h",
+      "bytes": 7715,
+      "sha256": "c3608e584bd9659aebdbb4c8c82585605989193623f240552d35c43311b3d31a"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/vendor/src/buffer.c",
+      "bytes": 9814,
+      "sha256": "0ab484d7870c3a8e7a3a1ee61e2070072cf445ed85b619d4c4207fed34356d99"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/vendor/src/buffer.h",
+      "bytes": 1862,
+      "sha256": "175ec5496c020509cf4c7670322b51b5bcd5b63a345bfefc4a19b43675857fa7"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/vendor/src/hde/hde32.c",
+      "bytes": 9318,
+      "sha256": "5da4941e9044f7b325c7f952b5840089e365f374740b7fe7318805d08c0d6c32"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/vendor/src/hde/hde32.h",
+      "bytes": 2555,
+      "sha256": "754579fbcec5f64fa229646ceecb241c0b7f31c8a0bb12370e604c316c569315"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/vendor/src/hde/hde64.c",
+      "bytes": 9507,
+      "sha256": "824eafa315322e6da105a7ce4ec1fc0e0adeee0106d32152fbb0b59e709bd15c"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/vendor/src/hde/hde64.h",
+      "bytes": 2714,
+      "sha256": "fd5b39e2865e12b9525ebda8fd9e9658b341ead5932d1bcb412a189f81ca42ca"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/vendor/src/hde/pstdint.h",
+      "bytes": 1701,
+      "sha256": "975488009779ea99c7e04b83a160397d5cd7195cb5bf6ad79180805f756c7d00"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/vendor/src/hde/table32.h",
+      "bytes": 3581,
+      "sha256": "e56f8641bd9133c1b99a1e6555b19eebe7ed663e5ea8de4edbe74ba461161ab4"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/vendor/src/hde/table64.h",
+      "bytes": 3651,
+      "sha256": "0b6c69ad498e67907e0c574ab06123aee4ec30c99fa181099ea929a8d820bfc1"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/vendor/src/hook.c",
+      "bytes": 26626,
+      "sha256": "edcce4c81985d7dd5b73feae96d6498c8f749b1bca4c3d2d9926ea9a17a84755"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/vendor/src/trampoline.c",
+      "bytes": 10718,
+      "sha256": "f13a169f803ff5a8e45c58ce668b4377a9878c0fc4452369b8a1325065186b2b"
+    },
+    {
+      "file": "native/outputs/shogun2-accuracy90-preview/vendor/src/trampoline.h",
+      "bytes": 3864,
+      "sha256": "23681f7768d5dbd23ea14b45ba64e488a337501f23122253c532b05dbed4b85f"
+    },
+    {
+      "file": "native/outputs/shogun2-ammunition83-preview/hud-src/accuracy_geometry90.h",
+      "bytes": 1282,
+      "sha256": "5673022f01e4ee9f01c898b684993ef6fc215624f8061f182eb454a0d7cafcad"
+    },
+    {
+      "file": "native/outputs/shogun2-ammunition83-preview/hud-src/accuracy_protocol90.h",
+      "bytes": 1090,
+      "sha256": "3638afd2116e4f15defaac0259137873fdeee0e801cef4133d373069c2f40c01"
+    },
+    {
+      "file": "native/outputs/shogun2-ammunition83-preview/hud-src/audio_feedback109.h",
+      "bytes": 1577,
+      "sha256": "7af705605f69635586c8fdc6e43cb8bce65e019d0a0b6436aa8847e83ec5666c"
+    },
+    {
+      "file": "native/outputs/shogun2-ammunition83-preview/hud-src/hud-assets.rc",
+      "bytes": 434,
+      "sha256": "96097b64d9bfc2bff71faf3dac9ee1c51a88685cea3435955f4c31e16e6f4121"
+    },
+    {
+      "file": "native/outputs/shogun2-ammunition83-preview/hud-src/hud.cpp",
+      "bytes": 23251,
+      "sha256": "64f050063888489816d56f164ca2bab319d849f15c30a3f3c803831f198bd55f"
+    },
+    {
+      "file": "native/outputs/shogun2-ammunition83-preview/hud-src/hud_renderer.h",
+      "bytes": 22401,
+      "sha256": "6bee7e1c90663cfd31a46548746c86a003a5915db970da9ce1ab33d351a73835"
+    },
+    {
+      "file": "native/outputs/shogun2-ammunition83-preview/hud-src/hud_state89.h",
+      "bytes": 1294,
+      "sha256": "ded5ed4e2d5d6e73b588093b30ee2dd9b0903ff6560fdc88a715d2b27534d84b"
+    },
+    {
+      "file": "native/outputs/shogun2-ammunition83-preview/hud-src/hud_surface100.h",
+      "bytes": 2001,
+      "sha256": "c269a2653ab83159db05feaf8d63c1a2963895e33796458d7bf020ee13171fce"
+    },
+    {
+      "file": "native/outputs/shogun2-ammunition83-preview/hud-src/native-fonts.rc",
+      "bytes": 2092,
+      "sha256": "25e2fcf63f727e463d3afaceb757d139f2364a7a4a4de9148283ca93a0c47d80"
+    },
+    {
+      "file": "native/outputs/shogun2-ammunition83-preview/hud-src/native_font.h",
+      "bytes": 6385,
+      "sha256": "efc8cef1a50f7410cdc0505ee91ab0c9cb381d62cef12212ca083762fb494225"
+    },
+    {
+      "file": "native/outputs/shogun2-ammunition83-preview/hud-src/qte-sprites.generated.h",
+      "bytes": 1085,
+      "sha256": "ac9a240a20e2460bd4a39c59d1687d94fba233b956ac87072533d6abc220b515"
+    },
+    {
+      "file": "native/outputs/shogun2-ammunition83-preview/hud-src/sprites.generated.h",
+      "bytes": 49067,
+      "sha256": "4250329472eb8d32b2f55d1f56a6bf80b0fc1714aa6902ecda42cfa2bd7d0e24"
+    },
+    {
+      "file": "native/outputs/shogun2-ammunition83-preview/hud-src/unit_art.generated.h",
+      "bytes": 86026,
+      "sha256": "2006effcd8bf5845756a4517652e7f1f9ae3276ffd83aca180cdc3ece8505b8c"
+    },
+    {
+      "file": "native/outputs/shogun2-ammunition83-preview/hud-src/verify_hud_ability141.cpp",
+      "bytes": 1099,
+      "sha256": "2fabce857f434e583ad20a83f474049f764c0f8979ebc199f48ff4e4eb68156a"
+    },
+    {
+      "file": "native/outputs/shogun2-ammunition83-preview/hud-src/verify_hud_audio109.cpp",
+      "bytes": 2450,
+      "sha256": "500841d32be73f8a1ec1211393549cfbd78782e71ad979d511507f471d567dec"
+    },
+    {
+      "file": "native/outputs/shogun2-ammunition83-preview/hud-src/verify_hud_layout108.cpp",
+      "bytes": 2307,
+      "sha256": "739e17ae4defab9cae54b410d96b3bb96fec3b7a393d6d61bfbf6b68e224f52c"
+    },
+    {
+      "file": "native/outputs/shogun2-ammunition83-preview/hud-src/verify_hud_mode133.cpp",
+      "bytes": 1516,
+      "sha256": "3418e31d757562b1733d276da3c32c4e987ff9675c4f8271c4aa52e3d786e6f4"
+    },
+    {
+      "file": "native/outputs/shogun2-ammunition83-preview/hud-src/verify_hud_state89.cpp",
+      "bytes": 1633,
+      "sha256": "6f2645cb52029fcab6f7c2076ea485307135ffb3e72c1a387295e2af5fcd7c69"
+    },
+    {
+      "file": "native/outputs/shogun2-ammunition83-preview/hud-src/verify_hud_surface100.cpp",
+      "bytes": 1316,
+      "sha256": "a042022ea172713e1f3c84eb1ce7b5a923c494bb411b546f618c4010e0daeda5"
+    },
+    {
+      "file": "native/outputs/shogun2-ammunition83-preview/hud-src/verify_hud_window105.cpp",
+      "bytes": 3137,
+      "sha256": "57fb8fcecafb800fe98894b06ac566f7696c56b141cd86395f76f6f08875ed72"
+    },
+    {
+      "file": "native/outputs/shogun2-ammunition83-preview/hud-src/weapon_mode133.h",
+      "bytes": 530,
+      "sha256": "adc8270610398a51119779ab082d0c79c7c336251e0881cee936f8d3a85c328d"
+    },
+    {
+      "file": "native/outputs/shogun2-ammunition83-preview/src/ammunition_protocol83.h",
+      "bytes": 2807,
+      "sha256": "7b0962975b377a3a24fd6c27cbea55a36c1078eaf371ae48e12293654116db2b"
+    },
+    {
+      "file": "native/outputs/shogun2-ammunition83-preview/src/equipment_protocol81.h",
+      "bytes": 619,
+      "sha256": "15ed360d3799d6fab398732d12d1be3757eb9011904e2aee2d5b2409be266ff9"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/battle_epoch151.h",
+      "bytes": 2018,
+      "sha256": "44141b88ba183cabfdbeab7a8c22af10ab528296daeddced24f5c383e6f0d1e3"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/encounter_admission.h",
+      "bytes": 1777,
+      "sha256": "ad5bcca512e9da68a9572cd5eca3e2ac009d5e1bdc557e0a5c8dfd00faf2b14a"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/melee_commitment.h",
+      "bytes": 3111,
+      "sha256": "04ceafdc68737be79441b58408be43a2948ddad2ffe09aded06fa8c3bce4bdc2"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/meter_calibration.cpp",
+      "bytes": 1065,
+      "sha256": "20e87830147b3503dde9168ef7a4f35577c2f5fccfa170fe26fbd2128d791e2d"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/native_animation_snapshot.h",
+      "bytes": 3305,
+      "sha256": "648a2aa9253b51897273ddb6beb5185bc581f45921636d27c3300c244acae17b"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/native_battle_clock.h",
+      "bytes": 3454,
+      "sha256": "d4d12fc32ab9f64d0b31055acd75f0dd86705da8afc9a91116624db80249e41b"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/native_charge_contact140.h",
+      "bytes": 9396,
+      "sha256": "2323eefb3fdb89e523d5b35d6178e319025fed69f1135b356db421a132e07309"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/native_combat_actor.h",
+      "bytes": 4260,
+      "sha256": "a5bfa2f4121916cb2fe36c29a8f95fac8731b0ffbc02b4f7245c483f4581769f"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/native_effective_combat.h",
+      "bytes": 5713,
+      "sha256": "6b1dbdc1affd32f6d9f763b1faae63da789fd48126aabbb5f3de0c1990bc94a9"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/native_observer.h",
+      "bytes": 4957,
+      "sha256": "f83fbcd95a2c6380103edad2e03208894c115ce24e743615d622c77e15e52660"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/native_qte_abi.h",
+      "bytes": 1671,
+      "sha256": "fa5a2b1496b5d3e6a43b3573cff6e6c9fa9ea5c59702ecbb97ee0362f0ffe0b4"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/native_registry94.h",
+      "bytes": 3529,
+      "sha256": "3cf3277ee57262acac05b52f772e7e6779bcc0e67d73694fc25d650d1e12acf8"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/native_reservation.h",
+      "bytes": 4037,
+      "sha256": "dce1379347794291cd27e429f91898b64c49499baa776393342d4170a45b72bd"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/native_retarget.h",
+      "bytes": 5513,
+      "sha256": "0b3554191311bdeda60a0e757b624d25a674093f8981bf94e948d3cab1398e1a"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/native_selection_prefix.h",
+      "bytes": 7056,
+      "sha256": "aa58fb55da7dc53843a081611497d470f3d852fde77c5e406ba735e411237a96"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/native_unit_context.h",
+      "bytes": 4662,
+      "sha256": "42367194a2d9018d6cc034fcb9d91430c051690251954bc85788468c4ddeca78"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/observer.cpp",
+      "bytes": 13185,
+      "sha256": "4c0dd880c9e35340ae1bdf98b4ff9c4c6382cb78afc73cf7c9d719e3b4f6e5e6"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/observer_launcher.cpp",
+      "bytes": 5984,
+      "sha256": "82f027a1c09d6e37b2f41f2ab55cff4ac786fe0f99571d8f0666976ead2dab71"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/observer_protocol.h",
+      "bytes": 749,
+      "sha256": "4c5fb287f4bf4a9a2dd3846da11798bdb1120d450f00dc1d0e40bd8697f1ae32"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_launcher.cpp",
+      "bytes": 6443,
+      "sha256": "401f046037fd462d5667d02687d8ae8305e0e597259126f7eacbaba4a5b73f2b"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_protocol.h",
+      "bytes": 128,
+      "sha256": "7158f8c31c560a0227638f71f13787a5a127368d5295538bab248265b97d9a47"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
+      "bytes": 81645,
+      "sha256": "aaac4c9ba91d0e5c9d40a8fcb724214e4d57d81e5b92690f3627be4e71857d70"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/possession_observation.h",
+      "bytes": 478,
+      "sha256": "6f1672a8881cc918ac19727014f663c1f7763f27dfb82ed959606b5e46bf3de0"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/qte-assets.rc",
+      "bytes": 93,
+      "sha256": "3c970a7d56ad0a9b5bf62d7f6ff3651bd505c59d6515d494c9a68f861c705ae3"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/qte_core.h",
+      "bytes": 14854,
+      "sha256": "acca2690a9566d72e54cd8e8f086b25b6f7de9fc9ffe8c97193406190be4c562"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/qte_native_bridge.h",
+      "bytes": 28933,
+      "sha256": "74787e98a48fdd9ee56c7bad2f3134de9e25c845b1269b6afc96e0a525036496"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/qte_pair_gate.h",
+      "bytes": 5479,
+      "sha256": "bbfbe67eec90cabebbe7fa942f6637aaf6938b383140ba6e3028dcafd6942486"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/qte_presentation93.h",
+      "bytes": 1411,
+      "sha256": "9c3f03931ef99328ba0a6da9d8dbfd92cf7db433c0b1c89de9d8610bf98593d1"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/qte_presented113.h",
+      "bytes": 1762,
+      "sha256": "9998ffaba5aa5f9b4d6154eb387bebda852eb9d60f1246db97d94642802473a9"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/qte_render.h",
+      "bytes": 993,
+      "sha256": "f5f81d2832a2daa828ca6a3bd7a028d7e21ce7877e60fb9640a1d80b331112ef"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/qte_service94.h",
+      "bytes": 481,
+      "sha256": "ef8b9ab59f903ff03a7b2966f282bd817f194b7d9bab82b858adb8eb0468c552"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/qte_session.h",
+      "bytes": 8358,
+      "sha256": "d2f8969e9256657dff361397abbb740287c433761db40122c9eab5b745e8bca7"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/qte_timeline.h",
+      "bytes": 3599,
+      "sha256": "1fe289a7a05334b214966e4efd191e1fdd10e92c8c081e47e0907f90cc56acdf"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/qte_transport.h",
+      "bytes": 4399,
+      "sha256": "6113d64bb6e37df5da4c37c59983a4782ea38b91bf4568ad88514fdd9aa98160"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/registry93_benchmark.h",
+      "bytes": 1533,
+      "sha256": "15779f4ecd4c9ee2981e54394e6d4dce061f43bc315ca81232faae27d4f2f823"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/render_preview.cpp",
+      "bytes": 2600,
+      "sha256": "6c158ca844dec86b7dfdd4dd57cdda7edf53639f0a67e48874ea7f190885cc57"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/strict_melee_gate.h",
+      "bytes": 5148,
+      "sha256": "bf7796751106b8cacedc5eff25453d1fea6a724e1feec6374488ea5ac70ef650"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_animation_snapshot.cpp",
+      "bytes": 5981,
+      "sha256": "9320d4d132338f0fbff5448ee56dc758d40b38ed17a49a9a0777ac2d346b83bc"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_attribution.cpp",
+      "bytes": 5868,
+      "sha256": "094b4fb0cb0f0fdb9b0abefb54c996335a51b5fd6d179e9eac06ca4275111528"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_battle_epoch151.cpp",
+      "bytes": 3975,
+      "sha256": "cc323eabfb82ec9f9bfe571ba7bd9ae599c7ec6fb810b249119e44335d958f2c"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_cadence107.cpp",
+      "bytes": 1666,
+      "sha256": "3f0e92d9af630879af10b50252224e6bc4bd8f73cde90f8a9a28e3502dbdaa02"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_charge.cpp",
+      "bytes": 6665,
+      "sha256": "bf25fb226507d67b84641a55219229276e60f714e0d43805b8510a26bd33c90d"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_charge140.cpp",
+      "bytes": 12014,
+      "sha256": "5cbdfa8b0d5aa5368b32c5d012637afa25a845b5ad11334d519948a911d2a5b8"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_charge_runtime.cpp",
+      "bytes": 2836,
+      "sha256": "e96f091a31a3c19d31579d68960c89227659f429c83890a70040f8c9376bed2a"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_clock.cpp",
+      "bytes": 6201,
+      "sha256": "03cb3a0ed248f315cc784de09387863c0492d6bf60f295d993f4a7fa135d77b4"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_commitment.cpp",
+      "bytes": 3496,
+      "sha256": "9ae99026969b72726b3f82ac1a8a3fe8755cf007c0f2394753eb84cb36e09cb1"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_crowd114.cpp",
+      "bytes": 5075,
+      "sha256": "24230201a754313e9d824c2c7476fb3970c9677c3673eb7fe829f66fb13d9a1a"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_crowd115.cpp",
+      "bytes": 10030,
+      "sha256": "9fb625e39abc7286757f323922f277808a138788bcd722d264e734b3816140c5"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_crowd92.cpp",
+      "bytes": 5096,
+      "sha256": "f411a29e6340641f00876df89ef20740c9eb73fefebc360e92f46ea0f792642e"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_cycle95.cpp",
+      "bytes": 4146,
+      "sha256": "08269fe3109d87a1f092d5eebf0e0a75e30eba147c479c4b6ec6b2bdc354f153"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_deadline.cpp",
+      "bytes": 5737,
+      "sha256": "c47b64620c8f61d5692da6bc58d854af2f8f616d998298b63d0d93fc048b623d"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_drift105.cpp",
+      "bytes": 2681,
+      "sha256": "f69e26045afc03d7598cd1e74612c519e2bdf0cb150a0fa0e9f9ff2582601463"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_duration91.cpp",
+      "bytes": 4193,
+      "sha256": "a389753e0be4cd07912bc53bf722a7986dcfc066489ee362bcc763736230a571"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_identity120.cpp",
+      "bytes": 3843,
+      "sha256": "6bdc333237da0dfe05fe5ce3ee30762fbcdf665f4d12344a4b1459a226ca22fe"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_immediate_start.cpp",
+      "bytes": 4366,
+      "sha256": "8f4afc652bd2bd1d3bcd04cec302dfcbc88edb13ba03265b472b171d34f0fa18"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_input113.cpp",
+      "bytes": 7588,
+      "sha256": "2ad51a7fe04e672ff95b2ed47c00ec00606d4fb1f62d849c551aa57bef951081"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_meter.cpp",
+      "bytes": 8164,
+      "sha256": "27f7f0a1bb1ea57b3f3bdfc0492691aba062696d3aee9335c8c9af6c837009a7"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_native_abi.cpp",
+      "bytes": 3903,
+      "sha256": "1e4e994b426ddcfcdce6c2768df7957e6b17eeacace4eec0b44b4d5f6d6507b1"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_native_bridge.cpp",
+      "bytes": 13918,
+      "sha256": "62de8b033a28fa361f157cbb6678dcb79c8d8684cd8714f85a627e7a2856f8a6"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_native_context.cpp",
+      "bytes": 4750,
+      "sha256": "ffff77bcf44bce9fed89f101929cfd114fd73d6ac3096d3c21a53a0cc7e650ae"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_native_wait92.cpp",
+      "bytes": 3896,
+      "sha256": "fb0dd1d9ce3e635c0b826ce1a19222c1711e7198936735fd3755f1fcfad7773f"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_observer.cpp",
+      "bytes": 9262,
+      "sha256": "1c0ccd4cc19c756196407f174a6912efaf1ceb334b69545f7359f6b2f1f0b534"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_pair_gate.cpp",
+      "bytes": 4814,
+      "sha256": "b0709d521c7e739f5f1260a8fc044815beb53dbf634c99296cbabb34c234f4b6"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_playable_forwarding.cpp",
+      "bytes": 3580,
+      "sha256": "941ea09c111e55472069a62a4ce844fe9ec7bf149155c9807c05e2e18a5c765e"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_preparation124.cpp",
+      "bytes": 9998,
+      "sha256": "cb54427060e4d29acbc41c3d6c7aaf324030d3bbce5f0b0416ceaa91e8e0924b"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_prepared_bridge.cpp",
+      "bytes": 4789,
+      "sha256": "793b683c5f29f3768773c66647e2037a678a38e3764fac6a754f2e5642a886b4"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_presentation93.cpp",
+      "bytes": 5305,
+      "sha256": "5191dade7275b431003c9c6fc5c5415d92d6a944638da9e8cd3c8829c7a3adda"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_presented106.cpp",
+      "bytes": 2407,
+      "sha256": "735052661143c1b54fe9ab0a6b547c5d0da40b6a5257931ea5d5bbfed96bb5f7"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_publication107.cpp",
+      "bytes": 5487,
+      "sha256": "b6fbbb15ac8103d4d4a07cd0f2aeed1be335ede1232f751ef50f411b25e55e8c"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_qte.cpp",
+      "bytes": 5755,
+      "sha256": "368bc075910d412f7cfcd2da938a08daa8ca391feeaa96176d95fad55032b361"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_registry94.cpp",
+      "bytes": 5273,
+      "sha256": "2e829bc239271907da7a5133d2e8d09ec89f1257bc8c6f17a76dec760e58fd4e"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_renderer.cpp",
+      "bytes": 2564,
+      "sha256": "f3dfb08d4e1ee6cb95213ee49ad8b70a9c3bcc00294c0b5fc14a8471468fc485"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_reservation.cpp",
+      "bytes": 9497,
+      "sha256": "8f14092462d6c11cce6c8e387fbcda55b40863bfc6dd6d9a7151923b5739ca07"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_retarget.cpp",
+      "bytes": 6351,
+      "sha256": "10b0955fe24d4e3aea7e308a025cdb98a3fba454b7463d07c3c000a5556e1be9"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_roles157.cpp",
+      "bytes": 4557,
+      "sha256": "e96aec62247055e9483c60c54ce45cfacae5a4577856352d69b40054dde26769"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_routing152.cpp",
+      "bytes": 5475,
+      "sha256": "6d122e18d4ddfb762344b675197880c89b436fbe6817f1eb18ce15fede2c40db"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_scope118.cpp",
+      "bytes": 8132,
+      "sha256": "1ff27a4b01bb4b2c7060940af99badcf03f754f5f4fb4e6b7a304e7645f5aa41"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_scope119.cpp",
+      "bytes": 11426,
+      "sha256": "e419df98414e0bbbffdae8e2b58a336434607dbceee891f14d797d75b82d7fd5"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_scope120.cpp",
+      "bytes": 17608,
+      "sha256": "99c14e948a546fbfb90785ff405758da55a56b73d2290d63aa3dbf6b587a1a97"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_scope121.cpp",
+      "bytes": 22343,
+      "sha256": "6efccafac76304695b546d1255b37acfb280ca647e92a879bb3060d03ed3c903"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_scope122.cpp",
+      "bytes": 29044,
+      "sha256": "c976f559feb9dc00d89e53bcf241f7005b4d089122405abbe090ca62348a9448"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_score_interleave.cpp",
+      "bytes": 8755,
+      "sha256": "59c39c257341a9fc644c1511963013f1810092a3e828ac4c5e2b2beb593db279"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_selection_prefix.cpp",
+      "bytes": 5635,
+      "sha256": "1ed82d844b0d0ddc805feaf9b0f01845cf7f127d1c797dd137aed088fa0a9c40"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_session.cpp",
+      "bytes": 14993,
+      "sha256": "607e00c5f763152ce5c185080157a5e7b23988daa07568a8fda1c11248105c63"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_strict_bridge.cpp",
+      "bytes": 4489,
+      "sha256": "fd9f71bcbccafbc314c92bcd3ccdadec4d77b7cf97a46fe44cc21d6784ce4f13"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_strict_runtime.cpp",
+      "bytes": 6166,
+      "sha256": "d620ac9c0a4acc71f8e29385c49e4c9158a0e3b8a6ca8edf3575f658425ec423"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_surface93.cpp",
+      "bytes": 966,
+      "sha256": "e9ef4a5d18a9bb6727249ede43198cb1dfbf3d67c0bb47e8a766a90f0cf9365a"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/src/hud-assets.rc",
+      "bytes": 205,
+      "sha256": "6526614824dbb4cefc45c7953b0b24758ed9a79077941b9f35ca59dc9d1c1961"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/src/hud.cpp",
+      "bytes": 12076,
+      "sha256": "d46335e332cb7573c52b85a6a08c5269d28a1244a94561a4cbd6f5f8c1b638e7"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/src/hud_renderer.h",
+      "bytes": 13730,
+      "sha256": "13027ad650c516ca78cae8f1d4ec2ba107be322d4da3761f03bdc8a450281356"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/src/native-fonts.rc",
+      "bytes": 1390,
+      "sha256": "fa8ecb58fbb7313bc10a17f2611c33217f900cd85b850f9f8c5cacf4a69e80eb"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/src/native_font.h",
+      "bytes": 6288,
+      "sha256": "c32069f2b6f254eea1a93b451fb910d100020f47041b67c1538cbec37ef3d864"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/src/qte-sprites.generated.h",
+      "bytes": 1085,
+      "sha256": "ac9a240a20e2460bd4a39c59d1687d94fba233b956ac87072533d6abc220b515"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/src/sprites.generated.h",
+      "bytes": 49067,
+      "sha256": "4250329472eb8d32b2f55d1f56a6bf80b0fc1714aa6902ecda42cfa2bd7d0e24"
+    },
+    {
+      "file": "native/outputs/shogun2-authentic-hud80-preview/src/unit_art.generated.h",
+      "bytes": 86026,
+      "sha256": "2006effcd8bf5845756a4517652e7f1f9ae3276ffd83aca180cdc3ece8505b8c"
+    },
+    {
+      "file": "native/outputs/shogun2-melee-meter79-preview/src/qte_core.h",
+      "bytes": 14854,
+      "sha256": "acca2690a9566d72e54cd8e8f086b25b6f7de9fc9ffe8c97193406190be4c562"
+    },
+    {
+      "file": "native/outputs/shogun2-melee-qte63-preview/src/melee_commitment.h",
+      "bytes": 3111,
+      "sha256": "04ceafdc68737be79441b58408be43a2948ddad2ffe09aded06fa8c3bce4bdc2"
+    },
+    {
+      "file": "native/outputs/shogun2-possession-cleanup-v46/src/actor_types152.h",
+      "bytes": 1116,
+      "sha256": "685a06b573e46897d423ade98f3cdf1699fe2ebf7d3faec82123230b8836e30c"
+    },
+    {
+      "file": "native/outputs/shogun2-possession-cleanup-v46/src/charge_protocol146.h",
+      "bytes": 1416,
+      "sha256": "fe0aebb2063a345ad7f95ccd33fe665e61fe15d8ea62aa27a91ca0f8504a52f2"
+    },
+    {
+      "file": "native/outputs/shogun2-possession-cleanup-v46/src/friendly_fire_protocol109.h",
+      "bytes": 1290,
+      "sha256": "6833af8fd53fdcc322981e87f1320b62667d65a739f2a9b65f074691417a9313"
+    },
+    {
+      "file": "native/outputs/shogun2-possession-cleanup-v46/src/game_window105.h",
+      "bytes": 1322,
+      "sha256": "def0be3e21fd68295d03189cc23c3426059d5f5be7b76cbf6317d83750cc9e84"
+    },
+    {
+      "file": "native/outputs/shogun2-possession-cleanup-v46/src/hud_layout108.h",
+      "bytes": 1309,
+      "sha256": "49946414019a08097af25b61eadb3f108501e1ce469d6b257b1fb3270be838bd"
+    },
+    {
+      "file": "native/outputs/shogun2-possession-cleanup-v46/src/hud_visibility148.h",
+      "bytes": 1139,
+      "sha256": "f2a2d079fc6be12a8fa2511cdd1875c4db95b00617666958cdcb42c1e022d6cc"
+    },
+    {
+      "file": "native/outputs/shogun2-possession-cleanup-v46/src/identity.h",
+      "bytes": 4109,
+      "sha256": "5ceb7b14c711ae732612e6294d2d0b87d1d8f71c6630a04a3f695845afd4af29"
+    },
+    {
+      "file": "native/outputs/shogun2-possession-cleanup-v46/src/overlay_surface106.h",
+      "bytes": 6336,
+      "sha256": "cfbfd23555a512032917adc94421bef592f6a98593c323d14d9dce8fba6e3dd0"
+    },
+    {
+      "file": "native/outputs/shogun2-possession-cleanup-v46/src/protocol.h",
+      "bytes": 4035,
+      "sha256": "4491892ab8a40f3aa757258f40c3d2f204ddb2d12b480ac6aae0888a617fb02b"
+    },
+    {
+      "file": "native/outputs/shogun2-possession-cleanup-v46/src/qte_meter108.h",
+      "bytes": 1948,
+      "sha256": "d30322a8312c23d00bf8a52aec7eaed4d82e18dbaef90caf4f7f56c83b6f82b4"
+    },
+    {
+      "file": "native/outputs/shogun2-possession-cleanup-v46/vendor/AUTHORS.txt",
+      "bytes": 214,
+      "sha256": "073b4e8b0a5a0cd9f4dfa838369f4fc7a4f47151d930b4e1fd891644060a897f"
+    },
+    {
+      "file": "native/outputs/shogun2-possession-cleanup-v46/vendor/CMakeLists.txt",
+      "bytes": 4204,
+      "sha256": "ff59c571f60eb3f8fdee11b199cbe0ffd7477386f0e145da87691b1233e3cdc6"
+    },
+    {
+      "file": "native/outputs/shogun2-possession-cleanup-v46/vendor/LICENSE.txt",
+      "bytes": 4365,
+      "sha256": "d5c2224982b0b95a16b098a561335fa93f3eaf4d0aa964b7843edb986df78dc8"
+    },
+    {
+      "file": "native/outputs/shogun2-possession-cleanup-v46/vendor/README.md",
+      "bytes": 4489,
+      "sha256": "66f55334357ca5e76ffb2fa5075ef839346981b4ed6137730bda8c65e8c38d7b"
+    },
+    {
+      "file": "native/outputs/shogun2-possession-cleanup-v46/vendor/cmake/minhook-config.cmake.in",
+      "bytes": 1883,
+      "sha256": "0aa1f5c2a987966763dc518875d16b23ff360c2134fb1b0643b8638d49d5bec7"
+    },
+    {
+      "file": "native/outputs/shogun2-possession-cleanup-v46/vendor/dll_resources/MinHook.def",
+      "bytes": 252,
+      "sha256": "6f7c105459a8739899a78371a9e962a5b8979170e2a51c06534417e6a04198f6"
+    },
+    {
+      "file": "native/outputs/shogun2-possession-cleanup-v46/vendor/dll_resources/MinHook.rc",
+      "bytes": 879,
+      "sha256": "7bf72847f2c3559d9f4dd45ece24454e9352295d3f5be457bac364cbf1bd7012"
+    },
+    {
+      "file": "native/outputs/shogun2-possession-cleanup-v46/vendor/include/MinHook.h",
+      "bytes": 7530,
+      "sha256": "62dff05e63155c6bf8135c36a0d79dedbdcaaede9da26fe38daf0bea34323e38"
+    },
+    {
+      "file": "native/outputs/shogun2-possession-cleanup-v46/vendor/src/buffer.c",
+      "bytes": 9814,
+      "sha256": "0ab484d7870c3a8e7a3a1ee61e2070072cf445ed85b619d4c4207fed34356d99"
+    },
+    {
+      "file": "native/outputs/shogun2-possession-cleanup-v46/vendor/src/buffer.h",
+      "bytes": 1820,
+      "sha256": "9769702bd625249e59a19ede05c84365fcc7707e1fa0e5df08df42227cee13e3"
+    },
+    {
+      "file": "native/outputs/shogun2-possession-cleanup-v46/vendor/src/hde/hde32.c",
+      "bytes": 9318,
+      "sha256": "5da4941e9044f7b325c7f952b5840089e365f374740b7fe7318805d08c0d6c32"
+    },
+    {
+      "file": "native/outputs/shogun2-possession-cleanup-v46/vendor/src/hde/hde32.h",
+      "bytes": 2450,
+      "sha256": "5132de5be8ac7a9d054420f5caef0fb01437faa892f03b3cdc77f795973bf15a"
+    },
+    {
+      "file": "native/outputs/shogun2-possession-cleanup-v46/vendor/src/hde/hde64.c",
+      "bytes": 9507,
+      "sha256": "824eafa315322e6da105a7ce4ec1fc0e0adeee0106d32152fbb0b59e709bd15c"
+    },
+    {
+      "file": "native/outputs/shogun2-possession-cleanup-v46/vendor/src/hde/hde64.h",
+      "bytes": 2602,
+      "sha256": "e99aa4997bda14b534c614c3d8cb78a72c4aca91a1212c8b03ec605d1d75e36e"
+    },
+    {
+      "file": "native/outputs/shogun2-possession-cleanup-v46/vendor/src/hde/pstdint.h",
+      "bytes": 1662,
+      "sha256": "604d1cdf45c5a95bc9cf1bbf39ca05ef83013541101d34971c5cd7577e3d5247"
+    },
+    {
+      "file": "native/outputs/shogun2-possession-cleanup-v46/vendor/src/hde/table32.h",
+      "bytes": 3508,
+      "sha256": "43bf687a9fff071b5f46070db4d36c846f8e069cdc57485ee897c499aacdde23"
+    },
+    {
+      "file": "native/outputs/shogun2-possession-cleanup-v46/vendor/src/hde/table64.h",
+      "bytes": 3577,
+      "sha256": "b774446d2f110ce954fb0a710f4693c5562ddbd8d56fe84106f2ee80db8b50a2"
+    },
+    {
+      "file": "native/outputs/shogun2-possession-cleanup-v46/vendor/src/hook.c",
+      "bytes": 26626,
+      "sha256": "edcce4c81985d7dd5b73feae96d6498c8f749b1bca4c3d2d9926ea9a17a84755"
+    },
+    {
+      "file": "native/outputs/shogun2-possession-cleanup-v46/vendor/src/trampoline.c",
+      "bytes": 10718,
+      "sha256": "f13a169f803ff5a8e45c58ce668b4377a9878c0fc4452369b8a1325065186b2b"
+    },
+    {
+      "file": "native/outputs/shogun2-possession-cleanup-v46/vendor/src/trampoline.h",
+      "bytes": 3759,
+      "sha256": "53ed9934492320617a27bfd952ffe7f5b7a4a1d09963d4512447082fe7b727b4"
+    },
+    {
+      "file": "native/outputs/shogun2-possession-qte55-preview/src/identity.h",
+      "bytes": 4109,
+      "sha256": "5ceb7b14c711ae732612e6294d2d0b87d1d8f71c6630a04a3f695845afd4af29"
+    },
+    {
+      "file": "native/outputs/shogun2-possession-qte55-preview/src/protocol.h",
+      "bytes": 4035,
+      "sha256": "4491892ab8a40f3aa757258f40c3d2f204ddb2d12b480ac6aae0888a617fb02b"
+    },
+    {
+      "file": "native/outputs/shogun2-possession-qte55-preview/src/steering.h",
+      "bytes": 1792,
+      "sha256": "74ad236f42956acd3d75818f1e84931026d64efae0a37fba7bf6b241ac901337"
+    },
+    {
+      "file": "native/work/autoload99-preview/bootstrap.cpp",
+      "bytes": 2909,
+      "sha256": "b2b778144be530ed41aae35914806f578d68c7f3e607008be3beb74330875b21"
+    },
+    {
+      "file": "native/work/autoload99-preview/dinput8.def",
+      "bytes": 426,
+      "sha256": "9a9cdbef9af0be84d849247c144c27e54211c33fc479db538f92526df530cf6d"
+    },
+    {
+      "file": "native/work/autoload99-preview/integrated.h",
+      "bytes": 9884,
+      "sha256": "1e3e3ae34e82aa5960ed8933622dbd0b5912489dd63b5d43cacb9068b6edd6ec"
+    },
+    {
+      "file": "native/work/autoload99-preview/payload.rc",
+      "bytes": 215,
+      "sha256": "c58ed8afc14e510669d54d7a73874a6d424f71171e258b8e9faa27fd6a901fbf"
+    },
+    {
+      "file": "native/work/autoload99-preview/prepare_embedded.py",
+      "bytes": 3708,
+      "sha256": "894666e8930b1c599098008a36db443dc775e85bddf2c5a129796fb163736caa"
+    },
+    {
+      "file": "native/work/autoload99-preview/setup.cpp",
+      "bytes": 9029,
+      "sha256": "0a2ac6d65e2aed46fc7a765f51371f3add36214dfe7e6a27131bf7cb5788f889"
+    },
+    {
+      "file": "native/work/autoload99-preview/verify_bootstrap.cpp",
+      "bytes": 2885,
+      "sha256": "a27cbef6852b1c3393ed74723d921d78604bc8ac8d650993117a6f605b94f428"
+    },
+    {
+      "file": "native/work/autoload99-preview/verify_integrated.cpp",
+      "bytes": 2232,
+      "sha256": "e4e5907370a34c174dbc91601baf2bcc198faff5d904257b24fa91be4226b1ed"
+    },
+    {
+      "file": "native/work/installer-siege98/cache_catalog.h",
+      "bytes": 13481,
+      "sha256": "e80fd2fec40e7319cfa3b7f1d041812d87dd53b8fc3e79a68c741f96aeca73cd"
+    },
+    {
+      "file": "native/work/installer-siege99/flash_startup86.h",
+      "bytes": 4653,
+      "sha256": "1278ebf8544d00e735e340c5dad7c2ba46867748ba55719e89c36432226a2797"
+    },
+    {
+      "file": "native/work/installer-siege99/install.h",
+      "bytes": 25872,
+      "sha256": "cce33dbaf901b5b8fde2bd90f6ef508cde2f90548cb553e7c9b133549b695c03"
+    },
+    {
+      "file": "native/work/installer-siege99/install_cli.cpp",
+      "bytes": 878,
+      "sha256": "18b0282a3d2b853f02815933810ccbaadea6fa29bb843c96fc47ef16be08f41b"
+    },
+    {
+      "file": "native/work/installer-siege99/installer_retention.h",
+      "bytes": 5946,
+      "sha256": "26ef9f8d75e931b368c1bad5d1edef348ccc649d84b2de03d2b2946ee9c99d09"
+    },
+    {
+      "file": "native/work/installer-siege99/previous_cache_catalog.h",
+      "bytes": 30943,
+      "sha256": "bd39024abd3bbd53c37c06404a643df982c98886c2da2fa7fa0ee36c9e6b452b"
+    },
+    {
+      "file": "native/work/installer-siege99/setup.rc",
+      "bytes": 544,
+      "sha256": "f44739b61036f6461f4d19a0464b056d4fa5cf6c763ef39d20fbb9737c8224a9"
+    },
+    {
+      "file": "native/work/installer-siege99/verify.cpp",
+      "bytes": 160810,
+      "sha256": "6630868815f3c9c87e808e9aff8b4e8993f3af2af0f27ab8a1fa545eb0de2365"
+    },
+    {
+      "file": "native/work/installer-siege99/wizard.cpp",
+      "bytes": 8107,
+      "sha256": "72c3905b92f7aa8c19984a0c41112011ceac3e18369b686415d6cb30638ca813"
+    },
+    {
+      "file": "tools/audio109.json",
+      "bytes": 678,
+      "sha256": "1bbdb81fa72c6feda1f5fcdc4022ad87a95d8d35cca315ea815a1bcae143ae78"
+    },
+    {
+      "file": "tools/audit_repository.py",
+      "bytes": 2505,
+      "sha256": "dbac9531c9694b6466a731b6f47ce7d34e414b8bc11bbc887f464177f6549855"
+    },
+    {
+      "file": "tools/build.py",
+      "bytes": 10802,
+      "sha256": "6a55e44c2681d343c4f698ca9e8a50e91cdb6cff2f36abab83f9cfe9c3a9518e"
+    },
+    {
+      "file": "tools/configure.py",
+      "bytes": 3060,
+      "sha256": "aef1d7b4601ebf144dd270e382597f742b83e80aaee4deedd26400039d856595"
+    },
+    {
+      "file": "tools/diagnostics/README.md",
+      "bytes": 4290,
+      "sha256": "870d0af7f3ee9c8f1b770d891f45ecdc1a53e5833e14b54b106d6c70b8409cec"
+    },
+    {
+      "file": "tools/diagnostics/build111.py",
+      "bytes": 2585,
+      "sha256": "24ef9e113257aed1d8a3914bf3cbd7d7f7d22066ddeb0ec7242f53aad5ef4b91"
+    },
+    {
+      "file": "tools/diagnostics/source/accuracy_read90.py",
+      "bytes": 725,
+      "sha256": "15113d3b32562bd17db803cdcc95e27ddcc5f7417d21cacd181708fda2525eea"
+    },
+    {
+      "file": "tools/diagnostics/source/binary_policy111.py",
+      "bytes": 2343,
+      "sha256": "de1db8a116b14d45c24466e3f2c0a2de0b8590f0e21815bf762e4756cec7b65f"
+    },
+    {
+      "file": "tools/diagnostics/source/control.py",
+      "bytes": 2089,
+      "sha256": "e5ecc98490add3242c8763ea60d8e062f15b0ffe290613eac993fc775d2bb616"
+    },
+    {
+      "file": "tools/diagnostics/source/deploy110.py",
+      "bytes": 3888,
+      "sha256": "3832cd1c36582d8e8e5c0a4b4d02022c764ef8012f3b34b5a464af44d90ba73e"
+    },
+    {
+      "file": "tools/diagnostics/source/events.ps1",
+      "bytes": 1892,
+      "sha256": "3562a27b71819052dfee0a0919e4b0b3307e17b11ce073bcc37a61edbf4d4e67"
+    },
+    {
+      "file": "tools/diagnostics/source/inspect_minidump.py",
+      "bytes": 5808,
+      "sha256": "a8593abecf9aa95addd07b9a0b67ad14304e6962834c3ca305c72907c1948bec"
+    },
+    {
+      "file": "tools/diagnostics/source/install.py",
+      "bytes": 3553,
+      "sha256": "797381c56cf131d3f21ae4b139af25891cc09c54be27c95fcc358189fe26f675"
+    },
+    {
+      "file": "tools/diagnostics/source/lifecycle110.py",
+      "bytes": 17267,
+      "sha256": "31536d7ebb3da454e7084ed9adc72573166ae2bd5fc3962055de0974ff08b82e"
+    },
+    {
+      "file": "tools/diagnostics/source/native/build-fixture.cmd",
+      "bytes": 208,
+      "sha256": "bff3a9b15eb6f0eac3170f29a100072ec212a02e5d146b4492b2bb1b0ac03b64"
+    },
+    {
+      "file": "tools/diagnostics/source/native/build.cmd",
+      "bytes": 287,
+      "sha256": "51aeb2b55577b1017dcc03aa2ada02b74e0647b4bea73e99bb3bdef09c1a862e"
+    },
+    {
+      "file": "tools/diagnostics/source/native/capture_only111.h",
+      "bytes": 1480,
+      "sha256": "4b8a17527919d76f812512ad33a60040c737844a5f8f1aba86157c3f32d1b6cc"
+    },
+    {
+      "file": "tools/diagnostics/source/native/crash_capture112.h",
+      "bytes": 7013,
+      "sha256": "8f4bba40a3895f47faf3cb00b6527fa531c009930d2006a6a3389335d2ea4b98"
+    },
+    {
+      "file": "tools/diagnostics/source/native/crash_recorder.cpp",
+      "bytes": 10548,
+      "sha256": "73cf6c13e7b5bd8a2b8ba31d86abfb55bae7edd580fd249aecbc31059661cf58"
+    },
+    {
+      "file": "tools/diagnostics/source/native/fixture.cpp",
+      "bytes": 1702,
+      "sha256": "0bc5f45e9a7a7d69c18c7c51c2bc42d8762ec7b0e0773d6bf087c38373c4dfe1"
+    },
+    {
+      "file": "tools/diagnostics/source/native/fixture_identity111.h",
+      "bytes": 921,
+      "sha256": "516fde166c0b0b10740fb88ff33998b37dd810e178cf01b73b8b205d851cfd1f"
+    },
+    {
+      "file": "tools/diagnostics/source/native/identity.h",
+      "bytes": 4109,
+      "sha256": "5ceb7b14c711ae732612e6294d2d0b87d1d8f71c6630a04a3f695845afd4af29"
+    },
+    {
+      "file": "tools/diagnostics/source/native/targeted_trace110.h",
+      "bytes": 18840,
+      "sha256": "28913a1b38e9e35e3371c5a7d5ded5185ebed59bef6804315e35c679f09d7c4d"
+    },
+    {
+      "file": "tools/diagnostics/source/native/trace_fixture110.cpp",
+      "bytes": 5159,
+      "sha256": "e68bbb7cb180abd670cea72c7fda4349d25921109126b1256a99f2e9940cbb02"
+    },
+    {
+      "file": "tools/diagnostics/source/native/trace_ownership111.h",
+      "bytes": 1591,
+      "sha256": "25543477a0520752911603aa3ab7ef037b0178b7c8709b0016da94e5f884fda3"
+    },
+    {
+      "file": "tools/diagnostics/source/native/verify_dump112.cpp",
+      "bytes": 2775,
+      "sha256": "82e5e99a820d758b45abfbaef49dd120799107385b79c4f58a8b6604219cc29a"
+    },
+    {
+      "file": "tools/diagnostics/source/native/verify_ownership111.cpp",
+      "bytes": 1746,
+      "sha256": "0af46329d07491b17ede2cbed95904c1cd533b38429e51d7807a8caf63223ccc"
+    },
+    {
+      "file": "tools/diagnostics/source/native/verify_trace_disabled110.cpp",
+      "bytes": 660,
+      "sha256": "2f0aea5ea39af2d0889a599ac9e38077dee48b718905df5e76d18b7308043cca"
+    },
+    {
+      "file": "tools/diagnostics/source/native_input.py",
+      "bytes": 14436,
+      "sha256": "5a9b7f00ca777c55669d53995eaba2dd05a832107185bea6a7b57dcdf1018da4"
+    },
+    {
+      "file": "tools/diagnostics/source/preserve_qte_log.py",
+      "bytes": 2639,
+      "sha256": "7bb3b6e824230a54c8103886d123417d4108d618da42d15b8e0ba23de74241a5"
+    },
+    {
+      "file": "tools/diagnostics/source/process_memory.py",
+      "bytes": 7263,
+      "sha256": "650138f491771bf7488142458762707efbf0b824ad1d0bff0d9ac80fad6963df"
+    },
+    {
+      "file": "tools/diagnostics/source/process_probe.py",
+      "bytes": 4693,
+      "sha256": "e20cccccdd0b09806c36c83384e3298fbbf21272b77ed8842ef34ec512ec6515"
+    },
+    {
+      "file": "tools/diagnostics/source/sensors.py",
+      "bytes": 3273,
+      "sha256": "481b31ad81adb8e68583280601abaec145c84a591899697bcbfc6b4d2091fb0a"
+    },
+    {
+      "file": "tools/diagnostics/source/session.py",
+      "bytes": 22906,
+      "sha256": "a65c24b2e4fb5934ded061612a5c94e8bc230eb8d9130b8da0a547c93c726b2a"
+    },
+    {
+      "file": "tools/diagnostics/source/verify.py",
+      "bytes": 3216,
+      "sha256": "359d4777bd4ea5e4c9071d55e83fd009fdff157970242dcf319697b050aaafe5"
+    },
+    {
+      "file": "tools/diagnostics/source/verify_capture112.py",
+      "bytes": 4384,
+      "sha256": "71c09691e3959895fd00c35242de1350c296ac41fc03346cc605801db6565d51"
+    },
+    {
+      "file": "tools/diagnostics/source/verify_hardening111.py",
+      "bytes": 9958,
+      "sha256": "e0a26282535ab64ca4059c229bab54ffdcb5400118c67c183d2ae9f932b39a4d"
+    },
+    {
+      "file": "tools/diagnostics/source/verify_hash_failure.py",
+      "bytes": 1288,
+      "sha256": "66ff0f630b61cc7c69c060eb76783c592f33827e432ab26b393d4fcdf9f6d0dd"
+    },
+    {
+      "file": "tools/diagnostics/source/verify_lifecycle110.py",
+      "bytes": 4920,
+      "sha256": "ae16e8a422e7184741bdc61bc36d076c0bef1920397c0d3f8bf94d9ac52ca80d"
+    },
+    {
+      "file": "tools/diagnostics/source/verify_targeted110.py",
+      "bytes": 4246,
+      "sha256": "17df03184491df830ed525caa6b6f92a8dc0281d74cf3bfba1056d1414275b97"
+    },
+    {
+      "file": "tools/diagnostics/source/verify_watcher.py",
+      "bytes": 2313,
+      "sha256": "528ad8d9ba966f2b035d0452b09f7f3e9ab11b05761512a56e8694b5cb6a13bb"
+    },
+    {
+      "file": "tools/diagnostics/source/watcher.py",
+      "bytes": 3597,
+      "sha256": "723ff25a129774534f7a9976e168f01d91d6a596046ff829477f25ef99757e7a"
+    },
+    {
+      "file": "tools/github_release.py",
+      "bytes": 10424,
+      "sha256": "f647caf92c34b18014703d96089eaadf77bd14e94305957b4ffdc3eae9f4d171"
+    },
+    {
+      "file": "tools/local-assets.json",
+      "bytes": 9414,
+      "sha256": "45ecfd6f7874554051e879c66beaec7ec96e06f61e0a6d0438cae1d2dfcf8712"
+    },
+    {
+      "file": "tools/package_release.py",
+      "bytes": 14740,
+      "sha256": "2efae93c3acdb0b76791a204db1abbe960f46443b6d2de1bbd9b41933bde9679"
+    },
+    {
+      "file": "tools/prepare_audio109.py",
+      "bytes": 2263,
+      "sha256": "9531b5c3661d8f0bb5b1dd326874b0abc22bdf716c3e76a7ff2013396456bce5"
+    }
+  ],
+  "release_binaries": [
+    {
+      "name": "possession-v46.dll",
+      "bytes": 606720,
+      "sha256": "2e95892177ade15b1433acc6ebe14da067844cc7fd79cf802b1981c63fc14266"
+    },
+    {
+      "name": "possession-hud.exe",
+      "bytes": 25466368,
+      "sha256": "bdf816d69ba6ed50c869ee2fad0f1d0cfb4533dd6fcdc8c10489de0e90f8d6c5"
+    },
+    {
+      "name": "qte-playable-v79.dll",
+      "bytes": 8466944,
+      "sha256": "26a1484d219a83dbbdff40384f9467860326f47b7c96b68132aa1b3f0050be9e"
+    },
+    {
+      "name": "dinput8.dll",
+      "bytes": 34848256,
+      "sha256": "88974ac522b209513f7b687fd4c8fd68b2edd158cb7b7515227b653628a8ca22"
+    },
+    {
+      "name": "marker.pack",
+      "bytes": 1310,
+      "sha256": "9e777c7657021ccc017212be6a361db5f148cd5ff18639ba166cb89300957bb4"
+    },
+    {
+      "name": "Shogun2-Possession-Setup.exe",
+      "bytes": 35288064,
+      "sha256": "3f0dd8299a06f86ebc89588e98dba3e8f29aa2f6205d19c77d632f13dc22c17e"
+    },
+    {
+      "name": "install_cli.exe",
+      "bytes": 35269120,
+      "sha256": "f67cbe82142e51681e429573488fd70941f3a60bb3f28516901ffdfe6ea29be9"
+    }
+  ],
+  "gameplay": {
+    "components": [
+      {
+        "name": "possession-v46.dll",
+        "bytes": 606720,
+        "sha256": "2e95892177ade15b1433acc6ebe14da067844cc7fd79cf802b1981c63fc14266"
+      },
+      {
+        "name": "possession-hud.exe",
+        "bytes": 25466368,
+        "sha256": "bdf816d69ba6ed50c869ee2fad0f1d0cfb4533dd6fcdc8c10489de0e90f8d6c5"
+      },
+      {
+        "name": "qte-playable-v79.dll",
+        "bytes": 8466944,
+        "sha256": "26a1484d219a83dbbdff40384f9467860326f47b7c96b68132aa1b3f0050be9e"
+      }
+    ],
+    "source_files": 404,
+    "preserved": "Exact accepted Test157 adapter/QTE and HUD148; all native/outputs inputs match the Test157 freeze."
+  },
+  "live_validation": {
+    "user_reported_Test157_accepted": true,
+    "formal_Test157_loaded_gate_completed": true,
+    "release_wrapper_live_tested": false,
+    "report": "Worked great. Everything.",
+    "session_ended_in_captured_crash": true,
+    "crash_root_cause_established": false
+  },
+  "local_assets_verified": 26,
+  "stock_extra_icons_verified": 2,
+  "installed_accepted_Test157_unchanged": true,
+  "recorder_configuration_unchanged": true,
+  "protected_files_verified": 66,
+  "new_game_launch": false,
+  "new_profiler": false,
+  "cpu_or_graphics_changes": false,
+  "known_limits": [
+    "Other unresolved crashes; accepted session ended in captured native access violation",
+    "POV and model clipping; mounted bows",
+    "Ultra crowded battle performance",
+    "Enemy autonomous acquisition while separated",
+    "Bow sound decoupling deferred",
+    "Universal unit/castle coverage not established"
+  ]
+}

@@ -1,3 +1,43 @@
+# v0.28 release promotion
+
+v0.28 promotes exact accepted Test157 gameplay. Retain adapter96/QTE50/HUD1487 only under exact binary and native/outputs-source checks. Fresh release loader2/full installer exact157+published027+allprior, seven interruptions, repeat backup, Python7 and payload/assets/source/PE/package verification required. Installed Test157 remains unchanged; wrapper live testing is not claimed. See docs/releases/v0.28-validation.json.
+
+# Test157 development candidate
+
+Test157 requires fresh adapter96, QTE50, loader2, the full predecessor installer/rollback suite including exact Test156, and Python7. HUD148/7 remains byte-exact. See docs/development/Test157.md; final validation JSON records completed checks. No game launch is part of offline validation.
+
+# Test156 validation
+
+Require fresh adapter95/loader2/complete installer including exact Test155 and all retained predecessors, seven interruption rollbacks/repeat backup, and Python7. Retain exact HUD148/7 and QTE152/49 source/dependencies/binaries. Native325ca0 routed-selection regression, continuous third-person QTE/death checks and three behavioral negative controls are required. Preserve accepted155 wall/mount source. Exact155 rollback and independent installed readback, then fresh READY/exact156 loaded hashes and actual recording. See docs/development/Test156.md.
+
+# Test155 validation
+
+Fresh adapter94/loader2/full installer exact154 and all retained predecessors/seven interruptions/repeatbackup/Python7. Retain exact HUD1487/QTE15249 source and binaries. Real original native portal/navigation-cache and task-registration regressions plus both negative controls required. Exact154 rollback and independent readback; then fresh READY/exact155 loaded hashes and actual recording before play. See docs/development/Test155.md.
+
+# Test154 validation
+
+Require fresh adapter94/loader2/full installer exact Test153 plus published027/all retained predecessors, seven interruption rollbacks and repeat backup; Python7. Exact HUD148/7 and QTE152/49 sources/shared dependencies/binaries retained. New actual-native regressions cover routing count0/capacity32, M actions67/68 and ability13 restrictions, same-human mount/remount including current rider slots813..816 through native unit-task retirement, camera roll, independent MMB orbit, ground-sentinel portals and short registered wall paths. Three behavioral negative controls must fail at their intended assertion; native world/asynchronous route/rendering/window/allocator providers remain explicit boundaries. Full evidence docs/development/Test154.md. Actual game/session closed+recorder armed, exact153 rollback, independent installed readback, then fresh READY/exact154 loaded hashes/actual ordinary capture before play. Published v0.27 unchanged.
+
+# Test153 validation
+
+Require fresh adapter92/loader2/full installer exact Test152 plus all retained predecessors, seven interruption rollbacks/repeat backups and Python7. Retain exact QTE152/49 and HUD148/7 source/binaries. Native third-person negative control and automatic F path-entry regressions must pass; original world/navigation/asynchronous route/surface providers remain explicit fixture boundaries. See docs/development/Test153.md. Actual closed guard, exact152 rollback, independent readback, then fresh READY/exact153 loaded hashes/actual capture before play. Published v0.27 immutable.
+
+# Test152 validation
+
+Require fresh QTE49, adapter91, loader2, complete installer exact Test151 plus all retained predecessors/seven interruption rollbacks/repeat backup, and Python7. Retain exact HUD148/7. Candidate152 changes native leader admission and personal equipment, wall entry facing, QTE face-relative eye limits, P/wheel third person and explicitly requested broken/shattered automatic native combat. Full source/payload/asset/PE/marker/ZIP checks, actual closed guard, exact151 rollback and independent installed readback precede a fresh READY/loaded/capture gate. See docs/development/Test152.md for scope and fixture boundaries. Published v0.27 is immutable.
+
+# Test151 validation
+
+Fresh strict QTE48, adapter89, loader2 and complete installer checks are required, including exact installed Test150, published v0.27 and all retained predecessors, seven interruption rollbacks and repeat-install backup retention; Python7. Exact HUD148/7 source and binary remain retained. Use --candidate151; never modify published v0.27. New regressions cover actual native cursor unprojection, authoritative native Hide UI and the saved QTE clock lifetime failure. Close-game guard, exact150 rollback, independent installed readback and fresh READY/loaded hashes/actual recording gate remain mandatory. See docs/development/Test151.md and its validation receipt for completed status.
+
+# Test150 validation
+
+Test150 adds precise F9 selection at the stock RTS camera minimum zoom. It performs one native sorted center-ray query at entry; high camera retains the exact prior selection policy. The ray uses original342a40 render-service/virtual18 context and13660f0 unprojection, including cached matrices. Original29a450/a0b60 reads the live minimum, matching293cd0 camera+180 clamp. Original158970 mask30b includes actors and world occluders. The first physical hit wins; an eligible current selected-unit human or proved reciprocal horse maps to the exact existing holder. Foreign/dead/unsupported hits and missing/invalid context retain prior selection. Existing selection/identity/thread/heartbeat/roster guards and native camera constructor remain. No input/cursor/selection order mutation, shared ABI, hook, recurring crowd scan or new asset.
+
+The focused production entry fixture passes 1000 repeated calls, native getter/unprojection/query dispatch, original high view, live minimum changes, world occluders, dead/foreign hits, bounded results, cached matrices/nonfinite input, reciprocal horse and broken links. Geometry/render device/sorting/allocation/camera construction are explicit providers. Negative control fails without the hit preference. Twelve indexed exports are instruction-byte verified. The first private fixture had swapped actor-grid provider argument labels and lacked a valid custom camera aspect; fixed only providers, failures retained. A preliminary pose-based ray was replaced before source freeze by the original render unprojection path.
+
+Exact accepted Test149 charge/K/order/movement/weapon/ability source is retained except the F9 entry call/preference. Exact HUD148 and QTE146 source/binaries remain. v0.27/433815b release/tag/main and six published assets stay unchanged. Full fresh adapter89/loader2/full installer exact149+published027+allprior/seven interruptions/repeatbackup/Python7 required. Test150 is development0.27 and not accepted/published. Install only under actual closed/armed guard with exact149 rollback; then fresh READY/menu or IN BATTLE and exact150 loaded hashes plus actual crash/input/memory/CPU/GPU recording before formal play. No automatic launch or extra profiling. Enemy acquisition/POV/Ultra/other crashes remain open.
+
 # v0.27 / charging checkpoint complete
 
 v0.27 promotes exact user-accepted Test149 gameplay without rebuilding adapter/HUD/QTE. Fresh release loader2, full installer exact149+all prior predecessors/seven interruption rollbacks/repeat backup, Python7 and pinned payload/assets/source/package checks required. Test149 adapter88 and retained HUD148/7/QTE146/47 remain valid only with byte-exact source/binary checks. See docs/releases/v0.27-validation.json.

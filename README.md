@@ -2,16 +2,19 @@
 
 Take control of a soldier in your army and fight your **Total War: SHOGUN 2** battles from the front line. Select a unit and press **F9** to jump in. Press **F10** when you want to return to commanding the army.
 
-Fight on foot or horseback, fire bows and guns, and face enemy soldiers in melee. Your unit fights alongside you, and you can give them orders without leaving first person.
+Fight in first or third person, on foot or horseback, fire bows and guns, and face enemy soldiers in melee. Your unit fights alongside you, and you can give them orders without leaving first person.
 
-**[Download v0.27](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.27)** · [v0.27 notes](docs/releases/v0.27.md) · [Known problems](docs/KNOWN_ISSUES.md)
+**[Download v0.28](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.28)** · [v0.28 notes](docs/releases/v0.28.md) · [Known problems](docs/KNOWN_ISSUES.md)
 
-**v0.27** fixes first-person charging. Run or gallop toward an enemy with **W + Shift** to start a charge; the game handles the target, approach and attack. Its normal defenses and outcomes still apply. **K** now hides the first-person HUD too, and carries across when you enter or leave possession. Melee timing prompts stay visible.
+**v0.28** adds third-person play. Press **P** to switch views, scroll to change the distance, and hold the **middle mouse button** to look around your soldier while moving.
 
-Unit abilities, adjustable bow strength and all existing unit controls are included. The first-person weapon view still needs work; see the [known problems](docs/KNOWN_ISSUES.md).
+You can also choose who you play: zoom all the way in, point the mouse cursor at a soldier in your selected unit, and press **F9**. Generals, officers, flag bearers and musicians are included, with their own equipment. From high above, F9 still picks a soldier for you.
+
+This update also improves climbing, dismounting and camera continuity during combat. Crashes and some first-person weapon clipping remain open; see the [known problems](docs/KNOWN_ISSUES.md).
 
 ## Playing the mod
 
+- **Your view:** Play in first or third person, choose your soldier up close, and orbit the camera while moving.
 - **Ranged combat:** Aim and fire your soldier's weapon, switch ammunition and manage reloads. Shot spread depends on your unit's accuracy.
 - **Unit abilities:** Use your unit’s native abilities, with their usual restrictions and cooldowns. They apply to the whole unit, including your soldier.
 - **Melee combat:** Time your mouse clicks with the on-screen prompts to fight at close quarters.
@@ -25,7 +28,7 @@ And if you shoot one of your own men, you'll hear **“SHAMEFUL DISPLAY!”**
 
 You'll need the Windows Steam version of **Total War: SHOGUN 2**.
 
-1. Open the [release page](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.27) and download **Shogun2-First-Person-v0.27-Setup.exe**.
+1. Open the [release page](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.28) and download **Shogun2-First-Person-v0.28-Setup.exe**.
 2. Close the game completely, run setup and choose your Shogun 2 folder.
 3. Launch through Steam. In a land battle, select one of your units and press **F9**.
 
@@ -35,11 +38,15 @@ Close the game before installing an update, then start it again afterward.
 
 | Key | What it does |
 | --- | --- |
-| **F9** | Possess a soldier in the selected unit |
+| **F9** | Possess a soldier in the selected unit; at closest RTS zoom, aim the mouse cursor at who you want |
 | **F10 / Escape** | Return to your previous RTS camera view |
 | **WASD** | Move |
 | **Shift** | Run; hold W + Shift toward an enemy to charge |
 | **Mouse** | Look around |
+| **P** | Switch first/third person |
+| **Mouse wheel** in third person | Change camera distance |
+| **Hold middle mouse** in third person | Orbit your soldier without changing movement direction |
+| **M** | Mount/dismount the unit, where supported |
 | **Hold RMB** | Ready or draw your ranged weapon |
 | **LMB** | Fire guns/thrown weapons; hold and release for bow strength |
 | **1** | Toggle the unit between native melee and ranged mode, when supported |
@@ -49,7 +56,7 @@ Close the game before installing an update, then start it again afterward.
 | **LMB / RMB prompt** | Click the shown button when the marker reaches the highlighted zone |
 | **F** near a wall | Start climbing |
 | **W / S** while climbing | Climb up / down; release both to hold position |
-| **K** | Hide/show the HUD in RTS and first person; melee prompts remain visible |
+| **K** | Hide/show the HUD in RTS and possession; melee prompts remain visible |
 | **F12** | Turn the mod off for the rest of the session |
 
 ### Unit orders
@@ -66,13 +73,13 @@ You can't issue these orders while locked in a melee animation, climbing or land
 
 ## Known problems and compatibility
 
-**Large units, one full army per side and maximum graphics in DX11** have been reported smooth. Ultra units with several armies or heavy fighting nearby can still slow down badly. v0.27 retains those optimizations, the audio guard and a correction for one captured detached-soldier crash. Other crashes remain unresolved. Mounted bows can look wrong, and some weapon or arm clipping remains. See the [known problems and reporting guide](docs/KNOWN_ISSUES.md).
+**Large units, one full army per side and maximum graphics in DX11** have been reported smooth. Ultra units with several armies or heavy fighting nearby can still slow down badly. v0.28 retains those optimizations, the audio guard and a correction for one captured detached-soldier crash. Other crashes remain unresolved. Mounted bows can look wrong, and some weapon or arm clipping remains. See the [known problems and reporting guide](docs/KNOWN_ISSUES.md).
 
 The mod is intended for single-player land battles and sieges. It supports weapons from the base game, Rise of the Samurai and Fall of the Samurai, though not every unit, ammo type or castle layout has been tested. Multiplayer and overhaul mods haven't been confirmed to work. Ship possession isn't included; artillery uses the game's existing first-person mode.
 
 ## For contributors
 
-The mod is written in C++, with Python build and debugging tools. Start with the [source map](SOURCE_MAP.md), [build guide](BUILD_AND_TEST.md) and [contributing guide](CONTRIBUTING.md). The [architecture](docs/ARCHITECTURE.md), [v0.27 technical notes](docs/releases/v0.27-technical.md) and [validation records](VALIDATION.md) cover implementation, tests and ongoing investigations.
+The mod is written in C++, with Python build and debugging tools. Start with the [source map](SOURCE_MAP.md), [build guide](BUILD_AND_TEST.md) and [contributing guide](CONTRIBUTING.md). The [architecture](docs/ARCHITECTURE.md), [v0.28 technical notes](docs/releases/v0.28-technical.md) and [validation records](VALIDATION.md) cover implementation, tests and ongoing investigations.
 
 Building the full HUD and QTE needs separately prepared game resources; a fresh clone doesn't include them. The optional [crash recorder](tools/diagnostics/README.md) has its own setup and isn't part of the player installer. The source download is for contributors; players should use the setup download above.
 

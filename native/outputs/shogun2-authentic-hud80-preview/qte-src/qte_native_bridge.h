@@ -29,6 +29,7 @@ struct BridgeCalls {
     uint32_t(*retarget)(void*,uint32_t,const NativeVerdict&,const NativePlan*){};
     bool(*effective_pair)(void*,uint32_t,uint32_t,float&,float&){};
     bool(*retain_selected_pair)(void*,uint32_t,const NativeActor&,const NativeActor&){};
+    uint32_t(*routed152)(void*,uint32_t,const NativeActor&,const NativeActor&,const NativeVerdict&,const NativePlan*){};
 };
 // Native callback coordinator. A witness migrates between engine workers;
 // the adapter serializes owned state and scopes replay to the current callback.
@@ -47,6 +48,7 @@ class NativeBridge {
     bool outcomes_valid_{};
     bool preserve_special_{};
     bool prepared_mode_{};bool strict_{};
+    bool routed_frame152_{};uint32_t routed_answer152_{};
     uint32_t forward_or_reject(uint32_t witness,bool owned){return strict_&&owned?1:calls_.prepare(calls_.context,witness);}
     uint32_t reject_selected(const SelectionInput& input,const NativeVerdict& selected){return strict_?1:cached_prepare(input,selected);}
     NativePlan plans_[2]{};
@@ -191,6 +193,7 @@ public:
         return replay_.take(witness,return_rva,context,begin,end,flags,flags2,out);
     }
     bool occupied()const{return preparing92_||gate_.occupied();}
+    bool take_routed152(uint32_t witness,uint64_t generation,uint32_t& answer){if(!routed_frame152_||witness!=key_.address||generation!=key_.generation)return false;routed_frame152_=false;answer=routed_answer152_;return true;}
     WitnessKey pending_key()const{return occupied()?key_:WitnessKey{};}
     bool owner_matches(const Owner& owner)const{
         return !occupied()||(owner.verified_melee&&owner.battle==key_.pair.battle&&
@@ -227,7 +230,17 @@ public:
             }
         }
         acquisition_stage_=1;
-        if(!allow_prompt||!outcomes_valid_||occupied()||!owner.verified_melee||!owner.battle||!owner.lease||!generation)
+        bool route_candidate152=false;
+        if(!allow_prompt&&calls_.routed152&&owner.verified_melee&&calls_.routing){
+            SelectionInput route_input152;
+            if(selection_input(reader_,witness,engine_,route_input152)&&route_input152.environment==owner.environment){
+                for(unsigned i=0;i<route_input152.count;++i){uint32_t a{};NativeActor candidate;bool routed=false;
+                    if(reader_.get(route_input152.begin+i*4,a)&&actor_identity(reader_,a,witness,engine_,candidate,true)&&
+                       calls_.routing(calls_.context,candidate.unit,routed)&&routed)route_candidate152=true;
+                }
+            }
+        }
+        if((!allow_prompt&&!route_candidate152)||!outcomes_valid_||occupied()||!owner.verified_melee||!owner.battle||!owner.lease||!generation)
             return forward_or_reject(witness,owner.verified_melee);
         SelectionInput input;
         acquisition_stage_=2;
@@ -285,6 +298,17 @@ public:
         if(!facts(owned,own_facts))return reject_selected(input,selected);
         acquisition_stage_=9;
         if(!facts(enemy,enemy_facts))return reject_selected(input,selected);
+        if(calls_.routed152&&(own_facts.routing||enemy_facts.routing)){
+            // User policy: an engaged broken/shattered player loses; otherwise
+            // the engaged broken/shattered enemy loses. Native role/clip
+            // selection consumes the original pair once, without a QTE event.
+            selected.outcome=5;selected.attacker_address=own_facts.routing?enemy.address:owned.address;
+            selected.defender_address=own_facts.routing?owned.address:enemy.address;
+            if(!replay_.arm(input,selected)){++replay_errors_;return 1;}
+            uint32_t returned=calls_.routed152(calls_.context,witness,owned,enemy,selected,nullptr);
+            if(!replay_.finish())++replay_errors_;return returned;
+        }
+        if(!allow_prompt)return reject_selected(input,selected);
         if(calls_.effective_pair){
             if(!calls_.effective_pair(calls_.context,owned.address,enemy.address,own_facts.combat_score,enemy_facts.combat_score))return reject_selected(input,selected);
             own_facts.known|=EffectiveCombat;enemy_facts.known|=EffectiveCombat;
@@ -361,6 +385,13 @@ public:
             own_facts.known|=EffectiveCombat;enemy_facts.known|=EffectiveCombat;
         }
         own_facts_=own_facts;enemy_facts_=enemy_facts;
+        if(!paused&&focused&&calls_.routed152&&(own_facts.routing||enemy_facts.routing)){
+            NativeVerdict desired{5,own_facts.routing?enemy.address:player.address,own_facts.routing?player.address:enemy.address};
+            if(!replay_.arm(input_,desired)){release(CancelReason92::Facts);return;}
+            gate_.removed(key_.address,key_.generation);
+            routed_answer152_=calls_.routed152(calls_.context,key_.address,player,enemy,desired,prepared_mode_?plans_:nullptr);routed_frame152_=true;
+            if(!replay_.finish())++replay_errors_;return;
+        }
         // Routing still prevents a NEW encounter. An admitted encounter gets
         // to finish before the unit resumes its native retreat.
         if(calls_.facing_ready)own_facts_.routing=false;

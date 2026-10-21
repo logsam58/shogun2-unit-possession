@@ -1,4 +1,5 @@
 #pragma once
+#include "../../shogun2-possession-cleanup-v46/src/actor_types152.h"
 #include "../../shogun2-possession-cleanup-v46/src/charge_protocol146.h"
 // Player charge intent is W+Shift, independent of the unit's attack order.
 // Native forward perception, nearest-distance reduction, eligibility and actor virtual154
@@ -46,7 +47,7 @@ static bool charge_motion146(uintptr_t actor){__try{return actor==locomotion_act
 static bool charge_admission146(uintptr_t actor){
     melee60::Request melee;
     return member_owned130(actor)&&actor==locomotion_actor()&&root_motion_subject(actor,false)&&!native_recovery103(actor)&&
-        !wall_subject97(possessed)&&!native_airborne_subject99(possessed)&&!equipment_committed81()&&!state->aiming&&!state->aim_pose&&!state->weapon_phase&&
+        !climb_align152&&!wall_subject97(possessed)&&!native_airborne_subject99(possessed)&&!equipment_committed81()&&!state->aiming&&!state->aim_pose&&!state->weapon_phase&&
         !equipment_crouched81()&&!command_placing100&&!native_routing(unit)&&!field<uintptr_t>(actor,0x688)&&!melee_request(melee)&&
         // Original3e4850/3e44f0 classify0..7 as ground locomotion;8..11
         // are fighting/defending postures. Do not reset a combat posture to0
@@ -112,8 +113,8 @@ static bool charge_select148(uintptr_t actor,Charge139& selected){
         uintptr_t nearest[32]{};float distances[32]{};unsigned size=0;
         for(unsigned i=0;i<list.count;++i){__try{
             auto target=field<uintptr_t>(list.data,i*4);if(!target||target==actor)continue;
-            auto table=field<uintptr_t>(target,0);if(table!=base+0x15dfec8&&table!=base+0x15e8524)continue;
-            if(table==base+0x15dfec8){auto mount=field<uintptr_t>(target,0x210);if(mount)target=mount;}
+            auto table=field<uintptr_t>(target,0);if(!actor152::human(base,table)&&table!=base+0x15e8524)continue;
+            if(actor152::human(base,table)){auto mount=field<uintptr_t>(target,0x210);if(mount)target=mount;}
             float x=field<float>(target,0x48)-center[0],z=field<float>(target,0x50)-center[2],squared=x*x+z*z;
             if(!std::isfinite(squared)||squared<=0||squared>range*range||(size==32&&squared>=distances[31]))continue;
             bool duplicate=false;for(unsigned j=0;j<size;++j)if(nearest[j]==target){duplicate=true;break;}if(duplicate)continue;

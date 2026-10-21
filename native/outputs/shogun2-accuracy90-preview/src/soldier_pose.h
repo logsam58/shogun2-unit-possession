@@ -1,4 +1,6 @@
 #pragma once
+#include "view152.h"
+#include "../../shogun2-possession-cleanup-v46/src/actor_types152.h"
 #include "pose_geometry.h"
 #include "self_visibility100.h"
 #include "seated_weapon_geometry.h"
@@ -82,7 +84,7 @@ static void capture_model_eye(uintptr_t holder,uintptr_t result){
         }else if(linked!=id.actor)return;
         // A surviving link must still identify the same actor. A cleared link
         // is allowed only on the previously captured holder after proven death.
-        if(linked&&(field<uintptr_t>(linked,0)!=base+0x15dfec8||field<uint32_t>(linked,0x1c8)!=id.actor_id||field<uintptr_t>(linked,0x214)!=id.unit))return;
+        if(linked&&(!actor152::human(base,field<uintptr_t>(linked,0))||field<uint32_t>(linked,0x1c8)!=id.actor_id||field<uintptr_t>(linked,0x214)!=id.unit))return;
         auto n=field<unsigned>(result,4);auto array=field<uintptr_t>(result,8),bone=field<uintptr_t>(binding,0x9c);
         if(!array||!bone||!n||n>256||n!=field<unsigned>(asset,0x3c))return;
         auto index=field<unsigned>(bone,4);if(index>=n)return;
@@ -120,7 +122,7 @@ static void restore_soldier_pose(){
     ReleaseSRWLockExclusive(&pose_lock);
 }
 static void apply_soldier_pose(uintptr_t holder,uintptr_t result){
-    if(!enabled||!state||state->stop||state->release||state->mode!=POSSESSED||!possessed)return;
+    if(third_person152||!enabled||!state||state->stop||state->release||state->mode!=POSSESSED||!possessed)return;
     __try {
         bool mounted=possession_lease.identity.mount!=0;bool climbing97=!mounted&&wall_subject97(possessed);
         if(field<unsigned char>(possessed,0xf0)!=1||field<uintptr_t>(holder,8)!=possessed||!followed(possessed,false)||
@@ -311,7 +313,7 @@ static bool prepare_self_skin100(uintptr_t holder,uintptr_t result,SelfSkin100& 
            field<uintptr_t>(result,8)==pose_array&&pose_count>0&&pose_count<=256&&memcmp(reinterpret_cast<void*>(pose_array),pose_after,pose_count*48)==0){
             memcpy(reinterpret_cast<void*>(pose_array),pose_before,pose_count*48);pose_saved=false;InterlockedIncrement(&self_visibility_restores100);
         }
-        if(!enabled||!state||state->stop||state->release||state->mode!=POSSESSED||!possession_lease.active||!possessed||
+        if(third_person152||!enabled||!state||state->stop||state->release||state->mode!=POSSESSED||!possession_lease.active||!possessed||
            holder!=possession_lease.identity.holder||field<uintptr_t>(holder,8)!=possessed||!followed(possessed,false))return false;
         if(field<unsigned char>(possessed,0xf0)!=1)return false; // Native death rig remains unchanged.
         skin.lease=possession_lease.generation;skin.holder=holder;skin.result=result;skin.binding=field<uintptr_t>(holder,0x1e4);if(!skin.binding)return false;
@@ -376,6 +378,7 @@ static void __fastcall skin_ready_hook(void* holder,void*,void* result){
     }__finally{ReleaseSRWLockExclusive(&pose_lock);}
 }
 static void pose_manual_origin(float* origin){
+    if(third_person152)return;
     AcquireSRWLockShared(&pose_lock);
     __try {
     if(pose_saved&&pose_actor==possessed&&pose_environment==environment&&pose_unit==unit&&

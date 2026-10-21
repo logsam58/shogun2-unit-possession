@@ -3,6 +3,7 @@
 #include "equipment_protocol81.h"
 #include "ammunition_mapping83.h"
 static volatile LONG equipment_slot81=equipment81::Ranged,equipment_crouch81,equipment_crouch_supported81,equipment_ammo_inflight81;
+static volatile LONG equipment_personal152;
 static volatile LONG equipment_ranged81,equipment_lease81,equipment_unit_melee134;
 static HANDLE equipment_mapping81;
 static EquipmentStatus81* equipment_status81;
@@ -24,7 +25,7 @@ static bool equipment_crouched81(){return equipment_crouch81!=0;}
 static void equipment_reset81(){
     bow_reset142();ability_reset141();equipment_mode_reset131();
     AcquireSRWLockExclusive(&equipment_input_lock81);equipment_requests81={};ReleaseSRWLockExclusive(&equipment_input_lock81);
-    InterlockedExchange(&equipment_unit_melee134,0);InterlockedExchange(&equipment_lease81,0);InterlockedExchange(&equipment_ranged81,0);
+    InterlockedExchange(&equipment_personal152,0);InterlockedExchange(&equipment_unit_melee134,0);InterlockedExchange(&equipment_lease81,0);InterlockedExchange(&equipment_ranged81,0);
     InterlockedExchange(&equipment_slot81,equipment81::Ranged);InterlockedExchange(&equipment_crouch81,0);
     InterlockedExchange(&equipment_crouch_supported81,0);InterlockedExchange(&equipment_ammo_inflight81,0);
 }

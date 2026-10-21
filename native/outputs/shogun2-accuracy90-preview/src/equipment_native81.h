@@ -149,7 +149,7 @@ static bool equipment_prepare_motion81(){
     // Caller has validated the lease and excluded committed native melee.
     if(equipment_generation81!=state->lease_generation){
         equipment_generation81=state->lease_generation;InterlockedExchange(&equipment_lease81,LONG(equipment_generation81));
-        bool ranged=native_personal_kind(bow_record(unit))!=PersonalWeaponKind::Unsupported;InterlockedExchange(&equipment_ranged81,ranged?1:0);
+        bool ranged=native_personal_kind(bow_record(unit))!=PersonalWeaponKind::Unsupported;InterlockedExchange(&equipment_personal152,ranged?1:0);InterlockedExchange(&equipment_ranged81,unit_projectile152(unit)?1:0);
         bool melee=field<unsigned char>(unit,0xead)!=0;InterlockedExchange(&equipment_unit_melee134,melee?1:0);
         InterlockedExchange(&equipment_slot81,ranged&&!melee?equipment81::Ranged:equipment81::Melee);
         InterlockedExchange(&equipment_crouch81,0);InterlockedExchange(&equipment_ammo_inflight81,0);equipment_error81=0;
@@ -170,7 +170,7 @@ static bool equipment_prepare_motion81(){
     // and resume). Native unit state, not our requested target, is the authority.
     bool native_melee=field<unsigned char>(unit,0xead)!=0;
     InterlockedExchange(&equipment_unit_melee134,native_melee?1:0);
-    unsigned native_slot=equipment_ranged81&&!native_melee?equipment81::Ranged:equipment81::Melee;
+    unsigned native_slot=equipment_personal152&&!native_melee?equipment81::Ranged:equipment81::Melee;
     bool restore_melee137=safe&&native_slot==equipment81::Melee&&
         meleedisplay137::ready_request(field<unsigned>(possessed,0x1f0),weapon_mounted())&&
         melee_presentation_owned137(possessed);

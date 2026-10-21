@@ -10,10 +10,19 @@ static void hud_visibility_create148(){
     require(hud_visibility_shared148!=nullptr,"HUD visibility view");
     new(hud_visibility_shared148)hudvisibility148::Shared;hud_visibility_shared148->pid=GetCurrentProcessId();
 }
-static void hud_visibility_key148(bool valid,bool owned,unsigned char current,unsigned char previous){
-    if(!hud_visibility_shared148||!hudvisibility148::pressed(valid,owned,current,previous))return;
+static void hud_visibility_sync151(bool valid,bool owned){
+    if(!hud_visibility_shared148||!valid||!owned)return;
+    unsigned hidden;
+    __try{
+        auto root=*reinterpret_cast<const uintptr_t*>(base+0x1bc8180);
+        if(!root)return;
+        // Native global Hide UI (10f1060) owns root+ca0. Never XOR a second
+        // private toggle: it drifts at entry, exit, loading and other UI actions.
+        hidden=*reinterpret_cast<const unsigned char*>(root+0xca0);if(hidden>1)return;
+    }__except(EXCEPTION_EXECUTE_HANDLER){return;}
+    if(hud_visibility_shared148->hidden==hidden)return;
     InterlockedIncrement(&hud_visibility_shared148->sequence);MemoryBarrier();
-    hud_visibility_shared148->hidden^=1;++hud_visibility_shared148->changes;
+    hud_visibility_shared148->hidden=hidden;++hud_visibility_shared148->changes;
     MemoryBarrier();InterlockedIncrement(&hud_visibility_shared148->sequence);
 }
 static void hud_visibility_close148(){

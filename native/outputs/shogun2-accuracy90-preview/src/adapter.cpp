@@ -1,10 +1,12 @@
 #include "identity.h"
+#include "../../shogun2-possession-cleanup-v46/src/actor_types152.h"
 #include "steering.h"
 #include "mounted_look85.h"
 #include "look_pitch96.h"
 #include "animation_look104.h"
 #include "possession_entry125.h"
 #include "combat_focus125.h"
+#include "view152.h"
 #include "possession_lease.h"
 #include "control_metrics.h"
 #include "camera_entry_gate.h"
@@ -51,7 +53,7 @@ static bool overlay_key106(const overlay106::Frame& frame,unsigned layer){
 // Numeric heading published only at validated native boundaries. The mouse
 // worker never dereferences a horse pointer, including during battle changes.
 static volatile LONG mounted_heading85=-1;
-static volatile LONG entry_movement125;
+static volatile LONG entry_movement125,mount_camera_locked154;
 static SRWLOCK entry_lock125=SRWLOCK_INIT;
 static look125::Focus combat_focus125;
 static volatile LONG combat_entry_locked126;
@@ -104,6 +106,7 @@ static void relinquish();
 static void enter_selected_soldier();
 static void climb_adopt98(uintptr_t actor);
 static void climb_observe98(uintptr_t actor);
+static bool climb_pending153(uintptr_t actor);
 static void request_possession(){
     if(!enabled||!state||state->stop||state->release||state->mode==POSSESSED||state->mode==ARMED)return;
     InterlockedExchange(&entry_attempted,0);
@@ -136,6 +139,8 @@ static LRESULT CALLBACK weapon_window_proc(HWND window,UINT message,WPARAM w,LPA
         command_native_cancel100();InterlockedExchange(&state->release,1);interface_restore();
     }
     if(enabled&&state&&!state->stop&&!state->release&&state->mode==POSSESSED){
+        if(third_person152&&(message==WM_MBUTTONDOWN||message==WM_MBUTTONUP||message==WM_MBUTTONDBLCLK)){orbit_button154(message!=WM_MBUTTONUP);return 0;}
+        if(message==WM_MOUSEWHEEL&&third_person152){view_wheel152(GET_WHEEL_DELTA_WPARAM(w));return 0;}
         if(message==WM_KEYDOWN&&w=='F'&&!(l&(1L<<30)))InterlockedExchange(&climb_action97,1);
         // Consume owned movement/order keys so they do not also become Total War
         // camera or unit commands. Release/menu keys continue to the native window.
@@ -218,6 +223,7 @@ static bool death_context(uintptr_t camera=0){
             field<uintptr_t>(old.camera,0x180)==old.manager;
     }__except(EXCEPTION_EXECUTE_HANDLER){return false;}
 }
+static volatile LONG routing_empty_lease154,routing_empty_holds154;
 static __declspec(thread) unsigned follow_failure93;
 static volatile LONG release_stage93,release_confirmed93,release_recovered93,release_flags93;
 static __declspec(align(8)) volatile LONG64 release_tick93;
@@ -263,7 +269,7 @@ static bool followed(uintptr_t actor,bool acquire,bool commit=true) {
         uintptr_t manager=field<uintptr_t>(env,0x281fc);if(!manager)return reject_follow93(6);
         uintptr_t cam=field<uintptr_t>(manager,0x8e0);if(!cam)return reject_follow93(7);
         if(field<uintptr_t>(cam,0)!=base+0x15d22e8 || field<uintptr_t>(cam,0x180)!=manager)return reject_follow93(8);
-        if(field<uintptr_t>(actor,0)!=base+0x15dfec8)return reject_follow93(9);
+        if(!actor152::human(base,field<uintptr_t>(actor,0)))return reject_follow93(9);
         if(!acquire&&actor==possessed&&possession_lease.active&&field<unsigned char>(actor,0xf0)==0){
             const auto& old=possession_lease.identity;
             if(env!=old.environment||common!=old.common||phase!=old.phase||manager!=old.manager||cam!=old.camera||
@@ -282,16 +288,28 @@ static bool followed(uintptr_t actor,bool acquire,bool commit=true) {
         for(unsigned i=0;i<count;++i){uintptr_t holder=field<uintptr_t>(array,i*4);if(holder&&field<uintptr_t>(holder,8)==actor){idx=i;actor_holder=holder;break;}}
         if(idx==count)return reject_follow93(16);
         uintptr_t actor_unit=field<uintptr_t>(actor,0x214);if(!actor_unit)return reject_follow93(17);
-        // Use the game's script-exposed morale predicate; a routing unit regains
-        // native control instead of being held in combat by player WASD.
-        if(native_routing(actor_unit)&&!committed)return reject_follow93(18);
+        // Morale belongs to the unit; it does not retire a living player lease.
         // Exactly one selected unit must own the followed native soldier. This
         // also rejects an old eye-level camera after an overhead selection change.
         uintptr_t selected=field<uintptr_t>(env,0x2826c);if(!selected)return reject_follow93(19);
         uintptr_t owner=field<uintptr_t>(selected,0x4a8);if(!owner)return reject_follow93(20);
         uintptr_t group=owner+0xb0;
-        if(field<uintptr_t>(group,0)!=base+0x15c4da0||field<unsigned>(group,0x14)!=1||field<unsigned>(group,0x10)<1)return reject_follow93(21);
-        uintptr_t members=field<uintptr_t>(group,0x18);if(!members||field<uintptr_t>(members,0)!=actor_unit)return reject_follow93(22);
+        if(field<uintptr_t>(group,0)!=base+0x15c4da0||field<unsigned>(group,0x14)>field<unsigned>(group,0x10))return reject_follow93(21);
+        unsigned selected_count154=field<unsigned>(group,0x14);
+        bool retained_route154=!acquire&&possession_lease.active&&actor==possession_lease.identity.actor&&
+            actor_unit==possession_lease.identity.unit&&field<unsigned>(actor,0x1c8)==possession_lease.identity.actor_id&&
+            field<unsigned>(actor_unit,4)==possession_lease.identity.unit_id&&env==possession_lease.identity.environment;
+        // Native routing clears the selection (recorded stage21, count0). The
+        // current camera/roster/serial/lease still prove this SAME living human.
+        // A nonempty foreign selection and every acquisition remain strict.
+        if(!selected_count154&&retained_route154&&(native_routing(actor_unit)||
+            unsigned(InterlockedCompareExchange(&routing_empty_lease154,0,0))==possession_lease.generation)){
+            if(commit)InterlockedExchange(&routing_empty_lease154,LONG(possession_lease.generation));
+            InterlockedIncrement(&routing_empty_holds154);
+        }else{
+            if(selected_count154!=1)return reject_follow93(21);
+            uintptr_t members=field<uintptr_t>(group,0x18);if(!members||field<uintptr_t>(members,0)!=actor_unit)return reject_follow93(22);
+        }
         PossessionIdentity candidate{env,common,phase,manager,cam,view,actor_holder,actor,actor_unit,
             field<uintptr_t>(actor,0x20c),field<unsigned>(actor,0x1c8),field<unsigned>(actor_unit,4)};
         if(!acquire&&commit&&camera_callback_depth&&GetCurrentThreadId()==state->window_thread)dismount_observe143(candidate);
@@ -313,7 +331,7 @@ static bool followed(uintptr_t actor,bool acquire,bool commit=true) {
                 // subject generation. Guard-only reads cannot mutate a lease.
                 if(commit&&camera_callback_depth&&GetCurrentThreadId()==state->window_thread){
                     if(!possession_lease.acquire(candidate))return reject_follow93(27);
-                    state->actor_index=idx;state->lease_generation=possession_lease.generation;
+                    state->actor_index=idx;state->lease_generation=possession_lease.generation;view_lease152=possession_lease.generation;mount_completed154_now();
                     InterlockedExchange(&dismount_cleanup143,1);InterlockedIncrement(&dismount_transitions143);
                 }
                 return true;
@@ -345,7 +363,7 @@ static bool adopt_possession97(uintptr_t actor){
     if(!state||!state->acquire||possessed||!followed(actor,true))return false;
     possessed=actor;auto locomotion=possession_lease.identity.mount?possession_lease.identity.mount:actor;
     unsigned heading=field<unsigned short>(locomotion,0x64);
-    state->yaw=entry125::facing(heading);state->pitch=0;combat_focus125.reset();InterlockedExchange(&combat_entry_locked126,0);combat_pair_reset126();
+    state->yaw=entry125::facing(heading);state->pitch=0;eye_reset152();combat_focus125.reset();InterlockedExchange(&combat_entry_locked126,0);combat_pair_reset126();
     InterlockedExchange(&mounted_heading85,possession_lease.identity.mount?LONG(heading):-1);
     unsigned carry=entry125::carry(field<unsigned>(locomotion,0x1f0),field<unsigned>(locomotion,0x244),
         field<float>(locomotion,0x8c),field<float>(locomotion,0x94));
@@ -385,7 +403,7 @@ static bool camera_owned(uintptr_t camera) {
         if(dead_view())return death_context(camera);
         if(field<uintptr_t>(camera,0)!=base+0x15d22e8)return false;
         if(possessed&&possession_lease.active&&camera==possession_lease.identity.camera&&
-           field<uintptr_t>(possessed,0)==base+0x15dfec8&&field<unsigned>(possessed,0x1c8)==possession_lease.identity.actor_id&&
+           actor152::human(base,field<uintptr_t>(possessed,0))&&field<unsigned>(possessed,0x1c8)==possession_lease.identity.actor_id&&
            field<unsigned char>(possessed,0xf0)==0)return followed(possessed,false,false);
         uintptr_t actor=field<uintptr_t>(camera,0x188);
         if(!actor&&possessed&&possession_lease.active&&camera==possession_lease.identity.camera)actor=possessed;
@@ -409,7 +427,7 @@ static bool melee_motion_identity(uintptr_t actor,const melee60::Request& reques
         if(!links||count!=1)return false;
         unsigned matched=0;rider=0;
         for(unsigned i=0;i<count;++i){auto candidate=field<uintptr_t>(links,i*4);
-            if(!candidate||field<uintptr_t>(candidate,0)!=base+0x15dfec8||field<uintptr_t>(candidate,0x210)!=actor||
+            if(!candidate||!actor152::human(base,field<uintptr_t>(candidate,0))||field<uintptr_t>(candidate,0x210)!=actor||
                field<uintptr_t>(candidate,0x214)!=field<uintptr_t>(actor,0x214)||field<unsigned char>(candidate,0xf0)!=1)continue;
             auto u=field<uintptr_t>(candidate,0x214),serial=field<unsigned>(candidate,0x1c8),id=field<unsigned>(u,4);
             bool p=(request.player_kind==1?horse_serial:serial)==request.player&&id==request.player_unit,
@@ -418,7 +436,7 @@ static bool melee_motion_identity(uintptr_t actor,const melee60::Request& reques
         }
         if(matched!=1)return false;
         if(player&&(actor!=possession_lease.identity.mount||field<unsigned>(actor,0x1c8)!=possession_lease.identity.mount_id))return false;
-    }else if(vtable==base+0x15dfec8){
+    }else if(actor152::human(base,vtable)){
         auto u=field<uintptr_t>(actor,0x214);if(!u)return false;
         auto serial=field<unsigned>(actor,0x1c8),id=field<unsigned>(u,4);
         player=request.player_kind==0&&serial==request.player&&id==request.player_unit;
@@ -485,8 +503,7 @@ static bool apply_melee_motion(uintptr_t actor){
             auto a=field<uintptr_t>(witness,0x30),b=field<uintptr_t>(witness,0x34);
             if(field<unsigned>(witness,0x38)!=2||(a!=actor&&b!=actor))return true;
             auto other_actor=a==actor?b:a;auto other_kind=player?request.opponent_kind:request.player_kind;
-            auto other_table=base+(other_kind?0x15e8524:0x15dfec8);
-            if(!other_actor||field<uintptr_t>(other_actor,0)!=other_table||field<uintptr_t>(other_actor,0x688)!=witness)return true;
+            if(!other_actor||!actor152::kind(base,field<uintptr_t>(other_actor,0),other_kind)||field<uintptr_t>(other_actor,0x688)!=witness)return true;
             auto other_unit=field<uintptr_t>(other_actor,0x214);if(!other_unit)return true;
             if(field<unsigned>(other_actor,0x1c8)!=(player?request.opponent:request.player)||field<unsigned>(other_unit,4)!=(player?request.opponent_unit:request.player_unit))return true;
             // Read the targets registered by ORIGINAL preparation on this actor,
@@ -557,6 +574,7 @@ static void entry_failed(unsigned error){
     state->acquisition_error=error;InterlockedExchange(&state->acquire,0);
     if(!possessed)InterlockedExchange(&state->mode,IDLE);
 }
+#include "camera_pick150.h"
 static void enter_selected_soldier(){
     if(!state||!camera_entry_live(enabled!=0,state->stop!=0,state->release!=0,
         GetTickCount64()-state->heartbeat,state->mode))return;
@@ -577,7 +595,7 @@ static void enter_selected_soldier(){
             field<unsigned>(group,0x14)!=1||field<unsigned>(group,0x10)<1){entry_failed(3);return;}
         uintptr_t members=field<uintptr_t>(group,0x18);
         uintptr_t selected_unit=members?field<uintptr_t>(members,0):0;
-        if(!selected_unit||native_routing(selected_unit)){entry_failed(4);return;}
+        if(!selected_unit){entry_failed(4);return;}
         uintptr_t manager=field<uintptr_t>(env,0x281fc);
         if(!manager||field<uintptr_t>(manager,0)!=base+0x15d26fc){entry_failed(6);return;}
         uintptr_t view=field<uintptr_t>(manager,0x8f8);
@@ -595,12 +613,13 @@ static void enter_selected_soldier(){
         unsigned count=field<unsigned>(view,0x18);
         uintptr_t array=field<uintptr_t>(view,0x1c);
         if(!array||!count||count>1000){entry_failed(10);return;}
+        auto center_actor150=camera_center_actor150(env,phase,camera);
         bool live=false;Choice97 choice{};int choice_score98=-1;
         for(unsigned i=0;i<count;++i){
             uintptr_t holder=field<uintptr_t>(array,i*4),actor=holder?field<uintptr_t>(holder,8):0;
             // Validate the selected view by actor backlinks without indexing a
             // global view array whose capacity has not yet been recovered.
-            // A real infantry view also contains special models. Those do not
+            // A real view also contains noncombat special models. Those do not
             // disqualify its eligible regular soldiers. Every actor must still
             // belong to this one selected unit, and only a valid live regular
             // infantry actor may satisfy the candidate check below or the
@@ -609,6 +628,7 @@ static void enter_selected_soldier(){
             NativeSubject motion;if(actor&&native_subject(actor,selected_unit,view,false,motion)){
                 auto witness=field<uintptr_t>(actor,0x688);if(witness&&field<unsigned char>(witness,0xd1))continue;
                 live=true;int score98=wall_subject97(actor)?2:0;if(actor==field<uintptr_t>(manager,0x8fc))++score98;
+                if(center_actor150&&(actor==center_actor150||motion.actor==center_actor150))score98+=4;
                 if(score98>choice_score98){choice_score98=score98;choice={env,phase,manager,view,selected_unit,holder,actor,field<unsigned>(actor,0x1c8),field<unsigned>(actor,0x218)};}
             }
         }
@@ -638,10 +658,12 @@ static bool posed_arrow_origin(float* origin);
 #include "formation_arrival129.h"
 #include "unit_detach130.h"
 #include "equipment_native81.h"
+#include "mount154.h"
 // Revision40 attachment predicate was not reached for the display arrow.
 #include "mounted_render_clock.h"
 #include "climb_control97.h"
 #include "soldier_pose.h"
+#include "third_person152.h"
 static void equipment_render_reset81(){
     AcquireSRWLockExclusive(&pose_lock);mounted_transition71.reset();mounted_held_palette.reset();
     pose_muzzle_transform_valid=false;pose_carbine_valid=false;ReleaseSRWLockExclusive(&pose_lock);
@@ -692,14 +714,31 @@ static void adjust_eye(uintptr_t camera) {
             update_death_model_view();
             for(unsigned i=0;i<6;++i)field<float>(camera,8+i*4)=death_eye[i];
             for(unsigned i=0;i<3;++i)field<float>(camera,0x58+i*4)=death_up[i];
+            if(death_third_person156){
+                deathpose::Eye eye;memcpy(eye.view,death_eye,24);memcpy(eye.up,death_up,12);
+                if(!view_facing156(eye,state->yaw,state->pitch))return;
+                memcpy(reinterpret_cast<void*>(camera+8),eye.view,24);memcpy(reinterpret_cast<void*>(camera+0x58),eye.up,12);
+            }
             auto refresh=reinterpret_cast<Cancel>(field<uintptr_t>(field<uintptr_t>(camera,0),0xf4));
             refresh(reinterpret_cast<void*>(camera));return;
         }
-        if(dismount_native_motion143()){remember_owned_eye(camera);return;}
+        InterlockedExchange(&mount_camera_locked154,0);
+        if(dismount_native_motion143()){
+            deathpose::Eye native_mount_eye154;memcpy(native_mount_eye154.view,reinterpret_cast<void*>(camera+8),24);memcpy(native_mount_eye154.up,reinterpret_cast<void*>(camera+0x58),12);
+            float mount_yaw154{},mount_pitch154{};
+            if(animationview::angles(native_mount_eye154,mount_yaw154,mount_pitch154)){
+                state->yaw=mount_yaw154;state->pitch=mount_pitch154;
+                memcpy(animation_view_up78,native_mount_eye154.up,12);animation_view_active78=true;
+                InterlockedExchange(&mount_camera_locked154,1);
+            }
+            remember_owned_eye(camera);return;
+        }
         float yaw=state->yaw,pitch=state->pitch;
         melee60::Request committed;bool commitment=melee_request(committed);
-        if(commitment||(possession_lease.active&&melee_handoff78.matches(locomotion_actor(),possession_lease.generation,
-            possession_lease.identity.mount?possession_lease.identity.mount_id:possession_lease.identity.actor_id,possession_lease.identity.unit_id))){
+        bool paired156=commitment||(possession_lease.active&&melee_handoff78.matches(locomotion_actor(),possession_lease.generation,
+            possession_lease.identity.mount?possession_lease.identity.mount_id:possession_lease.identity.actor_id,possession_lease.identity.unit_id));
+        if(commitment)InterlockedExchange(&entry_movement125,0);
+        if(paired156&&!third_person152){
             deathpose::Eye native_eye;
             memcpy(native_eye.view,reinterpret_cast<void*>(camera+8),sizeof native_eye.view);
             memcpy(native_eye.up,reinterpret_cast<void*>(camera+0x58),sizeof native_eye.up);
@@ -708,6 +747,7 @@ static void adjust_eye(uintptr_t camera) {
             if(commitment){
                 InterlockedExchange(&entry_movement125,0);
                 if(combat_focus125.begin(committed)){
+                    eye_reset152();
                     InterlockedExchange(&combat_entry_locked126,1);
                     InterlockedExchange(&raw_mouse_x,0);InterlockedExchange(&raw_mouse_y,0);
                 }
@@ -724,10 +764,10 @@ static void adjust_eye(uintptr_t camera) {
             }
             if(combat_focus125.valid){
                 if(!combat_focus125.unlocked)free_eye=native_eye;
-                else if(!look125::free_eye(native_eye,state->yaw,state->pitch,combat_focus125.yaw,free_eye))return;
-            }else if(!look104::free_eye(native_eye,state->yaw,state->pitch,free_eye))return;
+                else if(!eye_apply152(native_eye,free_eye))return;
+            }else if(!eye_apply152(native_eye,free_eye))return;
             if(!animationview::angles(free_eye,yaw,pitch))return;
-            state->yaw=yaw;InterlockedExchange(&combat_entry_locked126,combat_focus125.valid&&!combat_focus125.unlocked?1:0);animation_view_active78=true;InterlockedExchange(&animation_look_active104,1);InterlockedIncrement(&animation_look_updates104);
+            state->yaw=yaw;state->pitch=pitch;InterlockedExchange(&combat_entry_locked126,combat_focus125.valid&&!combat_focus125.unlocked?1:0);animation_view_active78=true;InterlockedExchange(&animation_look_active104,1);InterlockedIncrement(&animation_look_updates104);
             memcpy(reinterpret_cast<void*>(camera+8),free_eye.view,sizeof free_eye.view);
             memcpy(reinterpret_cast<void*>(camera+0x58),free_eye.up,sizeof free_eye.up);
             native_eye=free_eye;
@@ -740,7 +780,7 @@ static void adjust_eye(uintptr_t camera) {
         InterlockedExchange(&combat_entry_locked126,0);
         InterlockedExchange(&animation_look_active104,0);
         if(!std::isfinite(yaw)||!std::isfinite(pitch))return;
-        if(possession_lease.identity.mount){
+        if(possession_lease.identity.mount&&!(third_person152&&paired156)){
             unsigned bearing=field<unsigned short>(possession_lease.identity.mount,0x64);
             InterlockedExchange(&mounted_heading85,LONG(bearing));
             yaw=mountedlook85::constrain(yaw,bearing);state->yaw=yaw;
@@ -773,7 +813,7 @@ static void __fastcall camera_matrix(void* camera,void*,const void* matrix) {
             InterlockedExchange(&mounted_heading85,-1);InterlockedExchange(&entry_movement125,0);
             combat_focus125.reset();combat_pair_reset126();command_reset100();
         }
-        original_matrix(camera,matrix);if(possessed&&!dead_view())climb_observe98(possessed);remember_native_eye78(reinterpret_cast<uintptr_t>(camera));adjust_eye(reinterpret_cast<uintptr_t>(camera));interface_update(reinterpret_cast<uintptr_t>(camera));
+        mount_prepare154(reinterpret_cast<uintptr_t>(camera));view_prepare152();original_matrix(camera,matrix);if(possessed&&!dead_view())climb_observe98(possessed);remember_native_eye78(reinterpret_cast<uintptr_t>(camera));adjust_eye(reinterpret_cast<uintptr_t>(camera));view_camera152(reinterpret_cast<uintptr_t>(camera));interface_update(reinterpret_cast<uintptr_t>(camera));
         if(!dead_view()){
             capture_aim_frame(reinterpret_cast<uintptr_t>(camera));
             process_orders(reinterpret_cast<uintptr_t>(camera));
@@ -785,7 +825,18 @@ static void __fastcall camera_matrix(void* camera,void*,const void* matrix) {
         }
     }__finally {--camera_callback_depth;}
 }
-static void relinquish(){InterlockedExchange(&dismount_cleanup143,0);charge_reset139();InterlockedExchange(&entry_movement125,0);combat_focus125.reset();combat_pair_reset126();InterlockedExchange(&combat_entry_locked126,0);InterlockedExchange(&animation_look_active104,0);command_reset100();climb_reset97();request_rts_restore90();next_accuracy90=0;publish_accuracy90(nullptr,0,0);InterlockedExchange(&mounted_heading85,-1);equipment_reset81();reset_death_view();InterlockedExchange(&manual_arrow_released,0);state->arrow_visual_hidden=0;possession_lease.release();InterlockedExchange(&state->input,0);InterlockedExchange(&state->aiming,0);state->aim_pose=0;InterlockedExchange(&state->weapon_phase,WEAPON_IDLE);possessed=0;environment=0;unit=0;InterlockedExchange(&state->follow,0);InterlockedExchange(&state->pending_order,0);follow_target=false;InterlockedExchange(&state->fire_request,0);InterlockedExchange(&state->mode,IDLE);}
+static bool death_camera_update156(uintptr_t camera){
+    if(!camera_owned(camera)||!dead_view())return false;
+    ++camera_callback_depth;
+    __try{
+        adjust_eye(camera);view_camera152(camera);interface_update(camera);
+        // Same native matrix publication as325ca0, using the retained numeric
+        // eye rather than querying a retired corpse or the unit's next soldier.
+        reinterpret_cast<Cancel>(base+0x134f1d0)(reinterpret_cast<void*>(camera));
+        return death_context(camera);
+    }__finally{--camera_callback_depth;}
+}
+static void relinquish(){InterlockedExchange(&mount_camera_locked154,0);InterlockedExchange(&mount_request154,0);InterlockedExchange(&routing_empty_lease154,0);view_reset152();InterlockedExchange(&dismount_cleanup143,0);charge_reset139();InterlockedExchange(&entry_movement125,0);combat_focus125.reset();combat_pair_reset126();InterlockedExchange(&combat_entry_locked126,0);InterlockedExchange(&animation_look_active104,0);command_reset100();climb_reset97();request_rts_restore90();next_accuracy90=0;publish_accuracy90(nullptr,0,0);InterlockedExchange(&mounted_heading85,-1);equipment_reset81();reset_death_view();InterlockedExchange(&manual_arrow_released,0);state->arrow_visual_hidden=0;possession_lease.release();InterlockedExchange(&state->input,0);InterlockedExchange(&state->aiming,0);state->aim_pose=0;InterlockedExchange(&state->weapon_phase,WEAPON_IDLE);possessed=0;environment=0;unit=0;InterlockedExchange(&state->follow,0);InterlockedExchange(&state->pending_order,0);follow_target=false;InterlockedExchange(&state->fire_request,0);InterlockedExchange(&state->mode,IDLE);}
 static void end_death_on_window(){
     if(!InterlockedExchange(&death_return_pending,0))return;
     __try{uintptr_t manager=possession_lease.identity.manager;uintptr_t env=environment;
@@ -923,6 +974,7 @@ static void snapshot_log(std::ofstream& log) {
      if(count!=previous){previous=count;log<<"{\"event\":\"animation_handoff78\",\"tick_ms\":"<<GetTickCount64()
         <<",\"handoffs\":"<<count<<",\"native_view_updates\":"<<animation_view_updates78<<",\"playback_anchor_bypasses\":"<<melee_playback_hold_bypasses78
         <<",\"root\":["<<melee_handoff_root78[0]<<','<<melee_handoff_root78[1]<<','<<melee_handoff_root78[2]<<"]}\n";}}
+    log<<"{\"event\":\"control154\",\"tick_ms\":"<<GetTickCount64()<<",\"routing_empty_holds\":"<<routing_empty_holds154<<",\"mount_orders\":"<<mount_orders154<<",\"mount_unavailable\":"<<mount_unavailable154<<"}\n";
     release_log103(log);log_mounted_pose_diagnostic(log);log_mounted_sequence69(log);log_mounted_render70(log);log_weapon_observation82(log);log_mounted_pose_audit87(log);
     {static LONG seen=-1;LONG blocks=mounted_carbine_predraw_blocks72;
       if(blocks!=seen){seen=blocks;
@@ -956,14 +1008,17 @@ static void snapshot_log(std::ofstream& log) {
         <<"],\"velocity\":["<<s.velocity[0]<<','<<s.velocity[1]<<','<<s.velocity[2]<<"],\"bearing\":"<<s.bearing<<",\"yaw\":"<<s.yaw<<",\"pitch\":"<<s.pitch<<",\"native_eye_y\":"<<s.native_eye_y<<",\"raised_eye_y\":"<<s.raised_eye_y<<",\"mouse_events\":"<<s.mouse_events<<",\"controlled_updates\":"<<s.controlled_updates<<",\"other_updates\":"<<s.other_updates<<",\"camera_cancels\":"<<s.camera_cancels<<",\"camera_suppressed\":"<<s.camera_suppressed<<",\"cancel_caller_rva\":"<<s.cancel_caller<<",\"orders_sent\":"<<s.orders_sent<<",\"last_order\":"<<s.last_order<<",\"order_error\":"<<s.order_error<<",\"follow\":"<<s.follow<<",\"packet_size\":"<<s.packet_size<<",\"queue_before\":"<<s.queue_before<<",\"queue_after\":"<<s.queue_after<<",\"window_thread\":"<<s.window_thread<<",\"camera_thread\":"<<s.camera_thread<<",\"order_target\":["<<s.order_target_x<<','<<s.order_target_z<<"],\"formation\":["<<s.formation_x<<','<<s.formation_z<<"],\"formation_count\":"<<s.formation_count<<",\"projectile_camera_suppressed\":"<<s.projectile_camera_suppressed<<",\"weapon_phase\":"<<s.weapon_phase<<",\"weapon_record\":"<<s.weapon_record<<",\"weapon_animation\":"<<s.weapon_animation<<",\"weapon_mouse_captured\":"<<s.weapon_mouse_captured<<",\"aiming\":"<<s.aiming<<",\"aim_pose\":"<<s.aim_pose<<",\"aim_blend\":"<<s.aim_blend<<",\"hip_fov\":"<<s.hip_fov<<",\"view_fov\":"<<s.view_fov<<",\"hud_hidden\":"<<s.hud_hidden<<",\"crosshair_visible\":"<<s.crosshair_visible<<",\"pose_muzzle_updates\":"<<s.pose_muzzle_updates<<",\"pose_weapon_record\":"<<s.pose_weapon_record<<",\"pose_native_clip\":"<<s.pose_native_clip<<",\"pose_native_bias\":"<<s.pose_native_bias<<",\"bow_origin_aligned\":"<<s.bow_origin_aligned<<",\"bow_origin_correction\":"<<s.bow_origin_correction<<",\"shot_camera_origin\":["<<s.shot_camera_origin[0]<<','<<s.shot_camera_origin[1]<<','<<s.shot_camera_origin[2]<<']'<<",\"pose_updates\":"<<s.pose_updates<<",\"pose_aim_updates\":"<<s.pose_aim_updates<<",\"pose_restores\":"<<s.pose_restores<<",\"pose_error\":"<<s.pose_error<<",\"pose_bones\":"<<s.pose_bones<<",\"pose_pitch\":"<<s.pose_pitch<<",\"camera_pitch\":"<<s.camera_pitch<<",\"native_matrix_override\":"<<s.native_matrix_override<<",\"raw_mouse_active\":"<<s.raw_mouse_active<<",\"raw_mouse_error\":"<<s.raw_mouse_error<<",\"raw_mouse_events\":"<<s.raw_mouse_events<<",\"raw_aim_events\":"<<s.raw_aim_events<<",\"raw_y_total\":"<<s.raw_y_total<<",\"raw_aim_y_total\":"<<s.raw_aim_y_total<<",\"interface_error\":"<<s.interface_error<<",\"interface_restores\":"<<s.interface_restores<<",\"cursor_suppressed\":"<<s.cursor_suppressed<<",\"aim_clip\":"<<s.aim_clip<<",\"draws_started\":"<<s.draws_started<<",\"reloads_started\":"<<s.reloads_started<<",\"ai_shots_suppressed\":"<<s.ai_shots_suppressed<<",\"weapon_release_time\":"<<s.weapon_release_time<<",\"weapon_reload_remaining\":"<<s.weapon_reload_remaining<<",\"shots_queued\":"<<s.shots_queued<<",\"shots_spawned\":"<<s.shots_spawned<<",\"shots_blocked\":"<<s.shots_blocked<<",\"shots_canceled\":"<<s.shots_canceled<<",\"spread_removed\":"<<s.spread_removed<<",\"direct_fire\":"<<s.direct_fire<<",\"launch_delta\":"<<s.launch_delta<<",\"shot_origin\":["<<s.shot_origin[0]<<','<<s.shot_origin[1]<<','<<s.shot_origin[2]<<']'<<",\"shot_velocity\":["<<s.shot_velocity[0]<<','<<s.shot_velocity[1]<<','<<s.shot_velocity[2]<<']'<<",\"shot_view_direction\":["<<s.shot_view_direction[0]<<','<<s.shot_view_direction[1]<<','<<s.shot_view_direction[2]<<']'<<",\"shot_error\":"<<s.shot_error<<",\"fire_ticket\":"<<s.fire_ticket<<",\"shot_packet_size\":"<<s.shot_packet_size<<",\"shot_thread\":"<<s.shot_thread<<",\"ammo_before\":"<<s.ammo_before<<",\"ammo_after\":"<<s.ammo_after<<",\"shot_target\":["<<s.shot_target[0]<<','<<s.shot_target[1]<<','<<s.shot_target[2]<<"],\"error\":"<<s.error<<"}\n";log.flush();
 }
 static void mouse_look101(int dx,int dy,unsigned input,float elapsed){
-    if(InterlockedCompareExchange(&combat_entry_locked126,0,0))return; // Native pair facing owns the initial view.
+    if(!third_person152&&InterlockedCompareExchange(&combat_entry_locked126,0,0))return; // First-person native pair facing owns the initial view.
     melee60::Request committed;
     if(!dead_view()&&std::abs(dx)<500&&std::abs(dy)<500){
         float turn=float(bool(input&TURN_RIGHT))-float(bool(input&TURN_LEFT));
         if(possession_lease.identity.mount)turn=0; // Mounted keyboard steering does not rotate mouse look.
         float sensitivity=0.0025f*(1.0f-state->aim_blend*0.55f);
+        if(orbit_mouse154(float(dx)*sensitivity,-float(dy)*sensitivity)){if(dx||dy)++state->mouse_events;return;}
+        if(InterlockedCompareExchange(&mount_camera_locked154,0,0))return;
         LONG heading=InterlockedCompareExchange(&mounted_heading85,0,0);
-        if(melee_request(committed)||InterlockedCompareExchange(&animation_look_active104,0,0))state->yaw=look104::mouse_yaw(state->yaw,float(dx)*sensitivity);
+        if(third_person152&&(melee_request(committed)||InterlockedCompareExchange(&animation_look_active104,0,0)))state->yaw=look104::mouse_yaw(state->yaw,float(dx)*sensitivity);
+        else if(melee_request(committed)||InterlockedCompareExchange(&animation_look_active104,0,0)){eye_mouse152(float(dx)*sensitivity,-float(dy)*sensitivity);state->yaw=look104::mouse_yaw(state->yaw,float(dx)*sensitivity);}
         else state->yaw=mountedlook85::mouse_yaw(state->yaw,float(dx)*sensitivity+turn*1.256637f*elapsed,
             possession_lease.identity.mount!=0&&heading>=0,unsigned(heading));
         state->pitch=look96::mouse_pitch(state->pitch,dy,sensitivity);
@@ -1054,6 +1109,7 @@ static DWORD WINAPI worker(void*) {
             DWORD foreground_pid=0;DWORD foreground_thread=GetWindowThreadProcessId(GetForegroundWindow(),&foreground_pid);bool focus=foreground_pid==GetCurrentProcessId();
             state->heartbeat=GetTickCount64();unsigned input=0;
             bool charge_locked146=charge_input_locked146();
+            if(!focus||!down(VK_MBUTTON)||!third_person152)orbit_button154(false);
             equipment_sample_input81(focus&&!charge_locked146);ability_sample141(focus&&!charge_locked146);
             if(!focus)bow_sample142(down(VK_LBUTTON),false);
             if(focus){

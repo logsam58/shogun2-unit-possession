@@ -1,5 +1,6 @@
 #pragma once
 #include "native_selection_prefix.h"
+#include "../../shogun2-possession-cleanup-v46/src/actor_types152.h"
 namespace qte {
 enum CombatKind:uint32_t {Human=0,Horse=1};
 struct NativeActor {
@@ -18,11 +19,11 @@ inline bool combat_identity(const Reader& r,uint32_t actor,uint32_t engine,Nativ
         memcpy(&table,prefix120.data(),4);alive=prefix120[0xf0];
         memcpy(&unit,prefix120.data()+0x214,4);memcpy(&serial,prefix120.data()+0x1c8,4);
         memcpy(&side,prefix120.data()+0x44,4);memcpy(&height,prefix120.data()+0x4c,4);
-        if((table!=actor_table(engine,Human)&&table!=actor_table(engine,Horse))||
+        if((!actor152::human(engine,table)&&table!=actor_table(engine,Horse))||
            alive>1||(require_alive&&alive!=1)||!unit||unit>UINT32_MAX-0xfd0||
            !r.get(unit+4,id)||!id||!std::isfinite(height))return false;
     }else {
-    if(!r.get(actor,table)||(table!=actor_table(engine,Human)&&table!=actor_table(engine,Horse))||
+    if(!r.get(actor,table)||(!actor152::human(engine,table)&&table!=actor_table(engine,Horse))||
        !r.get(actor+0xf0,alive)||alive>1||(require_alive&&alive!=1)||
        !r.get(actor+0x214,unit)||!unit||unit>UINT32_MAX-0xfd0||
        !r.get(actor+0x1c8,serial)||!r.get(unit+4,id)||!id||
@@ -30,9 +31,8 @@ inline bool combat_identity(const Reader& r,uint32_t actor,uint32_t engine,Nativ
     }
     out={actor,serial,unit,id,side,height,table==actor_table(engine,Horse)?Horse:Human};return true;
 }
-// Exact reciprocal link, same unit/side/environment, and a unique ordinary
-// human passenger. General special models and multi-crew vehicles are not
-// implicitly admitted by widening this predicate.
+// Exact reciprocal link, same unit/side/environment, and a unique supported
+// human soldier passenger. Multiple passengers and vehicle bodies stay excluded.
 inline bool horse_rider(const Reader& r,uint32_t engine,const NativeActor& horse,NativeActor& rider,bool require_alive=true){
     NativeActor current;uint32_t count{},links{},environment{};
     if(horse.kind!=Horse||!combat_identity(r,horse.address,engine,current,require_alive)||

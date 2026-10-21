@@ -2,7 +2,7 @@ from pathlib import Path
 import argparse,hashlib,json,struct,re
 here=Path(__file__).resolve().parent
 root=here.parents[1]
-parser=argparse.ArgumentParser();mode=parser.add_mutually_exclusive_group();mode.add_argument('--candidate',type=int,default=149);mode.add_argument('--release',action='store_true',help='Release metadata for v0.27/Test149 gameplay');args=parser.parse_args()
+parser=argparse.ArgumentParser();mode=parser.add_mutually_exclusive_group();mode.add_argument('--candidate',type=int,default=157);mode.add_argument('--release',action='store_true',help='Release metadata for v0.28/Test157 gameplay');args=parser.parse_args()
 if args.candidate is not None:assert args.candidate>=100, 'Candidate must be 100 or later'
 version=(root.parent/'VERSION').read_text().strip()
 development=not args.release
@@ -20,6 +20,8 @@ if args.candidate>=141:
     metadata['controls']=metadata['controls'].replace('TAB native ammo;','T cycle native whole-unit ability/ammunition; G activate/end selected ability;')
     if args.candidate>=142:metadata['controls']=metadata['controls'].replace('LMB fire;','LMB click fire guns/throw weapons; hold/release LMB for variable bow strength;')
     if args.candidate>=148:metadata['controls']+='; W+Shift personal native charge toward enemy; K hide UI except melee prompt, shared with RTS'
+    if args.candidate>=152:metadata['controls']+='; P first/third person; mouse wheel third-person distance; QTE eye look follows animated face; broken/shattered native combat has no QTE'
+    if args.candidate>=154:metadata['controls']+='; hold middle mouse to orbit third person independently of WASD; M native whole-unit mount/dismount'
     payload=json.dumps(metadata,indent=2).encode('utf-8')
 index=struct.pack('<I',len(payload))+b'possession\\checkpoint45.json\0'
 pack=here/'marker.pack'

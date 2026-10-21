@@ -1,4 +1,5 @@
 #pragma once
+#include "../../shogun2-possession-cleanup-v46/src/actor_types152.h"
 // Read-only proof of a CURRENT native formation charge.
 // No invented targets, attack results, animation clips or unit/squad writes.
 // The retail constructor owns the task, the retail update owns contact and
@@ -25,7 +26,7 @@ static bool charge_target139(const Charge139& c){
     unsigned n=field<unsigned>(c.target_unit,c.roster_offset);auto list=field<uintptr_t>(c.target_unit,c.roster_offset+4);
     if(!n||n>2000||!list||c.target_index>=n||field<uintptr_t>(list,c.target_index*4)!=c.target_owner)return false;
     auto owner=c.target_owner;
-    if(field<uintptr_t>(owner,0)!=base+0x15dfec8||field<unsigned>(owner,0x1c8)!=c.owner_serial||
+    if(!actor152::human(base,field<uintptr_t>(owner,0))||field<unsigned>(owner,0x1c8)!=c.owner_serial||
        field<uintptr_t>(owner,0x214)!=c.target_unit||field<uintptr_t>(owner,0x28)!=environment||field<unsigned char>(owner,0xf0)!=1)return false;
     if(c.target!=owner){
         if(field<uintptr_t>(owner,0x210)!=c.target||field<uintptr_t>(c.target,0)!=base+0x15e8524||
@@ -51,7 +52,7 @@ static bool charge_bind_target139(Charge139& c,uintptr_t target,uintptr_t target
     if(!n||n>2000||!list)return false;
     for(unsigned i=0;i<n;++i){if(budget){if(!*budget)return false;--*budget;}
       __try {auto owner=field<uintptr_t>(list,i*4);if(!owner)continue;
-      if(!target||owner==target||(field<uintptr_t>(owner,0)==base+0x15dfec8&&field<uintptr_t>(owner,0x210)==target)){
+      if(!target||owner==target||(actor152::human(base,field<uintptr_t>(owner,0))&&field<uintptr_t>(owner,0x210)==target)){
         auto mount=field<uintptr_t>(owner,0x210);auto subject=target?target:(mount?mount:owner);
         c.target=subject;c.native_target=target;c.target_unit=target_unit;c.target_index=i;c.roster_offset=off;c.target_owner=owner;c.owner_serial=field<unsigned>(owner,0x1c8);
         c.target_serial=field<unsigned>(subject,0x1c8);c.target_unit_serial=field<unsigned>(target_unit,4);
@@ -77,7 +78,7 @@ static bool charge_capture139(uintptr_t actor,ChargeIntent139& intent,Charge139&
 }
 static bool charge_peer139(uintptr_t rider,ChargeIntent139& intent,Charge139& candidate,unsigned* budget=nullptr){
     __try {
-    if(!rider||rider==possessed||field<uintptr_t>(rider,0)!=base+0x15dfec8||
+    if(!rider||rider==possessed||!actor152::human(base,field<uintptr_t>(rider,0))||
        field<uintptr_t>(rider,0x214)!=unit||field<uintptr_t>(rider,0x28)!=environment||
        field<unsigned char>(rider,0xf0)!=1)return false;
     auto actor=rider;

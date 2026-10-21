@@ -1,8 +1,37 @@
 #include "adapter.cpp"
-static unsigned forwarded_index97,forwarded_actor97;
+static unsigned forwarded_index97,forwarded_actor97,path_requests153,task_forwards153;
+static uintptr_t portal_surface153;
+static unsigned path_goal153[5];
+static float portal_height155;static unsigned native_lookup155;
+static std::array<unsigned char,1024> scene155{},cache155{};
+static unsigned __fastcall native_cell155(void*,void*,const float*,unsigned){++native_lookup155;return 7;}
+// World-height/navigation provider only: original portal397e40/80 and
+// original359070 construct the location, retaining its real native layout.
+static uintptr_t __fastcall portal_world155(void*,void*,void* out,const float* xz,uintptr_t surface,unsigned flags){
+ require(flags==3,"Portal changed native query flags");float point[3]={xz[0],portal_height155,xz[1]};
+ reinterpret_cast<void(__thiscall*)(void*,const float*,uintptr_t)>(base+0x359070)(out,point,surface);return uintptr_t(out);
+}
+static void __fastcall path_plan153(void* object,void*){
+ auto actor=reinterpret_cast<uintptr_t>(object);++path_requests153;memcpy(path_goal153,reinterpret_cast<void*>(actor+0x420),20);
+ // Execute the ORIGINAL request builder and cached-route validation that
+ // faulted in22472. Async solve/terrain remain explicit providers, not success.
+ unsigned request[18]{};auto scene=uintptr_t(scene155.data());
+ field<uintptr_t>(scene,0)=scene+0x100;field<uintptr_t>(scene+0x100,8)=scene+0x200;field<uintptr_t>(scene+0x200,0xbc)=scene+0x380;
+ field<float>(scene,0x7c)=field<float>(scene,0x80)=-100000;field<float>(scene,0x84)=field<float>(scene,0x88)=100000;
+ reinterpret_cast<void(__thiscall*)(void*,uintptr_t,unsigned,const void*,const void*,float,unsigned,unsigned,unsigned,unsigned)>(base+0x35fdf0)(request,scene,1,path_goal153,path_goal153,1.f,0,0,0,3);
+ cache155[0x20]=cache155[0x21]=cache155[0x76]=1;field<unsigned>(uintptr_t(cache155.data()),0x70)=0xdeadbeef;
+ unsigned cache_slot[4]={0,0,0,unsigned(uintptr_t(cache155.data()))};
+ require(!reinterpret_cast<unsigned(__thiscall*)(void*,const void*,const void*)>(base+0x378c70)(reinterpret_cast<void*>(scene),cache_slot,request),"Fresh fixture path unexpectedly reused route");
+ field<unsigned>(actor,0x3bc)=4;
+}
+static uintptr_t __fastcall surface_portal153(void*,void*){return portal_surface153;}
+static void __fastcall surface_transform153(void*,void*){} // Explicit identity surface transform provider.
+static void __fastcall formation_task153(void*,void*){++task_forwards153;}
+
 static unsigned __fastcall fake_index97(void*,void*){++forwarded_index97;return 999;}
 static uintptr_t __fastcall fake_actor97(void*,void*,unsigned){++forwarded_actor97;return 0;}
-int main(){unsigned char* mapped=nullptr;try{
+static LONG WINAPI fault_siege155(EXCEPTION_POINTERS* p){std::cerr<<"siege155 fault "<<std::hex<<p->ExceptionRecord->ExceptionCode<<" at "<<uintptr_t(p->ExceptionRecord->ExceptionAddress)-base<<" address "<<p->ExceptionRecord->ExceptionInformation[1]<<"\n";return EXCEPTION_EXECUTE_HANDLER;}
+int main(){SetUnhandledExceptionFilter(fault_siege155);unsigned char* mapped=nullptr;try{
  std::wstring path=L"C:\\Program Files (x86)\\Steam\\steamapps\\common\\Total War SHOGUN 2\\Empire.Retail.dll";require(hash_file(path)==EXPECTED_HASH,"Exact native fixture image");
  std::ifstream in(path,std::ios::binary);std::vector<unsigned char> image((std::istreambuf_iterator<char>(in)),{});auto dos=reinterpret_cast<IMAGE_DOS_HEADER*>(image.data());auto nt=reinterpret_cast<IMAGE_NT_HEADERS32*>(image.data()+dos->e_lfanew);
  mapped=static_cast<unsigned char*>(VirtualAlloc(nullptr,nt->OptionalHeader.SizeOfImage,MEM_COMMIT|MEM_RESERVE,PAGE_READWRITE));require(mapped!=nullptr,"Native fixture allocation");memcpy(mapped,image.data(),nt->OptionalHeader.SizeOfHeaders);
@@ -39,6 +68,67 @@ int main(){unsigned char* mapped=nullptr;try{
  require(view_actor_hook97(reinterpret_cast<void*>(v),nullptr,17)==a,"Scoped native logical-index lookup resolves current holder");
  choice97={};require(view_actor_hook97(reinterpret_cast<void*>(v),nullptr,18)==0&&forwarded_actor97==1,"Foreign index forwarded");
  field<unsigned>(a,0x1c8)=1204;require(!followed(a,false)&&!choice_valid97(v,choice),"ABA actor serial rejected");field<unsigned>(a,0x1c8)=1203;
+
+ // Original portal getter, location constructor, parameter/order and the
+ // recorded cached-path validation execute. Only terrain/async solve is supplied.
+ const unsigned patched153[]={0x3df3f0,0x1656b0,0x3f6290};unsigned char saved153[3][8];
+ auto patch153=[&](unsigned rv,void* fn){auto code=mapped+rv;code[0]=0xe9;unsigned rel=unsigned(reinterpret_cast<uintptr_t>(fn)-(base+rv)-5);memcpy(code+1,&rel,4);};
+ for(unsigned i=0;i<3;++i)memcpy(saved153[i],mapped+patched153[i],8);
+ patch153(0x3df3f0,reinterpret_cast<void*>(path_plan153));patch153(0x1656b0,reinterpret_cast<void*>(portal_world155));patch153(0x3f6290,reinterpret_cast<void*>(native_cell155));
+ std::vector<unsigned char> bottom153(64),top153(64),surface153(128);portal_surface153=ptr(surface153);
+ field<uintptr_t>(ptr(surface153),0)=base+0x15e7f00;field<uintptr_t>(base+0x15e7f00,0x10)=base+0x95740;field<uintptr_t>(ptr(surface153),0x44)=42;
+ field<uintptr_t>(pipe,0x28)=ptr(bottom153);field<uintptr_t>(pipe,0x2c)=ptr(top153);
+ std::array<unsigned char,sizeof nodes> native_nodes153{};memcpy(native_nodes153.data(),nodes,sizeof nodes);
+ field<float>(ptr(config),0x1c)=1.3f;field<float>(ptr(config),0x20)=3;field<float>(ptr(config),0x6c)=2;
+ field<float>(u,0x22c)=1;field<float>(base+0x18d1c80,0x5c)=1;field<float>(base+0x18d1ce0,0x5c)=1;
+ for(auto role153:{0x15dfec8u,0x15dbd68u,0x15dbfb4u})for(float rotate153:{0.f,1.570796327f,3.141592654f,-1.570796327f})for(bool descending153:{false,true})for(bool ground154:{false,true}){
+  portal_surface153=ground154?0:ptr(surface153);
+  memcpy(nodes,native_nodes153.data(),sizeof nodes);
+  for(unsigned i=0;i<4;++i)for(unsigned off:{0x24u,0x30u}){auto node=uintptr_t(nodes)+i*72;float x=field<float>(node,off),z=field<float>(node,off+8);field<float>(node,off)=x*std::cos(rotate153)+z*std::sin(rotate153);field<float>(node,off+8)=-x*std::sin(rotate153)+z*std::cos(rotate153);}
+  auto near153=uintptr_t(nodes)+(descending153?3:0)*72;unsigned near_off153=descending153?0x30:0x24;
+  for(unsigned side155=0;side155<2;++side155){auto pp155=side155?ptr(top153):ptr(bottom153);auto nn155=uintptr_t(nodes)+(side155?3:0)*72;unsigned oo155=side155?0x30:0x24;
+   field<uintptr_t>(pp155,0)=base+(ground154?0x15de28c:0x15de2ac);field<uintptr_t>(pp155,4)=ptr(env);
+   field<float>(pp155,8)=field<float>(nn155,oo155);field<float>(pp155,0x10)=field<float>(nn155,oo155+8);field<uintptr_t>(pp155,0x18)=portal_surface153;
+  }
+  portal_height155=field<float>(uintptr_t(nodes)+(descending153?0:3)*72,descending153?0x28:0x34);
+  field<uintptr_t>(a,0)=base+role153;field<uintptr_t>(a,0x18)=0;field<unsigned>(a,0x1f0)=0;field<unsigned char>(a,0xa1)=1;
+  for(unsigned k=0;k<3;++k)field<float>(a,0x48+k*4)=field<float>(near153,near_off153+k*4);
+  field<float>(a,0x48)+=std::cos(rotate153);field<float>(a,0x50)-=std::sin(rotate153);
+  field<unsigned short>(a,0x64)=20000;state->yaw=std::atan2(-std::cos(rotate153),std::sin(rotate153));state->input=FORWARD|RUN;state->heartbeat=GetTickCount64();
+  float before153[3];memcpy(before153,reinterpret_cast<void*>(a+0x48),12);auto heading153=field<unsigned short>(a,0x64);auto requests153=path_requests153;
+  climb_reset97();climb_adopt98(a);climb_action97=1;require(climb_prepare97(a),"F failed to enter native approach");
+  require(path_goal153[3]==portal_surface153&&path_goal153[4]==0,"Bearing pose was passed as navigation location");
+  require(path_requests153==requests153+1&&climb_align152&&!field<uintptr_t>(a,0x18),"F bypassed the native route/setup or bound before native arrival");
+  require(!memcmp(before153,reinterpret_cast<void*>(a+0x48),12)&&field<unsigned short>(a,0x64)==heading153,"F directly teleported or forced body bearing");
+  auto far153=uintptr_t(nodes)+(descending153?0:3)*72;unsigned far_off153=descending153?0x24:0x30;
+  for(unsigned k=0;k<3;++k){float value;memcpy(&value,path_goal153+k,4);require(std::abs(value-field<float>(far153,far_off153+k*4))<.001f,"Native route targets the wrong wall endpoint");}
+  require(field<float>(a,0x438)==1.3f&&field<unsigned>(a,0x448)==2,"Stock path speed/default restrictions changed");
+  for(unsigned frame153=0;frame153<100;++frame153){state->heartbeat=GetTickCount64();require(climb_prepare97(a),"Native approach lost without input");}
+  require(path_requests153==requests153+1&&keyboard_wall98,"Held approach rebuilt routes or accepted manual movement");
+  unsigned task153[2]={0,unsigned(a)},other153[2]={0,unsigned(ptr(dead_actor))};auto forwarded153=task_forwards153;
+  personal_task130(task153,reinterpret_cast<UnitTick130>(formation_task153));personal_task130(other153,reinterpret_cast<UnitTick130>(formation_task153));
+  require(task_forwards153==forwarded153+1,"Wall approach failed to retain its goal or blocked a peer task");
+  if(role153==0x15dfec8u&&rotate153==0.f&&!descending153&&!ground154){
+   auto repeat153=[&](){state->heartbeat=GetTickCount64();climb_action97=1;require(climb_prepare97(a)&&climb_align152,"Fresh F did not restart a failed native route");};
+   field<unsigned>(a,0x3bc)=7;require(!climb_prepare97(a)&&!climb_align152,"Native route failure retained manual-input lock");repeat153();
+   field<unsigned>(a,0x420)^=1;auto external153=field<unsigned>(a,0x420);
+   require(!climb_prepare97(a)&&!climb_align152&&field<unsigned>(a,0x420)==external153,"External native goal was overwritten instead of releasing ownership");repeat153();
+   pipes[0]=0;require(!climb_prepare97(a)&&!climb_align152,"Removed wall retained pending approach");pipes[0]=pipe;repeat153();
+  }
+  field<uintptr_t>(a,0x18)=pipe;field<float>(a,0x20)=descending153?1.f:0.f;field<unsigned>(a,0x1f0)=descending153?69:68;
+  require(climb_prepare97(a)&&!climb_align152&&wall_subject97(a),"Real native attachment did not restore W/S traversal");
+ }
+ // Native path vectors may contain 1..3 segments (the old hard-coded4
+ // was a single recorded wall, not a native minimum). Registry/type/clip and
+ // finite geometry checks still apply for these interior/elevated entries.
+ memcpy(nodes,native_nodes153.data(),sizeof nodes);
+ for(unsigned segments154:{1u,2u,3u}){
+  field<unsigned>(def,0x14)=segments154;Wall97 short154;require(read_wall97(a,pipe,short154)&&short154.count==segments154,"Short native wall resource omitted from discovery");
+ }
+ field<unsigned>(def,0x14)=4;
+ memcpy(nodes,native_nodes153.data(),sizeof nodes);field<uintptr_t>(a,0)=base+0x15dfec8;
+ for(unsigned i=0;i<3;++i)memcpy(mapped+patched153[i],saved153[i],8);
+ field<uintptr_t>(pipe,0x28)=field<uintptr_t>(pipe,0x2c)=0;climb_reset97();
  field<uintptr_t>(a,0x18)=pipe;field<unsigned>(a,0x1f0)=68;require(followed(a,false),"Same lease survives native climb attachment");
  using Point=uintptr_t(__thiscall*)(void*,float*,float);using Project=float(__thiscall*)(void*,const float*);auto point=reinterpret_cast<Point>(base+0x39a2e0);auto project=reinterpret_cast<Project>(base+0x38cc00);float length=reinterpret_cast<float(__thiscall*)(void*)>(base+0x3931f0)(reinterpret_cast<void*>(def));require(length>20&&length<40,"Original native captured wall length");
  unsigned cases=0;

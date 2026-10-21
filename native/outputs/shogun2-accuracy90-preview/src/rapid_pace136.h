@@ -1,4 +1,5 @@
 #pragma once
+#include "../../shogun2-possession-cleanup-v46/src/actor_types152.h"
 #include <algorithm>
 // Numeric observations only. No cached actor pointer grants control, and no
 // peer/unit/order is written. Native AI velocity is already terrain/fatigue
@@ -13,7 +14,7 @@ static volatile LONG rapid_pace_present136;
 static bool rapid_peer_speed136(uintptr_t rider,float& speed){
     __try {
         if(!rider||rider==possessed||rider==locomotion_actor())return false;
-        if(field<uintptr_t>(rider,0)!=base+0x15dfec8||field<uintptr_t>(rider,0x214)!=unit||
+        if(!actor152::human(base,field<uintptr_t>(rider,0))||field<uintptr_t>(rider,0x214)!=unit||
            field<uintptr_t>(rider,0x28)!=environment||field<unsigned char>(rider,0xf0)!=1)return false;
         unsigned serial=field<unsigned>(rider,0x1c8);uintptr_t actor=rider;
         if(possession_lease.identity.mount){

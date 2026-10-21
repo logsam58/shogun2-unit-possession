@@ -60,6 +60,7 @@ public:
         if(owner.observation_busy93&&bridge_.occupied())return 0;
         if(!clock_verified_)owner.verified_melee=false;
         advance(owner,frame,focused);
+        uint32_t routed152{};if(bridge_.take_routed152(witness,generation,routed152))return routed152;
         if(!point_.valid||point_.paused||!focused)owner.verified_melee=false;
         auto before=bridge_.snapshot();
         auto returned=bridge_.prepare(witness,generation,owner,allow_prompt);
@@ -70,7 +71,7 @@ public:
     uint32_t update(uint32_t witness,uint64_t generation,Owner owner,const ClockFrame& frame,bool focused){
         if(owner.observation_busy93&&bridge_.occupied())return 0;
         if(!clock_verified_)owner.verified_melee=false;
-        advance(owner,frame,focused);return bridge_.update(witness,generation);
+        advance(owner,frame,focused);uint32_t routed152{};if(bridge_.take_routed152(witness,generation,routed152))return routed152;return bridge_.update(witness,generation);
     }
     bool try_replay(uint32_t witness,uint32_t caller,uint32_t context,uint32_t begin,uint32_t end,
                     uint32_t flags,uint32_t flags2,NativeVerdict& output){

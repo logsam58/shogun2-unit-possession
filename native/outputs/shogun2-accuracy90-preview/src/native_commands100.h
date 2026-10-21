@@ -1,4 +1,5 @@
 #pragma once
+#include "../../shogun2-possession-cleanup-v46/src/actor_types152.h"
 #include "command_protocol100.h"
 #include "native_advance100.h"
 #include "native_context103.h"
@@ -174,7 +175,7 @@ static bool command_peer100(uintptr_t subject,command100::ActorKey& key){
             auto holder=field<uintptr_t>(array,i*4),human=holder?field<uintptr_t>(holder,8):0;
             if(!human||human==possessed)continue;
             if(human!=subject&&field<uintptr_t>(human,0x210)!=subject)continue;
-            if(field<uintptr_t>(human,0)!=base+0x15dfec8||field<unsigned char>(human,0xf0)!=1||
+            if(!actor152::human(base,field<uintptr_t>(human,0))||field<unsigned char>(human,0xf0)!=1||
                field<uintptr_t>(human,0x214)!=unit||field<uintptr_t>(human,0x28)!=owner.environment)return false;
             NativeSubject paired{};if(!native_subject(human,unit,owner.view,false,paired))return false;
             if(subject!=human&&subject!=paired.actor)return false;
@@ -254,7 +255,7 @@ static bool command_formation_gap102(uintptr_t camera,command100::Point leader,f
     double x=0,z=0;unsigned peers=0;
     for(unsigned i=0;i<count;++i){
         auto holder=field<uintptr_t>(array,i*4),actor=holder?field<uintptr_t>(holder,8):0;
-        if(!actor||actor==possessed||field<uintptr_t>(actor,0)!=base+0x15dfec8||field<unsigned char>(actor,0xf0)!=1||
+        if(!actor||actor==possessed||!actor152::human(base,field<uintptr_t>(actor,0))||field<unsigned char>(actor,0xf0)!=1||
            field<uintptr_t>(actor,0x214)!=unit||field<uintptr_t>(actor,0x28)!=environment)continue;
         command100::Point p{field<float>(actor,0x48),field<float>(actor,0x4c),field<float>(actor,0x50)};
         if(!command100::finite(p)||field<uintptr_t>(holder,8)!=actor)continue;

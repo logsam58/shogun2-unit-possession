@@ -1,4 +1,5 @@
 #pragma once
+#include "../../shogun2-possession-cleanup-v46/src/actor_types152.h"
 #include "fatigue_action.h"
 using NativeFatigueUpdate=void(__thiscall*)(void*);
 using NativeFatigueAction=void(__thiscall*)(void*,int*);
@@ -51,7 +52,7 @@ static void restore_fatigue_grade(uintptr_t actor,const PossessionIdentity& iden
     __try {
         // Restore after F10/focus loss/disable too, if the native object survives.
         if(field<uintptr_t>(field<uintptr_t>(base,0x1bc8180),0x110)==identity.environment&&
-            field<uintptr_t>(actor,0)==base+(identity.mount?0x15e8524:0x15dfec8)&&
+            actor152::kind(base,field<uintptr_t>(actor,0),identity.mount?1:0)&&
             actor==(identity.mount?identity.mount:identity.actor)&&
             field<unsigned>(actor,0x1c8)==(identity.mount?identity.mount_id:identity.actor_id)&&
             field<uintptr_t>(actor,0x214)==identity.unit&&field<unsigned>(identity.unit,4)==identity.unit_id&&

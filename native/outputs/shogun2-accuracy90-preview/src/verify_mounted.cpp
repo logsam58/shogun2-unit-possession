@@ -18,6 +18,8 @@ int main(){try{
     field<uintptr_t>(ptr(h1),8)=man;field<uintptr_t>(ptr(h2),8)=mount;field<uintptr_t>(ptr(h3),8)=extra;
     field<unsigned>(mount,0x6cc)=1;field<uintptr_t>(mount,0x6d0)=reinterpret_cast<uintptr_t>(passengers.data());
     NativeSubject subject;require(native_subject(man,u,v,false,subject)&&subject.actor==mount&&subject.holder==ptr(h2)&&subject.config==ptr(horse_config)&&subject.serial==32,"Exact native horse/passenger identity");
+    for(auto role:{0x15dbd68u,0x15dbfb4u}){field<uintptr_t>(man,0)=base+role;require(native_subject(man,u,v,false,subject)&&subject.actor==mount,"Exact leader/general reciprocal horse ownership");}
+    field<uintptr_t>(man,0)=base+0x15dfec8;
     // Replay the failed live Gen_Taisho category, which the recovered regular
     // cavalry predicate excludes. Reciprocal native mount ownership is valid.
     field<unsigned>(ptr(record),0x1c)=0;

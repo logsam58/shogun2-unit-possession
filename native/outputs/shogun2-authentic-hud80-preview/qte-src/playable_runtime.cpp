@@ -6,6 +6,7 @@
 #include "native_observer.h"
 #include "possession_observation.h"
 #include "native_battle_clock.h"
+#include "battle_epoch151.h"
 #include "qte_session.h"
 #include "qte_presentation93.h"
 #include "qte_presented113.h"
@@ -62,6 +63,7 @@ static volatile LONG conflicts_blocked,foreign_releases_preserved;
 static observation::Registry lifetimes;
 static EncounterAdmission admission;
 static ClockFrame delivery_clock;
+static BattleEpoch151 battle_epoch151;
 static volatile LONG delivery_address,suppressed_prompts;
 static melee60::Submit submit_commitment;
 static melee60::Request commitment;
@@ -119,14 +121,14 @@ static bool refresh_committed_pose(const NativeActor& actor,float* position){
     if(r.get(actor.address,prefix121)){
         memcpy(&table,prefix121.data(),4);memcpy(&serial,prefix121.data()+0x1c8,4);
         memcpy(&unit,prefix121.data()+0x214,4);
-        if(table!=actor_table(engine,actor.kind)||serial!=actor.serial||unit!=actor.unit||
+        if(!actor152::kind(engine,table,actor.kind)||serial!=actor.serial||unit!=actor.unit||
            !r.get(unit+4,id)||id!=actor.unit_serial)return false;
         for(unsigned i=0;i<3;++i){
             memcpy(position+i,prefix121.data()+0x48+i*4,4);
             if(!std::isfinite(position[i]))return false;
         }return true;
     }
-    if(!r.get(actor.address,table)||table!=actor_table(engine,actor.kind)||!r.get(actor.address+0x1c8,serial)||serial!=actor.serial||
+    if(!r.get(actor.address,table)||!actor152::kind(engine,table,actor.kind)||!r.get(actor.address+0x1c8,serial)||serial!=actor.serial||
        !r.get(actor.address+0x214,unit)||unit!=actor.unit||!r.get(unit+4,id)||id!=actor.unit_serial)return false;
     for(unsigned i=0;i<3;++i)if(!r.get(actor.address+0x48+i*4,position[i])||!std::isfinite(position[i]))return false;
     return true;
@@ -168,9 +170,8 @@ static void sample_playback(uint32_t address){
     if(playing&&!playback.playing_wall){playback.playing_wall=now;++playback.revision;admission.started(address,playback.generation);}
 }
 static bool focused(){DWORD pid=0;GetWindowThreadProcessId(GetForegroundWindow(),&pid);return pid==GetCurrentProcessId();}
-static bool clock_frame(uint32_t env,ClockFrame& frame){NativeClock c;
-    if(!battle_clock(reader(),env,engine,c))return false;
-    frame={uint64_t(env)<<32|c.phase,c.tick,wall(),c.step,c.speed};return true;}
+static bool clock_frame(uint32_t env,ClockFrame& frame){
+    return battle_epoch151.sample(reader(),engine,env,wall(),frame);}
 static bool routing(void*,uint32_t unit,bool& value){uint32_t root{},env{},common{},phase{},routing_state{};uint8_t on{};
     auto r=reader();if(!r.get(engine+0x1bc8180,root)||!r.get(root+0x110,env)||!r.get(env+8,common)||
        !r.get(common+0xb4,phase)||!r.get(phase+0x2778,on)||!r.get(unit+0xcec,routing_state))return false;
@@ -212,8 +213,8 @@ static uint32_t fps_camera_actor(uint64_t* lease=nullptr,CameraScope121* scope12
     if(scope_read121||r.get(actor,prefix119)){
         memcpy(&table,prefix119.data(),4);memcpy(&serial,prefix119.data()+0x1c8,4);
         memcpy(&unit,prefix119.data()+0x214,4);alive=prefix119[0xf0];
-        if(table!=engine+0x15dfec8||serial!=p.actor_id||!r.get(unit+4,id)||id!=p.unit_id||alive>1)return 0;
-    }else if(!r.get(actor,table)||table!=engine+0x15dfec8||
+        if(!actor152::human(engine,table)||serial!=p.actor_id||!r.get(unit+4,id)||id!=p.unit_id||alive>1)return 0;
+    }else if(!r.get(actor,table)||!actor152::human(engine,table)||
        !r.get(actor+0x1c8,serial)||serial!=p.actor_id||!r.get(actor+0x214,unit)||!r.get(unit+4,id)||id!=p.unit_id||
        !r.get(actor+0xf0,alive)||alive>1)return 0;
     if(lease)*lease=p.lease_generation;return actor;
@@ -264,7 +265,7 @@ static bool approved(uint32_t address,uint64_t generation){uint64_t lease{};if(!
     if(!verify.get(address+0x80,verdict)||memcmp(&verdict,&copy.verdict,sizeof verdict)||
        !verify.get(address+0x98,matched)||matched!=copy.matched||!verify.get(address+0xb4,fallback)||fallback!=copy.fallback)return false;
     auto r=reader();for(auto identity:{copy.player,copy.enemy}){uint32_t table{},id{},unit{},serial{},link{};uint8_t alive{};
-        if(!r.get(identity.address,table)||table!=actor_table(engine,identity.kind)||!r.get(identity.address+0x1c8,serial)||serial!=identity.serial||
+        if(!r.get(identity.address,table)||!actor152::kind(engine,table,identity.kind)||!r.get(identity.address+0x1c8,serial)||serial!=identity.serial||
            !r.get(identity.address+0x214,unit)||unit!=identity.unit||!r.get(unit+4,id)||id!=identity.unit_serial||
            !r.get(identity.address+0xf0,alive)||alive>1||!r.get(identity.address+0x688,link)||
            (link!=address&&(alive||link)))return false;
@@ -410,6 +411,29 @@ static void publish(){auto data=session->publication(GetCurrentProcessId(),wall(
     publish_commitment();
     transport::publish(publication,data);InterlockedExchange(&pending_address,LONG(session->key().address));
     state->mode=data.occupied?1:0;if(data.error){state->faults=LONG(data.error);InterlockedExchange(&state->stop,1);}}
+// A selected routing encounter uses the retained native pair lifecycle and
+// adapter alignment channel. No visible prompt or QTE admission is created.
+static volatile LONG routing_prepares152,routing_transitions152;
+static uint64_t routed_generation152(uint32_t address){
+    return candidate_witness==address&&lifetimes.matches140(address,candidate_generation)?candidate_generation:0;
+}
+
+static uint32_t routed_prepare152(void*,uint32_t address,const NativeActor& player,const NativeActor& enemy,const NativeVerdict& desired,const NativePlan* plans){
+    uint64_t lease{};auto physical=owned_combat_actor(address,&lease);auto r=reader();NativeActor current,opponent;uint32_t table{},env{};
+    auto generation=routed_generation152(address);
+    if(!owns_coordinator||!generation||!lease||physical!=player.address||
+       !combat_identity(r,physical,engine,current)||!same_actor(current,player)||
+       !combat_identity(r,enemy.address,engine,opponent)||!same_actor(opponent,enemy)||player.side==enemy.side||player.unit==enemy.unit||
+       !r.get(address,table)||!r.get(address+4,env)||!env)return 1;
+    if(plans){admission.removed(address,generation,delivery_clock);InterlockedExchange(&delivery_address,0);retire_authorization(address,generation);}
+    stock_charge_clear140();stock_charge140={address,table,env,generation,lease,generation|(uint64_t(1)<<63),player,false};
+    if(!stock_charge_current140(address,generation)){stock_charge_clear140();return 1;}
+    if(plans)InterlockedIncrement(&routing_transitions152);else InterlockedIncrement(&routing_prepares152);
+    auto prior_scope=stock_charge_scope140,prior_parent=replay_parent;stock_charge_scope140=address;replay_parent=address;uint32_t answer=1;bool completed=false;
+    __try{if(plans){uint32_t stage{};answer=retarget::rebuild(address,desired,plans,retarget_ports,stage,true);}else answer=native_prepare(reinterpret_cast<void*>(address));if(answer&0xff)stock_charge_clear140();else{stock_charge_heartbeat140();if(commitment.serial==stock_charge140.serial)publish_commitment();}completed=true;}
+    __finally{stock_charge_scope140=prior_scope;replay_parent=prior_parent;if(!completed)stock_charge_clear140();}
+    return answer;
+}
 static uint32_t controlled(uint32_t address,uint64_t generation,bool updating){
     drain_removals();
     const bool owned=scoped(address);
@@ -624,6 +648,13 @@ static NativeVerdict* __fastcall select_hook(void* self,void*,NativeVerdict* out
                 contains=selector_contains122(begin,end);
             }
             answer=selection_ports.select(self,output,begin,end,flags,flags2);
+            if(answer&&enabled&&owns_coordinator&&stock_charge_scope140&&stock_charge_target_scope140(stock_charge_scope140)){
+                auto r=reader();auto player=owned_combat_actor(stock_charge_scope140);NativeActor p,e;bool own_route=false,enemy_route=false;
+                uint32_t other=answer->attacker_address==player?answer->defender_address:answer->defender_address==player?answer->attacker_address:0;
+                if(player&&other&&combat_identity(r,player,engine,p)&&combat_identity(r,other,engine,e)&&p.side!=e.side&&p.unit!=e.unit&&routing(nullptr,p.unit,own_route)&&routing(nullptr,e.unit,enemy_route)&&(own_route||enemy_route)){
+                    answer->outcome=5;answer->attacker_address=own_route?e.address:p.address;answer->defender_address=own_route?p.address:e.address;
+                }
+            }
             // Never return null role pointers to native prepare: it immediately
             // dereferences both. A cache miss is a surviving registration that
             // its prepare wrapper rejects before any native clip update.
@@ -804,7 +835,7 @@ static DWORD WINAPI worker(void*){void* targets[10]{};bool hooked=false;HANDLE r
         require(!memcmp(reinterpret_cast<void*>(engine+0x3e1930),release_actor_sig,sizeof release_actor_sig)&&
             !memcmp(reinterpret_cast<void*>(engine+0x3e18f0),release_aux_sig,sizeof release_aux_sig),"Native pair release differs");
         retarget_ports={native_prepare,native_release_actor,reinterpret_cast<retarget::ReleaseAux>(engine+0x3e18f0),engine};
-        session=new Session(reader(),selection_ports.calls(),{nullptr,prepare_port,update_port,routing,facing_ready,retarget_port,effective_pair,retain_selected_pair},engine,{0,5,true},true,true,true,true,true);
+        session=new Session(reader(),selection_ports.calls(),{nullptr,prepare_port,update_port,routing,facing_ready,retarget_port,effective_pair,retain_selected_pair,routed_prepare152},engine,{0,5,true},true,true,true,true,true);
         wchar_t path[MAX_PATH];GetModuleFileNameW(module,path,MAX_PATH);std::wstring folder=path;folder=folder.substr(0,folder.find_last_of(L'\\'));
         log_file.open(folder+L"\\private\\qte-playable79-"+std::to_wstring(GetCurrentProcessId())+L".jsonl",std::ios::app);
         log_file<<std::setprecision(12);
@@ -817,6 +848,7 @@ static DWORD WINAPI worker(void*){void* targets[10]{};bool hooked=false;HANDLE r
         bool previous_left=false,previous_right=false,previous_focus=false;uint64_t next_log=0,logged_serial=0,logged_acquisitions=0,logged_resolutions=0,logged_playback=0;
         PlaybackWatch recorded_playback;
         uint32_t recorded_phase=melee60::Off,logged_phase=melee60::Off;
+        uint64_t recorded_epoch151=0,recorded_restarts151=0,recorded_tick151=0;
         PreciseWait93 input_wait93;precise_input93=input_wait93.precise();double previous_poll93=wall();
         ServiceCadence94 cadence94;uint64_t input_polls94=0,service_runs94=0;
         overlay106::Reader input_surface113;
@@ -834,12 +866,14 @@ static DWORD WINAPI worker(void*){void* targets[10]{};bool hooked=false;HANDLE r
             InterlockedExchange(&player_address,LONG(actor));
             if(actor)InterlockedIncrement(&player_polls);
             if(!InterlockedCompareExchange(&coordinator,1,0)){
-                drain_removals();uint32_t clock_env=uint32_t(last_environment);ClockFrame clock;if(clock_env&&clock_frame(clock_env,clock)){delivery_clock=clock;session->poll_clock(clock);}
+                drain_removals();ClockFrame clock;if(clock_frame(0,clock)){delivery_clock=clock;session->poll_clock(clock);}
                 observation::PossessionPrefix latest93{};
                 if(state->stop||!focus)session->release();
                 else if(possession_snapshot93(latest93)&&(!latest93.ready||latest93.stop||latest93.release||latest93.mode!=2))session->release(CancelReason92::Owner);
                 if(InterlockedExchange(&stale_press93,0))session->release(CancelReason92::Presentation93);
-                publish();recorded_playback=playback;recorded_phase=commitment.phase;InterlockedExchange(&coordinator,0);
+                publish();recorded_playback=playback;recorded_phase=commitment.phase;
+                recorded_epoch151=battle_epoch151.epoch();recorded_restarts151=battle_epoch151.restarts();recorded_tick151=delivery_clock.tick;
+                InterlockedExchange(&coordinator,0);
             }
             }
             transport::Payload data;Snapshot shown;bool show=transport::read(publication,data)&&transport::presentation(data,wall(),shown);
@@ -896,6 +930,7 @@ static DWORD WINAPI worker(void*){void* targets[10]{};bool hooked=false;HANDLE r
                 <<",\"clicked_frame_age_us93\":"<<InterlockedCompareExchange64(&clicked_frame_age_us93,0,0)<<",\"clicked_frame_inside93\":"<<clicked_frame_inside93
                 <<",\"frame_interval_us93\":"<<InterlockedCompareExchange64(&last_frame_us93,0,0)<<",\"max_frame_interval_us93\":"<<InterlockedCompareExchange64(&max_frame_us93,0,0)
                 <<",\"clock105\":1,\"anchor_simulation105\":"<<data.anchor.simulation<<",\"anchor_horizon105\":"<<data.anchor.horizon
+                <<",\"battle_epoch151\":"<<recorded_epoch151<<",\"battle_restarts151\":"<<recorded_restarts151<<",\"native_tick151\":"<<recorded_tick151
                 <<",\"moving_frames105\":"<<moving_frames105<<",\"repeated_frames105\":"<<repeated_frames105<<",\"max_marker_hold_us105\":"<<InterlockedCompareExchange64(&max_marker_hold_us105,0,0)
                 <<",\"clock107\":1,\"unique_frames107\":"<<unique_frames107<<",\"moving_frames107\":"<<moving_frames107<<",\"repeated_frames107\":"<<repeated_frames107<<",\"max_marker_hold_us107\":"<<InterlockedCompareExchange64(&max_marker_hold_us107,0,0)
                 <<",\"canceled92_total\":"<<canceled_total92<<",\"canceled92_reason\":"<<canceled_reason92<<",\"canceled92_serial\":"<<InterlockedCompareExchange64(&canceled_serial92,0,0)
@@ -908,7 +943,7 @@ static DWORD WINAPI worker(void*){void* targets[10]{};bool hooked=false;HANDLE r
                 <<",\"prompt_serial\":"<<(show?shown.serial:0)<<",\"prompt_action\":"<<(show?uint32_t(shown.action):0)
                 <<",\"player\":"<<player_address<<",\"player_polls\":"<<player_polls<<",\"filtered\":"<<foreign_filtered<<",\"clock_rejected\":"<<clock_rejected
                 <<",\"delivery_witness\":"<<delivery_address<<",\"suppressed_prompts\":"<<suppressed_prompts
-                <<",\"contacts_blocked\":"<<contacts_blocked<<",\"preplay_avoidance_blocked\":"<<preplay_avoidance_blocked<<",\"conflicts_blocked\":"<<conflicts_blocked<<",\"foreign_releases_preserved\":"<<foreign_releases_preserved<<",\"unapproved_melee_rejected\":"<<melee_rejected<<",\"native_score_samples\":"<<native_score_samples<<",\"stock_charge_prepares140\":"<<stock_charge_prepares140<<",\"stock_charge_updates140\":"<<stock_charge_updates140
+                <<",\"contacts_blocked\":"<<contacts_blocked<<",\"preplay_avoidance_blocked\":"<<preplay_avoidance_blocked<<",\"conflicts_blocked\":"<<conflicts_blocked<<",\"foreign_releases_preserved\":"<<foreign_releases_preserved<<",\"unapproved_melee_rejected\":"<<melee_rejected<<",\"native_score_samples\":"<<native_score_samples<<",\"stock_charge_prepares140\":"<<stock_charge_prepares140<<",\"stock_charge_updates140\":"<<stock_charge_updates140<<",\"routing_prepares152\":"<<routing_prepares152<<",\"routing_transitions152\":"<<routing_transitions152
                 <<",\"score_capture_rejected\":"<<score_capture_rejected<<",\"effective_score_rejected\":"<<effective_score_rejected
                 <<",\"score_metrics_valid\":"<<metrics_valid<<",\"score_player\":"<<metrics.player<<",\"score_enemy\":"<<metrics.opponent<<",\"score_generation\":"<<metrics.generation
                 <<",\"player_power\":"<<metrics.own<<",\"enemy_power\":"<<metrics.enemy<<",\"player_margin\":"<<metrics.detail.own_margin<<",\"enemy_margin\":"<<metrics.detail.enemy_margin

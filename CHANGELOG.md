@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.28 - 2026-10-21
+
+- Add third person with P, camera distance on the wheel, and middle-mouse orbit while moving.
+- Pick a specific soldier under the mouse cursor at closest RTS zoom, including Generals, officers, flag bearers and musicians with their own equipment.
+- Improve native wall approach/climbing and whole-unit mount/dismount with M.
+- Keep third-person camera position through melee encounters and death; limit first-person combat look around the animated face.
+- Keep possession through broken/shattered morale until death and carry K Hide UI across RTS/possession.
+- Retain unit orders, formation firing, abilities, bow strength, charges and performance/audio guards.
+
+Crashes remain under investigation. [Player notes](docs/releases/v0.28.md) - [Technical details](docs/releases/v0.28-technical.md).
+
 ## v0.27 - 2026-10-21
 
 - Complete the charging checkpoint with the user-accepted Test149 gameplay.

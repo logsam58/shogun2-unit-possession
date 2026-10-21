@@ -117,7 +117,7 @@ int main(){SetUnhandledExceptionFilter(&fault100);try{
     require(close125(state->yaw,3.141592654f)&&combat_focus125.unlocked&&!combat_entry_locked126,"Mutual native facing did not release free-look without a jump");
     mouse_look101(120,40,0,.008f);require(close125(state->yaw,3.141592654f+.3f)&&std::abs(state->pitch+.1f)<.0001f,"Free-look did not resume after the native lock");
     state->yaw=3.141592654f+.5f;state->pitch=.4f;r.phase=melee60::NativeCombat;melee60::publish(melee_channel,r);native_eye(-1.f,0);adjust_eye(cam);
-    require(close125(state->yaw,3.141592654f+.5f)&&std::abs(state->pitch-.4f)<.0001f,"Same QTE reset free-look to authored head turn");
+    deathpose::Eye bounded125{};require(eye_apply152(deathpose::Eye{{4,10,-20,4+std::sin(-1.f),10,-20+std::cos(-1.f)},{0,1,0}},bounded125),"Face-relative eye composition");float expected_y125{},expected_p125{};animationview::angles(bounded125,expected_y125,expected_p125);require(close125(state->yaw,expected_y125)&&std::abs(state->pitch-expected_p125)<.0001f,"QTE failed to follow current animated face with eye offsets");
     r.serial=2;r.opponent=16;r.opponent_position[0]=5;r.opponent_position[2]=0;r.phase=melee60::Facing;
     field<unsigned>(horse,0x1c8)=16;field<float>(horse,0x48)=5;field<float>(horse,0x50)=0;field<unsigned short>(horse,0x64)=49152;
     poses();melee60::publish(melee_channel,r);native_eye(3.141592654f,.1f);adjust_eye(cam);
@@ -125,7 +125,7 @@ int main(){SetUnhandledExceptionFilter(&fault100);try{
     field<unsigned short>(actor,0x64)=16384;poses();native_eye(1.570796327f,0);adjust_eye(cam);
     require(close125(state->yaw,1.570796327f)&&!combat_entry_locked126,"New pair did not unlock on its own native facing");
     state->yaw=-2.f;native_eye();adjust_eye(cam);
-    require(close125(state->yaw,1.570796327f+look104::yaw_limit),"Opponent-centered head-look bound lost");
+    require(close125(state->yaw,0),"A global yaw write moved the eye outside the animated face");
     r.phase=melee60::Off;melee60::publish(melee_channel,r);combat_focus125.reset();combat_pair_reset126();
     // Actual native move wrapper and voice subscriber execute in a private copy
     // of the hash-pinned engine. Planning/audio/event-queue providers are substituted.

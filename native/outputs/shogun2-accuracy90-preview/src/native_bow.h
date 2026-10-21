@@ -1,4 +1,5 @@
 #pragma once
+#include "../../shogun2-possession-cleanup-v46/src/actor_types152.h"
 #include "aim_geometry.h"
 #include "mounted_shot87.h"
 #include "personal_weapon_profile.h"
@@ -80,7 +81,7 @@ static PersonalWeaponKind native_personal_kind(uintptr_t record){
 // Recovered420050 direct branch accepts all native projectile families.
 // Aim sets initial direction; gravity, fuse, collision and effects remain native.
 static bool personal_direct_projectile(uintptr_t record){return native_personal_kind(record)!=PersonalWeaponKind::Unsupported;}
-static uintptr_t bow_record(uintptr_t actor_unit){
+static uintptr_t unit_projectile152(uintptr_t actor_unit){
     if(field<unsigned>(actor_unit,0xf7c)==0)return 0;
     uintptr_t record=reinterpret_cast<uintptr_t>(reinterpret_cast<NativeGet>(base+0x14ad40)(reinterpret_cast<void*>(actor_unit)));
     if(!record)return 0;
@@ -88,6 +89,16 @@ static uintptr_t bow_record(uintptr_t actor_unit){
     // arrow profile; runtime IDs are not inferred from database row numbers.
     if(native_personal_kind(record)==PersonalWeaponKind::Unsupported)return 0;
     return record;
+}
+static uintptr_t bow_record(uintptr_t actor_unit){
+    if(possessed&&actor_unit==unit&&actor152::individual(base,field<uintptr_t>(possessed,0))){
+        auto actions=field<uintptr_t>(possessed,0x23c),root=actions?field<uintptr_t>(actions,0):0;
+        auto definitions=root?field<uintptr_t>(root,0x28):0;
+        if(!definitions||!field<unsigned>(definitions,0xc44))return 0;
+        auto personal=field<uintptr_t>(possessed,0x6cc);
+        if(personal)return native_personal_kind(personal)==PersonalWeaponKind::Unsupported?0:personal;
+    }
+    return unit_projectile152(actor_unit);
 }
 static bool is_bow_projectile(uintptr_t record){return native_personal_kind(record)==PersonalWeaponKind::Bow;}
 #include "bow_input142.h"
@@ -118,7 +129,7 @@ static void manual_bow_apply(const uint32_t* payload,uintptr_t context){
         state->shot_thread=GetCurrentThreadId();
         uintptr_t actor=payload[11],env=field<uintptr_t>(context,0);
         if(!enabled||state->stop||state->release||state->mode!=POSSESSED||actor!=possessed||env!=environment||env!=ticket_environment||!followed(actor,false)){state->shot_error=70;return;}
-        if(field<uintptr_t>(actor,0)!=base+0x15dfec8||field<unsigned char>(actor,0xf0)!=1||field<uintptr_t>(actor,0x214)!=unit
+        if(!actor152::human(base,field<uintptr_t>(actor,0))||field<unsigned char>(actor,0xf0)!=1||field<uintptr_t>(actor,0x214)!=unit
             ||field<unsigned>(actor,0x1c8)!=ticket_actor||field<unsigned>(unit,4)!=ticket_unit){state->shot_error=71;return;}
         // A queued shot must never cancel or replace a native get-up animation.
         if(native_recovery103(actor)){InterlockedExchange(&state->weapon_phase,0);state->aim_pose=0;InterlockedExchange(&state->fire_request,0);++state->shots_canceled;return;}

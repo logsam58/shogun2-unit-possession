@@ -15,6 +15,10 @@ static void* __cdecl cursor_alloc100(unsigned size){require(size==60,"Unexpected
 static void* __fastcall cursor_copy100(void* out,void*,const void* in){memcpy(out,in,60);return out;}
 static void __cdecl cursor_free100(void* block,unsigned size){require(block==native_cursor_copy100&&size==60,"Foreign cursor cleanup");++native_cursor_frees100;}
 static void __fastcall cursor_preview100(void*,void*,uintptr_t){}
+static unsigned ui_restores151;
+static void __fastcall native_ui151(void* root,void*,unsigned hidden,unsigned a,unsigned b,unsigned c){
+    require(hidden==field<unsigned char>(reinterpret_cast<uintptr_t>(root),0xca0)&&a==1&&b==0&&c==1,"Native UI restore lost CURRENT K state/ABI");++ui_restores151;
+}
 static void __fastcall cursor_refresh100(void* cursor,void*,unsigned,unsigned,unsigned){field<uintptr_t>(reinterpret_cast<uintptr_t>(cursor),0x24)=reinterpret_cast<uintptr_t>(native_cursor_hit100);}
 static LRESULT CALLBACK stock_window100(HWND window,UINT message,WPARAM flags,LPARAM point){
     native_messages100.push_back(message);if(message==WM_CANCELMODE)return 0;
@@ -94,6 +98,7 @@ struct NativeFixture100 {
             cursor+=block->SizeOfBlock;
         }
         jump(0x15cb80,reinterpret_cast<void*>(&native_run102));
+        jump(0x10f1060,reinterpret_cast<void*>(&native_ui151)); // Native UI tree is an explicit provider.
         field<float>(base,0x18d1c80+0x5c)=1;field<float>(base,0x18d1ce0+0x5c)=1;
         jump(0x10ac90,reinterpret_cast<void*>(&copy_vector100));jump(0x1cc200,reinterpret_cast<void*>(&context100));jump(0x1d0d40,reinterpret_cast<void*>(&destroy_context100));jump(0x1d10f0,reinterpret_cast<void*>(&destroy_group100));
         jump(0x342930,reinterpret_cast<void*>(&write_group100));jump(0x285990,reinterpret_cast<void*>(&write_point100));jump(0x2859e0,reinterpret_cast<void*>(&write_uint100));jump(0x285a00,reinterpret_cast<void*>(&write_uint100));
@@ -201,6 +206,7 @@ int main(){SetUnhandledExceptionFilter(&fault100);try{
         for(unsigned bone:{0u,1u,2u,5u,6u,7u})require(!memcmp(palette+bone*12,raw+bone*12,48),"Body/arms/weapon altered by self visibility");
     }
     restore_soldier_pose();require(!memcmp(palette,raw,sizeof raw),"Exact previous self palette was not restored on exit");
+    InterlockedExchange(&third_person152,1);skin_ready_hook(fixture.holder.data(),nullptr,result.data());require(!memcmp(palette,raw,sizeof raw),"Third person hid/distorted own full model");InterlockedExchange(&third_person152,0);
     SelfSkin100 cache101{};require(prepare_self_skin100(P::ptr(fixture.holder),P::ptr(result),cache101),"Raw cache snapshot");
     palette[cache101.head*12+7]+=2;palette[cache101.left*12+11]+=3;palette[cache101.right*12+3]-=4;
     float presented101[96];memcpy(presented101,palette,sizeof palette);
@@ -325,11 +331,13 @@ int main(){SetUnhandledExceptionFilter(&fault100);try{
     field<uintptr_t>(interface_controller,4)=interface_crosshair;interface_original_state[0]=0;saved_widget_count=0;
     auto test_camera=P::ptr(fixture.camera);interface_hip_fov=.6f;
     for(unsigned lifecycle=0;lifecycle<3;++lifecycle){
+        field<unsigned char>(P::ptr(fixture.root),0xca0)=lifecycle&1;
         interface_camera=test_camera;interface_active=1;field<float>(test_camera,0x34)=.15f;field<float>(test_camera,0x38)=5000;
         require(interface_clip101.capture(.15f,5000)&&interface_clip101.apply(field<float>(test_camera,0x34)),"Native interface near capture");
         if(lifecycle==1)field<float>(test_camera,0x34)=.07f;
         if(lifecycle==2)field<uintptr_t>(P::ptr(fixture.manager),0x8e0)=test_camera+4;
         interface_restore();
+        require(ui_restores151==lifecycle+1,"Exit did not reapply the current native HUD state");
         require(field<float>(test_camera,0x34)==(lifecycle==0?.15f:lifecycle==1?.07f:.02f),"Interface changed a foreign/stale clip plane or failed exact restoration");
         require(field<float>(test_camera,0x38)==5000,"Near correction changed native far plane");
         field<uintptr_t>(P::ptr(fixture.manager),0x8e0)=test_camera;

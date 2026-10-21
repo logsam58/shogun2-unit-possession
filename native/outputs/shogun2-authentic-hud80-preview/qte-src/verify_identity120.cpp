@@ -43,5 +43,7 @@ int main(){try{
     put(edge,actor_table(engine,Human));put(edge+0xf0,uint8_t(1));compare(edge,true);VirtualFree(pages,0,MEM_RELEASE);
     put(a,actor_table(engine,Human));put(a+0xf0,uint8_t(1));put(a+0x214,u);put(u+4,7u);put(a+0x4c,1.f);calls=0;NativeActor out;
     check(combat_identity(r,a,engine,out)&&calls==2,"Identity exceeds two current reads");
+    for(auto role:{0x15dbd68u,0x15dbfb4u}){put(a,engine+role);reject_prefix=false;check(combat_identity(r,a,engine,out)&&out.kind==Human,"Native leader identity rejected");reject_prefix=true;check(combat_identity(r,a,engine,out)&&out.kind==Human,"Leader slow read identity rejected");}
+    put(a,engine+0x15e65f4u);check(!combat_identity(r,a,engine,out),"Vehicle admitted as soldier");
     std::cout<<"PASS: "<<checks<<" identity/output differential cases, forced fallback, invalid types/life/unit/height and inaccessible page; valid identity reads="<<calls<<".\n";return 0;
 }catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}}

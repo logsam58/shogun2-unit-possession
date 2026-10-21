@@ -87,6 +87,26 @@ int main(){unsigned char* mapped=nullptr;try{
  require(PossessionMeleeCommitment63(&pair104)==63,"Camera pair fixture publish");field<unsigned char>(a,0xa2)=1;state->heartbeat=GetTickCount64();
  require(followed(a,false)&&update(reinterpret_cast<void*>(ptr(cam)),.1f,.5f)&&field<uintptr_t>(ptr(cam),0x188)==a,"Current committed actor lost its camera during non-ground paired motion");
  melee60::Request off104{};PossessionMeleeCommitment63(&off104);field<unsigned char>(a,0xa2)=0;
+ // Test156: followed() accepted routing selection loss, but choice_valid97()
+ // still rejected it inside the ORIGINAL325ca0 roster queries. That returned
+ // false to the manager before a camera matrix could retain the living actor.
+ const unsigned char route156[]={0xb0,0x01,0xc3};memcpy(mapped+0x1821e0,route156,sizeof route156);
+ field<unsigned>(group,0x14)=0;field<unsigned>(u,0xce8)=6;field<unsigned>(u,0xcec)=2;
+ for(unsigned i=0;i<200;++i){state->heartbeat=GetTickCount64();require(followed(a,false),"Routed selection proof failed");
+   require(update(reinterpret_cast<void*>(ptr(cam)),.1f,.5f)&&field<uintptr_t>(ptr(cam),0x188)==a&&field<uintptr_t>(ptr(manager),0x8fc)==a,
+       "ORIGINAL325ca0 still returned false or replaced the routed living soldier");
+   require(count(reinterpret_cast<void*>(v))==0,"Routing override leaked outside camera scope");}
+ field<unsigned>(group,0x14)=1;field<unsigned>(u,0xcec)=0;memcpy(mapped+0x1821e0,routing,sizeof routing);
+ // Test157 executes ORIGINAL325ca0 for every final native soldier class,
+ // with an independent config and posture24 for special roles.
+ std::vector<unsigned char> role_config157(0x100);
+ for(unsigned role157:{0x15dfec8u,0x15dbd68u,0x15dbfb4u,0x15dc590u,0x15dc1a8u,0x15dc39cu,0x15dcf54u,0x15dc978u,0x15dcb6cu,0x15dcd60u}){
+   field<uintptr_t>(a,0)=base+role157;field<uintptr_t>(a,0x20c)=role157==0x15dfec8u?ptr(config):ptr(role_config157);field<unsigned>(a,0x1f0)=24;
+   possession_lease.release();state->heartbeat=GetTickCount64();require(followed(a,true),"Native role camera adoption");state->lease_generation=possession_lease.generation;
+   for(unsigned repeat157=0;repeat157<10;++repeat157){state->heartbeat=GetTickCount64();require(update(reinterpret_cast<void*>(ptr(cam)),.1f,.5f)&&field<uintptr_t>(ptr(cam),0x188)==a&&!memcmp(submitted98,native_pose98,64),"ORIGINAL325ca0 special-role camera failed/changed actor");}
+ }
+ field<uintptr_t>(a,0)=base+0x15dfec8;field<uintptr_t>(a,0x20c)=ptr(config);field<unsigned>(a,0x1f0)=0;
+ possession_lease.release();state->heartbeat=GetTickCount64();require(followed(a,true),"Restore regular role camera baseline");state->lease_generation=possession_lease.generation;
  unsigned guards=0;
  auto denied=[&](){++camera_scope104;require(count(reinterpret_cast<void*>(v))==0,"Invalid ownership keeps original count policy");require(pose(reinterpret_cast<void*>(v),result,17,.5f)==result&&!memcmp(result,cache98,64),"Invalid ownership keeps original cached pose policy");--camera_scope104;++guards;};
  state->release=1;denied();state->release=0;

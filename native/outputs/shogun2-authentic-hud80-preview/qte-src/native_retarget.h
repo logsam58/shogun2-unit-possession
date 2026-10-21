@@ -15,7 +15,7 @@ template<class T>inline T& at(uint32_t object,unsigned offset){return *reinterpr
 // Animation selection is rebuilt by original prepare, not by forcing clip or
 // casualty flags. The native original selector is supplied its cached roles by
 // the caller's replay scope, so this transition does not reroll combat roles.
-inline uint32_t rebuild(uint32_t witness,const NativeVerdict& desired,const NativePlan* plans,const Ports& ports,uint32_t& stage){
+inline uint32_t rebuild(uint32_t witness,const NativeVerdict& desired,const NativePlan* plans,const Ports& ports,uint32_t& stage,bool route152=false){
     stage=1;
     if(!plans||!ports.prepare||!ports.release_actor||!ports.release_aux||!witness)return 1;
     uint32_t prior_state[2]{},prior_clip[2]{},serial[2]{},unit[2]{},table[2]{};
@@ -24,12 +24,15 @@ inline uint32_t rebuild(uint32_t witness,const NativeVerdict& desired,const Nati
            at<uint32_t>(witness,0x48)!=0||at<uint8_t>(witness,0xee)!=0)return 1;
         uint32_t a=at<uint32_t>(witness,0x30),b=at<uint32_t>(witness,0x34);
         if(a==b||!((a==plans[0].actor&&b==plans[1].actor)||(b==plans[0].actor&&a==plans[1].actor)))return 1;
-        if(at<uint32_t>(witness,0x24)!=2||at<uint32_t>(witness,0x84)!=desired.attacker_address||at<uint32_t>(witness,0x88)!=desired.defender_address)return 1;
+        if(at<uint32_t>(witness,0x24)!=2)return 1;
+        auto old_attacker=at<uint32_t>(witness,0x84),old_defender=at<uint32_t>(witness,0x88);
+        if(route152){if(!((old_attacker==a&&old_defender==b)||(old_attacker==b&&old_defender==a)))return 1;}
+        else if(old_attacker!=desired.attacker_address||old_defender!=desired.defender_address)return 1;
         if(!((desired.attacker_address==a&&desired.defender_address==b)||(desired.attacker_address==b&&desired.defender_address==a))||
            (desired.outcome!=0&&desired.outcome!=5))return 1;
         for(unsigned i=0;i<2;++i){auto actor=plans[i].actor;
             table[i]=at<uint32_t>(actor,0);
-            if(table[i]!=actor_table(ports.engine,plans[i].kind)||at<uint8_t>(actor,0xf0)!=1||
+            if(!actor152::kind(ports.engine,table[i],plans[i].kind)||at<uint8_t>(actor,0xf0)!=1||
                at<uint32_t>(actor,0x688)!=witness||at<uint32_t>(actor,0x21c)||plans[i].state>0x100)return 1;
             if(plans[i].kind==Horse){
                 Reader r{[](void*,uint32_t address,void* out,size_t size){SIZE_T n{};return ReadProcessMemory(GetCurrentProcess(),reinterpret_cast<void*>(address),out,size,&n)&&n==size;},nullptr};

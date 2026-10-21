@@ -94,6 +94,10 @@ int main(){void* memory=nullptr;try{
  lifetimes.removed(w140,removed_generation140);auto removed_live140=lifetimes.metrics94().live;
  for(unsigned i=0;i<1000;++i)require(!stock_charge_current140(w140,removed_generation140),"Removed lifetime retained charge bypass");
  require(lifetimes.metrics94().live==removed_live140,"Removed charge recreated a ghost lifetime record");stock_charge_clear140();
+ candidate_witness=w140;candidate_generation=removed_generation140;
+ for(unsigned n152=0;n152<1000;++n152)require(!routed_generation152(w140),"Removed encounter gained automatic routing authority");
+ require(lifetimes.metrics94().live==removed_live140,"Routing lookup created a ghost native lifetime");candidate_witness=0;candidate_generation=0;
+
  require(!stock_charge_target_scope140(w140)&&!stock_charge_scope140,"Native target scope leaked");
  if(charge_read146)UnmapViewOfFile(charge_read146);if(charge_read_map146)CloseHandle(charge_read_map146);charge_read146=nullptr;charge_read_map146=nullptr;
  UnmapViewOfFile(publication146);CloseHandle(publisher146);

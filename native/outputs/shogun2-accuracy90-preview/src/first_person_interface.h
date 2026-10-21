@@ -62,6 +62,12 @@ static void interface_restore(){
             for(unsigned i=0;i<saved_widget_count;++i)if(saved_widget_live(saved_widgets[i]))
                 original_ui_visible(reinterpret_cast<void*>(saved_widgets[i].object),saved_widgets[i].visible);
             if(interface_original_state[0])ui_state(interface_crosshair,interface_original_state);
+            // K may have changed during possession. Reapply the CURRENT stock
+            // Hide UI state after restoring widgets; a saved entry snapshot
+            // must not undo it. Same four arguments as native1210a10.
+            auto root151=field<uintptr_t>(base,0x1bc8180);
+            using NativeUI151=void(__thiscall*)(void*,unsigned,unsigned,unsigned,unsigned);
+            reinterpret_cast<NativeUI151>(base+0x10f1060)(reinterpret_cast<void*>(root151),field<unsigned char>(root151,0xca0),1,0,1);
             uintptr_t manager=field<uintptr_t>(interface_environment,0x281fc);
             if(manager&&field<uintptr_t>(manager,0x8e0)==interface_camera&&field<uintptr_t>(interface_camera,0)==base+0x15d22e8){
                 interface_clip101.restore(field<float>(interface_camera,0x34),true);
@@ -79,7 +85,7 @@ static void interface_restore(){
 static void __fastcall ui_visible_hook(void* widget,void*,unsigned visible){
     if(interface_active&&!own_ui_call&&enabled&&!state->stop&&!state->release&&state->mode==POSSESSED){
         uintptr_t p=reinterpret_cast<uintptr_t>(widget);
-        for(unsigned i=0;i<saved_widget_count;++i)if(saved_widgets[i].object==p){visible=saved_widgets[i].desired;break;}
+        for(unsigned i=0;i<saved_widget_count;++i)if(saved_widgets[i].object==p){saved_widgets[i].visible=visible;visible=saved_widgets[i].desired;break;}
     }
     original_ui_visible(widget,visible);
 }
@@ -160,9 +166,7 @@ static void interface_update(uintptr_t camera){
         }
         // During Q the stock context cursor stays at the centered aim point.
         unsigned crosshair=0;
-        auto kind=native_personal_kind(bow_record(unit));
         // Test90 HUD owns the four movable firearm bars and projectile drop dashes.
-        (void)kind;
         for(unsigned i=0;i<saved_widget_count;++i)if(saved_widgets[i].object==interface_crosshair){
             saved_widgets[i].desired=crosshair;own_ui_call=1;
             original_ui_visible(reinterpret_cast<void*>(interface_crosshair),crosshair);own_ui_call=0;break;
@@ -173,7 +177,7 @@ static void interface_update(uintptr_t camera){
         ViewRay view{};float up[3];
         bool valid_view=camera_ray(reinterpret_cast<float*>(camera+8),reinterpret_cast<float*>(camera+0x14),view);
         if(valid_view){
-            if(dead_view()&&death_model_valid){memcpy(up,death_up,sizeof up);valid_view=deathpose::normalize(up)&&std::abs(deathpose::dot(up,view.direction))<.01f;}
+            if(dead_view()&&death_model_valid&&!death_third_person156){memcpy(up,death_up,sizeof up);valid_view=deathpose::normalize(up)&&std::abs(deathpose::dot(up,view.direction))<.01f;}
             else if(animation_view_active78){memcpy(up,animation_view_up78,sizeof up);valid_view=deathpose::normalize(up)&&std::abs(deathpose::dot(up,view.direction))<.01f;}
             else valid_view=level_camera_up(view,up);
         }

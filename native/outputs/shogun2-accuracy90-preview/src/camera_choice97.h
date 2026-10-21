@@ -16,17 +16,23 @@ static bool choice_valid97(uintptr_t view,const Choice97& c){
     if(field<uintptr_t>(c.environment,0x281fc)!=c.manager||field<uintptr_t>(c.manager,0x8f8)!=view)return false;
     auto selected=field<uintptr_t>(c.environment,0x2826c),owner=selected?field<uintptr_t>(selected,0x4a8):0;
     if(!owner)return false;auto group=owner+0xb0,members=field<uintptr_t>(group,0x18);
-    if(field<uintptr_t>(group,0)!=base+0x15c4da0||field<unsigned>(group,0x14)!=1||field<unsigned>(group,0x10)<1||!members||field<uintptr_t>(members,0)!=c.unit)return false;
+    if(field<uintptr_t>(group,0)!=base+0x15c4da0||field<unsigned>(group,0x14)>field<unsigned>(group,0x10))return false;
+    bool retained156=possession_lease.active&&c.actor==possessed&&c.holder==possession_lease.identity.holder;
+    // The camera must use the SAME routing-selection policy as followed().
+    // Acquisition and nonempty foreign selections still require the native unit.
+    if(!(retained156&&field<unsigned>(group,0x14)==0)){
+        if(field<unsigned>(group,0x14)!=1||!members||field<uintptr_t>(members,0)!=c.unit)return false;
+    }
     unsigned n=field<unsigned>(view,0x18);auto array=field<uintptr_t>(view,0x1c);if(!array||!n||n>1000)return false;
     bool found=false;for(unsigned i=0;i<n;++i)if(field<uintptr_t>(array,i*4)==c.holder){found=true;break;}
     if(!found||field<uintptr_t>(c.actor,0x28)!=c.environment||field<uintptr_t>(c.holder,8)!=c.actor||field<unsigned>(c.actor,0x1c8)!=c.serial||field<unsigned>(c.actor,0x218)!=c.index)return false;
     bool committed=false;
-    if(possession_lease.active&&c.actor==possessed&&c.holder==possession_lease.identity.holder){
+    if(retained156){
         if(!followed(possessed,false,false))return false;
         melee60::Request request{};committed=melee_request(request)||melee_handoff78.matches(locomotion_actor(),possession_lease.generation,
             possession_lease.identity.mount?possession_lease.identity.mount_id:possession_lease.identity.actor_id,possession_lease.identity.unit_id);
     }
-    NativeSubject motion;return native_subject(c.actor,c.unit,view,committed,motion)&&!native_routing(c.unit);
+    NativeSubject motion;return native_subject(c.actor,c.unit,view,committed,motion);
 }
 static Choice97 owned_choice97(uintptr_t view){
     if(!camera_scope104||!possessed||!possession_lease.active||view!=possession_lease.identity.view||!followed(possessed,false,false)||dead_view())return {};
@@ -37,10 +43,14 @@ using CameraUpdate104=bool(__thiscall*)(void*,float,float);
 using ViewHolder104=uintptr_t(__thiscall*)(void*,unsigned);
 static CameraUpdate104 original_camera_update104;
 static ViewHolder104 original_view_holder104;
+static bool death_camera_update156(uintptr_t);
 static bool __fastcall camera_update104(void* camera,void*,float time,float interpolation){
     bool owned=false;
-    __try{owned=state&&state->mode==POSSESSED&&!dead_view()&&camera_owned(reinterpret_cast<uintptr_t>(camera));}__except(EXCEPTION_EXECUTE_HANDLER){}
+    __try{owned=state&&state->mode==POSSESSED&&camera_owned(reinterpret_cast<uintptr_t>(camera));}__except(EXCEPTION_EXECUTE_HANDLER){}
     if(!owned)return original_camera_update104(camera,time,interpolation);
+    // A proved death consumes only captured numeric poses. Calling the native
+    // roster selector here can return false or move to another living soldier.
+    if(dead_view())return death_camera_update156(reinterpret_cast<uintptr_t>(camera));
     ++camera_scope104;InterlockedIncrement(&camera_updates104);
     __try{return original_camera_update104(camera,time,interpolation);}
     __finally{--camera_scope104;}

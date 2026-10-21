@@ -1,3 +1,41 @@
+# v0.28 release promotion
+
+v0.28 promotes accepted Test150–157 selection/roles, native camera/orbit/death/routing, wall navigation and mount continuity. Exact Test157 native/outputs closure retained; metadata/loader/installer predecessor handling only changes for release. See docs/releases/v0.28-technical.md and native shared actor_types152.h.
+
+# Test157 development candidate
+
+Test157 expands the shared actor_types152 soldier-role policy and actual-config exceptions in native_subject/native_wall/native_air/dismount/native_bow. Both fps_camera_actor read paths use the same role policy. New adapter/QTE verify_roles157 fixtures plus exact-cursor and original-native-camera role cases cover these changes. Details: docs/development/Test157.md.
+
+# Test156 camera sources
+
+view152.h and adapter.cpp retain manual third-person direction across QTEs; third_person152.h and melee_control.h retain third-person death mode/distance and omit FPS eyelids. camera_choice97.h shares the proved routing-selection policy and uses the numeric death update; first_person_interface.h retains the correct third-person up vector without an unused unit lookup. verify_view156.cpp and expanded verify_native_camera98.cpp cover production/native paths. Accepted155 wall/dismount code is byte-exact. Evidence: artifacts/Test156, docs/development/Test156.md.
+
+# Test155 source
+
+climb_control97.h uses original397e40/397e80 portal navigation locations instead of351e40 bearing poses, including the correct navigation surface on exit. dismount143.h reads native task slotsba0/ba4 with countba8. Expanded siege/dismount fixtures execute native cached-route validation and original task registration. Exact154 orbit, HUD/QTE/charge/orders/AI/movement retained.
+
+# Test153 source
+
+third_person152.h rebuilds ordinary pitched look basis before third-person validation; QTE native roll retained. climb_control97.h uses original351e40/3ba540/3df290 native path approach for F rather than a derived heading/direct bind. unit_detach_combat130.h scopes formation-task yielding to that live actor/current goal; native_charge148.h excludes pending wall approach. verify_view153.cpp runs original camera matrix/refresh; verify_siege97.cpp adds original native frame/parameters/path-order tests and retains W/S/crest/landing coverage. Exact Test152 QTE/shared/HUD and accepted leaders/equipment/eye/routing retained.
+
+# Test152 source
+
+actor_types152.h admits only native general351740/officer353d50 subtypes beyond ordinary humans; each affected camera/AI/combat/weapon identity boundary uses it. native_bow.h follows native391b50 personal action/projectile data. climb_control97.h aligns using original3936f0 before original3c1ba0. view152.h and third_person152.h implement bounded animated eyes and local P/wheel camera controls, native world obstruction and full model presentation. Native bridge/Session routing transitions reuse the selected pair and native preparation/retargeting, without QTE admission. Existing151 epoch/K/cursor and normal149 charging mechanics are retained. See docs/development/Test152.md.
+
+# Test151 source additions
+
+Adapter camera_pick150.h now reads originalbd4d70 normalized native mouse coordinates and applies335260's transform before original13660f0 unprojection; entry remains minimum-zoom/current selected-unit scoped. hud_visibility148.h reads native root+ca0, native_keyboard84.h leaves K native, and first_person_interface.h reapplies current10f1060 state on exit. Existing keyboard, F9 and interface lifecycle fixtures exercise these changes.
+
+QTE battle_epoch151.h assigns process-local clock lifetime identities from fresh current native root/env/common/phase snapshots and confirms model tick resets. playable_runtime.cpp uses it for callbacks and read-only polls, with bounded numeric logging only. verify_battle_epoch151.cpp reproduces the saved pointer-key failure and tests actual Session admission across100 reused-address battles; qte_timeline.h and native combat/charge guards remain unchanged. Offline dump/index evidence is local in artifacts/Test151, excluded from publication.
+
+# Test150 F9 entry
+
+Test150 adds precise F9 selection at the stock RTS camera minimum zoom. It performs one native sorted center-ray query at entry; high camera retains the exact prior selection policy. The ray uses original342a40 render-service/virtual18 context and13660f0 unprojection, including cached matrices. Original29a450/a0b60 reads the live minimum, matching293cd0 camera+180 clamp. Original158970 mask30b includes actors and world occluders. The first physical hit wins; an eligible current selected-unit human or proved reciprocal horse maps to the exact existing holder. Foreign/dead/unsupported hits and missing/invalid context retain prior selection. Existing selection/identity/thread/heartbeat/roster guards and native camera constructor remain. No input/cursor/selection order mutation, shared ABI, hook, recurring crowd scan or new asset.
+
+The focused production entry fixture passes 1000 repeated calls, native getter/unprojection/query dispatch, original high view, live minimum changes, world occluders, dead/foreign hits, bounded results, cached matrices/nonfinite input, reciprocal horse and broken links. Geometry/render device/sorting/allocation/camera construction are explicit providers. Negative control fails without the hit preference. Twelve indexed exports are instruction-byte verified. The first private fixture had swapped actor-grid provider argument labels and lacked a valid custom camera aspect; fixed only providers, failures retained. A preliminary pose-based ray was replaced before source freeze by the original render unprojection path.
+
+Exact accepted Test149 charge/K/order/movement/weapon/ability source is retained except the F9 entry call/preference. Exact HUD148 and QTE146 source/binaries remain. v0.27/433815b release/tag/main and six published assets stay unchanged. Full fresh adapter89/loader2/full installer exact149+published027+allprior/seven interruptions/repeatbackup/Python7 required. Test150 is development0.27 and not accepted/published. Install only under actual closed/armed guard with exact149 rollback; then fresh READY/menu or IN BATTLE and exact150 loaded hashes plus actual crash/input/memory/CPU/GPU recording before formal play. No automatic launch or extra profiling. Enemy acquisition/POV/Ultra/other crashes remain open.
+
 # v0.27 / charging checkpoint complete
 
 v0.27 retains Test149 adapter and native_charge148.h via native_charge146.h, proximity147.h, native keyboard K continuity, exact HUD148 and QTE146. Version/build/embedded metadata and installer predecessor catalog/tests promote accepted gameplay to a regular release. See docs/releases/v0.27-technical.md.

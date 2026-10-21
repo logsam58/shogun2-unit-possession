@@ -3,7 +3,8 @@
 static uintptr_t base;
 static volatile LONG enabled;
 enum {POSSESSED=2};
-struct TestStatus {LONG mode{},stop{},release{};};
+struct TestStatus {LONG mode{},stop{},release{};unsigned lease_generation{1};};
+static bool charge_input_locked146(){return false;}
 static TestStatus status;
 static TestStatus* state=&status;
 #include "native_keyboard84.h"
@@ -13,8 +14,10 @@ static bool valid=true;
 static unsigned reads;
 static bool __cdecl device_read(){++reads;if(valid)memcpy(reinterpret_cast<void*>(base+0x1b30f58),physical.data(),256);return valid;}
 int main(){void* allocation=nullptr;try{
-    allocation=VirtualAlloc(nullptr,0x1b32000,MEM_RESERVE|MEM_COMMIT,PAGE_READWRITE);
+    allocation=VirtualAlloc(nullptr,0x1bd0000,MEM_RESERVE|MEM_COMMIT,PAGE_READWRITE);
     require(allocation!=nullptr,"Keyboard fixture allocate");base=reinterpret_cast<uintptr_t>(allocation);
+    std::array<unsigned char,0xe00> root151{};
+    *reinterpret_cast<uintptr_t*>(base+0x1bc8180)=reinterpret_cast<uintptr_t>(root151.data());
     auto code=reinterpret_cast<unsigned char*>(base+0xbd75f0);
     // Exact native stolen prologue, state-copy instructions and relocated
     // operands. Only its device COM read/reacquire tail is a fixture substitute.
@@ -36,19 +39,27 @@ int main(){void* allocation=nullptr;try{
     physical[2]=0x80;physical[0x1d]=0x80;physical[0x21]=0x80;
     require(poll()&&current[2]==0x80&&current[0x1d]==0x80&&current[0x21]==0x80&&keyboard_blocked84==0,"RTS control-group and Ctrl remain native");
     enabled=1;status.mode=POSSESSED;
+    root151[0xca0]=1; // Result of stock Hide UI, including an already-hidden entry.
     physical[0x25]=0x80;require(poll(),"Native K poll");bool hidden148=false;
     require(hudvisibility148::read(hud_visibility_shared148,GetCurrentProcessId(),hidden148)&&hidden148&&current[0x25]==0x80&&previous[0x25]==0,"K did not hide HUD while preserving native edge");
     for(unsigned i=0;i<100;++i)require(poll()&&hud_visibility_shared148->changes==1&&current[0x25]==0x80&&previous[0x25]==0x80,"Held K repeated or changed native input");
-    physical[0x25]=0;require(poll(),"K release");physical[0x25]=0x80;require(poll(),"K show poll");
+    physical[0x25]=0;require(poll(),"K release");root151[0xca0]=0;physical[0x25]=0x80;require(poll(),"K show poll");
     require(hudvisibility148::read(hud_visibility_shared148,GetCurrentProcessId(),hidden148)&&!hidden148&&hud_visibility_shared148->changes==2,"Second K did not restore HUD");
     physical[0x25]=0;require(poll(),"K final release");
-    status.mode=0;physical[0x25]=0x80;require(poll(),"RTS K hide poll");
+    status.mode=0;root151[0xca0]=1;physical[0x25]=0x80;require(poll(),"RTS K hide poll");
     require(hudvisibility148::read(hud_visibility_shared148,GetCurrentProcessId(),hidden148)&&hidden148&&hud_visibility_shared148->changes==3&&current[0x25]==0x80&&previous[0x25]==0,"RTS K did not preserve native edge and hide preference");
     status.mode=POSSESSED;require(poll()&&hud_visibility_shared148->hidden&&hud_visibility_shared148->changes==3,"RTS-to-FPS lost preference or toggled held K twice");
     physical[0x25]=0;require(poll(),"FPS K release after RTS entry");
-    status.mode=0;physical[0x25]=0x80;require(poll()&&!hud_visibility_shared148->hidden&&hud_visibility_shared148->changes==4,"RTS K show did not carry into FPS");
+    status.mode=0;root151[0xca0]=0;physical[0x25]=0x80;require(poll()&&!hud_visibility_shared148->hidden&&hud_visibility_shared148->changes==4,"RTS K show did not carry into FPS");
     status.mode=POSSESSED;require(poll()&&!hud_visibility_shared148->hidden&&hud_visibility_shared148->changes==4,"Second entry reset visibility or repeated K");
     physical[0x25]=0;require(poll(),"Carry-over K release");
+    // A K edge alone must not invent a second toggle if stock UI rejects it.
+    physical[0x25]=0x80;require(poll()&&!hud_visibility_shared148->hidden&&hud_visibility_shared148->changes==4,"Private toggle drifted from native state");
+    root151[0xca0]=1;require(poll()&&hud_visibility_shared148->hidden,"Native hide without a K edge was ignored");
+    root151[0xca0]=0;require(poll()&&!hud_visibility_shared148->hidden,"Native show without a K edge was ignored");physical[0x25]=0;
+    physical[0x19]=0x80;require(poll()&&!current[0x19]&&!previous[0x19]&&view_input152.toggles==1,"P edge not captured by actual poll hook");
+    for(unsigned repeat152=0;repeat152<100;++repeat152)require(poll()&&view_input152.toggles==1,"Held P repeated in native poll");
+    status.mode=0;require(poll()&&!current[0x19],"Held P leaked into RTS");physical[0x19]=0;require(poll(),"P release");physical[0x19]=0x80;require(poll()&&current[0x19]==0x80,"Fresh RTS P was consumed");physical[0x19]=0;require(poll(),"RTS P release");status.mode=POSSESSED;
     for(unsigned i=0;i<11;++i)physical[keyboard84::scan(i)]=0x80;
     physical[0x11]=0x80;physical[0x2a]=0x80;physical[0x44]=0x80; // W, Shift, F10
     equipment81::Edges edges;

@@ -1,4 +1,5 @@
 #pragma once
+#include "../../shogun2-possession-cleanup-v46/src/actor_types152.h"
 #include "native_wall97.h"
 #include "native_air99.h"
 // Proven by paused RTS/FPS snapshots and native motion capture: human+210 is
@@ -23,11 +24,17 @@ static bool native_mounted_jump140(uintptr_t actor){
 }
 static bool native_subject(uintptr_t rider,uintptr_t actor_unit,uintptr_t view,bool committed,NativeSubject& subject){
     subject={};
-    if(!rider||!actor_unit||!view||field<uintptr_t>(rider,0)!=base+0x15dfec8||
+    if(!rider||!actor_unit||!view||!actor152::human(base,field<uintptr_t>(rider,0))||
        field<uintptr_t>(rider,0x214)!=actor_unit||field<unsigned char>(rider,0xf0)!=1)return false;
     auto config=field<uintptr_t>(rider,0x20c),movement=field<uintptr_t>(actor_unit,0xf9c);
     if(!config||!movement)return false;
-    if(config==movement)return root_motion_subject(rider,committed)||wall_subject97(rider)||native_airborne_subject99(rider);
+    if(!field<uintptr_t>(rider,0x210)){
+        if(config!=movement&&!actor152::individual(base,field<uintptr_t>(rider,0)))return false;
+        // Native3e4850 handles postures through0x5c. Special soldiers use the
+        // same root/attachment/recovery ownership as regular soldiers; their
+        // independent config is not a reason to reject native posture>=18.
+        return root_motion_subject(rider,committed)||wall_subject97(rider)||native_airborne_subject99(rider);
+    }
     if(field<uintptr_t>(rider,0x18))return false;
     auto record=field<uintptr_t>(actor_unit,0x2c);
     // RVA180440's category==1 predicate applies to ordinary cavalry only.
@@ -51,9 +58,9 @@ static bool native_subject(uintptr_t rider,uintptr_t actor_unit,uintptr_t view,b
     for(unsigned i=0;i<count;++i){
         auto h=field<uintptr_t>(array,i*4),a=h?field<uintptr_t>(h,8):0;
         if(a==mount){holder=h;++memberships;}
-        if(a&&field<uintptr_t>(a,0)==base+0x15dfec8&&field<uintptr_t>(a,0x210)==mount&&
+        if(a&&actor152::human(base,field<uintptr_t>(a,0))&&field<uintptr_t>(a,0x210)==mount&&
            field<unsigned char>(a,0xf0)==1)++owners;
     }
     if(memberships!=1||owners!=1)return false;
-    subject={mount,holder,movement,field<uint32_t>(mount,0x1c8)};return true;
+    subject={mount,holder,field<uintptr_t>(mount,0x20c),field<uint32_t>(mount,0x1c8)};return true;
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include "native_unit_context.h"
+#include "../../shogun2-possession-cleanup-v46/src/actor_types152.h"
 namespace qte { namespace observation {
 struct ActorSnapshot {
     uint32_t valid{},address{},serial{},unit{},unit_serial{},side{},alive{},witness{},state{},mount{};
@@ -13,7 +14,7 @@ struct AnimationSnapshot {
 inline bool actor_snapshot(const Reader& reader,uint32_t actor,uint32_t engine,ActorSnapshot& out){
     if(!actor||actor>UINT32_MAX-0x700)return false;
     ActorSnapshot next;next.address=actor;uint32_t vtable{};uint8_t alive{};
-    if(!reader.get(actor,vtable)||vtable!=engine+0x15dfec8||
+    if(!reader.get(actor,vtable)||!actor152::human(engine,vtable)||
        !reader.get(actor+0x1c8,next.serial)||!reader.get(actor+0x214,next.unit)||
        !next.unit||next.unit>UINT32_MAX-8||!reader.get(next.unit+4,next.unit_serial)||
        !reader.get(actor+0x44,next.side)||!reader.get(actor+0xf0,alive)||alive>1||

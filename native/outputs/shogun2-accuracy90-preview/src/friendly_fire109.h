@@ -1,4 +1,5 @@
 #pragma once
+#include "../../shogun2-possession-cleanup-v46/src/actor_types152.h"
 #include "../../shogun2-possession-cleanup-v46/src/friendly_fire_protocol109.h"
 #include <array>
 namespace friendly109 {
@@ -34,7 +35,7 @@ static bool friendly_owned109(PossessionIdentity& out){
        field<uintptr_t>(id.environment,0x281fc)!=id.manager||field<uintptr_t>(id.manager,0x8e0)!=id.camera||
        field<uintptr_t>(id.camera,0)!=base+0x15d22e8||field<uintptr_t>(id.camera,0x180)!=id.manager||
        field<uintptr_t>(id.camera,0x188)!=id.actor||field<uintptr_t>(id.manager,0x8fc)!=id.actor||
-       field<uintptr_t>(id.camera,0x184)!=id.view||field<uintptr_t>(id.actor,0)!=base+0x15dfec8||
+       field<uintptr_t>(id.camera,0x184)!=id.view||!actor152::human(base,field<uintptr_t>(id.actor,0))||
        field<unsigned char>(id.actor,0xf0)!=1||field<unsigned>(id.actor,0x1c8)!=id.actor_id||
        field<uintptr_t>(id.actor,0x214)!=id.unit||field<unsigned>(id.unit,4)!=id.unit_id||
        field<uintptr_t>(id.actor,0x20c)!=id.config||field<uintptr_t>(id.actor,0x28)!=id.environment||
@@ -82,7 +83,7 @@ static bool friendly_candidate109(uintptr_t victim,uintptr_t projectile,friendly
     if(!found)return false;PossessionIdentity current;
     if(!friendly_owned109(current)||tag.environment!=current.environment||tag.actor!=current.actor_id||tag.unit!=current.unit_id||
        victim==current.actor||!victim||field<unsigned char>(victim,0xf0)!=1||field<uintptr_t>(victim,0x28)!=current.environment)return false;
-    auto table=field<uintptr_t>(victim,0);if(table!=base+0x15dfec8&&table!=base+0x15e8524)return false;
+    auto table=field<uintptr_t>(victim,0);if(!actor152::human(base,table)&&table!=base+0x15e8524)return false;
     auto own_side=field<uintptr_t>(current.actor,0x44),other_side=field<uintptr_t>(victim,0x44);
     if(!own_side||!other_side)return false;
     // Retail combat's433b80 compares side+10 for battle-team membership;

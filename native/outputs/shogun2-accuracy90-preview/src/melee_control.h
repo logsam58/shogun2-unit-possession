@@ -11,6 +11,7 @@ static float melee_handoff_root78[3];
 static melee60::Channel melee_channel;
 static __declspec(align(8)) volatile LONG64 death_started;
 static volatile LONG death_return_pending;
+static bool death_third_person156;
 static HWND eyelid_top,eyelid_bottom;
 static overlay106::Publisher death_pixels106;
 static float death_eye[6];static bool death_eye_valid;
@@ -24,7 +25,7 @@ static bool read_model_eye(const ModelEyeChannel& channel,ModelEye& value){for(u
 static bool leased_model_eye(const ModelEye& value){return possession_lease.active&&value.lease==possession_lease.generation&&value.actor==possession_lease.identity.actor_id&&value.unit==possession_lease.identity.unit_id;}
 static bool dead_view(){return InterlockedCompareExchange64(&death_started,0,0)!=0;}
 static uint64_t death_elapsed(){auto start=uint64_t(InterlockedCompareExchange64(&death_started,0,0));return start?GetTickCount64()-start:0;}
-static void reset_death_view(){InterlockedExchange64(&death_started,0);InterlockedExchange(&death_return_pending,0);death_eye_valid=false;last_owned_eye_valid=false;death_model_valid=false;animation_view_active78=false;melee_handoff78.reset();melee_opponent_motion78.reset();}
+static void reset_death_view(){InterlockedExchange64(&death_started,0);InterlockedExchange(&death_return_pending,0);death_third_person156=false;death_eye_valid=false;last_owned_eye_valid=false;death_model_valid=false;animation_view_active78=false;melee_handoff78.reset();melee_opponent_motion78.reset();}
 static void remember_owned_eye(uintptr_t camera){
     float eye[6];bool valid=camera!=0;
     if(camera)for(unsigned i=0;i<6;++i){eye[i]=*reinterpret_cast<float*>(camera+8+i*4);valid=valid&&std::isfinite(eye[i]);}
@@ -42,6 +43,7 @@ static void update_death_model_view(){
 }
 static void begin_death_view(){
     if(!InterlockedCompareExchange64(&death_started,LONG64(GetTickCount64()),0)){
+        death_third_person156=third_person152!=0;
         if(!last_owned_eye_valid)remember_owned_eye(possession_lease.identity.camera);
         death_eye_valid=last_owned_eye_valid;if(death_eye_valid)memcpy(death_eye,last_owned_eye,sizeof death_eye);
         ModelEye sample;bool native=read_model_eye(native_eye_channel78,sample)&&leased_model_eye(sample)&&GetTickCount64()-sample.tick<=500;
@@ -82,7 +84,7 @@ static LRESULT CALLBACK eyelid_proc(HWND window,UINT message,WPARAM w,LPARAM l){
     return DefWindowProcW(window,message,w,l);
 }
 static void update_eyelids(bool focused){
-    if(!dead_view()||!focused||!input_window||IsIconic(input_window)||state->release||state->stop){
+    if(!dead_view()||death_third_person156||!focused||!input_window||IsIconic(input_window)||state->release||state->stop){
         death_pixels106.hide();
         if(eyelid_top)ShowWindow(eyelid_top,SW_HIDE);if(eyelid_bottom)ShowWindow(eyelid_bottom,SW_HIDE);return;
     }

@@ -1,4 +1,5 @@
 #pragma once
+#include "../../shogun2-possession-cleanup-v46/src/actor_types152.h"
 // Native primary SQUAD membership is actor+3b4, separate from unit+214.
 // Use native removal/insertion; never alter unit ownership, physical unit
 // roster, secondary mount/passenger groups (+3b8), camera or actor serials.
@@ -63,7 +64,7 @@ static bool unit_member130(uintptr_t native_unit,uintptr_t actor){
     for(unsigned off:{0x384u,0x2bcu}){
         unsigned n=field<unsigned>(native_unit,off);auto a=field<uintptr_t>(native_unit,off+4);
         for(unsigned i=0;i<n;++i){auto p=field<uintptr_t>(a,i*4);
-            if(p&&field<uintptr_t>(p,0)==base+0x15dfec8&&field<uintptr_t>(p,0x210)==actor)return true;}
+            if(p&&actor152::human(base,field<uintptr_t>(p,0))&&field<uintptr_t>(p,0x210)==actor)return true;}
     }
     return false;
 }
