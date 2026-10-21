@@ -55,10 +55,15 @@
     "reason": "Optional unpublished historical payload archive is excluded; current tests do not need it"
   },
   "live": {
-    "status": "not performed",
-    "installed": false,
-    "game_launched": false,
-    "active_recorder_changed": false
+    "status": "User-reported successful completed battle",
+    "installed": true,
+    "user_accepted": true,
+    "scope": "One reported battle; no universal feature/unit/map coverage inferred",
+    "formal_preplay_gate_completed": false,
+    "retrospective_recorded_loader_adapter_QTE_HUD_hashes_match": true,
+    "ordinary_capture_confirmed_in_existing_metadata": true,
+    "new_trace_started": false,
+    "accepted157_rollback_preserved": true
   },
   "publication": {
     "status": "not authorized",

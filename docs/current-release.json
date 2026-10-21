@@ -10,10 +10,13 @@
     "branch": "public-release",
     "candidate": 158,
     "format": "source/local-resource-kit",
-    "installed": false,
-    "live_accepted": false,
+    "installed": true,
+    "live_accepted": true,
     "pushed": false,
-    "published": false
+    "published": false,
+    "acceptance_scope": "User reported one completed battle with everything working.",
+    "formal_preplay_gate_completed": false,
+    "recorded_component_hashes_match": true
   },
   "owner_decisions": {
     "first_party_license": "MIT",
@@ -25,7 +28,7 @@
     "Ultra multi-army slowdown",
     "some first-person clipping",
     "isolated enemy acquisition",
-    "candidate live validation",
-    "permission for resource-containing public binaries"
+    "permission for resource-containing public binaries",
+    "Formal native-hook/preplay capture gate not completed for accepted Test158 battle; future testing needs fresh cue."
   ]
 }

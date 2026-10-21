@@ -24,10 +24,10 @@ Independent resource runs produced 32 byte-identical prepared files. This is a r
 
 ## Separate gates and limitations
 
-- [ ] Candidate live validation: not performed; fresh authorization and loaded hashes/actual recording required before formal play. This does not block offline source-kit preparation.
+- [ ] Full formal live gate: not completed before play. The owner subsequently accepted Test158 after one completed battle; existing recorder inventory matched all four component hashes and capture metadata. This is user acceptance with retrospective evidence, not a formal native-hook gate. Future testing needs a fresh cue.
 - [ ] Owner approval to push/publish/change visibility: not yet granted; nothing is pushed or released by this task.
 - [ ] Permission for public binaries containing game artwork/fonts/voice: unresolved; those binaries are excluded. The owner already chose the supported source/local-resource route, so no additional format decision is pending.
 
 Crashes/crowd slowdown/POV remain open. Native provider boundaries, unknown races and incomplete historical sampler re-capture inputs remain documented limits. Formatting canonical records is not fresh decoding. Process-kill recovery is not a physical power-loss guarantee. Normal Windows path-length limits remain.
 
-Owner decisions already received: full implementation on a separate branch, CLOSED for repository work, MIT, source/local-resource kit, original native status icons for that public profile. Private accepted icons, installed Test157 and published v0.28 remain unchanged.
+Owner decisions already received: full implementation on a separate branch, CLOSED for repository work, MIT, source/local-resource kit, original native status icons for that public profile. Private accepted icons and published v0.28 remain unchanged. The owner later authorized a safe local swap to Test158; exact Test157 rollback and old caches are preserved.
