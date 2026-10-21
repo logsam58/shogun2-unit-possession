@@ -37,12 +37,22 @@ int main(){void* memory=nullptr;try{
  Status status{};state=&status;enabled=1;LARGE_INTEGER freq;QueryPerformanceFrequency(&freq);frequency=double(freq.QuadPart);
  native_prepare=reinterpret_cast<NativeWitnessCall>(&prepare140);native_update=reinterpret_cast<NativeWitnessCall>(&update140);native_target=reinterpret_cast<NativeTarget>(&target140);selection_ports.select=reinterpret_cast<NativeSelector>(&selector140);
  session=new Session(reader(),selection_ports.calls(),{},engine,{0,5,true},true,true,true,true,true);
+ wchar_t mapping_name146[96];charge146::name(mapping_name146,GetCurrentProcessId());
+ HANDLE publisher146=CreateFileMappingW(INVALID_HANDLE_VALUE,nullptr,PAGE_READWRITE,0,sizeof(charge146::Shared),mapping_name146);
+ require(publisher146,"Charge observation fixture mapping");
+ auto publication146=static_cast<charge146::Shared*>(MapViewOfFile(publisher146,FILE_MAP_ALL_ACCESS,0,0,sizeof(charge146::Shared)));
+ require(publication146,"Charge observation fixture view");new(publication146)charge146::Shared;
  w140=ptr(w);e140=ptr(enemy);unsigned cases=0;
- for(bool mounted:{false,true})for(uint32_t result:{0u,5u,2u})for(bool counter:{false,true}){
+ for(bool mounted:{false,true})for(uint32_t result:{0u,5u,2u})for(bool counter:{false,true})for(unsigned evidence146:{0u,1u,2u}){
   stock_charge_clear140();std::fill(w.begin(),w.end(),uint8_t(0));lease.heartbeat=GetTickCount64();lease.lease_generation++;
   put140(ptr(human)+0x210,mounted?ptr(horse):0u);p140=mounted?ptr(horse):ptr(human);player_address=LONG(p140);
   put140(p140+0x688,0u);put140(e140+0x688,0u);put140(w140,engine+0x15e1000);put140(w140+4,ptr(env));put140(w140+0x24,2u);put140(w140+0x10,p140);put140(w140+0x14,e140);
   put140(p140+0x1d0,16u);put140(p140+0x119,uint8_t(2));put140(p140+0x2e8,uint8_t(1));put140(p140+0x250,engine+0x15e0a5c);put140(p140+0x254,p140);put140(p140+0x258,uint8_t(counter)); // queued native contact may already have completed the charge task
+  charge146::publish(publication146,{});
+  // Contact can precede the visual charge pose, or replace the charge task
+  // after the adapter has yielded the soldier to the native squad planner.
+  if(evidence146) {put140(p140+0x1d0,0u);put140(p140+0x119,uint8_t(0));}
+  if(evidence146==2){put140(p140+0x250,engine+0x15e0a20);charge146::publish(publication146,{GetCurrentProcessId(),lease.lease_generation,lease.actor_id,lease.unit_id,mounted?12u:11u,unsigned(mounted),1,GetTickCount64()});}
   verdict140={result,counter?e140:p140,counter?p140:e140};auto generation=lifetimes.get(w140,true);auto before=prepares140;
   auto got140=dispatch(w140,generation,false);
   if(got140||prepares140!=before+1||selects140!=prepares140||targets140!=prepares140)std::cerr<<"debug mounted="<<mounted<<" result="<<result<<" got="<<got140<<" prepares="<<prepares140<<" selects="<<selects140<<" targets="<<targets140<<" owned="<<scoped(w140)<<" actor="<<fps_actor()<<" task="<<stock_charge_task140(reader(),p140)<<" record="<<stock_charge140.address<<" current="<<stock_charge_current140(w140,generation)<<" session="<<session->occupied()<<"\n";
@@ -55,12 +65,24 @@ int main(){void* memory=nullptr;try{
   put140(w140+0xd1,uint8_t(1));stock_charge_heartbeat140();require(commitment.phase==melee60::NativeCombat,"Stock playback failed to release native root motion");
   stock_charge_removed140(w140,generation+1);require(stock_charge140.address==w140,"Stale removal cleared current charge");
   stock_charge_removed140(w140,generation);require(!stock_charge140.address&&commitment.phase==melee60::Off,"Native removal did not clear charge handoff");
+  charge146::publish(publication146,{});
   // Speed/pose flags without the actual live charge task cannot grant bypass.
   put140(p140+0x250,engine+0x15e0a20);put140(p140+0x1d0,16u);put140(p140+0x119,uint8_t(2));require(!stock_charge_task140(reader(),p140),"Pose alone bypassed QTE");
   NativeActor identity;require(combat_identity(reader(),p140,engine,identity),"Actor proof");
   if(mounted){put140(p140+0x248,16u);put140(p140+0x250,engine+0x15e0cec);put140(p140+0x258,uint8_t(0));require(stock_charge_jump140(reader(),identity),"Native horse jump not recognized");put140(p140+0x258,uint8_t(1));require(!stock_charge_jump140(reader(),identity),"Completed jump retained charge bypass");}
   ++cases;
  }
+ // A numeric handoff is usable only beside separately proved current actors.
+ NativeActor observed146;require(combat_identity(reader(),p140,engine,observed146),"Observed charge actor");
+ charge146::Value valid146{GetCurrentProcessId(),lease.lease_generation,lease.actor_id,lease.unit_id,observed146.serial,unsigned(observed146.kind),1,GetTickCount64()};
+ charge146::publish(publication146,valid146);require(stock_charge_owner146(observed146,lease.lease_generation),"Fresh native handoff rejected");
+ for(unsigned field146=0;field146<10;++field146){auto bad=valid146;
+  switch(field146){case 0:++bad.pid;break;case 1:++bad.lease;break;case 2:++bad.human;break;case 3:++bad.unit;break;case 4:++bad.physical;break;case 5:bad.kind^=1;break;case 6:bad.active=0;break;case 7:bad.tick-=501;break;case 8:bad.tick+=10000;break;case 9:bad.lease=0;break;}
+  charge146::publish(publication146,bad);require(!stock_charge_owner146(observed146,lease.lease_generation),"Stale/foreign charge handoff bypassed QTE");
+ }
+ charge146::publish(publication146,valid146);InterlockedIncrement(&publication146->sequence);charge146::Value torn146;
+ require(!charge146::read(publication146,torn146),"Torn charge handoff accepted");InterlockedIncrement(&publication146->sequence);
+ charge146::publish(publication146,{});
  // Lifetime/lease/serial proof is repeated; stale pointers never grant replay.
  stock_charge140={w140,engine+0x15e1000,ptr(env),lifetimes.get(w140),lease.lease_generation,99,{p140,12,ptr(pu),7,0,1.f,Horse},false};
  lease.lease_generation++;require(!stock_charge_current140(w140,stock_charge140.generation),"Reused possession lease retained bypass");stock_charge_clear140();
@@ -73,6 +95,8 @@ int main(){void* memory=nullptr;try{
  for(unsigned i=0;i<1000;++i)require(!stock_charge_current140(w140,removed_generation140),"Removed lifetime retained charge bypass");
  require(lifetimes.metrics94().live==removed_live140,"Removed charge recreated a ghost lifetime record");stock_charge_clear140();
  require(!stock_charge_target_scope140(w140)&&!stock_charge_scope140,"Native target scope leaked");
+ if(charge_read146)UnmapViewOfFile(charge_read146);if(charge_read_map146)CloseHandle(charge_read_map146);charge_read146=nullptr;charge_read_map146=nullptr;
+ UnmapViewOfFile(publication146);CloseHandle(publisher146);
  delete session;session=nullptr;VirtualFree(memory,0,MEM_RELEASE);
- std::cout<<"PASS: "<<cases<<" production infantry/horse stock-charge dispatch variants, untouched success/failed/countercharge verdicts,12000 original-port updates after pose exit, native target forwarding, alignment/root-motion handoff, exact removal and stale lease/pose/jump guards. Native selection/preparation/clip outputs are explicit providers; live animations remain unproved.\n";return 0;
+ std::cout<<"PASS: "<<cases<<" production infantry/horse stock-charge dispatch variants, untouched success/failed/countercharge verdicts,36000 original-port updates after pose exit; early contact before pose and fresh native handoff after task replacement; stale/foreign/torn handoff rejection, native target forwarding, alignment/root-motion handoff and exact removal. Native selection/preparation/clip outputs are explicit providers; live animations remain unproved.\n";return 0;
 }catch(const std::exception& e){std::cerr<<e.what()<<'\n';if(memory)VirtualFree(memory,0,MEM_RELEASE);return 1;}}

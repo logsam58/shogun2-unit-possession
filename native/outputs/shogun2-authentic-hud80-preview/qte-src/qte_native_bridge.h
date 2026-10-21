@@ -253,13 +253,8 @@ public:
             return forward_or_reject(witness,owner.verified_melee);
         }
         if(strict_)selected.outcome=0; // Initial registration is always a surviving exchange; QTE alone authorizes a casualty.
-        const bool own_charge=charge_planning(reader_,owned.address);
-        // A player-initiated native charge uses an offensive QTE even if the
-        // stock contest picked the countercharger as attacker. Keep the exact
-        // selected opponent; only orient this pair so charge success means
-        // killing that opponent, rather than merely surviving an RMB defence.
-        if(own_charge&&selected.defender_address==owned.address&&selected.attacker_address!=owned.address)
-            std::swap(selected.attacker_address,selected.defender_address);
+        // Committed native charges are forwarded before this QTE-only path.
+        // A pose alone must never reorient the stock attacker or force a kill.
         const bool attacks=selected.attacker_address==owned.address;
         const bool defends=selected.defender_address==owned.address;
         acquisition_stage_=6;
@@ -273,7 +268,7 @@ public:
             return reject_selected(input,selected);
         uint32_t enemy_ranged{};
         if(!strict_&&prepared_mode_&&(!reader_.get(enemy.unit+0xf7c,enemy_ranged)||enemy_ranged))return reject_selected(input,selected);
-        const bool charge=attacks&&own_charge;
+        const bool charge=false;
         if(prepared_mode_&&input.count!=2){
             // Select from the ORIGINAL native group exactly once, then retain
             // its chosen pair. Never substitute a nearest enemy before selection.

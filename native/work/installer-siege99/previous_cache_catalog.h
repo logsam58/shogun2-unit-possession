@@ -2,6 +2,11 @@
 struct CacheFileIdentity { const wchar_t* name; const char* sha; };
 struct CacheIdentity { const wchar_t* build; CacheFileIdentity files[3]; };
 static const CacheIdentity CACHE_CATALOG[]={
+{L"863658499e2f7268",{{L"possession-v46.dll","3ab212f1fb2bda80b1f1054ddbfe06344f8503d95090e7c0d7d1586e6eed462a"},{L"possession-hud.exe","bdf816d69ba6ed50c869ee2fad0f1d0cfb4533dd6fcdc8c10489de0e90f8d6c5"},{L"qte-playable-v79.dll","e26c4041dbeb93f5a8e6f488428c9737d1be593bdbdd6134f2336c4ceaf0617e"}}},
+{L"303e7ed74fe530d0",{{L"possession-v46.dll","15e92cceaa7c3a549b2b26ff09599329343aa0d9dbab9b0bc2149420d49077a9"},{L"possession-hud.exe","bdf816d69ba6ed50c869ee2fad0f1d0cfb4533dd6fcdc8c10489de0e90f8d6c5"},{L"qte-playable-v79.dll","e26c4041dbeb93f5a8e6f488428c9737d1be593bdbdd6134f2336c4ceaf0617e"}}},
+{L"eebeafa2d66a0c7d",{{L"possession-v46.dll","284326e928cabbb12cd05af164491d6b0fd8f8ea53f75ac891ce7fc1f5a53024"},{L"possession-hud.exe","3d007c31f447dc63f74b4c172f3e1a8dfbb0032246c3577e8acf2f26b85ae321"},{L"qte-playable-v79.dll","e26c4041dbeb93f5a8e6f488428c9737d1be593bdbdd6134f2336c4ceaf0617e"}}},
+{L"1f3a2c4cb9c388dc",{{L"possession-v46.dll","bacba4bd6fc36350339ed4ef55003106c179ff847e885a6d930e577ddd5293d7"},{L"possession-hud.exe","3d007c31f447dc63f74b4c172f3e1a8dfbb0032246c3577e8acf2f26b85ae321"},{L"qte-playable-v79.dll","e26c4041dbeb93f5a8e6f488428c9737d1be593bdbdd6134f2336c4ceaf0617e"}}},
+{L"89353c8cf4cd6f8d",{{L"possession-v46.dll","a012e9576e922cbde85fa065e94e58db99a7564b3bd13d381a3b139fdb6a28e3"},{L"possession-hud.exe","3d007c31f447dc63f74b4c172f3e1a8dfbb0032246c3577e8acf2f26b85ae321"},{L"qte-playable-v79.dll","1b1fab1020f2b3248869b27625fd31c38b2900b818be76f63ea3f5f328abbdb0"}}},
 {L"2f2c4c94ade24e28",{{L"possession-v46.dll","ef73acc5828122db0eddf82ea7f56608a52c7e276652016a817f68e631a6980e"},{L"possession-hud.exe","23f2a8ced82391a8c9347fc567d7514db620a4b62feabc60c1855ced45b85e6d"},{L"qte-playable-v79.dll","1b1fab1020f2b3248869b27625fd31c38b2900b818be76f63ea3f5f328abbdb0"}}},
 {L"9b2e93c7f3af257d",{{L"possession-v46.dll","438f3ce850f0b3f82fb5a5f18a9fbf9e7d6e7ac19ff0b4d98ab6762b37899c0b"},{L"possession-hud.exe","3d007c31f447dc63f74b4c172f3e1a8dfbb0032246c3577e8acf2f26b85ae321"},{L"qte-playable-v79.dll","1b1fab1020f2b3248869b27625fd31c38b2900b818be76f63ea3f5f328abbdb0"}}},
 

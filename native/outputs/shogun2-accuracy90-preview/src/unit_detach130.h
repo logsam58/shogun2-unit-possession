@@ -68,7 +68,7 @@ static bool unit_member130(uintptr_t native_unit,uintptr_t actor){
     return false;
 }
 static bool deny_member_insert130(uintptr_t squad,uintptr_t actor){
-    __try{return member_owned130(actor)&&squad_owner130(squad,unit,environment);}
+    __try{if(proximity_managed147(actor))return proximity_deny147(squad,actor);return member_owned130(actor)&&!charge_member146(actor)&&squad_owner130(squad,unit,environment);}
     __except(EXCEPTION_EXECUTE_HANDLER){return false;}
 }
 static void __fastcall member_insert130(void* squad,void*,uintptr_t actor,unsigned clear){
@@ -80,7 +80,7 @@ static void __fastcall member_transfer130(void* squad,void*,uintptr_t actor,unsi
     if(deny_member_insert130(reinterpret_cast<uintptr_t>(squad),actor)){InterlockedIncrement(&member_denials130);return;}
     original_member_transfer130(squad,actor,clear);
 }
-static int __cdecl skip_regroup_member130(uintptr_t actor){return member_owned130(actor)?1:0;}
+static int __cdecl skip_regroup_member130(uintptr_t actor){return member_owned130(actor)&&!charge_member146(actor)&&!proximity_managed147(actor)?1:0;}
 static __declspec(naked) void regroup_gate130(){
     __asm{
         pushfd
@@ -106,8 +106,16 @@ static bool restore_member130(const Detached130& r,uintptr_t current_unit){
     auto actor=r.actor;
     if(field<unsigned>(actor,0x1c8)!=r.actor_id||field<uintptr_t>(actor,0x20c)!=r.config||
        field<uintptr_t>(actor,0x214)!=current_unit||field<unsigned char>(actor,0xf0)!=1)return true;
-    if(field<uintptr_t>(actor,0x3b4))return true; // Native code already rejoined/reassigned it.
-    auto target=r.preferred;
+    auto charge_target=charge_squad147(actor);if(!charge_target)charge_target=proximity_squad147(actor);
+    // A native mounted rider can start with no primary membership. Recording
+    // that state must not invent a rider slot in the horse formation on exit.
+    if(!r.preferred&&!charge_target&&!field<uintptr_t>(actor,0x3b4))return true;
+    if(field<uintptr_t>(actor,0x3b4)){
+        if(!charge_target||field<uintptr_t>(actor,0x3b4)==charge_target)return true;
+        original_member_transfer130(reinterpret_cast<void*>(charge_target),actor,1);
+        return field<uintptr_t>(actor,0x3b4)==charge_target&&squad_matches130(charge_target,actor)==1;
+    }
+    auto target=charge_target?charge_target:r.preferred;
     if(!squad_registered130(target,current_unit,r.environment))target=field<uintptr_t>(current_unit,0xb9c);
     if(!squad_registered130(target,current_unit,r.environment))return false;
     original_member_insert130(reinterpret_cast<void*>(target),actor,1);
@@ -115,7 +123,7 @@ static bool restore_member130(const Detached130& r,uintptr_t current_unit){
     InterlockedIncrement(&member_rejoins130);return true;
 }
 static void detach_member130(uintptr_t actor,const PossessionIdentity& id,unsigned generation){
-    if(!actor||!member_owned130(actor)||!unit_member130(id.unit,actor))return;
+    if(!actor||!member_owned130(actor)||charge_member146(actor)||proximity_managed147(actor)||!unit_member130(id.unit,actor))return;
     Detached130* slot=nullptr;
     for(auto& r:detached130){if(r.actor==actor&&r.unit==id.unit&&r.actor_id==field<unsigned>(actor,0x1c8)){slot=&r;break;}if(!r.actor&&!slot)slot=&r;}
     if(!slot){InterlockedIncrement(&member_errors130);InterlockedExchange(&state->release,1);return;}
@@ -134,6 +142,7 @@ static void detach_member130(uintptr_t actor,const PossessionIdentity& id,unsign
     if(field<uintptr_t>(actor,0x3b4)||squad_matches130(squad,actor)!=0){InterlockedIncrement(&member_errors130);InterlockedExchange(&state->release,1);return;}
     InterlockedIncrement(&member_detaches130);
 }
+#include "proximity147.h"
 static void sync_members130(uintptr_t current_unit){
     AcquireSRWLockExclusive(&member_lock130);member_sync_active130=true;
     __try{
@@ -141,8 +150,9 @@ static void sync_members130(uintptr_t current_unit){
             auto root=field<uintptr_t>(base,0x1bc8180),env=root?field<uintptr_t>(root,0x110):0;
             auto common=env?field<uintptr_t>(env,8):0,phase=common?field<uintptr_t>(common,0xb4):0;
             unsigned phase_id=phase?field<unsigned>(phase,0x14):0;
+            proximity_sync147(current_unit,env,phase,phase_id);
             for(auto& r:detached130)if(r.actor&&(r.environment!=env||r.phase!=phase||phase_id<5||phase_id>8))forget_member130(r);
-            for(auto& r:detached130)if(r.actor&&r.unit==current_unit&&!member_owned130(r.actor))
+            for(auto& r:detached130)if(r.actor&&r.unit==current_unit&&(!member_owned130(r.actor)||charge_member146(r.actor)||proximity_managed147(r.actor)))
                 if(restore_member130(r,current_unit))forget_member130(r);
             if(current_unit==unit&&member_owned130(possessed)){
                 auto id=possession_lease.identity;unsigned generation=possession_lease.generation;
@@ -155,9 +165,11 @@ static void sync_members130(uintptr_t current_unit){
 }
 static void __fastcall unit_tick130(void* current,void*){
     auto native_unit=reinterpret_cast<uintptr_t>(current);
-    if(detached_count130||native_unit==unit)sync_members130(native_unit);
+    charge_boundary146(native_unit,false);
+    if(detached_count130||proximity_count147||native_unit==unit)sync_members130(native_unit);
     original_unit_tick130(current);
-    if(detached_count130||native_unit==unit)sync_members130(native_unit);
+    charge_boundary146(native_unit,true);
+    if(detached_count130||proximity_count147||native_unit==unit)sync_members130(native_unit);
 }
 #include "unit_detach_combat130.h"
 static void create_unit_detach130(){
@@ -179,17 +191,19 @@ static void create_unit_detach130(){
     require(MH_CreateHook(reinterpret_cast<void*>(base+0x1b33f0),reinterpret_cast<void*>(&member_transfer130),reinterpret_cast<void**>(&original_member_transfer130))==MH_OK,"Squad transfer hook failed");
     require(MH_CreateHook(reinterpret_cast<void*>(base+0x1afed6),reinterpret_cast<void*>(&regroup_gate130),&original_regroup_gate130)==MH_OK,"Squad regroup candidate hook failed");
     create_detach_combat130();
+    create_proximity147();
+    create_native_charge147();
 }
 
 static MH_STATUS disable_control_hooks130(){
     MH_STATUS result=MH_OK;
-    for(unsigned rva:{0x14bc50u,0x1b33f0u,0x1afed6u}){
+    for(unsigned rva:{0x14bc50u,0x1b33f0u,0x1afed6u,0x3dacf0u,0x3c0bd0u,0x1679c0u}){
         auto status=MH_DisableHook(reinterpret_cast<void*>(base+rva));
         if(status!=MH_OK&&status!=MH_ERROR_DISABLED)result=MH_UNKNOWN;
     }
     // Pending native rejoin keeps both its callback and read-only personal
     // combat compatibility resident. No off-thread native actor writes.
-    if(!detached_count130)for(unsigned rva:{0x1b7ed0u,0x3eba00u,0x3ed950u,0x3ee240u,0x15d5d0u,0x14ad80u,0x17bee0u,0x3edcbau,0x3ee767u}){
+    if(!detached_count130&&!proximity_count147)for(unsigned rva:{0x1b7ed0u,0x3eba00u,0x3ed950u,0x3ee240u,0x15d5d0u,0x14ad80u,0x17bee0u,0x3edcbau,0x3ee767u}){
         auto status=MH_DisableHook(reinterpret_cast<void*>(base+rva));
         if(status!=MH_OK&&status!=MH_ERROR_DISABLED)result=MH_UNKNOWN;
     }

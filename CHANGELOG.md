@@ -1,5 +1,22 @@
 # Changelog
 
+## v0.27 - 2026-10-21
+
+- Complete the charging checkpoint with the user-accepted Test149 gameplay.
+- Start a personal native charge with W+Shift, retaining the game's target approach, paired attacks and defensive outcomes.
+- Fix native charge alignment and stop ordinary melee prompts from taking over that contact.
+- Carry K Hide UI between RTS and first person while keeping melee prompts visible.
+- Preserve v0.26 unit abilities, bow strength, native audio and all existing unit controls.
+
+[Player notes](docs/releases/v0.27.md) - [Technical details](docs/releases/v0.27-technical.md).
+
+## v0.26 - 2026-10-20
+
+- Add whole-unit T/G abilities, friendly-target Inspire and variable bow strength.
+- Restore native bow audio and retain the melee aiming dot, dismount continuity and Hold Here corrections.
+
+[Player notes](docs/releases/v0.26.md).
+
 ## v0.25 - 2026-10-20
 
 - Join native infantry and cavalry charges while possessed.

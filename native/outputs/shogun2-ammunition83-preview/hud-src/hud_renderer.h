@@ -40,6 +40,7 @@ struct View {
     unsigned aim_pose{},weapon_phase{},kind{},equipment_error{};
     bool equipment_known{},has_ranged{},crouch_supported{},crouched{},pending{};
     bool unit_mode_known{},unit_melee{};
+    bool hidden{};
     unsigned slot{},styles{};std::wstring ammunition;
     bool ammunition_known{};ammo83::Status ammunition_state{};
     float ammo{},reload{},speed{};
@@ -207,6 +208,12 @@ inline void render(Graphics& g,const Assets& a,float width,float height,const Vi
     const hudlayout108::Layout layout(width,height);
     const float scale=layout.zoom;
     GraphicsState all=g.Save();g.ScaleTransform(scale,scale);width/=scale;height/=scale;
+    if(v.hidden){
+        // Native QTE meter includes the required mouse-button indicator.
+        // The live QTE renderer is independent and never reads this HUD flag.
+        if(qte&&qte->active)qte_meter(g,a,width*.5f,hudlayout108::qte_anchor_y(height),*qte);
+        g.Restore(all);return;
+    }
     const float bottom=height-26,x=26,y=bottom-302;
     panel(g,a,RectF(x,y,466,302));
     text(g,v.unit?v.unit->name:L"Unit identity unavailable",x+27,y+23,344,32,21,ink(),true);

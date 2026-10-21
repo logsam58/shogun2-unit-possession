@@ -10,6 +10,9 @@ using RangedSettled128=bool(__cdecl*)(uintptr_t);
 static RangedSettled128 original_ranged_settled128;
 static RangedGate original_ranged_position128;
 static volatile LONG unit_position_bypasses128,task_position_bypasses128;
+// Full adapter initialization supplies the camera/lease ownership policy.
+// Isolated weapon users retain their narrower personal weapon policy.
+static bool(*unit_position_owner147)(uintptr_t);
 static bool ranged_position_owned128(uintptr_t actor){
     // This predicate runs over native rosters. Reject unrelated subjects before
     // the full proof (especially its rider/horse branch); never cache authority.
@@ -21,7 +24,7 @@ static bool ranged_position_owned128(uintptr_t actor){
 }
 static bool __cdecl ranged_settled128(uintptr_t actor){
     auto caller=reinterpret_cast<uintptr_t>(_ReturnAddress());
-    if(caller==base+0x1aef82&&ranged_position_owned128(actor)){
+    if(caller==base+0x1aef82&&(unit_position_owner147?unit_position_owner147(actor):ranged_position_owned128(actor))){
         InterlockedIncrement(&unit_position_bypasses128);return true;
     }
     return original_ranged_settled128(actor);

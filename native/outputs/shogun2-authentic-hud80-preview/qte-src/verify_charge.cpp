@@ -1,3 +1,7 @@
+// Pose-only synthetic actors are ordinary melee here. Committed native
+// charges are handled by the production dispatcher (verify_charge140), with
+// no QTE. This fixture must not demand the deleted charge LMB prompt or
+// rewrite a selected counterattacker into the player.
 #define PREPARED_FIXTURE_ENTRY legacy_prepared_fixture_main
 #include "verify_prepared_bridge.cpp"
 #undef PREPARED_FIXTURE_ENTRY
@@ -45,14 +49,14 @@ int main(){try{using namespace qte;ChargeWorld w;unsigned cases=0;
     for(bool mounted:{false,true})for(bool group:{false,true})for(bool counter:{false,true})for(bool success:{false,true}){
         w.init(mounted,group);w.countercharger_selected=counter;NativeBridge bridge(w.reader(),w.selectors(),w.ports(),World::engine,{0,5,true},true,true,true);w.bridge=&bridge;auto owner=w.own();
         check(bridge.prepare(World::witness,1,owner)==0&&bridge.occupied(),"Native charge not admitted");
-        check(bridge.snapshot().action==Action::Charge,"Charge did not receive its own LMB prompt");
-        check(w.rolls==1&&w.sorts==1&&w.retained==unsigned(group)&&w.committed.defender_address==World::enemy,"Native charge target replaced or rerolled");
+        check(bridge.snapshot().action==(counter?Action::Defend:Action::Attack),"Pose-only charge flags changed native attack/defend roles");
+        check(w.rolls==1&&w.sorts==1&&w.retained==unsigned(group)&&w.committed.defender_address==(counter?World::player:World::enemy),"Native charge target replaced or rerolled");
         check(w.get<uint32_t>(World::witness+0x24)==2,"Selected pair not retained");
         check(w.get<uint32_t>(ChargeWorld::extra+0x688)==0,"Excluded soldier registration altered");
         check(bridge.update(World::witness,1)==0&&w.updates==0,"Native charge advanced before QTE answer");
-        auto prompt=bridge.snapshot();bridge.frame(owner,success?prompt.ideal:0,false,true,prompt.serial,true,false);
+        auto prompt=bridge.snapshot();bridge.frame(owner,success?prompt.ideal:0,false,true,prompt.serial,!counter,counter);
         check(bridge.prepare(World::witness,1,owner)==0&&w.resumes==1&&w.rolls==1,"Charge did not commit exactly once");
-        check(w.committed.outcome==(success?5u:0u)&&w.committed.defender_address==World::enemy,"Charge success/failure or target changed");++cases;
+        check(w.committed.outcome==(counter?(success?0u:5u):(success?5u:0u))&&w.committed.defender_address==(counter?World::player:World::enemy),"Charge success/failure or target changed");++cases;
     }
     w.init(true,false);NativeActor human,subject;
     check(combat_identity(w.reader(),ChargeWorld::rider,World::engine,human)&&physical_actor(w.reader(),World::engine,human,subject)&&subject.address==World::player&&subject.kind==Horse,"Camera rider did not map to horse principal");
@@ -61,5 +65,5 @@ int main(){try{using namespace qte;ChargeWorld w;unsigned cases=0;
     w.init(true,false);w.put(ChargeWorld::rider+0x28,World::environment+4);check(!physical_actor(w.reader(),World::engine,human,subject),"Foreign rider environment admitted");
     w.init(false,false);w.put(World::player+0x119,uint8_t(0));check(!charge_planning(w.reader(),World::player),"Speed/state alone classified a charge");
     w.put(World::player+0x119,uint8_t(2));w.put(World::player+0x1d0,13u);check(!charge_planning(w.reader(),World::player),"Running classified as native charge");
-    std::cout<<"PASS: "<<cases<<" infantry/horse and multi-participant charge success/failure cases; original native target retained even with a nearer enemy; selector exactly once; pending hold; physical rider mapping and ambiguous/foreign/invalid state rejection. Synthetic engine only.\n";return 0;
+    std::cout<<"PASS: "<<cases<<" infantry/horse and multi-participant pose-only attack/defend success/failure cases; original native target retained even with a nearer enemy; selector exactly once; native roles retained without a charge prompt; pending ordinary-melee hold; physical rider mapping and ambiguous/foreign/invalid state rejection. Synthetic engine only.\n";return 0;
 }catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}}

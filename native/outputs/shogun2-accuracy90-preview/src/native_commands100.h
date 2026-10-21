@@ -353,7 +353,7 @@ static void process_orders(uintptr_t camera){
         frame.tick=GetTickCount64();frame.lease=possession_lease.generation;frame.actor=possession_lease.identity.actor_id;frame.unit=possession_lease.identity.unit_id;
         command_publish_frame100(frame);
         observe_formation(camera);
-        melee60::Request commitment{};bool busy=melee_request(commitment)||wall_subject97(possessed)||native_airborne_subject99(possessed);
+        melee60::Request commitment{};bool busy=charge_input_locked146()||melee_request(commitment)||wall_subject97(possessed)||native_airborne_subject99(possessed);
         if(busy&&command_native_root100)command_native_cancel100();
         if(InterlockedExchange(&command_input_overflow100,0)){command_feedback_set100(command100::Feedback::Unavailable,64);}
         command100::Event event{};

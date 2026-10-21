@@ -1,6 +1,7 @@
 #pragma once
 #include "keyboard_policy84.h"
 #include "command_policy100.h"
+#include "hud_visibility148.h"
 using KeyboardPoll84=bool(__cdecl*)();
 static KeyboardPoll84 original_keyboard_poll84;
 static void* keyboard_poll_target84;
@@ -14,6 +15,11 @@ static bool __cdecl keyboard_poll84(){
     bool valid=original_keyboard_poll84();
     auto current=reinterpret_cast<std::uint8_t*>(base+0x1b30f58);
     auto previous=reinterpret_cast<std::uint8_t*>(base+0x1b31058);
+    // DIK_K is left in BOTH native buffers. Mirror its actual edge, without
+    // consuming/repeating the game's own Hide UI action. QTE input is separate.
+    // Presentation preference follows native K in RTS too. Entering/leaving
+    // possession does not manufacture a key edge or reset the shared value.
+    hud_visibility_key148(valid,enabled&&state&&!state->stop,current[0x25],previous[0x25]);
     unsigned blocked=keyboard_filter84.apply(current,previous,keyboard_fps84(),valid);
     if(valid){bool physical=(current[0x21]&0x80)!=0,owned=keyboard_fps84();
         if(owned||climb_key_held97)current[0x21]=previous[0x21]=0;
@@ -39,6 +45,7 @@ static bool keyboard_window_owned84(unsigned key){
     return keyboard84::window_bit(key)&&(keyboard_fps84()||(unsigned(keyboard_held84)&keyboard84::window_bit(key)));
 }
 static void create_keyboard_hook84(){
+    hud_visibility_create148();
     keyboard_poll_target84=reinterpret_cast<void*>(base+0xbd75f0);
     // Check relocated absolute operands separately; this function copies the
     // prior keyboard state, polls/reacquires the keyboard, then returns AL.

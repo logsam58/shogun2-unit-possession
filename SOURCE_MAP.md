@@ -1,3 +1,19 @@
+# v0.27 / charging checkpoint complete
+
+v0.27 retains Test149 adapter and native_charge148.h via native_charge146.h, proximity147.h, native keyboard K continuity, exact HUD148 and QTE146. Version/build/embedded metadata and installer predecessor catalog/tests promote accepted gameplay to a regular release. See docs/releases/v0.27-technical.md.
+
+# Test149
+
+native_keyboard84.h tracks native K in RTS/FPS. native_charge148.h retains W+Shift acquisition with native ground/separation/actual-pose gates and numeric observations. adapter.cpp gives proved pair alignment priority over approach-only charge yield. verify_charge148.cpp executes original entry/pose/contact/intent with explicit scene/path/pace providers; keyboard84 covers RTS transitions. QTE146/HUD148 remain byte-exact.
+
+# Test148
+
+native_charge148.h replaces active147 charging; native_charge146.h includes it. verify_charge148.cpp exercises native perception/eligibility/human/horse/rider dispatch and queued contact. proximity147.h retains membership with drain/retirement corrections. hud_visibility148.h in common and adapter carries K preference; native_keyboard84.h mirrors DIK_K; ammunition83 HUD consumes it. QTE146 source/binary stays exact.
+
+# Test147
+
+proximity147.h manages real kind2/3 native groups and distance transitions at existing unit callbacks. unit_detach130.h retains legacy fallback/rider restoration; ranged_position128.h and formation_arrival129.h supply full scoped aggregate ownership. native_charge147.h hooks actual native charge assignment; verify_proximity147.cpp executes native subgroup pools, targeting, original unit target picker/scheduler, foot/horse handoff and restoration. verify_charge139.cpp retains native personal entry/contact/jump coverage.
+
 # v0.26
 
 v0.26/Test145 removes experimental bow-sound hooks, actor audio TLS and LMB cue/handle bookkeeping. native_audio143.h retains only original per-ability sound selection. bow_input142.h retains hold/release strength. weapon_animation.h/native_bow.h keep the native animation/projectile paths. Exact HUD144 aiming dot and QTE140 are retained.

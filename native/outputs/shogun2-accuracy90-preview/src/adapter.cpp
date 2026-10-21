@@ -22,6 +22,19 @@ static HANDLE mapping;
 static volatile LONG enabled;
 static uintptr_t possessed,environment,unit;
 static PossessionLease possession_lease;
+static volatile LONG charge_input_generation146;
+static volatile LONG charge_physical_input148;
+static bool charge_input_locked146(){return enabled&&state&&!state->stop&&!state->release&&state->mode==POSSESSED&&state->lease_generation&&unsigned(InterlockedCompareExchange(&charge_input_generation146,0,0))==state->lease_generation&&GetTickCount64()-state->heartbeat<=500;}
+static bool charge_member146(uintptr_t actor);
+static bool charge_native_task146(uintptr_t actor);
+static bool proximity_managed147(uintptr_t actor);
+static bool proximity_deny147(uintptr_t squad,uintptr_t actor);
+static uintptr_t proximity_squad147(uintptr_t actor);
+static bool formation_owned129(uintptr_t actor);
+static uintptr_t charge_squad147(uintptr_t actor);
+static void create_native_charge147();
+static void charge_boundary146(uintptr_t native_unit,bool after);
+
 static bool overlay_key106(const overlay106::Frame& frame,unsigned layer){
     auto key=frame.key;
     // Retained cancellation/result feedback is immutable numeric UI, never an
@@ -97,6 +110,16 @@ static void request_possession(){
     InterlockedExchange(&state->acquire,1);InterlockedExchange(&state->mode,ARMED);
 }
 static LRESULT CALLBACK weapon_window_proc(HWND window,UINT message,WPARAM w,LPARAM l){
+    if(charge_input_locked146()){
+        // Drain command key releases without dispatching an order. Keys held
+        // before native commitment must not remain latched after it ends.
+        if(message==WM_KEYUP||message==WM_SYSKEYUP)command_key_held100&=~command100::key_bit(unsigned(w));
+        if(message==WM_LBUTTONDOWN||message==WM_LBUTTONUP||message==WM_LBUTTONDBLCLK||message==WM_RBUTTONDOWN||message==WM_RBUTTONUP||message==WM_RBUTTONDBLCLK)return 0;
+        if(message==WM_KEYDOWN||message==WM_KEYUP||message==WM_SYSKEYDOWN||message==WM_SYSKEYUP||message==WM_CHAR||message==WM_SYSCHAR){
+            auto key=(w>='a'&&w<='z')?w-32:w;
+            switch(key){case 'W':case 'A':case 'S':case 'D':case 'Q':case 'E':case 'Z':case 'C':case 'R':case 'F':case 'T':case 'G':case '0':case '1':case '2':case '3':case '4':case '5':case '6':case '7':case '8':case '9':case VK_SHIFT:case VK_CONTROL:case VK_TAB:return 0;}
+        }
+    }
     if(command_window100(window,message,w,l))return 0;
     if((message==WM_KEYDOWN||message==WM_KEYUP||message==WM_SYSKEYDOWN||message==WM_SYSKEYUP||message==WM_CHAR||message==WM_SYSCHAR)&&keyboard_window_owned84(unsigned((message==WM_CHAR||message==WM_SYSCHAR)&&w>='a'&&w<='z'?w-32:w)))return 0;
     if(message==RETURN_RTS_MESSAGE90){restore_rts_on_window90(uint32_t(w));return 0;}
@@ -779,7 +802,11 @@ static bool prepare(uintptr_t actor) {
         if(InterlockedExchange(&state->release,0)){relinquish();InterlockedExchange(&state->acquire,0);}
         if(state->acquire&&!possessed)adopt_possession97(actor);
         if((actor==possessed||actor==possession_lease.identity.mount)&&dismount_native_motion143())return false; // Original dismount owns movement/animation.
-        if(apply_melee_motion(actor)){if(actor==locomotion_actor()){charge_reset139();InterlockedExchange(&entry_movement125,0);}return false;}
+        // A charge remains on rails, but original encounter registration can
+        // now require its existing paired alignment before native playback.
+        // Do not let the approach-only yield skip that proved handoff.
+        if(apply_melee_motion(actor)){if(actor==locomotion_actor()){if(!charge_input_locked146())charge_reset139();InterlockedExchange(&entry_movement125,0);}return false;}
+        if(charge_motion146(actor)){InterlockedExchange(&entry_movement125,0);return false;}
         if(actor!=locomotion_actor())return false;
         if(!confirm_follow93(possessed)){note_follow_release93();++state->identity_releases;relinquish();return false;}
         if(dead_view())return false;
@@ -819,8 +846,6 @@ static bool prepare(uintptr_t actor) {
             float magnitude=std::hypot(vx,vz);
             if(magnitude>0){direction.x=vx/magnitude;direction.z=vz/magnitude;}
         }
-        charge_prepare139(actor,movement_input,direction);
-        if(charge_rate139(movement_input,speed))state->effective_speed=speed;
         float modifier=1;
         if(!read_native_speed_modifiers(actor,movement_input,speed,modifier)){
             ++state->speed_modifier_errors;state->error=98;relinquish();return false;
@@ -869,7 +894,7 @@ static void __fastcall detour(void* actor,void*) {
         reinterpret_cast<volatile LONG*>(&state->native_motion_thread),LONG(current),0);
     InterlockedIncrement(&motion_callback_depth);
     __try {
-        if(hold_melee_motion(reinterpret_cast<uintptr_t>(actor))){
+        if(!charge_input_locked146()&&hold_melee_motion(reinterpret_cast<uintptr_t>(actor))){
             InterlockedIncrement(reinterpret_cast<volatile LONG*>(&state->other_updates));return;
         }
         bool controlled=prepare(reinterpret_cast<uintptr_t>(actor));
@@ -886,6 +911,7 @@ static void snapshot_log(std::ofstream& log) {
     nativeoverlay106::log(log);
     command_log100(log);
     charge_log139(log);
+    proximity_log147(log);
     log<<"{\"event\":\"native_input143\",\"tick_ms\":"<<GetTickCount64()<<",\"dismount_transitions\":"<<dismount_transitions143<<",\"native_bow_audio145\":1,\"ability_sound_requests\":"<<ability_sound_played143<<",\"audio_errors\":"<<audio_errors143<<"}\n";
     {static LONG prior=-1,failed=-1;LONG blocked=keyboard_blocked84,errors=keyboard_failures84;
      if(blocked!=prior||errors!=failed){prior=blocked;failed=errors;
@@ -992,7 +1018,7 @@ static DWORD WINAPI worker(void*) {
         const unsigned char projectile_camera_sig[8]={0x56,0x8b,0xf1,0x57,0x8d,0xbe,0xec,0x08};
         require(memcmp(projectile_camera_target,projectile_camera_sig,8)==0,"Projectile camera signature differs");
         require(MH_CreateHook(projectile_camera_target,reinterpret_cast<void*>(&projectile_camera),reinterpret_cast<void**>(&original_projectile_camera))==MH_OK,"Projectile camera hook failed");
-        create_weapon_hooks();create_formation_arrival129();create_unit_detach130();create_mounted_render_hooks70();create_siege_hooks97();create_context_hooks103();
+        charge_mapping146();create_weapon_hooks();create_formation_arrival129();create_unit_detach130();create_mounted_render_hooks70();create_siege_hooks97();create_context_hooks103();
 
         create_dispersion_hook();create_friendly_hook109();create_follow_voice125();
         create_interface_hooks();
@@ -1027,17 +1053,18 @@ static DWORD WINAPI worker(void*) {
         while(!state->stop) {
             DWORD foreground_pid=0;DWORD foreground_thread=GetWindowThreadProcessId(GetForegroundWindow(),&foreground_pid);bool focus=foreground_pid==GetCurrentProcessId();
             state->heartbeat=GetTickCount64();unsigned input=0;
-            equipment_sample_input81(focus);ability_sample141(focus);
+            bool charge_locked146=charge_input_locked146();
+            equipment_sample_input81(focus&&!charge_locked146);ability_sample141(focus&&!charge_locked146);
             if(!focus)bow_sample142(down(VK_LBUTTON),false);
             if(focus){
                 capture_weapon_mouse(GetForegroundWindow());
                 bool click=down(VK_LBUTTON);
                 melee60::Request active_melee;bool melee_locked=melee_request(active_melee);
-                bool firing142=state->mode==POSSESSED&&!dead_view()&&!melee_locked&&!command_placing100&&down(VK_RBUTTON)&&equipment_ranged_selected81();
+                bool firing142=!charge_locked146&&state->mode==POSSESSED&&!dead_view()&&!melee_locked&&!command_placing100&&down(VK_RBUTTON)&&equipment_ranged_selected81();
                 bow_sample142(click,firing142&&!state->weapon_phase&&!state->fire_ticket&&state->weapon_reload_remaining<=0);
                 if(click&&!left_mouse&&firing142&&bow_family142==0)InterlockedExchange(&state->fire_request,1);
                 left_mouse=click;
-                InterlockedExchange(&state->aiming,state->mode==POSSESSED&&!dead_view()&&!melee_locked&&!command_placing100&&down(VK_RBUTTON)?1:0);
+                InterlockedExchange(&state->aiming,!charge_locked146&&state->mode==POSSESSED&&!dead_view()&&!melee_locked&&!command_placing100&&down(VK_RBUTTON)?1:0);
                 state->window_thread=foreground_thread;
                 if(down('W'))input|=FORWARD;if(down('S'))input|=BACKWARD;if(down('A'))input|=LEFT;if(down('D'))input|=RIGHT;
                 if(down(VK_SHIFT))input|=RUN;
@@ -1056,7 +1083,8 @@ static DWORD WINAPI worker(void*) {
             }else {if(was_focus)InterlockedExchange(&state->release,1);f9=f10=f12=false;}
             if(!focus){left_mouse=false;InterlockedExchange(&state->aiming,0);}
             if((state->mode!=POSSESSED||state->stop||state->release||!focus)&&interface_active)restore_interface_on_window();
-            was_focus=focus;input=entry_input125(input,focus&&!dead_view());
+            InterlockedExchange(&charge_physical_input148,focus&&!dead_view()?LONG(input):0);
+            was_focus=focus;input=entry_input125(input,focus&&!dead_view()&&!charge_locked146);if(charge_locked146)input=0;
             InterlockedExchange(&state->input,dead_view()?0:LONG(input));
             uint64_t now=GetTickCount64();float elapsed=std::min(float(now-last_mouse)*0.001f,0.05f);last_mouse=now;
             bool command_resume100=InterlockedExchange(&command_recenter100,0)!=0;
@@ -1112,6 +1140,7 @@ static DWORD WINAPI worker(void*) {
         if(memcmp(reinterpret_cast<void*>(base+0x4c56d0),skin_sig,8)!=0)state->error=31;
         if(!native_fatigue_signatures(base))state->error=31;
         log<<"{\"event\":\"disabled\",\"reason\":\"explicit_stop\",\"tick_ms\":"<<GetTickCount64()<<",\"bytes_restored\":"<<(restored?"true":"false")<<",\"camera_bytes_restored\":"<<(camera_restored?"true":"false")<<",\"hook_status\":"<<int(result)<<"}\n";log.flush();
+        charge_reset139();charge146::publish(charge_shared146,{});
         // Keep DLL, mapping, and trampoline resident until process exit: no unload race.
     }catch(const std::exception& ex){nativeoverlay106::stop();if(state){state->error=1;state->ready=0;}if(log){log<<"{\"event\":\"initialization_failed\",\"reason\":\""<<ex.what()<<"\"}\n";log.flush();}}
     return 0;

@@ -4,11 +4,11 @@ Take control of a soldier in your army and fight your **Total War: SHOGUN 2** ba
 
 Fight on foot or horseback, fire bows and guns, and face enemy soldiers in melee. Your unit fights alongside you, and you can give them orders without leaving first person.
 
-**[Download v0.26](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.26)** · [v0.26 notes](docs/releases/v0.26.md) · [Known problems](docs/KNOWN_ISSUES.md)
+**[Download v0.27](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.27)** · [v0.27 notes](docs/releases/v0.27.md) · [Known problems](docs/KNOWN_ISSUES.md)
 
-**v0.26** adds unit abilities and adjustable bow strength. Press **T** to cycle abilities or special ammunition and **G** to use the selected one. For bows, hold RMB to ready the weapon, then hold and release LMB: a quick tap gives a weaker shot, and holding longer reaches full strength. A small melee aiming dot helps with orders and abilities. Bow sounds stay linked to the native animation.
+**v0.27** fixes first-person charging. Run or gallop toward an enemy with **W + Shift** to start a charge; the game handles the target, approach and attack. Its normal defenses and outcomes still apply. **K** now hides the first-person HUD too, and carries across when you enter or leave possession. Melee timing prompts stay visible.
 
-Charging and the first-person weapon view still need work; see the [known problems](docs/KNOWN_ISSUES.md).
+Unit abilities, adjustable bow strength and all existing unit controls are included. The first-person weapon view still needs work; see the [known problems](docs/KNOWN_ISSUES.md).
 
 ## Playing the mod
 
@@ -25,7 +25,7 @@ And if you shoot one of your own men, you'll hear **“SHAMEFUL DISPLAY!”**
 
 You'll need the Windows Steam version of **Total War: SHOGUN 2**.
 
-1. Open the [release page](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.26) and download **Shogun2-First-Person-v0.26-Setup.exe**.
+1. Open the [release page](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.27) and download **Shogun2-First-Person-v0.27-Setup.exe**.
 2. Close the game completely, run setup and choose your Shogun 2 folder.
 3. Launch through Steam. In a land battle, select one of your units and press **F9**.
 
@@ -38,7 +38,7 @@ Close the game before installing an update, then start it again afterward.
 | **F9** | Possess a soldier in the selected unit |
 | **F10 / Escape** | Return to your previous RTS camera view |
 | **WASD** | Move |
-| **Shift** | Run |
+| **Shift** | Run; hold W + Shift toward an enemy to charge |
 | **Mouse** | Look around |
 | **Hold RMB** | Ready or draw your ranged weapon |
 | **LMB** | Fire guns/thrown weapons; hold and release for bow strength |
@@ -49,6 +49,7 @@ Close the game before installing an update, then start it again afterward.
 | **LMB / RMB prompt** | Click the shown button when the marker reaches the highlighted zone |
 | **F** near a wall | Start climbing |
 | **W / S** while climbing | Climb up / down; release both to hold position |
+| **K** | Hide/show the HUD in RTS and first person; melee prompts remain visible |
 | **F12** | Turn the mod off for the rest of the session |
 
 ### Unit orders
@@ -65,13 +66,13 @@ You can't issue these orders while locked in a melee animation, climbing or land
 
 ## Known problems and compatibility
 
-**Large units, one full army per side and maximum graphics in DX11** have been reported smooth. Ultra units with several armies or heavy fighting nearby can still slow down badly. v0.26 retains those optimizations, the audio guard and a correction for one captured detached-soldier crash. Other crashes remain unresolved. Mounted bows can look wrong, and some weapon or arm clipping remains. See the [known problems and reporting guide](docs/KNOWN_ISSUES.md).
+**Large units, one full army per side and maximum graphics in DX11** have been reported smooth. Ultra units with several armies or heavy fighting nearby can still slow down badly. v0.27 retains those optimizations, the audio guard and a correction for one captured detached-soldier crash. Other crashes remain unresolved. Mounted bows can look wrong, and some weapon or arm clipping remains. See the [known problems and reporting guide](docs/KNOWN_ISSUES.md).
 
 The mod is intended for single-player land battles and sieges. It supports weapons from the base game, Rise of the Samurai and Fall of the Samurai, though not every unit, ammo type or castle layout has been tested. Multiplayer and overhaul mods haven't been confirmed to work. Ship possession isn't included; artillery uses the game's existing first-person mode.
 
 ## For contributors
 
-The mod is written in C++, with Python build and debugging tools. Start with the [source map](SOURCE_MAP.md), [build guide](BUILD_AND_TEST.md) and [contributing guide](CONTRIBUTING.md). The [architecture](docs/ARCHITECTURE.md), [v0.26 technical notes](docs/releases/v0.26-technical.md) and [validation records](VALIDATION.md) cover implementation, tests and ongoing investigations.
+The mod is written in C++, with Python build and debugging tools. Start with the [source map](SOURCE_MAP.md), [build guide](BUILD_AND_TEST.md) and [contributing guide](CONTRIBUTING.md). The [architecture](docs/ARCHITECTURE.md), [v0.27 technical notes](docs/releases/v0.27-technical.md) and [validation records](VALIDATION.md) cover implementation, tests and ongoing investigations.
 
 Building the full HUD and QTE needs separately prepared game resources; a fresh clone doesn't include them. The optional [crash recorder](tools/diagnostics/README.md) has its own setup and isn't part of the player installer. The source download is for contributors; players should use the setup download above.
 

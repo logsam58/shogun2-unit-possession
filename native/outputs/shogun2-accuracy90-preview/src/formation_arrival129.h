@@ -31,6 +31,7 @@ static bool __fastcall formation_arrival129(void* subject,void*){
     return original_formation_arrival129(subject);
 }
 static void create_formation_arrival129(){
+    unit_position_owner147=&formation_owned129;
     const unsigned char predicate[]={0x80,0xb9,0x84,3,0,0,1,0x75,0x23,0x80,0xb9,8,3,0,0,1};
     const unsigned char call[]={0x8b,0x0e,0xe8,0xa8,0xce,0x27,0,0x84,0xc0};
     require(!memcmp(reinterpret_cast<void*>(base+0x3cbe40),predicate,sizeof predicate)&&

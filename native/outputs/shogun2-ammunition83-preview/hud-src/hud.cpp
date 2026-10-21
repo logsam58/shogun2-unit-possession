@@ -9,6 +9,7 @@
 #include "accuracy_protocol90.h"
 #include "../../shogun2-accuracy90-preview/src/climb_protocol97.h"
 #include "../src/equipment_protocol81.h"
+#include "../../shogun2-possession-cleanup-v46/src/hud_visibility148.h"
 static_assert(sizeof(void*)==4,"Build x86 for the game's telemetry");
 static DWORD pid;static uintptr_t base;static HANDLE process;static Status* shared;
 static EquipmentStatus81* equipment_shared;
@@ -20,6 +21,8 @@ static command100::Status* commands_shared100;static HANDLE commands_map100;stat
 static HudSurface100 hud_surface100;
 static AudioFeedback109 audio_feedback109;
 static HWND game,overlay;static bool visible;static hud80::View display;static hud80::Assets assets;
+static HANDLE visibility_mapping148;static const hudvisibility148::Shared* visibility_shared148;
+static uint64_t visibility_retry148;
 static overlay106::Publisher pixels106;static overlay106::Key display_key106;
 template<class T>T read(uintptr_t address){T v{};SIZE_T n=0;
     require(ReadProcessMemory(process,reinterpret_cast<void*>(address),&v,sizeof v,&n)&&n==sizeof v,"Native HUD read failed");return v;}
@@ -61,7 +64,15 @@ static bool measure(){
     if(read<uintptr_t>(actor)!=base+0x15dfec8||read<unsigned>(actor+0x1c8)!=s.actor_id)return false;
     uintptr_t unit=read<uintptr_t>(actor+0x214);
     if(read<unsigned>(unit+4)!=s.unit_id||read<unsigned char>(actor+0xf0)!=1)return false;
-    hud80::View d{};d.fatigue=read<unsigned char>(unit+0xd3c)?0:read<unsigned>(unit+0xd34);d.morale=read<unsigned>(unit+0xce8);
+    hud80::View d{};
+    if(!visibility_shared148&&now>=visibility_retry148){
+        visibility_retry148=now+1000;wchar_t name[96];hudvisibility148::name(name,pid);
+        visibility_mapping148=OpenFileMappingW(FILE_MAP_READ,FALSE,name);
+        if(visibility_mapping148)visibility_shared148=static_cast<const hudvisibility148::Shared*>(MapViewOfFile(visibility_mapping148,FILE_MAP_READ,0,0,sizeof(hudvisibility148::Shared)));
+        if(visibility_mapping148&&!visibility_shared148){CloseHandle(visibility_mapping148);visibility_mapping148=nullptr;}
+    }
+    hudvisibility148::read(visibility_shared148,pid,d.hidden);
+    d.fatigue=read<unsigned char>(unit+0xd3c)?0:read<unsigned>(unit+0xd34);d.morale=read<unsigned>(unit+0xce8);
     unsigned routing=read<unsigned>(unit+0xcec);d.routing=read<unsigned char>(phase+0x2778)!=0&&(routing==2||routing==3);
     d.men=read<unsigned>(unit+0x2bc);d.initial=read<unsigned>(unit+0xcbc);
     uintptr_t definition=0;std::wstring key=unit_key(unit,definition);d.unit=hud80::unit_art(key.c_str());
@@ -147,10 +158,13 @@ static int preview(int argc,wchar_t** argv){
         mortar=wcscmp(argv[3],L"mortar")==0,rocket=wcscmp(argv[3],L"rocket")==0,fots=wcscmp(argv[3],L"fots")==0,unknown=wcscmp(argv[3],L"unknown")==0;
     bool ranged=wcscmp(argv[3],L"ranged")==0||bomb||gun||single||pending||empty||reload||lowered||drawing||mortar||rocket||fots||unknown||wcscmp(argv[3],L"ammo-qte")==0,combat=wcscmp(argv[3],L"combat")==0,qte_active=wcscmp(argv[3],L"qte")==0||wcsncmp(argv[3],L"qte-",4)==0||wcscmp(argv[3],L"ammo-qte")==0;
     bool command_preset=wcsncmp(argv[3],L"command-",8)==0;
+    const bool hidden_preset=wcsncmp(argv[3],L"hidden",6)==0;
+    qte_active=qte_active||wcscmp(argv[3],L"hidden-qte")==0;
     bool climb_preset=wcsncmp(argv[3],L"climb-",6)==0;
-    require(command_preset||climb_preset||ranged||combat||qte_active||(wcscmp(argv[3],L"clean")==0||wcscmp(argv[3],L"melee")==0),"Unknown preview preset");
+    require(hidden_preset||command_preset||climb_preset||ranged||combat||qte_active||(wcscmp(argv[3],L"clean")==0||wcscmp(argv[3],L"melee")==0),"Unknown preview preset");
     hud80::View v;v.fixture=true;v.unit=hud80::unit_art(ranged?L"Inf_Missile_Bow_Ashigaru":L"Inf_Sword_Katana_Samurai");require(v.unit!=nullptr,"Fixture catalog entry missing");
     v.abilities_known=true;v.abilities.count=1;v.abilities.selected=0;v.abilities.items[0]={argc>=7?unsigned(_wtoi(argv[6])):39,ability141::Available,0};
+    v.hidden=hidden_preset;
     require(ability141::art(v.abilities.items[0].id)!=nullptr,"Unknown ability preview");
     if(v.abilities.items[0].id==35)v.abilities.items[0].flags|=ability141::Targeted;
     if(argc>=8)v.abilities.error=unsigned(_wtoi(argv[7]));
@@ -205,6 +219,7 @@ int wmain(int argc,wchar_t** argv){Gdiplus::GdiplusStartupInput input;ULONG_PTR 
                 else{game=gamewindow105::find(pid);SetProcessDPIAware();WNDCLASSW cls{};cls.lpfnWndProc=proc;cls.hInstance=GetModuleHandleW(nullptr);cls.lpszClassName=L"ShogunAuthenticHUD80";require(RegisterClassW(&cls)!=0,"HUD class failed");
                     overlay=CreateWindowExW(WS_EX_LAYERED|WS_EX_TRANSPARENT|WS_EX_NOACTIVATE|WS_EX_TOOLWINDOW|WS_EX_TOPMOST,cls.lpszClassName,L"Shogun FPS HUD",WS_POPUP,0,0,0,0,nullptr,nullptr,cls.hInstance,nullptr);require(overlay!=nullptr,"HUD window failed");
                     SetTimer(overlay,1,150,nullptr);MSG msg{};while(GetMessageW(&msg,nullptr,0,0)>0){TranslateMessage(&msg);DispatchMessageW(&msg);}result=0;}}
+            if(visibility_shared148)UnmapViewOfFile(visibility_shared148);if(visibility_mapping148)CloseHandle(visibility_mapping148);
             if(commands_shared100)UnmapViewOfFile(commands_shared100);if(commands_map100)CloseHandle(commands_map100);
             if(climb_shared97)UnmapViewOfFile(climb_shared97);if(accuracy_shared90)UnmapViewOfFile(accuracy_shared90);if(ammunition_shared83)UnmapViewOfFile(ammunition_shared83);if(equipment_shared)UnmapViewOfFile(equipment_shared);UnmapViewOfFile(shared);
         }
