@@ -37,8 +37,17 @@
   },
   "fresh_source_validation": {
     "resources": "passed",
-    "native": "in progress",
-    "diagnostics": "in progress"
+    "native": "passed",
+    "diagnostics": "passed",
+    "python": "passed",
+    "source_archive_used": true,
+    "default_library_assumed": false,
+    "game_input_view": "Build-only hardlinked read-only view of legitimate exact local game inputs at a different path with spaces; no new game installation claimed",
+    "separate_build_directory": true,
+    "private_prepared_assets_used": false,
+    "private_runtime_used": false,
+    "private_historical_archive_used": false,
+    "final_wizard_rebuilt_and_installer_retested": true
   },
   "historical": {
     "status": "skipped",
@@ -63,5 +72,96 @@
     "Canonical historical palette formatting, not fresh original sampling",
     "Normal Windows path limits",
     "No permission asserted for game-derived binary distribution"
+  ],
+  "engineering_revision": "588d4a2c81f55e184bb789c35456e20d8f7193dc",
+  "tools": {
+    "python": "3.12.10",
+    "magick": "Version: ImageMagick 7.1.2-24 Q16-HDRI x64 d73fb3c:20260526 https://imagemagick.org",
+    "node": "v24.16.0",
+    "ffmpeg": "ffmpeg version 9.0.2-essentials_build-www.gyan.dev Copyright (c) 2000-2026 the FFmpeg developers",
+    "packer": "0.3.0",
+    "msvc": "Visual Studio 2022 17.14.40, x86 toolset 14.44",
+    "npm": "11.13.0",
+    "packer_core": "0.3.5"
+  },
+  "automated_results": [
+    {
+      "name": "minhook",
+      "passed": true
+    },
+    {
+      "name": "adapter",
+      "passed": true
+    },
+    {
+      "name": "adapter-tests",
+      "passed": true,
+      "executables": 96
+    },
+    {
+      "name": "qte",
+      "passed": true
+    },
+    {
+      "name": "qte-tests",
+      "passed": true,
+      "executables": 50
+    },
+    {
+      "name": "hud",
+      "passed": true
+    },
+    {
+      "name": "hud-tests",
+      "passed": true,
+      "executables": 8
+    },
+    {
+      "name": "loader",
+      "passed": true
+    },
+    {
+      "name": "loader-tests",
+      "passed": true
+    },
+    {
+      "name": "installer",
+      "passed": true
+    },
+    {
+      "name": "installer-current-tests",
+      "passed": true,
+      "executables": 2
+    },
+    {
+      "name": "installer-historical-compatibility",
+      "status": "skipped",
+      "reason": "Optional archived fingerprints are not prerequisites for current transaction tests. Run the documented historical target with a complete verified archive."
+    }
+  ],
+  "local_artifacts": [
+    {
+      "name": "fresh-native-results",
+      "sha256": "687cf2a410313e11ffdec030083b29f155adae313669f4c81577f285b107c66e"
+    },
+    {
+      "name": "final-installer-results",
+      "sha256": "f8b156f6bb10720d8653972dfea1c59831d7577f8879f685e747a6ad6d927571"
+    },
+    {
+      "name": "fresh-capture-results",
+      "sha256": "277cf1a7004e8ce88725aedbe5ba9bc6b5e25eb51e11715999372543efcd5ae5"
+    },
+    {
+      "name": "independent-resource-comparison",
+      "sha256": "08d4d195d1a2e1c25749812acf1792cd72c836c4e22c9b510537b0eed61137f2"
+    }
+  ],
+  "installed_baseline_preserved": true,
+  "known_corrections_during_validation": [
+    "Windows fixture header min/max macro collision corrected",
+    "Transparent atlas border geometry explicitly handled",
+    "Wizard path separator corrected and final installer retested",
+    "Documented role --check alias added and rerun"
   ]
 }
