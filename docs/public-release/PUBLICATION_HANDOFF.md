@@ -1,11 +1,11 @@
-# v0.29 release handoff
+# v0.30 release handoff
 
-The owner authorized main as the sole branch and v0.29 as the next release. The repository remains private; only the owner decides its public visibility. The owner explicitly authorized deleting older embedded-resource installers/ZIPs and replacing the v1.0 label with v0.29. Other release bodies/tags and source downloads are preserved, with verified backups.
+The owner authorized renaming the mod and repository to Shogun 2 Unit Possession, adding clear support warnings and the startup view chooser, and freshly confirmed CLOSED for the build. main remains the only branch; repository visibility stays private. Historical v0.29 and earlier releases/tags are preserved.
 
-Current release downloads are Shogun2-First-Person-v0.29-Setup.exe, Shogun2-First-Person-v0.29-Source.zip and SHA256SUMS.txt. Setup prepares artwork, cards, ability/status icons, fonts and the cropped advisor voice from each player's game. No game image/font/audio payload is included. Earlier private embedded-resource history is not converted by this task.
+Current downloads are Shogun2-Unit-Possession-v0.30-Setup.exe, Shogun2-Unit-Possession-v0.30-Source.zip and SHA256SUMS.txt. Resources remain prepared from each owned game. Retired resource-containing installers must not be re-uploaded; see the [deletion record](LEGACY_DOWNLOAD_CLEANUP.json).
 
-The accepted Test159 adapter, HUD, QTE and native extractor are retained exactly. v0.29 loader/metadata and standard setup integration have fresh offline validation, including preview upgrades and separate rollback records. See [v0.29 validation](V0_29_VALIDATION.json). No real install/game launch/settings/recorder change is part of release packaging.
+Test160 reads the loader's process-local camera choice before adapter initialization and applies it to each new possession lease. P can still toggle within the lease. The chooser runs on the autoload worker, outside DllMain/native callbacks; no persistent settings or protocol layouts change. The setup keeps its existing AppId and ownership identity so updates/uninstall retain old records. See [v0.30 validation](V0_30_VALIDATION.json).
 
-Test159 acceptance covers the reported manual trial; its formal preplay gate was missed and must not be fabricated. The v0.29 wrapper is not live-tested. **Charging and castle wall climbing are intermittent**, and crash/performance/POV/acquisition limitations remain open.
+Naval possession does not work and is planned for later. Multiplayer is not implemented; Versus and campaign drop-in are under consideration. Visual/gameplay bugs and occasional crashes are expected. Charging/climbing, crowd slowdown, clipping and isolated acquisition remain open.
 
-The [download removal record](LEGACY_DOWNLOAD_CLEANUP.json) lists the exact retired assets.
+The new build is offline-tested only, not installed or live-accepted on the owner's game. Test159 baseline acceptance and its missed formal preplay gate remain historical facts. A future real swap/test needs fresh cues and loaded/native-hook/actual capture checks. No game/recorder/settings/CPU changes are part of this release work.

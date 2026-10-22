@@ -1,6 +1,6 @@
 # Validation
 
-[v0.29 release checks](docs/public-release/V0_29_VALIDATION.json) distinguish fresh wrapper tests from retained exact accepted gameplay evidence. The v0.29 setup was not installed or live-tested on the owner’s game.
+[v0.30 release checks](docs/public-release/V0_30_VALIDATION.json) distinguish fresh wrapper tests from the current native build evidence. The v0.30 setup has not been installed or live-tested on the owner’s game.
 
 [Build commands](BUILD_AND_TEST.md) and [source-kit engineering summary](docs/public-release/VALIDATION_RESULTS.json) and [local-resource installer validation](docs/public-release/LOCAL_ASSETS159_VALIDATION.json) are current. Raw logs, toy dumps and game resources stay out of the source kit.
 

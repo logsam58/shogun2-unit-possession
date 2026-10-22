@@ -1,7 +1,7 @@
 """Publish the verified VERSION release to this repository. Credentials stay in memory."""
 import argparse,hashlib,json,os,re,subprocess,sys,urllib.error,urllib.parse,urllib.request,zipfile
 from pathlib import Path
-ROOT=Path(__file__).resolve().parents[1];REPOSITORY='logsam58/shogun2-first-person';API='https://api.github.com/repos/'+REPOSITORY
+ROOT=Path(__file__).resolve().parents[1];REPOSITORY='logsam58/shogun2-unit-possession';API='https://api.github.com/repos/'+REPOSITORY
 VERSION=(ROOT/'VERSION').read_text().strip()
 if not re.fullmatch(r'[0-9]+\.[0-9]+(?:\.[0-9]+)?',VERSION):raise RuntimeError('Invalid product version')
 TAG='v'+VERSION
@@ -66,14 +66,14 @@ def main():
  remote=git('ls-remote','--tags','origin','refs/tags/'+TAG+'^{}').split()
  if not remote or remote[0]!=head:raise RuntimeError('The annotated release tag must be pushed and verified first')
  folder=ROOT/'artifacts/releases'/TAG;manifest=json.loads((folder/'upload-manifest.json').read_text());assert manifest['source_commit']==head and manifest['version']==VERSION
- files=manifest['assets'];allowed={'Shogun2-First-Person-'+TAG+'-Setup.exe','Shogun2-First-Person-'+TAG+'-Windows.zip','SHA256SUMS.txt','release-manifest.json'}
- if VERSION!='0.15':allowed.update({'Shogun2-First-Person-'+TAG+'-Source.zip','SOURCE_SHA256SUMS.txt'})
+ files=manifest['assets'];allowed={'Shogun2-Unit-Possession-'+TAG+'-Setup.exe','Shogun2-Unit-Possession-'+TAG+'-Windows.zip','SHA256SUMS.txt','release-manifest.json'}
+ if VERSION!='0.15':allowed.update({'Shogun2-Unit-Possession-'+TAG+'-Source.zip','SOURCE_SHA256SUMS.txt'})
  if {x['name'] for x in files}!=allowed:raise RuntimeError('Release asset list differs from the reviewed package')
  for item in files:
   p=folder/item['name']
   if not p.is_file() or p.stat().st_size!=item['bytes'] or hashlib.sha256(p.read_bytes()).hexdigest()!=item['sha256']:raise RuntimeError('Local release asset differs: '+item['name'])
  if VERSION!='0.15':
-  source='Shogun2-First-Person-'+TAG+'-Source.zip';blobs={}
+  source='Shogun2-Unit-Possession-'+TAG+'-Source.zip';blobs={}
   for line in subprocess.check_output(['git','ls-tree','-r','-z','HEAD'],cwd=ROOT).split(b'\0'):
    if not line:continue
    meta,name=line.split(b'\t',1);mode,kind,blob=meta.split()
@@ -92,7 +92,7 @@ def main():
  if release:
   if release['target_commitish']!=head or release['body']!=notes:raise RuntimeError('Existing '+TAG+' draft differs; refusing to overwrite it')
  else:
-  release=api.request('POST',API+'/releases',{'tag_name':TAG,'target_commitish':head,'name':TAG+' - Shogun 2 First-Person Possession','body':notes,'draft':True,'prerelease':False,'generate_release_notes':False})
+  release=api.request('POST',API+'/releases',{'tag_name':TAG,'target_commitish':head,'name':TAG+' - Shogun 2 Unit Possession','body':notes,'draft':True,'prerelease':False,'generate_release_notes':False})
  receipt={'tag':TAG,'source_commit':head,'release_id':release['id'],'draft':True,'url':release['html_url'],'assets':[]};receipt_path=folder/'publication-receipt.json';receipt_path.write_text(json.dumps(receipt,indent=2)+'\n')
  assets=api.request('GET',release['assets_url']);known={x['name']:x for x in assets}
  if set(known)-allowed:raise RuntimeError('Existing draft contains unexpected assets; no deletion attempted')

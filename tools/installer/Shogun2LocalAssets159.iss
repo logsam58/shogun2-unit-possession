@@ -20,13 +20,13 @@
 
 [Setup]
 AppId={#Identity}
-AppName=Shogun 2 First-Person Mod
+AppName=Shogun 2 Unit Possession
 AppVersion={#ProductVersion}
-AppVerName=Shogun 2 First-Person Mod v{#ProductVersion}
+AppVerName=Shogun 2 Unit Possession v{#ProductVersion}
 AppPublisher=logsam58
-AppPublisherURL=https://github.com/logsam58/shogun2-first-person
-AppSupportURL=https://github.com/logsam58/shogun2-first-person/blob/main/docs/KNOWN_ISSUES.md
-DefaultDirName={autopf}\Shogun 2 First-Person Mod
+AppPublisherURL=https://github.com/logsam58/shogun2-unit-possession
+AppSupportURL=https://github.com/logsam58/shogun2-unit-possession/blob/main/docs/KNOWN_ISSUES.md
+DefaultDirName={autopf}\Shogun 2 Unit Possession
 DisableDirPage=yes
 DisableProgramGroupPage=yes
 UsePreviousAppDir=yes
@@ -36,15 +36,15 @@ LicenseFile={#PayloadDir}\LICENSE
 InfoBeforeFile={#PayloadDir}\BeforeInstall.txt
 InfoAfterFile={#PayloadDir}\AfterInstall.txt
 OutputDir={#OutputDir}
-OutputBaseFilename=Shogun2-First-Person-v{#ProductVersion}-Setup
+OutputBaseFilename=Shogun2-Unit-Possession-v{#ProductVersion}-Setup
 Compression=lzma2
 SolidCompression=yes
 SetupLogging=yes
-UninstallDisplayName=Shogun 2 First-Person Mod
+UninstallDisplayName=Shogun 2 Unit Possession
 UninstallFilesDir={app}
 UninstallLogMode=overwrite
 VersionInfoVersion={#ProductFileVersion}
-VersionInfoDescription=Shogun 2 First-Person Mod Setup
+VersionInfoDescription=Shogun 2 Unit Possession Setup
 CloseApplications=no
 RestartApplications=no
 RestartIfNeededByRun=no

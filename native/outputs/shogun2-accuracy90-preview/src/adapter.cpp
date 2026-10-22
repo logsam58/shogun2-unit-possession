@@ -7,6 +7,7 @@
 #include "possession_entry125.h"
 #include "combat_focus125.h"
 #include "view152.h"
+#include "../../../common/startup_view160.h"
 #include "possession_lease.h"
 #include "control_metrics.h"
 #include "camera_entry_gate.h"
@@ -1029,6 +1030,7 @@ static void mouse_look101(int dx,int dy,unsigned input,float elapsed){
 static DWORD WINAPI worker(void*) {
     std::ofstream log;
     try {
+        view_default160(startup160::third_person());
         wchar_t name[80];mapping_name(name,GetCurrentProcessId());
         mapping=CreateFileMappingW(INVALID_HANDLE_VALUE,nullptr,PAGE_READWRITE,0,sizeof(Status),name);
         require(mapping && GetLastError()!=ERROR_ALREADY_EXISTS,"Prototype already loaded; restart game to reload");

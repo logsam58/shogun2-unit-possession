@@ -28,6 +28,7 @@ def main():
     p.add_argument("--previous159-bin", type=Path)
     p.add_argument("--previous-setup", type=Path)
     p.add_argument("--previous-release-bin", type=Path)
+    p.add_argument("--previous029-bin", type=Path)
     a = p.parse_args()
     version=json.loads((a.build/'package-receipt.json').read_text())['version']
     assert digest(a.engine) == "022fae2e2da92b59b8b1b8ee52887003c624e3c8eca060b209f5d792a7f874f5"
@@ -99,6 +100,16 @@ def main():
         action('prepare',f);copy_payload(f);action('finish',f);action('rollback',f)
         assert baseline==[digest(t) for t in f[4]]
         results.append('exact former v1.0 upgrade and complete rollback')
+
+    if a.previous029_bin:
+        f=fixture('previous029-upgrade')
+        for name,target in zip(('dinput8.dll','marker.pack'),f[4][:2]):shutil.copyfile(a.previous029_bin/name,target)
+        for target in f[4][4:]:shutil.copyfile(a.assets/target.name,target)
+        baseline=[digest(t) for t in f[4]]
+        assert baseline[0]=='6e2bec13bdf74795e48281bdade07fa8a2c101ca7993ea2765679d7e5abd5af0'
+        action('prepare',f);copy_payload(f);action('finish',f);action('rollback',f)
+        assert baseline==[digest(t) for t in f[4]]
+        results.append('exact v0.29 upgrade and complete rollback')
 
     encodings = {
         "utf8": 'mod other.pack;\r\n// naïve comment\r\n'.encode(),
@@ -210,7 +221,7 @@ def main():
     # Run the real Inno engine against fixture paths, with its separate registry
     # identity. Never execute the production administrator installer in tests.
     f = fixture("inno-end-to-end")
-    setup = (a.build / f"fixture-output/Shogun2-First-Person-v{version}-Setup.exe").resolve()
+    setup = (a.build / f"fixture-output/Shogun2-Unit-Possession-v{version}-Setup.exe").resolve()
     options = ["/VERYSILENT", "/SUPPRESSMSGBOXES", "/SP-", "/NORESTART", "/NOCLOSEAPPLICATIONS", "/NORESTARTAPPLICATIONS",
                f"/DIR={f[3].resolve()}", f"/GAME={f[1].resolve()}", f"/PROFILE={f[2].resolve()}"]
     for attempt in range(2):
@@ -220,7 +231,7 @@ def main():
         for i in (4,5):assert digest(f[4][i])==digest(a.assets/f[4][i].name)
     key = r"Software\Microsoft\Windows\CurrentVersion\Uninstall\Shogun2FirstPerson-LocalAssetsFixture159_is1"
     with winreg.OpenKey(winreg.HKEY_CURRENT_USER, key) as k:
-        assert winreg.QueryValueEx(k, "DisplayName")[0] == "Shogun 2 First-Person Mod"
+        assert winreg.QueryValueEx(k, "DisplayName")[0] == "Shogun 2 Unit Possession"
     results.append("real Inno install + repeat install + Windows uninstall registration")
     subprocess.run([str((f[3] / "unins000.exe").resolve()), "/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART",
                     f"/LOG={f[0].resolve() / 'uninstall.log'}"], check=True, timeout=60)

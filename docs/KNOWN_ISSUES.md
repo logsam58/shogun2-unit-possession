@@ -1,6 +1,8 @@
 # Known problems and troubleshooting
 
-The mod is still being worked on. These are the main things to watch for.
+The mod is still being worked on. **Visual and gameplay bugs, and some crashes, are expected.**
+
+**Naval battles do not support possession.** Naval support is planned for a later update. **Multiplayer is not implemented:** Versus and campaign drop-in are under consideration.
 
 ## Crashes and slowdowns
 
@@ -37,7 +39,7 @@ v0.24 gameplay was accepted, with first-person weapon/arm poses and clipping lef
 
 The mod is meant for single-player land battles and sieges. Weapons from Shogun 2, Rise of the Samurai and Fall of the Samurai are recognised, but not every unit and ammo combination has been tested.
 
-Multiplayer and overhaul mods need separate testing. Ship possession and ship commands aren't included. Artillery keeps the game's existing first-person mode.
+Multiplayer is not implemented; Versus and campaign drop-in support are under consideration. Naval possession and ship commands do not work and are planned for later. Overhaul compatibility needs separate testing. Artillery keeps the game's existing first-person mode.
 
 ## Setup and updates
 

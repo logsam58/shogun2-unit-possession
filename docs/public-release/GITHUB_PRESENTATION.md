@@ -1,14 +1,14 @@
 # GitHub presentation
 
-The landing page is on main, the sole maintained branch. The owner authorized the v0.29 release inside the private repository. Do not change repository visibility without a new explicit instruction.
+The landing page is on main, the sole maintained branch. The owner authorized the v0.30 release inside the private repository. Do not change repository visibility without a new explicit instruction.
 
 ## Repository name
 
-Keep **shogun2-first-person**. Display title: **Shogun 2 First-Person Mod**.
+Repository: **shogun2-unit-possession**. Display title: **Shogun 2 Unit Possession**.
 
 ## About description
 
-Take control of a soldier in Total War: Shogun 2. Fight in first or third person, lead your unit from the front, then return to commanding the army. Setup uses assets from your own game.
+Possess a soldier in Total War: Shogun 2. Play in first or third person and command your unit from the battlefield. Single-player land battles and sieges; naval and multiplayer possession are not implemented.
 
 ## Topics
 
@@ -17,7 +17,7 @@ total-war, shogun-2, game-mod, first-person, third-person, cpp, windows, reverse
 ## Files
 
 - [Landing page and controls](../../README.md)
-- [v0.29 release notes](../releases/v0.29.md)
+- [v0.30 release notes](../releases/v0.30.md)
 - [Standard setup](STANDARD_SETUP.md)
 - [Release handoff](PUBLICATION_HANDOFF.md)
 

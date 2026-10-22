@@ -17,8 +17,8 @@ VERSION = (ROOT / 'VERSION').read_text().strip()
 if not re.fullmatch(r'[0-9]+\.[0-9]+(?:\.[0-9]+)?', VERSION):
     raise RuntimeError('Invalid product version')
 TAG = 'v' + VERSION
-SETUP = 'Shogun2-First-Person-' + TAG + '-Setup.exe'
-ARCHIVE = 'Shogun2-First-Person-' + TAG + '-Windows.zip'
+SETUP = 'Shogun2-Unit-Possession-' + TAG + '-Setup.exe'
+ARCHIVE = 'Shogun2-Unit-Possession-' + TAG + '-Windows.zip'
 ENGINE_SHA = '022fae2e2da92b59b8b1b8ee52887003c624e3c8eca060b209f5d792a7f874f5'
 COMPONENTS = ['possession-v46.dll', 'possession-hud.exe', 'qte-playable-v79.dll']
 RECEIPT = ROOT / 'docs/releases' / (TAG + '-validation.json')
@@ -154,7 +154,7 @@ def verify_inputs():
 
 
 def web_links(text, relative):
-    base = 'https://github.com/logsam58/shogun2-first-person/blob/' + TAG + '/'
+    base = 'https://github.com/logsam58/shogun2-unit-possession/blob/' + TAG + '/'
     def link(match):
         label, target = match.groups()
         if '://' in target or target.startswith('#'):
@@ -195,7 +195,7 @@ def main():
     require(not publication.exists(), 'Publication receipt already exists; refusing to replace release assets')
     shutil.copy2(BIN / 'Shogun2-Possession-Setup.exe', folder / SETUP)
     manifest = {
-        'product': 'Shogun 2 First-Person Possession', 'version': VERSION, 'tag': TAG,
+        'product': 'Shogun 2 Unit Possession', 'version': VERSION, 'tag': TAG,
         'source_commit': head, 'cache_id': receipt['cache_id'], 'engine_sha256': ENGINE_SHA,
         'pe_version': versions, 'components': receipt['release_binaries'],
         'installer': record(folder / SETUP), 'validation': RECEIPT.relative_to(ROOT).as_posix(), 'candidate': receipt.get('candidate'), 'development_candidate': receipt.get('development_candidate', False),

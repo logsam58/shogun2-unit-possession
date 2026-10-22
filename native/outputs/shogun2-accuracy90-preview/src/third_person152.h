@@ -24,7 +24,7 @@ static void view_prepare152(){
     if(!state||state->mode!=POSSESSED||!possession_lease.active)return;
     if(dead_view())return; // Keep the view selected at death until normal return.
     AcquireSRWLockExclusive(&view_lock152);
-    if(view_lease152!=possession_lease.generation){view_lease152=possession_lease.generation;InterlockedExchange(&third_person152,0);}
+    if(view_lease152!=possession_lease.generation){view_lease152=possession_lease.generation;InterlockedExchange(&third_person152,InterlockedCompareExchange(&default_third_person160,0,0));}
     bool change=(view_input152.toggles&1)!=0;view_input152.toggles=0;
     if(change)InterlockedExchange(&third_person152,!third_person152);
     if(third_person152)view_distance152=std::clamp(view_distance152-float(view_input152.wheel)/120.f*.5f,1.f,12.f);

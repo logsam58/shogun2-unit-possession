@@ -1,6 +1,6 @@
-# Shogun 2 First-Person Mod v0.29
+# Shogun 2 Unit Possession v0.30
 
-Launch the original Shogun 2 normally through Steam. In a single-player land
+Launch the original Shogun 2 normally through Steam. Choose Third-Person or First-Person in the startup window; P can switch during possession. In a single-player land
 battle, select a friendly unit and press **F9**. At the closest RTS zoom, point
 the mouse cursor at the soldier you want; from higher up, one is picked for you.
 **F10** or **Escape** returns to your previous RTS view.
@@ -24,11 +24,13 @@ the mouse cursor at the soldier you want; from higher up, one is picked for you.
 | F12 | Disable the mod until the game restarts |
 
 Close the game before an update or uninstall. Use **Windows Settings → Apps →
-Installed apps → Shogun 2 First-Person Mod → Uninstall** to remove this setup.
+Installed apps → Shogun 2 Unit Possession → Uninstall** to remove this setup.
 Unknown replacement files are preserved. Earlier snapshots remain in the setup
 records folder's versioned rollback directory; uninstall does not delete runtime caches.
 
 Charging and castle wall climbing are intermittent known bugs.
+**Naval battles do not support possession.** Naval support is planned for a later update. **Multiplayer is not implemented**; Versus and campaign drop-in support are under consideration. Expect visual bugs, gameplay bugs and occasional crashes. Current support is for single-player land battles and sieges.
+
 Battle crashes, crowd slowdowns with Ultra units, and some first-person weapon
 clipping remain known limitations. Single-player land battles and sieges are the
 intended use; multiplayer, overhaul compatibility and ship possession are not

@@ -22,7 +22,8 @@ void validate_standard_game(){
     auto predecessor=durable::digest(game+L"\\DINPUT8.dll");
     const char* previous_pack=predecessor=="936bb2cd09bfb57ba4a703a3dbdb7ca682d8df4e92a7feaf8b3738d8493a26c2"?"3db77b196bc9fb3ded51ac6e850a386a2b8cc30cf9e97011b1babf88d5e2753b":
         predecessor=="13e9097a3965d9a8a3fb054c1dd9dfe30c0591eba22fda678ab736b036251c44"?"6706393a2b4756765d76a894849fe34052d1ce22eabffdd35ae23965c8a587b2":
-        predecessor=="583b12f04734b8e5db59cad9f909b3a2f1c32773d5f5513008e4601d9f317af3"?"024eb40e5298e80fd817a95c13cf703de396ef741df2edb2aa1c46ac2d23573e":nullptr;
+        predecessor=="583b12f04734b8e5db59cad9f909b3a2f1c32773d5f5513008e4601d9f317af3"?"024eb40e5298e80fd817a95c13cf703de396ef741df2edb2aa1c46ac2d23573e":
+        predecessor=="6e2bec13bdf74795e48281bdade07fa8a2c101ca7993ea2765679d7e5abd5af0"?"21c8e04b83437b1b1f29c4c27e61b9e84d4002862e74f94296c53b95375bf235":nullptr;
     if(previous_pack){
         require(hash_file(game+L"\\Empire.Retail.dll")==EXPECTED_HASH,"Unsupported game version");
         auto pack=durable::digest(game+L"\\data\\"+PACK);

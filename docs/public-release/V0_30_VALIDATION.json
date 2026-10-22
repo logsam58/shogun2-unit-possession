@@ -1,0 +1,221 @@
+{
+  "version": "0.30",
+  "product": "Shogun 2 Unit Possession",
+  "candidate": 160,
+  "fresh_native_results": [
+    {
+      "name": "local-assets-extractor",
+      "passed": true,
+      "seconds": 4.068,
+      "log": "logs\\local-assets-extractor.log"
+    },
+    {
+      "name": "local-assets-prepare",
+      "passed": true,
+      "seconds": 2.858,
+      "log": "logs\\local-assets-prepare.log"
+    },
+    {
+      "name": "local-assets-format-render-tests",
+      "passed": true,
+      "seconds": 7.515,
+      "log": "logs\\local-assets-format-render-tests.log"
+    },
+    {
+      "name": "minhook",
+      "passed": true,
+      "seconds": 2.858,
+      "log": "logs\\minhook.log"
+    },
+    {
+      "name": "adapter",
+      "passed": true,
+      "seconds": 7.175,
+      "log": "logs\\adapter.log"
+    },
+    {
+      "name": "adapter-tests",
+      "passed": true,
+      "seconds": 273.312,
+      "log": "logs\\adapter-tests.log",
+      "executables": 97
+    },
+    {
+      "name": "qte",
+      "passed": true,
+      "seconds": 5.973,
+      "log": "logs\\qte.log"
+    },
+    {
+      "name": "qte-tests",
+      "passed": true,
+      "seconds": 143.14,
+      "log": "logs\\qte-tests.log",
+      "executables": 50
+    },
+    {
+      "name": "hud",
+      "passed": true,
+      "seconds": 3.917,
+      "log": "logs\\hud.log"
+    },
+    {
+      "name": "hud-tests",
+      "passed": true,
+      "seconds": 10.973,
+      "log": "logs\\hud-tests.log",
+      "executables": 8
+    },
+    {
+      "name": "loader",
+      "passed": true,
+      "seconds": 3.78,
+      "log": "logs\\loader.log"
+    },
+    {
+      "name": "loader-tests",
+      "passed": true,
+      "seconds": 6.271,
+      "log": "logs\\loader-tests.log"
+    },
+    {
+      "name": "startup-view-tests",
+      "passed": true,
+      "seconds": 2.663,
+      "log": "logs\\startup-view-tests.log",
+      "executables": 1
+    },
+    {
+      "name": "installer-current-tests",
+      "passed": true,
+      "seconds": 16.64,
+      "log": "logs\\installer-current-tests.log",
+      "executables": 2
+    },
+    {
+      "name": "installer-historical-compatibility",
+      "status": "skipped",
+      "reason": "Optional archived fingerprints are not prerequisites for current transaction tests. Run the documented historical target with a complete verified archive."
+    }
+  ],
+  "fresh_fixture_counts": {
+    "adapter": 97,
+    "qte": 50,
+    "hud": 8,
+    "loader": 2,
+    "real_native_startup_dialog": 1,
+    "current_installer": 2,
+    "owned_child_kills": 15,
+    "standard_installer_groups": 30,
+    "python": 15,
+    "canonical_headers": 6
+  },
+  "standard_checks": [
+    "exact accepted158 upgrade and complete rollback",
+    "exact accepted159 upgrade and complete rollback",
+    "exact former v1.0 upgrade and complete rollback",
+    "exact v0.29 upgrade and complete rollback",
+    "utf8: install, repeat repair, uninstall, repeat uninstall, engine preservation",
+    "utf8-bom: install, repeat repair, uninstall, repeat uninstall, engine preservation",
+    "utf16le: install, repeat repair, uninstall, repeat uninstall, engine preservation",
+    "utf16be: install, repeat repair, uninstall, repeat uninstall, engine preservation",
+    "empty: install, repeat repair, uninstall, repeat uninstall, engine preservation",
+    "interrupted prefix 0: exact baseline restored twice",
+    "interrupted prefix 1: exact baseline restored twice",
+    "interrupted prefix 2: exact baseline restored twice",
+    "interrupted prefix 3: exact baseline restored twice",
+    "interrupted prefix 4: exact baseline restored twice",
+    "interrupted prefix 5: exact baseline restored twice",
+    "interrupted prefix 6: exact baseline restored twice",
+    "foreign DINPUT8 refused without changes",
+    "foreign pack refused without changes",
+    "unknown post-install binary blocks uninstall and rollback without changes",
+    "uninstall preserves script and launcher entries added afterward",
+    "adopt exact pre-existing mod, exact rollback, uninstall and reinstall with retained prior snapshot",
+    "malformed launcher data refused without changes",
+    "changed rollback snapshot refused without game-file changes",
+    "unknown local asset refused without game changes: 4",
+    "unknown local asset refused without game changes: 5",
+    "post-install asset changes preserved and refused",
+    "real Inno install + repeat install + Windows uninstall registration",
+    "real Inno uninstall removes fixture registration and mod, retains rollback and other mods",
+    "real Inno missing original input fails before deployment/registration",
+    "real Inno preview-to-release upgrade preserves old rollback and removes new mod safely"
+  ],
+  "setup": {
+    "name": "Shogun2-Unit-Possession-v0.30-Setup.exe",
+    "sha256": "87e8ba3af58126ce8356049b9b0227eb8eaa61c4ce17cf243666206803ca18b8",
+    "bytes": 2730682,
+    "signed": false,
+    "game_resources_shipped": false,
+    "asset_closure_audit_passed": true,
+    "production_wrapper_executed": false,
+    "fixture_tested_helper_sha256": "dd6d0330704e439821d22b2c9c4b65d39db30ce9e8311888d7cc1d165b4e3517",
+    "stable_previous_AppId_and_ownership_records": true
+  },
+  "runtime_binaries": {
+    "dinput8.dll": {
+      "sha256": "19f7c9b197cb8128a160aa8bd7b4e930b2612f420a5468413690bea55e791ae7",
+      "bytes": 1870848
+    },
+    "marker.pack": {
+      "sha256": "a611fadf4369e7a415aab40099982822c32ba5107c357fea12aadc1c73e81623",
+      "bytes": 1419
+    },
+    "possession-hud.exe": {
+      "sha256": "ebcb4ce1173b565668c981f1a2b6481f8a66bc67cc5f976409bbae110bec1145",
+      "bytes": 505344
+    },
+    "possession-v46.dll": {
+      "sha256": "6041347a13febbe960848401b3476afae28ef307bc381924b11b25864e3e8147",
+      "bytes": 607232
+    },
+    "prepare-local-assets159.exe": {
+      "sha256": "25ce7701936c61fa04c84a3b5ba5f4f0d0ae05324358cdafe5a392ec4af9fb9c",
+      "bytes": 370688
+    },
+    "qte-playable-v79.dll": {
+      "sha256": "57dc95eb033f3a8a938720d74a785435510cf29d93fd248a2e31383778025455",
+      "bytes": 436736
+    }
+  },
+  "startup": {
+    "real_dialog_third_first_close_tested": true,
+    "dialog_title_labels_default_and_bounds_tested": true,
+    "dialog_creation_failure_fallback": "first person",
+    "close_default": "third person",
+    "process_local_strict_value_tested": true,
+    "new_lease_P_and_held_key_behavior_tested": true,
+    "application": "Each new possession; P switches within that lease.",
+    "no_game_settings_registry_or_protocol_layout_change": true
+  },
+  "support": {
+    "naval": "not supported; planned later",
+    "multiplayer": "not implemented; Versus and campaign drop-in under consideration",
+    "expected": "visual/gameplay bugs and occasional crashes"
+  },
+  "live": {
+    "installed_on_owner_game": false,
+    "Test160_live_accepted": false,
+    "game_launched": false,
+    "fresh_loaded_recording_gate_completed": false,
+    "baseline_Test159_manual_acceptance_is_separate": true
+  },
+  "limits": [
+    "Finite synthetic/native provider boundaries",
+    "Steam/fullscreen launch popup still needs live trial",
+    "No naval or multiplayer support claimed",
+    "No new crash, crowd, climbing or charge fixes claimed",
+    "No legal clearance established by resource audits"
+  ],
+  "earlier_attempts": "build-1 and build-2 stopped before completion for test-harness fixes; partial logs retained, not counted as completed validation.",
+  "independent_source_export_build": {
+    "passed": true,
+    "fresh_for_v0_30": true,
+    "separate_extracted_source_and_output": true,
+    "nondefault_owned_game_input_view_with_spaces": true,
+    "original_game_inputs_read_only": true,
+    "all_release_targets_built": true,
+    "full_native_fixture_suite_not_repeated_for_this_closure_check": true
+  }
+}

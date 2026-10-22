@@ -36,6 +36,8 @@ struct Input {
 static SRWLOCK view_lock152=SRWLOCK_INIT;
 static view152::Input view_input152;
 static volatile LONG third_person152;
+static volatile LONG default_third_person160;
+static void view_default160(bool third){InterlockedExchange(&default_third_person160,third?1:0);}
 static unsigned view_lease152;
 static bool orbit_held154;static float orbit_yaw154,orbit_pitch154;
 static void orbit_button154(bool held){AcquireSRWLockExclusive(&view_lock152);orbit_held154=held&&third_person152;if(!orbit_held154)orbit_yaw154=orbit_pitch154=0;ReleaseSRWLockExclusive(&view_lock152);}
