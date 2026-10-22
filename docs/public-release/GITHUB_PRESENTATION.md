@@ -1,7 +1,9 @@
 # GitHub presentation
 
-Prepared locally. Do not push, create a release, change visibility, rename the
-repository or replace existing release assets as part of this preparation.
+The owner authorized uploading this prepared page and installer to the private
+repository. The page is on `public-release`, with a separate draft release.
+Do not make the repository public, publish the draft, rename the repository or
+replace existing release assets without further authorization.
 
 ## Repository name
 
@@ -33,4 +35,5 @@ reverse-engineering
 
 No new version number is assigned. v0.28 is the current version; Test158 is the
 accepted candidate inside the new setup. Existing v0.28 tags and assets stay
-immutable. The new local setup has not replaced an existing GitHub download.
+immutable. The new setup is in a separate private draft and has not replaced an existing
+GitHub download.

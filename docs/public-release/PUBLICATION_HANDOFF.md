@@ -1,8 +1,11 @@
-# Publication handoff — private preparation
+# Publication handoff — private GitHub preview
 
-The owner requested a finished GitHub page and standard setup, with publication
-left to them. No push, release creation, repository rename or visibility change
-is part of this task. The existing GitHub repository was verified private.
+After the initial local preparation, the owner explicitly authorized uploading
+the prepared page and installer to GitHub while keeping the repository private.
+The page is on the [public-release branch](https://github.com/logsam58/shogun2-first-person/tree/public-release).
+The installer, frozen source kit and checksums are in the [private draft release](https://github.com/logsam58/shogun2-first-person/releases/tag/untagged-ccbcd8419ff6f2951702).
+There is no public release, repository rename or visibility change. The original
+main branch and published v0.28/v0.27 releases remain intact.
 
 ## Prepared presentation
 
@@ -47,11 +50,10 @@ immutable. Do not upload the new same-named setup over the old v0.28 asset or
 retag the release. The owner must choose how to publish the new packaging while
 preserving that history; this preparation assigns no new version.
 
-The release body already uses absolute documentation links to `public-release`;
-those new links will resolve when the owner publishes that branch. No branch
-push is claimed here. Keep the private-preview notice until actual download
-availability and distribution status are established. No uploaded asset URL is
-invented.
+The release body uses absolute documentation links to the uploaded
+`public-release` branch. The README links to the actual private draft. Keep the
+private-preview notice while downloads remain private and redistribution status
+is unresolved. A future public launch remains the owner's decision.
 
 The optional diagnostic recorder is separate from the player installer. No new
 recorder deployment or live-test readiness is implied. Any future installation

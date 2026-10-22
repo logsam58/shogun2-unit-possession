@@ -1,6 +1,6 @@
 # Public-release preparation branch
 
-This branch is isolated from the accepted v0.28/Test157 release. The user authorized implementing the public-release engineering plan here and freshly confirmed CLOSED. No installation, live capture, game launch/termination, recorder deployment, settings/CPU change, push, visibility change or publication is authorized by that work.
+This branch is isolated from the accepted v0.28/Test157 release. The user authorized implementing the public-release engineering plan here and freshly confirmed CLOSED. The owner subsequently authorized a private branch upload and separate draft containing the standard installer/source kit. No real installation, live capture, game launch/termination, recorder deployment, settings/CPU change, visibility change or public publication is authorized. Preserve published release tags/assets and the original main branch.
 
 Preserve the existing native implementation and accepted gameplay. Use verified role/ABI/lifetime contracts; no speculative native-layout changes, wholesale rewrite. Keep published tags/assets immutable. Obtain fresh game-state authorization for future live/install work and verify exact loaded identities plus actual recording before asking for gameplay.
 

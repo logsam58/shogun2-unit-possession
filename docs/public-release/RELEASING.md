@@ -1,6 +1,6 @@
 # Prepare a release
 
-The approved public format is a source/local-resource kit. Local setup/HUD/loader binaries embed game resources; do not upload them while redistribution permission is unresolved. Build tools are obtained separately.
+The approved public format is a source/local-resource kit. Local setup/HUD/loader binaries embed game resources; do not upload them publicly while redistribution permission is unresolved. The owner separately approved the private preview draft; that is not public distribution clearance. Build tools are obtained separately.
 
 1. Read current-release.json, choose a branch/candidate and preserve published tags.
 2. Regenerate roles/tables/resources, then run current native/Python/diagnostic checks from a fresh source export with explicit paths.

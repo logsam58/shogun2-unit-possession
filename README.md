@@ -20,11 +20,11 @@ The HUD puts your unit's condition, weapon, ammo, abilities and orders within re
 
 ## Install and play
 
-**v0.28 — private preview.** The standard Windows installer is prepared locally and has not been uploaded. Public download availability will be announced by the repository owner.
+**v0.28 — private preview.** The installer is available under **Assets** in the [private draft release](https://github.com/logsam58/shogun2-first-person/releases/tag/untagged-ccbcd8419ff6f2951702). This repository and its downloads remain private.
 
 You need an installed, owned copy of the **original Windows Steam version of Total War: SHOGUN 2**. The installer checks the supported game build and runs on Windows 10 or later. No compiler, Python installation or separate mod launcher is needed to play.
 
-1. Get **`Shogun2-First-Person-v0.28-Setup.exe`** from the supplied private preview package. Once a download is published, this is the player installer to choose from the release's **Assets**.
+1. Open the [private draft release](https://github.com/logsam58/shogun2-first-person/releases/tag/untagged-ccbcd8419ff6f2951702) and download **`Shogun2-First-Person-v0.28-Setup.exe`** from **Assets**. You need to be signed into GitHub with access to this draft.
 2. Close Shogun 2 completely. Run setup and choose the folder containing **Shogun2.exe** and **Empire.Retail.dll**.
 3. Launch the game normally **through Steam**. In a single-player land battle, select one of your units and press **F9**.
 
