@@ -24,7 +24,7 @@ v0.24 gameplay was accepted, with first-person weapon/arm poses and clipping lef
 
 - **Bow draw and sound:** bow strength depends on holding LMB, but the native draw animation and sound begin with RMB. Separating sound timing from that animation is deferred.
 
-- **Charging is intermittent:** it sometimes works and sometimes does not. This remains an open bug in the current build.
+- **Attack charging is partly broken:** it remains unreliable and may work in one attempt and fail in another. This is an open bug in the current build.
 - **Enemies targeting a separated player:** autonomous enemy shooting and charge acquisition when you leave your formation still need investigation. Being present in native targeting data does not prove that an enemy will choose you.
 
 - **Interrupted melee prompts:** another hit, death or a change in the fight can cut a prompt short. INTERRUPTED is there to show that it ended early. Crowded fights still need more testing.

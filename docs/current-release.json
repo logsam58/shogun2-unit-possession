@@ -39,7 +39,7 @@
     "branch_policy": "main only"
   },
   "open": [
-    "intermittent charging",
+    "attack charging remains partly broken and unreliable",
     "intermittent castle wall climbing",
     "unresolved game crashes",
     "Ultra multi-army slowdown",

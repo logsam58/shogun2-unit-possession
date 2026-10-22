@@ -76,7 +76,7 @@ Unit orders are unavailable while you're locked in a melee animation, climbing o
 
 This mod is intended for **single-player land battles and sieges**. It recognises weapons from Shogun 2, Rise of the Samurai and Fall of the Samurai, but not every unit, weapon, ability or castle layout has been tested. Naval possession is not available and is planned for later. Multiplayer, including Versus and campaign drop-in, is under consideration and is not implemented. Overhaul compatibility is unconfirmed. Artillery keeps the game's own first-person mode.
 
-Charging and castle wall climbing are intermittent: sometimes they work, sometimes they do not. Both remain known bugs.
+Attack charging is still partly broken and unreliable: it may work in one attempt and fail in another. Castle wall climbing is also intermittent. Both remain known bugs.
 
 Battle crashes remain unresolved. **Ultra unit size with several armies or dense fighting can still cause serious slowdowns**, even on low graphics settings. Large units with one full army per side have been reported smooth, but that isn't a performance guarantee. Some first-person weapons and arms can clip, and mounted bows still have presentation issues. Bow draw audio follows the native animation rather than the variable draw input.
 
