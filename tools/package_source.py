@@ -30,7 +30,7 @@ def selected(root=ROOT):
             if path.suffix!='.cmd':yield path
         elif parts[0]=='tests':yield path
         elif parts[0]=='docs':
-            if (len(parts)==2 and path.name in DOCS) or (len(parts)>2 and parts[1]=='public-release'):yield path
+            if (len(parts)==2 and path.name in DOCS) or (len(parts)>2 and parts[1]=='public-release') or rel.as_posix()=='docs/releases/v0.28-public-preview.md':yield path
         elif parts[0]=='tools':
             if len(parts)==2 and path.name in TOOLS:yield path
             elif parts[1]=='installer':yield path
