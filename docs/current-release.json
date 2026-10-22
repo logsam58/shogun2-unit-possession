@@ -12,14 +12,17 @@
     "format": "standard setup with install-time local assets",
     "installed": false,
     "live_accepted": false,
-    "pushed": false,
+    "pushed": true,
     "published": false,
     "game_resources_shipped": false,
     "private_draft": {
       "url": "https://github.com/logsam58/shogun2-first-person/releases/tag/untagged-ccbcd8419ff6f2951702",
       "release_id": 420192018,
       "label": "v0.28-private-preview",
-      "public": false
+      "public": false,
+      "candidate": 159,
+      "installer": "Shogun2-First-Person-v0.28-LocalAssets-Setup.exe",
+      "source_kit": "Shogun2FP-Public-Source-Kit-Test159.zip"
     }
   },
   "owner_decisions": {
