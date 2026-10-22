@@ -8,7 +8,7 @@ The mod is still being worked on. **Visual and gameplay bugs, and some crashes, 
 
 Crashes can still happen during battles, including with blood turned off. The accepted v0.28 playtest also ended in a recorded crash; its cause remains unresolved. v0.24 corrects one captured fault where a detached soldier's native advance task expected a squad. Other captured failures remain unresolved, and this does not establish a shared cause for every crash.
 
-v0.22 was reported smooth with Large units, one massive army per side and maximum graphics in DX11. Ultra units with substantial army presence can still become very slow. The audio guard covers one reproduced fault; it does not resolve all crashes. It can happen without a QTE showing, and sometimes the QTE stays smooth while the battle slows down. Some fights recover on their own. Leaving and re-entering possession isn't a confirmed fix.
+v0.22 was reported smooth with Large units, one massive army per side and maximum graphics in DX11. Ultra units with substantial army presence can still become very slow, as is normal with Total War Shogun 2. The audio guard covers one reproduced fault; it does not resolve all crashes. It can happen without a QTE showing, and sometimes the QTE stays smooth while the battle slows down. Some fights recover on their own. Leaving and re-entering possession isn't a confirmed fix.
 
 If you hit either problem, include the unit, map and what was happening nearby. The [technical notes](https://github.com/logsam58/shogun2-first-person/blob/v0.28/docs/releases/v0.24-technical.md#remaining-limits) contain the crash details and investigation limits.
 
