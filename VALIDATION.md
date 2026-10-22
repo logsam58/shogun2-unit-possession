@@ -8,6 +8,6 @@ Current installer tests cover install, repeated repair, encoding, collisions, ex
 
 Fixtures have finite native/synthetic provider boundaries. Passing them does not prove all driver/world/castle behavior, race freedom, absence of leaks, or physical display latency.
 
-No real game was launched, installed, attached or profiled for Test159. Installed Test158 and its limited reported acceptance stay separate. A new candidate needs separate install authorization and a fresh READY/IN BATTLE, exact loaded hashes/native hooks and actual recording check before formal play.
+The owner subsequently installed Test159 through the standard setup and accepted the manual trial. Readback matches the installed payload/resources and own activation; existing recorder metadata matches all four runtime backing files. The formal preplay native-hook/capture gate was not completed and is not retrospectively claimed. This acceptance does not establish universal unit/map coverage. No new launch, live read, trace or recorder change was performed while recording that feedback. Future testing still needs a fresh cue and exact loaded/capture verification.
 
 Crashes, crowd slowdown and first-person clipping remain open. No review finding established their cause; a native-module fault address alone does not determine causation.

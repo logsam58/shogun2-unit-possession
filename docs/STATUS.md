@@ -1,7 +1,11 @@
 # Status
 
-Published v0.28/Test157 and the original main branch remain unchanged. Installed Test158 was accepted after one reported completed battle; its missing formal preplay gate remains explicit.
+The owner has tried the Test159 local-resource installer from a clean starting point and accepted the build. The installed loader, marker, resource files and activation match the intended package. Existing recording metadata also matches the four runtime component backing-file hashes.
 
-The public-release branch now prepares Test159: a standard Inno installer that reads each player’s own game resources during installation. No Shogun image/font/audio payload ships in the new candidate. See [local-resource validation](public-release/LOCAL_ASSETS159_VALIDATION.json), [setup](public-release/STANDARD_SETUP.md) and [current identity](current-release.json).
+The formal preplay native-hook/capture gate was not completed for that trial and is not retrospectively claimed. User acceptance is separate from that missing gate; individual unit/map/feature coverage was not specified. The recorder's expected-build baseline has not been changed here.
 
-Test159 has not been installed into the real game or live-accepted. The repository and preview draft remain private. Earlier embedded-resource previews and published historical assets are retained separately. Crashes, Ultra crowd slowdown, clipping and isolated acquisition remain open; no gameplay or crash fix is claimed here.
+Charging and castle wall climbing are intermittent and remain known bugs. Crashes, Ultra crowd slowdown, clipping and isolated enemy acquisition also remain open.
+
+The current public-release page and private draft point to the accepted local-resource installer. The default main branch and published v0.28/v0.27 releases are unchanged. Superseded draft downloads are archived locally. Nothing has been publicly published or made public.
+
+See [current identity](current-release.json), [known bugs](KNOWN_ISSUES.md), [resource behavior](public-release/RESOURCES.md) and [validation](public-release/LOCAL_ASSETS159_VALIDATION.json).

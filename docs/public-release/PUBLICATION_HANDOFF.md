@@ -1,9 +1,11 @@
-# Private preview handoff
+# Private release handoff
 
-The current work is **Test159** on `public-release`: standard Inno setup that prepares Shogun artwork, ability icons, unit cards, fonts and voice from each player's installed game. It ships no game image/font/audio payload. See [setup details](STANDARD_SETUP.md), [resources](RESOURCES.md) and [validation](LOCAL_ASSETS159_VALIDATION.json).
+The owner accepted the clean manual Test159 installer trial and requested that it become the current public-release build. Product version remains **v0.28**. The standard setup reads game artwork, cards, ability/status icons, fonts and voice from the player's own installation; those assets are excluded from the download.
 
-The prepared page/downloads remain in the private repository and draft ID420192018. The default main branch and immutable v0.28/v0.27 releases remain unchanged. Use the distinct LocalAssets setup and Test159 source kit; the earlier Test158 setup/frozen source kit are retained historical private artifacts.
+The private draft is still release ID420192018. Current downloads are the LocalAssets setup, `Shogun2FP-Public-Source-Kit-v0.28.zip` and `SHA256SUMS.txt`. Superseded draft previews are archived locally before retirement. The exact tested setup is reused without rebuilding gameplay. Main and published v0.28/v0.27 releases/tags are unchanged.
 
-No real game installation or live acceptance is claimed for Test159. Installed/user-reported accepted158 and accepted157 rollback remain untouched. Fresh install and loaded-build/capture gates still apply. No recorder, settings, CPU, affinity, game launch or new trace changes belong to this task.
+User acceptance is scoped to the reported manual trial. Installed-file and existing recorded backing-file identities match Test159; the formal preplay/native-hook gate was not completed and must not be fabricated. No new live read, trace, installation, recorder/settings change or game launch was performed for this update.
 
-Do not publish the draft or change visibility without explicit new authorization. Old private release downloads/history have not been converted by this new candidate. The owner's public-launch decision remains separate.
+**Charging and castle wall climbing are intermittent.** Both are listed in the README, known issues and release notes. Other crash/performance/POV/acquisition limitations remain open.
+
+The repository stays private and the release stays draft/prerelease. Only the owner decides the public launch. Older published/private history has not been converted into code-only downloads by this task.

@@ -1,6 +1,6 @@
 # Standard Windows setup
 
-The current candidate is **v0.28 / Test159**, using Inno Setup 7.1.0. Download `Shogun2-First-Person-v0.28-LocalAssets-Setup.exe`. It is unsigned and remains a private preview pending the owner's decision.
+The current build is **v0.28 / Test159**, using Inno Setup 7.1.0. The owner has tried the installer from a clean starting point and accepted it. Download `Shogun2-First-Person-v0.28-LocalAssets-Setup.exe`. It is unsigned and the release remains a private draft pending the owner's public-launch decision.
 
 ## Installation
 
@@ -18,4 +18,4 @@ Run setup from the Windows account used to play. It requests administrator acces
 
 See [BUILD_AND_TEST.md](../../BUILD_AND_TEST.md). `build_local_setup159.py` accepts a successful isolated local-assets Test159 build, audits PE resource closure and packages code/notices only. It deliberately excludes the privately generated `local-assets`, `bin/*.s2fp` and `tests/*.s2fp` inputs. The fixture verification runs the actual Inno engine against isolated read-only game-input views, including preparation on the test computer.
 
-The earlier `Shogun2-First-Person-v0.28-Setup.exe` is a separate historical private preview containing embedded resources. Its identity and previous assets are preserved. It is not the local-resource download.
+The earlier `Shogun2-First-Person-v0.28-Setup.exe` is a separate historical private preview containing embedded resources. Its exact file is archived locally after the owner authorized replacing old draft previews. It is not the current download.

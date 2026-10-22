@@ -22,14 +22,14 @@ v0.24 gameplay was accepted, with first-person weapon/arm poses and clipping lef
 
 - **Bow draw and sound:** bow strength depends on holding LMB, but the native draw animation and sound begin with RMB. Separating sound timing from that animation is deferred.
 
-- **Charging:** the reworked charge was accepted in v0.27. The game decides the attack, defense and outcome, so a kill or cavalry leap is not guaranteed for every approach.
+- **Charging is intermittent:** it sometimes works and sometimes does not. This remains an open bug in the current build.
 - **Enemies targeting a separated player:** autonomous enemy shooting and charge acquisition when you leave your formation still need investigation. Being present in native targeting data does not prove that an enemy will choose you.
 
 - **Interrupted melee prompts:** another hit, death or a change in the fight can cut a prompt short. INTERRUPTED is there to show that it ended early. Crowded fights still need more testing.
 - **Shots or volleys not releasing:** include the exact unit, weapon and ammo. Bow, gun and other weapon support is broader than the combinations tested so far. Say whether it was your soldier, the rest of the unit, or both.
 - **Unexpected return to the RTS view:** some battle situations still need investigation. Say whether your soldier was alive, wavering, climbing, falling or landing when it happened.
 - **Formations:** orders use Shogun 2's own formations and pathfinding. Terrain, casualties and morale can change how a unit responds. Report soldiers staying stuck or failing to reform.
-- **Siege climbing:** speed, climbing over and landing have been tested, but not every castle layout or interruption. Include the castle and where on the wall it happened.
+- **Castle wall climbing is intermittent:** it sometimes works and sometimes does not. This remains an open bug in the current build. Include the castle and wall location when reporting it.
 - **Friendly-fire voice:** it covers direct hits from your own tracked shots. Splash damage, secondary effects and every weapon combination haven't been tested.
 - **Aiming:** the descending dashes help with drop; they aren't a rangefinder. Shot spread follows unit accuracy, but isn't an exact copy of RTS shot scattering.
 

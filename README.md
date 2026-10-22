@@ -20,7 +20,7 @@ The HUD puts your unit's condition, weapon, ammo, abilities and orders within re
 
 ## Install and play
 
-**v0.28 — private local-resource candidate (Test159).** Use **`Shogun2-First-Person-v0.28-LocalAssets-Setup.exe`** under **Assets** in the [private draft release](https://github.com/logsam58/shogun2-first-person/releases/tag/untagged-ccbcd8419ff6f2951702). This repository and its downloads remain private.
+**v0.28 — current build.** Use **`Shogun2-First-Person-v0.28-LocalAssets-Setup.exe`** under **Assets** in the [private draft release](https://github.com/logsam58/shogun2-first-person/releases/tag/untagged-ccbcd8419ff6f2951702). This repository and its downloads remain private.
 
 You need an installed, owned copy of the **original Windows Steam version of Total War: SHOGUN 2**. The installer checks the supported game build and runs on Windows 10 or later. No compiler, Python installation or separate mod launcher is needed to play.
 
@@ -71,6 +71,8 @@ Unit orders are unavailable while you're locked in a melee animation, climbing o
 ## Compatibility and limits
 
 This mod is intended for **single-player land battles and sieges**. It recognises weapons from Shogun 2, Rise of the Samurai and Fall of the Samurai, but not every unit, weapon, ability or castle layout has been tested. Multiplayer and overhaul compatibility are unconfirmed. Ship possession isn't included; artillery keeps the game's own first-person mode.
+
+Charging and castle wall climbing are intermittent: sometimes they work, sometimes they do not. Both remain known bugs.
 
 Battle crashes remain unresolved. **Ultra unit size with several armies or dense fighting can still cause serious slowdowns**, even on low graphics settings. Large units with one full army per side have been reported smooth, but that isn't a performance guarantee. Some first-person weapons and arms can clip, and mounted bows still have presentation issues. Bow draw audio follows the native animation rather than the variable draw input.
 

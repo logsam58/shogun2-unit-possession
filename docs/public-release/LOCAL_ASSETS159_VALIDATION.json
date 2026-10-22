@@ -4,8 +4,8 @@
   "version": "0.28",
   "branch": "public-release",
   "offline_passed": true,
-  "installed": false,
-  "live_accepted": false,
+  "installed": true,
+  "live_accepted": true,
   "published": false,
   "private": true,
   "game_resources_shipped": false,
@@ -201,7 +201,10 @@
     "bytes": 2728452,
     "unsigned": true,
     "production_wrapper_executed": false,
-    "exact_fixture_tested_helper": true
+    "exact_fixture_tested_helper": true,
+    "subsequent_manual_install_accepted": true,
+    "production_wrapper_executed_by_agent": false,
+    "production_wrapper_executed_field_scope": "Earlier offline package-validation run only; owner subsequently ran the installer."
   },
   "payload_audit": {
     "passed": true,
@@ -237,7 +240,7 @@
     "recorder_debugger_settings_changed": false
   },
   "limitations": [
-    "No new live gameplay test; future swap and loaded/capture gate remain separate.",
+    "Owner accepted manual Test159 trial; formal preplay/native-hook gate was not completed and is not retrospectively claimed.",
     "Original supported Windows Steam engine and pinned English data/local_en packs required.",
     "Windows N requires Media Feature Pack.",
     "Older private embedded-resource downloads/history remain unchanged.",
@@ -247,5 +250,17 @@
     "initial Media Foundation include compile failure",
     "duplicate packaging header inclusion compile failures before corrected final build"
   ],
-  "raw_evidence": "Private Test159 artifacts; generated game resources and raw logs excluded from source kit."
+  "raw_evidence": "Private Test159 artifacts; generated game resources and raw logs excluded from source kit.",
+  "formal_preplay_gate_completed": false,
+  "user_acceptance": {
+    "source": "Owner report following manual clean installation",
+    "scope": "Individual unit/map/feature coverage unspecified",
+    "installed_files_verified": true,
+    "existing_recorded_backing_files_match": true,
+    "new_live_trace": false
+  },
+  "subsequent_known_bugs": [
+    "Intermittent charging",
+    "Intermittent castle wall climbing"
+  ]
 }

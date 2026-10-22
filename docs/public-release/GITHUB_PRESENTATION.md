@@ -3,7 +3,7 @@
 The owner authorized uploading this prepared page and installer to the private
 repository. The page is on `public-release`, with a separate draft release.
 Do not make the repository public, publish the draft, rename the repository or
-replace existing release assets without further authorization.
+replace published release assets. The owner authorized replacing the superseded private draft previews.
 
 ## Repository name
 
@@ -33,4 +33,4 @@ reverse-engineering
 - [Standard setup build and validation](STANDARD_SETUP.md)
 - [Publication handoff](PUBLICATION_HANDOFF.md)
 
-Product version remains v0.28. Test159 is the separate local-resource installer candidate, not installed or live-accepted. The existing private draft receives distinct new candidate filenames; older setup/source assets retain their identities. Keep the repository private and the draft unpublished.
+Product version remains v0.28. Test159 is the owner-accepted local-resource installer. Current draft downloads are the LocalAssets setup, versioned source kit and checksums. Superseded draft previews are archived locally before retirement. Keep the repository private and the draft unpublished.

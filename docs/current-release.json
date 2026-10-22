@@ -10,8 +10,8 @@
     "branch": "public-release",
     "candidate": 159,
     "format": "standard setup with install-time local assets",
-    "installed": false,
-    "live_accepted": false,
+    "installed": true,
+    "live_accepted": true,
     "pushed": true,
     "published": false,
     "game_resources_shipped": false,
@@ -22,8 +22,12 @@
       "public": false,
       "candidate": 159,
       "installer": "Shogun2-First-Person-v0.28-LocalAssets-Setup.exe",
-      "source_kit": "Shogun2FP-Public-Source-Kit-Test159.zip"
-    }
+      "source_kit": "Shogun2FP-Public-Source-Kit-v0.28.zip"
+    },
+    "acceptance_scope": "Owner accepted the manual clean-install/game trial; individual unit/map/feature coverage unspecified.",
+    "formal_preplay_gate_completed": false,
+    "installed_component_hashes_match": true,
+    "recorded_component_hashes_match": true
   },
   "owner_decisions": {
     "first_party_license": "MIT",
@@ -31,18 +35,20 @@
     "status_icons": "original native icons in public profile"
   },
   "open": [
+    "intermittent castle wall climbing",
+    "intermittent charging",
     "unresolved game crashes",
     "Ultra multi-army slowdown",
     "some first-person clipping",
     "isolated enemy acquisition",
     "permission for resource-containing public binaries",
-    "Formal native-hook/preplay capture gate not completed for accepted Test158 battle; future testing needs fresh cue."
+    "Test159 formal preplay gate was not completed; acceptance is user-reported and future live tests require a fresh gate."
   ],
   "previous_candidate": {
     "branch": "public-release",
     "candidate": 158,
     "format": "source/local-resource-kit",
-    "installed": true,
+    "installed": false,
     "live_accepted": true,
     "pushed": true,
     "published": false,
@@ -54,6 +60,7 @@
       "release_id": 420192018,
       "label": "v0.28-private-preview",
       "public": false
-    }
+    },
+    "removed_with_verified_rollback": true
   }
 }
