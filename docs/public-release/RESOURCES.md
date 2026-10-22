@@ -1,6 +1,6 @@
 # Local game resources
 
-v0.30 uses the accepted Test159 resource format, with extraction on the player’s installation. The setup download contains no Shogun images, unit cards, ability icons, CUF fonts or advisor audio. No placeholders replace them.
+v0.31 uses the accepted Test159 resource format, with extraction on the player’s installation. The setup download contains no Shogun images, unit cards, ability icons, CUF fonts or advisor audio. No placeholders replace them.
 
 `prepare-local-assets159.exe` runs outside the game during setup. It checks the supported engine, reads `data.pack` and `local_en.pack` without changing them, and verifies all 615 original entries against metadata-only hashes. Its bounded PFH3/TGA reader builds the accepted HUD and QTE atlas layout, copies 20 fonts, prepares native ability/status icons and crops the English advisor voice to 3.25–4.80 seconds. Windows Media Foundation decodes the MP3; no Python, FFmpeg, ImageMagick, Node or compiler is needed by players. Windows N requires the Media Feature Pack.
 

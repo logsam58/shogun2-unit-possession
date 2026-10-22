@@ -1,4 +1,8 @@
-# Current v0.30 work
+# Current v0.31 update
+
+The owner requested a quick-start control schematic in the prelaunch chooser, then authorized committing and releasing v0.31 privately. See [V0_31_VALIDATION.json](V0_31_VALIDATION.json) for fresh startup/installer checks, retained exact gameplay evidence and live-test limits.
+
+# Historical v0.30 work
 
 The owner requested the Shogun 2 Unit Possession rename, startup camera chooser and explicit naval/multiplayer/bug limitations. This new Test160 build is awaiting live acceptance. Current checks are in [V0_30_VALIDATION.json](V0_30_VALIDATION.json). The earlier source-kit engineering checklist below records historical work, not a claim of live acceptance for Test160.
 

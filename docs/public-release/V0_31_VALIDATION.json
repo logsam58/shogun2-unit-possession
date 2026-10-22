@@ -1,0 +1,92 @@
+{
+  "schema": 1,
+  "version": "0.31",
+  "candidate": 161,
+  "published_repository_visibility": "private",
+  "owner_installation_changed": false,
+  "production_installer_executed": false,
+  "live_accepted": false,
+  "features": [
+    "Quick-start guide with native WASD key diagram and possession/combat/camera/unit-order instructions",
+    "Steam prelaunch chooser; a camera button starts the original game; closing cancels",
+    "One-time player-configured Steam launch option; no Steam file editing",
+    "Game loader no longer creates a camera popup"
+  ],
+  "fresh_native_tests": {
+    "loader": 2,
+    "real_guide_dialog": 1,
+    "real_prelaunch_dialog_and_toy_child": 1,
+    "current_installer": 2,
+    "owned_child_kill_recoveries": 15,
+    "passed": true
+  },
+  "retained_native_tests": {
+    "adapter": 97,
+    "qte": 50,
+    "hud": 8,
+    "resource_format_and_production_renderers": true,
+    "exact_components_reused": true,
+    "protected_source_files_exact": 408,
+    "scope": "Full Test161 build passed during this task; these exact component binaries and unchanged source were retained for v0.31. Not a second run of those gameplay suites."
+  },
+  "standard_installer": {
+    "grouped_checks": 26,
+    "passed": true,
+    "exact_v0_30_upgrade_and_rollback": true,
+    "helper_deployed_and_removed": true,
+    "generated_steam_line_verified": true,
+    "helper_sha256": "15b6894263ef103f43082240ea6882159b210eb58bcf300faa099aa45bbfc9a8",
+    "actual_previous_inno_upgrade": {
+      "passed": true,
+      "previous_app_directory_retained": true,
+      "old_snapshot_files_preserved": 16,
+      "uninstalled_without_game_or_steam_changes": true
+    }
+  },
+  "python": {
+    "tests": 15,
+    "passed": true,
+    "role_policy_passed": true,
+    "generated_headers": 6
+  },
+  "resource_audit": {
+    "passed": true,
+    "game_images_fonts_audio_embedded": false,
+    "prepared_from_each_owned_game": true
+  },
+  "runtime": {
+    "dinput8.dll": "9c1471e8dea6bae0f21dec152fc092e1858e680a878a74fa282d1f1b8bda1f64",
+    "marker.pack": "7835ea6cab325d8823be27e1a19476e4c0cabf826db52c1258e7ce4c8dcf12ca",
+    "possession-v46.dll": "5a8e3267c81cc3a29bb3ccf03aabbaea369ee7b8dd315776443a5a68010ac8c7",
+    "possession-hud.exe": "4c0a27469d8a5e69e6266f06309861e3f1d91c85c49a131b731d9abfafab3aea",
+    "qte-playable-v79.dll": "fe6abb6afdeae93cd288893315313aaba534b05dd069c17421700a474fea7536",
+    "shogun2-unit-possession-launcher.exe": "7aa7ee2e4ba069e521c6fb1fd983752835016a6c797a09d21a20c30a0cdec3aa",
+    "prepare-local-assets159.exe": "036f5ab4e5fdef8a62884dca69ef1aaaff61c6643d5f0119831f800d6829b875"
+  },
+  "installer": {
+    "name": "Shogun2-Unit-Possession-v0.31-Setup.exe",
+    "sha256": "4f1bc315a1a8789c6b4baf9f9658b2eb44e8347376c8f31954dff38c03d236b9",
+    "bytes": 2756289,
+    "unsigned": true
+  },
+  "limits": [
+    "Actual Steam command expansion, DRM/overlay and fullscreen focus require a live launch",
+    "Not installed or live-tested on the owner game",
+    "Without the helper launch option, first-person fallback starts without a popup",
+    "Existing custom Steam launch wrappers need compatibility review",
+    "Attack charging partly broken; castle climbing intermittent; crashes, Ultra slowdown and visual issues unresolved"
+  ],
+  "earlier_failures_retained": [
+    "First Test161 Inno fixture caught early app-constant initialization; corrected to WizardDirValue before final passing setup checks",
+    "First v0.31 installer-fixture run lacked the explicit legitimate game input; final build-2 supplied it",
+    "Guide capture test required the OLE header and post-show capture; final rendered dialog checked"
+  ],
+  "source_closure_build": {
+    "passed": true,
+    "independent_exported_source": true,
+    "full_native_release_build": true,
+    "game_launched_or_modified": false,
+    "second_gameplay_fixture_run": false,
+    "note": "Built from the independently exported source. Final receipt/documentation updates do not change compiled source."
+  }
+}

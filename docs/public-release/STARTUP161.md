@@ -1,0 +1,19 @@
+# Test161 — choose the camera before launching the game
+
+v0.31 / Test161. The published v0.30 tag and downloads are unchanged.
+
+The v0.30 chooser ran on the autoload worker after DirectInput initialization. That allowed startup to continue while a separate dialog took focus from the game's fullscreen window. The preserved engine analysis at RVA 9d2e0 calls bba610/DirectInput8Create after window setup; moving a worker popup around that call cannot provide a true prelaunch chooser. Decompiled output is analysis, not original source or a verified callable ABI. No engine patch is introduced here.
+
+Test161 uses a small Windows launch helper in front of Steam's original command. The chooser also provides a quick-start guide with a WASD schematic, F9/F10, ranged/melee inputs, cameras, abilities and unit commands. Its text and control bounds are checked in the real native dialog.
+
+Setup displays the exact one-time Steam Launch Options line and saves it in Steam-Launch-Options.txt in the installed app folder. Steam starts the helper through `%command%`. A camera button closes the chooser, publishes the existing process-local preference, and only then creates the original game process. Closing/cancelling the chooser starts nothing. Dialog creation failure also starts nothing. The loader no longer creates a camera dialog inside the game.
+
+The helper passes the original command line unchanged to CreateProcessW with an explicit executable, no shell and no inherited handles. It retains Steam's environment and current working directory, waits for the child and returns its exit code. It requires the supported original Shogun2.exe or Shogun2.retail.exe, the supported engine fingerprint and SteamAppId 34330. A per-session mutex prevents duplicate helper launches. No game executable replacement, Steam file editing, DRM workaround, CPU/graphics change or new native gameplay hook is involved.
+
+Without the launch option, the loader uses the historical first-person fallback with no popup. The player can still switch using P. Existing custom Steam launch wrappers require separate compatibility review. Remove this helper's line before uninstalling; setup's uninstall prompt explains that step. The setup identity remains stable, while rollback-v0.31 keeps this update separate from the existing v0.30 snapshots. The exact Test160 loader/marker pair is recognized as an upgrade predecessor.
+
+The dedicated native fixture opens the real chooser and launches an isolated toy executable. It checks first/third selection, no child report before the choice, cancellation, Unicode/quoted/empty arguments, Steam environment, working directory and child exit status. Target-name and malformed-command guards are separate. The toy never uses a Shogun executable name and cannot attach to or run the game. Standard installer fixtures cover actual Inno deployment/removal of the helper and the generated Steam line, plus exact v0.30 game-file upgrade/rollback.
+
+These fixtures do not establish actual Steam `%command%` expansion, DRM/overlay behavior, driver fullscreen focus or live possession on the owner's game. Those still require the real installer, the one-time Steam line, a fresh launch cue, exact loaded hashes/native hooks and actual recording verification. Gameplay and resource-source changes are not part of this correction.
+
+References: [Microsoft CreateProcessW](https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-createprocessw), [child environment inheritance](https://learn.microsoft.com/en-us/windows/win32/procthread/environment-variables), [Valve Steam initialization context](https://partner.steamgames.com/doc/sdk/api), and a [Windows wrapper author's `%command%` setup](https://github.com/chdonncha/steam-wrapper-launcher). The wrapper example is a reference, not a dependency or incorporated source.

@@ -51,7 +51,7 @@ Multiplayer is not implemented; Versus and campaign drop-in support are under co
 
 **An old build still seems active:** close Shogun 2 completely before updating, then launch it again through Steam.
 
-**Turning it off or removing it:** F12 turns the mod off for the current session. The new standard setup provides a Windows uninstall entry; close the game, then use Settings → Apps → Installed apps → Shogun 2 First-Person Mod → Uninstall. It preserves unknown replacement files and retains rollback snapshots. Older custom installers require careful manual removal or restoration. See [standard setup](public-release/STANDARD_SETUP.md).
+**Turning it off or removing it:** F12 turns the mod off for the current session. The new standard setup provides a Windows uninstall entry; close the game, then use Settings → Apps → Installed apps → Shogun 2 Unit Possession → Uninstall. Remove the v0.31 camera helper's Steam launch-option line first so Steam resumes its original game command. It preserves unknown replacement files and retains rollback snapshots. Older custom installers require careful manual removal or restoration. See [standard setup](public-release/STANDARD_SETUP.md).
 
 ## Reporting a problem
 

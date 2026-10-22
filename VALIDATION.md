@@ -1,6 +1,8 @@
 # Validation
 
-[v0.30 release checks](docs/public-release/V0_30_VALIDATION.json) distinguish fresh wrapper tests from the current native build evidence. The v0.30 setup has not been installed or live-tested on the owner’s game.
+Test161 / v0.31 is the startup-guide update. It moves camera selection into a Steam launch helper before the game process starts, with one-time Steam Launch Options setup. Its fresh and retained checks are recorded in [v0.31 validation](docs/public-release/V0_31_VALIDATION.json). No Test161 live acceptance is claimed.
+
+[v0.30 release checks](docs/public-release/V0_30_VALIDATION.json) distinguish fresh wrapper tests from the current native build evidence. That record describes release-time offline evidence. Subsequent file readback matches the installed v0.30 loader/marker and the owner reported a positive manual trial; a complete loaded-hook/capture gate is not claimed.
 
 [Build commands](BUILD_AND_TEST.md) and [source-kit engineering summary](docs/public-release/VALIDATION_RESULTS.json) and [local-resource installer validation](docs/public-release/LOCAL_ASSETS159_VALIDATION.json) are current. Raw logs, toy dumps and game resources stay out of the source kit.
 

@@ -65,6 +65,7 @@ Source: "{#PayloadDir}\game-integration.exe"; Flags: dontcopy
 Source: "{#PayloadDir}\dinput8.dll"; Flags: dontcopy
 Source: "{#PayloadDir}\marker.pack"; Flags: dontcopy
 Source: "{#PayloadDir}\game-integration.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#PayloadDir}\shogun2-unit-possession-launcher.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#PayloadDir}\LICENSE"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#PayloadDir}\THIRD_PARTY_NOTICES.md"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#PayloadDir}\MinHook-LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
@@ -79,6 +80,9 @@ Source: "{#PayloadDir}\marker.pack"; DestDir: "{code:GameFolder}\data"; DestName
 Source: "{tmp}\local-assets\hud-assets159.s2fp"; DestDir: "{code:GameFolder}\data\shogun2_possession_local_assets159"; Flags: external ignoreversion uninsneveruninstall
 Source: "{tmp}\local-assets\qte-assets159.s2fp"; DestDir: "{code:GameFolder}\data\shogun2_possession_local_assets159"; Flags: external ignoreversion uninsneveruninstall
 
+[UninstallDelete]
+Type: files; Name: "{app}\Steam-Launch-Options.txt"
+
 [INI]
 Filename: "{app}\installation.ini"; Section: "Installation"; Key: "Game"; String: "{code:GameFolder}"
 Filename: "{app}\installation.ini"; Section: "Installation"; Key: "Profile"; String: "{code:ProfileFolder}"
@@ -87,6 +91,7 @@ Filename: "{app}\installation.ini"; Section: "Installation"; Key: "Rollback"; St
 [Code]
 var
   GamePage: TInputDirWizardPage;
+  LaunchPage: TInputQueryWizardPage;
   Prepared, Completed: Boolean;
   RemovalGame, RemovalProfile: String;
 
@@ -142,6 +147,12 @@ begin
     DefaultGame := Steam + '\steamapps\common\Total War SHOGUN 2';
   end;
   GamePage.Values[0] := ExpandConstant('{param:GAME|' + DefaultGame + '}');
+  LaunchPage := CreateInputQueryPage(GamePage.ID, 'Show the camera chooser before launch',
+    'One-time Steam setup',
+    'After installation, right-click Shogun 2 in Steam, choose Properties, then paste this line into Launch Options. Keep existing game arguments after %command%. If you already use another launcher, review compatibility first.');
+  LaunchPage.Add('Steam Launch Options (select and press Ctrl+C):', False);
+  LaunchPage.Values[0] := Quoted(AddBackslash(WizardDirValue) + 'shogun2-unit-possession-launcher.exe') + ' %command%';
+  LaunchPage.Edits[0].ReadOnly := True;
 end;
 
 function NextButtonClick(CurPageID: Integer): Boolean;
@@ -183,6 +194,7 @@ procedure CurStepChanged(CurStep: TSetupStep);
 var ErrorText: String;
 begin
   if CurStep = ssPostInstall then begin
+    SaveStringToFile(ExpandConstant('{app}\Steam-Launch-Options.txt'), Utf8Encode(LaunchPage.Values[0] + #13#10), False);
     if not Integration(ExpandConstant('{tmp}\game-integration.exe'), 'finish', GameFolder(''), ProfileFolder(''), ErrorText) then
       RaiseException(ErrorText);
     Completed := True;
@@ -206,6 +218,8 @@ begin
   if Result then Result := Integration(ExpandConstant('{app}\game-integration.exe'), 'uninstall-check', RemovalGame, RemovalProfile, ErrorText)
   else ErrorText := 'The installation record is missing. Files have been preserved.';
   if not Result then MsgBox(ErrorText, mbError, MB_OK);
+  if Result and not UninstallSilent then
+    Result := MsgBox('Remove this mod''s camera-chooser line from Shogun 2 > Properties > Launch Options in Steam before continuing. This lets Steam launch the game normally after uninstall.', mbConfirmation, MB_OKCANCEL) = IDOK;
 end;
 
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);

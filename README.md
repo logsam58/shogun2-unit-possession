@@ -22,19 +22,23 @@ The HUD puts your unit's condition, weapon, ammo, abilities and orders within re
 
 ## Install and play
 
-**v0.30.** Download **`Shogun2-Unit-Possession-v0.30-Setup.exe`** from the [latest release](https://github.com/logsam58/shogun2-unit-possession/releases/tag/v0.30). The repository remains private until its owner opens access. Older embedded-resource installers have been removed. Use the latest installer for the current features.
+**v0.31.** Download **`Shogun2-Unit-Possession-v0.31-Setup.exe`** from the [latest release](https://github.com/logsam58/shogun2-unit-possession/releases/tag/v0.31). The repository remains private until its owner opens access. Older embedded-resource installers have been removed. Use the latest installer for the current features.
 
-You need an installed, owned copy of the **original Windows Steam version of Total War: SHOGUN 2**. The installer checks the supported game build and runs on Windows 10 or later. No compiler, Python installation or separate mod launcher is needed to play.
+You need an installed, owned copy of the **original Windows Steam version of Total War: SHOGUN 2**. The installer checks the supported game build and runs on Windows 10 or later. No compiler or Python installation is needed to play; setup includes the Steam launch helper.
 
-1. Open the [v0.30 release](https://github.com/logsam58/shogun2-unit-possession/releases/tag/v0.30) and download **`Shogun2-Unit-Possession-v0.30-Setup.exe`** from **Assets**. You need to be signed into GitHub with repository access.
+1. Open the [v0.31 release](https://github.com/logsam58/shogun2-unit-possession/releases/tag/v0.31) and download **`Shogun2-Unit-Possession-v0.31-Setup.exe`** from **Assets**. You need to be signed into GitHub with repository access.
 2. Close Shogun 2 completely. Run setup and choose the folder containing **Shogun2.exe** and **Empire.Retail.dll**.
-3. Launch normally **through Steam**. In the startup window, choose **Third-Person** or **First-Person** as your starting view. Select a unit in a single-player land battle and press **F9**.
+3. Paste the launch-option line supplied by setup into **Steam > Shogun 2 > Properties > Launch Options**. Launch through Steam and choose **Third-Person** or **First-Person** as your starting view. Select a unit in a single-player land battle and press **F9**.
 
 Close the game before updating or removing the mod, and start a fresh game process afterward. To remove this setup, open **Windows Settings → Apps → Installed apps → Shogun 2 Unit Possession → Uninstall**. Setup reads the artwork, unit cards, ability icons, fonts and cropped “Shameful display!” voice from your installed game. Those resources are not bundled in this download. The supported English `local_en.pack` is needed for the voice; Windows N editions need the Media Feature Pack. Setup preserves unknown replacement files and retains rollback snapshots. The optional crash recorder is separate and isn't installed or removed with the mod.
 
+## Before launching
+
+v0.31 puts the camera choice and a quick-start controls guide before the game starts. Setup supplies a one-time Steam Launch Options line ending in `%command%`. Steam Play then shows the chooser; either camera button starts the original game, and closing it cancels launch. The helper keeps Steam context and game arguments. Without that line, the game opens normally in first person with no popup. Remove the line before uninstalling.
+
 ## Controls
 
-Each launch asks which view to use for new possessions. Third-Person is the highlighted choice; closing the chooser uses Third-Person. **P** still switches views during possession. The selection lasts for that game process and does not change Shogun 2 settings.
+With the Steam launch option configured, each launch shows the controls guide and asks which view to use. Third-Person is highlighted; closing the chooser cancels launch. **P** still switches views during possession. The selection lasts for that game process and does not change Shogun 2 settings.
 
 ### Your soldier and camera
 
@@ -91,7 +95,7 @@ Start with the [source map](SOURCE_MAP.md) and [build guide](BUILD_AND_TEST.md),
 - [Architecture and subsystem relationships](docs/ARCHITECTURE.md)
 - [Native interfaces, ownership, lifetime and threading contracts](docs/public-release/NATIVE_CONTRACTS.md)
 - [Local build dependencies](docs/LOCAL_DEPENDENCIES.md) and [owned-game resource preparation](docs/public-release/RESOURCES.md)
-- [Validation and test coverage](VALIDATION.md), including [v0.30 release checks](docs/public-release/V0_30_VALIDATION.json)
+- [Validation and test coverage](VALIDATION.md), including [v0.31 release checks](docs/public-release/V0_31_VALIDATION.json)
 - [Standard Windows setup packaging](docs/public-release/STANDARD_SETUP.md)
 - [Optional crash diagnostics](tools/diagnostics/README.md) and [contributing](CONTRIBUTING.md)
 

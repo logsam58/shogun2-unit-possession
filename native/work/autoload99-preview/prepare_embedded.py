@@ -2,7 +2,7 @@ from pathlib import Path
 import argparse,hashlib,json,struct,re
 here=Path(__file__).resolve().parent
 root=here.parents[1]
-parser=argparse.ArgumentParser();mode=parser;mode.add_argument('--candidate',type=int,default=160);mode.add_argument('--release',action='store_true',help='Use product release metadata');args=parser.parse_args()
+parser=argparse.ArgumentParser();mode=parser;mode.add_argument('--candidate',type=int,default=161);mode.add_argument('--release',action='store_true',help='Use product release metadata');args=parser.parse_args()
 if args.candidate is not None:assert args.candidate>=100, 'Candidate must be 100 or later'
 version=(root.parent/'VERSION').read_text().strip()
 development=not args.release
@@ -23,6 +23,7 @@ if args.candidate>=141:
     if args.candidate>=152:metadata['controls']+='; P first/third person; mouse wheel third-person distance; QTE eye look follows animated face; broken/shattered native combat has no QTE'
     if args.candidate>=154:metadata['controls']+='; hold middle mouse to orbit third person independently of WASD; M native whole-unit mount/dismount'
     if args.candidate>=160:metadata['startup_view']='Choose Third-Person or First-Person at each launch; P switches during possession'
+    if args.candidate>=161:metadata['startup_view']='Steam prelaunch helper: choose before the game process starts; P switches during possession'
     payload=json.dumps(metadata,indent=2).encode('utf-8')
 index=struct.pack('<I',len(payload))+b'possession\\checkpoint45.json\0'
 pack=here/'marker.pack'

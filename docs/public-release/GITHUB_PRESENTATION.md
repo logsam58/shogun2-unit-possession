@@ -1,6 +1,6 @@
 # GitHub presentation
 
-The landing page is on main, the sole maintained branch. The owner authorized the v0.30 release inside the private repository. Do not change repository visibility without a new explicit instruction.
+The landing page is on main, the sole maintained branch. The owner authorized the v0.31 release inside the private repository. Do not change repository visibility without a new explicit instruction.
 
 ## Repository name
 
@@ -17,7 +17,7 @@ total-war, shogun-2, game-mod, first-person, third-person, cpp, windows, reverse
 ## Files
 
 - [Landing page and controls](../../README.md)
-- [v0.30 release notes](../releases/v0.30.md)
+- [v0.31 release notes](../releases/v0.31.md)
 - [Standard setup](STANDARD_SETUP.md)
 - [Release handoff](PUBLICATION_HANDOFF.md)
 

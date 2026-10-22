@@ -1,18 +1,18 @@
 {
   "schema": 2,
-  "version": "0.30",
+  "version": "0.31",
   "branch": "main",
-  "tag": "v0.30",
-  "release_url": "https://github.com/logsam58/shogun2-unit-possession/releases/tag/v0.30",
+  "tag": "v0.31",
+  "release_url": "https://github.com/logsam58/shogun2-unit-possession/releases/tag/v0.31",
   "repository_visibility": "private; owner controls public launch",
-  "installer": "Shogun2-Unit-Possession-v0.30-Setup.exe",
-  "source_kit": "Shogun2-Unit-Possession-v0.30-Source.zip",
+  "installer": "Shogun2-Unit-Possession-v0.31-Setup.exe",
+  "source_kit": "Shogun2-Unit-Possession-v0.31-Source.zip",
   "format": "standard Windows setup; resources prepared from each owned game",
   "game_resources_shipped": false,
   "gameplay": {
-    "candidate": 160,
+    "candidate": 161,
     "live_accepted": false,
-    "changes": "Per-launch default camera choice; native gameplay and protocol layouts retained.",
+    "changes": "Prelaunch camera chooser with quick-start guide; gameplay source retained unchanged from the passing Test161 build.",
     "accepted_baseline": {
       "candidate": 159,
       "user_accepted": true,
@@ -22,15 +22,16 @@
     }
   },
   "release_wrapper": {
-    "version": "0.30",
+    "version": "0.31",
     "installed_on_owner_game": false,
     "live_tested": false,
-    "offline_validation": "docs/public-release/V0_30_VALIDATION.json"
+    "offline_validation": "docs/public-release/V0_31_VALIDATION.json"
   },
   "owner_installation": {
-    "version": "0.28",
-    "candidate": 159,
-    "changed_by_release_packaging": false
+    "version": "0.30",
+    "candidate": 160,
+    "changed_by_release_packaging": false,
+    "last_check": "Installed loader and marker match packaged Test160. No loaded/native-hook/live-capture gate completed."
   },
   "owner_decisions": {
     "first_party_license": "MIT",
@@ -48,12 +49,20 @@
     "bow audio follows the native animation",
     "Test159 formal preplay gate missed; future live tests require a fresh gate"
   ],
-  "history": "24 legacy embedded-resource downloads removed with owner authorization; source/history retained. Current v0.30 replaces the former v1.0 release label.",
+  "history": "Legacy embedded-resource downloads remain removed; previous releases/tags/downloads preserved. v0.29 replaced the former v1.0 label.",
   "legal_clearance": "Not established by resource removal; native-hook/reverse-engineering permission remains a separate question. See docs/public-release/PROVENANCE.md.",
   "product": "Shogun 2 Unit Possession",
   "support": {
     "naval_possession": "not supported; planned for later",
     "multiplayer": "not implemented; Versus and campaign drop-in under consideration",
     "expected": "visual/gameplay bugs and occasional crashes"
+  },
+  "startup": {
+    "steam_launch_option_required": true,
+    "configured_by": "player; exact line provided by setup",
+    "selection_before_game_creation": true,
+    "close_cancels_launch": true,
+    "quick_start_guide": true,
+    "without_helper": "normal launch with first-person default and no popup"
   }
 }

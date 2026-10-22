@@ -25,7 +25,7 @@ def main():
     result=json.loads((build/'build-results.json').read_text())
     assert inputs['local_assets'] and inputs['native_build_passed'] and result['candidate']>=160
     assert all(r.get('passed',True) for r in result['results'])
-    assert {'local-assets-format-render-tests','adapter-tests','qte-tests','hud-tests','loader-tests','installer-current-tests','startup-view-tests'} <= {r['name'] for r in result['results']}
+    assert {'local-assets-format-render-tests','adapter-tests','qte-tests','hud-tests','loader-tests','installer-current-tests','startup-view-tests','prelaunch-tests'} <= {r['name'] for r in result['results']}
     checked=audit(binaries)
     out.mkdir(parents=True);stage=out/'stage';stage.mkdir()
     for value in (out,source,a.vcvars,ROOT):
@@ -45,12 +45,12 @@ def main():
         shutil.copyfile(fixture_helper,helper)
     else:
         subprocess.run(['cmd.exe','/d','/c',str(batch)],check=True)
-    for name in ('dinput8.dll','marker.pack','prepare-local-assets159.exe'):shutil.copyfile(binaries/name,stage/name)
+    for name in ('dinput8.dll','marker.pack','prepare-local-assets159.exe','shogun2-unit-possession-launcher.exe'):shutil.copyfile(binaries/name,stage/name)
     for name in ('LICENSE','THIRD_PARTY_NOTICES.md'):shutil.copyfile(ROOT/name,stage/name)
     shutil.copyfile(ROOT/'native/outputs/shogun2-possession-cleanup-v46/vendor/LICENSE.txt',stage/'MinHook-LICENSE.txt')
     shutil.copyfile(ROOT/'tools/installer/PLAYING.md',stage/'PLAYING.md')
     (stage/'BeforeInstall.txt').write_text(f'Shogun 2 Unit Possession v{VERSION}\n\nClose Shogun 2. Select your original Steam installation. Setup reads artwork, unit cards, ability icons, fonts and the advisor voice from your own game. It does not download or ship those resources. No Python or developer tools are needed.\n\nWindows N editions need the Media Feature Pack. Saves, graphics, CPU settings and other mods are preserved. The separate recorder/debugger is not installed or changed.\n',encoding='utf-8')
-    (stage/'AfterInstall.txt').write_text('Launch through Steam and choose your default camera in the startup window. P switches views during possession. In a land battle, select a friendly unit and press F9. F10 returns to RTS.\n\nTo remove the mod, close the game and use Windows Settings > Apps > Shogun 2 Unit Possession. Rollback snapshots remain in the setup records folder.\n',encoding='utf-8')
+    (stage/'AfterInstall.txt').write_text('Before the next launch, set the Steam Launch Options line shown on the setup page. Steam Play will show the camera choice first, then start the game. Closing the choice cancels launch. P switches views during possession. In a land battle, select a friendly unit and press F9. F10 returns to RTS.\n\nTo remove the mod, close the game and use Windows Settings > Apps > Shogun 2 Unit Possession. Rollback snapshots remain in the setup records folder.\n',encoding='utf-8')
     receipt={'version':VERSION,'candidate':result['candidate'],'game_resources_shipped':False,'assets_prepared_at_install':True,
              'asset_audit':checked,'fixture':a.fixture,'installed_or_launched':False,'signed':False,
              'payloads':{x.name:sha(x) for x in stage.iterdir()},

@@ -2,7 +2,7 @@
 #include "../../outputs/shogun2-possession-cleanup-v46/src/identity.h"
 #include "../../outputs/shogun2-possession-cleanup-v46/src/protocol.h"
 #include "embedded_hashes.h"
-#include "startup_view160.h"
+#include "../../common/startup_view160.h"
 #include <shlobj.h>
 #include <regex>
 #ifdef S2FP_LOCAL_ASSETS
@@ -100,9 +100,9 @@ static DWORD WINAPI integrated_worker(void* argument){try{
     auto adapter=extract(static_cast<HMODULE>(argument),101,L"possession-v46.dll",EMBEDDED_ADAPTER_SHA);
     auto hud=extract(static_cast<HMODULE>(argument),102,L"possession-hud.exe",EMBEDDED_HUD_SHA);
     auto qte=extract(static_cast<HMODULE>(argument),103,L"qte-playable-v79.dll",EMBEDDED_QTE_SHA);
-    record(4,"Embedded components verified; waiting for starting-view choice");
-    bool starting_third160=startupdialog160::launch_choice(static_cast<HINSTANCE>(argument));
-    require(startup160::publish(starting_third160),"Cannot publish starting-view choice");
+    // Choice is inherited from the Steam prelaunch helper. Never show a dialog
+    // from a game worker: the fullscreen window already exists at this point.
+    bool starting_third160=startup160::third_person();
     record(4,starting_third160?"Third-person default selected; waiting for a battle":"First-person default selected; waiting for a battle");
     uintptr_t base=0;for(;;){if(!selected()){record(3,"Mod unchecked while waiting");return 0;}
         HMODULE engine=GetModuleHandleW(L"Empire.Retail.dll");if(engine){base=reinterpret_cast<uintptr_t>(engine);if(battle_ready(base))break;}Sleep(1000);}

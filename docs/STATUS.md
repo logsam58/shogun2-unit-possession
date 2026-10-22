@@ -1,9 +1,9 @@
 # Status
 
-v0.30 introduces the **Shogun 2 Unit Possession** name and the per-launch camera chooser. main remains the only branch; the repository stays private until the owner explicitly opens access. The new Test160 build has not been live-tested or installed on the owner's game.
+v0.31 / Test161 adds a quick-start controls guide and moves the camera chooser before the original game starts. Setup provides a one-time Steam Launch Options line. Steam Play then opens the guide; either camera button starts the game, while closing cancels. The loader no longer opens a popup over the fullscreen game.
 
-Support is single-player land battles and sieges. **Naval possession does not work** and is planned for later. Multiplayer is not implemented; Versus and campaign drop-in are under consideration. Visual/gameplay bugs and occasional crashes are expected. Attack charging is still partly broken and unreliable. Castle wall climbing, Ultra slowdown, clipping and isolated acquisition also remain open.
+The repository remains private and main is the only branch. The owner requested this release. This update has offline validation only; it has not been installed or live-tested on the owner's game. File readback confirms the installed v0.30/Test160 loader and marker; the owner reported a positive manual trial, but a complete loaded-hook/capture gate was not performed.
 
-The owner's installed Test159 remains unchanged. Its manual acceptance is separate from its missed formal preplay gate. New live testing needs a fresh cue and loaded/native-hook/actual recording checks.
+Support remains single-player land battles and sieges. Naval possession does not work and is planned for later. Multiplayer is not implemented; Versus and campaign drop-in are under consideration. Visual/gameplay bugs and crashes are expected. Attack charging remains partly broken and unreliable; climbing is intermittent. Ultra slowdown, clipping and isolated acquisition remain open.
 
-See [current identity](current-release.json), [known issues](KNOWN_ISSUES.md) and [v0.30 validation](public-release/V0_30_VALIDATION.json). Older resource-containing installer downloads remain deleted; source/history and notices are retained.
+See [current identity](current-release.json), [known issues](KNOWN_ISSUES.md), [startup design](public-release/STARTUP161.md) and [v0.31 validation](public-release/V0_31_VALIDATION.json). Earlier downloads remain unchanged, and retired embedded-resource installers have not been re-uploaded.

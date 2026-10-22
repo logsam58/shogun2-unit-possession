@@ -29,6 +29,7 @@ def main():
     p.add_argument("--previous-setup", type=Path)
     p.add_argument("--previous-release-bin", type=Path)
     p.add_argument("--previous029-bin", type=Path)
+    p.add_argument("--previous030-bin", type=Path)
     a = p.parse_args()
     version=json.loads((a.build/'package-receipt.json').read_text())['version']
     assert digest(a.engine) == "022fae2e2da92b59b8b1b8ee52887003c624e3c8eca060b209f5d792a7f874f5"
@@ -110,6 +111,17 @@ def main():
         action('prepare',f);copy_payload(f);action('finish',f);action('rollback',f)
         assert baseline==[digest(t) for t in f[4]]
         results.append('exact v0.29 upgrade and complete rollback')
+
+    if a.previous030_bin:
+        f=fixture('previous030-upgrade')
+        for name,target in zip(('dinput8.dll','marker.pack'),f[4][:2]):shutil.copyfile(a.previous030_bin/name,target)
+        for target in f[4][4:]:shutil.copyfile(a.assets/target.name,target)
+        baseline=[digest(t) for t in f[4]]
+        assert baseline[0]=='19f7c9b197cb8128a160aa8bd7b4e930b2612f420a5468413690bea55e791ae7'
+        assert baseline[1]=='a611fadf4369e7a415aab40099982822c32ba5107c357fea12aadc1c73e81623'
+        action('prepare',f);copy_payload(f);action('finish',f);action('rollback',f)
+        assert baseline==[digest(t) for t in f[4]]
+        results.append('exact v0.30 upgrade and complete rollback')
 
     encodings = {
         "utf8": 'mod other.pack;\r\n// naïve comment\r\n'.encode(),
@@ -227,6 +239,9 @@ def main():
     for attempt in range(2):
         subprocess.run([str(setup), *options, f"/LOG={f[0].resolve() / ('install-' + str(attempt) + '.log')}"], check=True, timeout=60)
         assert (f[3] / "unins000.exe").exists()
+        assert digest(f[3]/'shogun2-unit-possession-launcher.exe')==digest(a.build/'stage/shogun2-unit-possession-launcher.exe')
+        line=(f[3]/'Steam-Launch-Options.txt').read_text(encoding='utf-8')
+        assert line.strip()=='"'+str(f[3].resolve()/'shogun2-unit-possession-launcher.exe')+'" %command%'
         assert digest(f[4][0]) == digest(a.build / "stage/dinput8.dll")
         for i in (4,5):assert digest(f[4][i])==digest(a.assets/f[4][i].name)
     key = r"Software\Microsoft\Windows\CurrentVersion\Uninstall\Shogun2FirstPerson-LocalAssetsFixture159_is1"
@@ -245,6 +260,8 @@ def main():
     else:
         raise AssertionError("Fixture uninstall registration left behind")
     assert all(not f[4][i].exists() for i in (0,1,4,5))
+    assert not (f[3]/"shogun2-unit-possession-launcher.exe").exists()
+    assert not (f[3]/"Steam-Launch-Options.txt").exists()
     assert (f[3] / f"rollback-v{version}/manifest.json").exists()
     assert "other.pack" in f[4][3].read_text()
     results.append("real Inno uninstall removes fixture registration and mod, retains rollback and other mods")

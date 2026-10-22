@@ -35,7 +35,7 @@ def resources(path):
 
 def audit(folder):
     folder=Path(folder);rows={}
-    for name in ('possession-v46.dll','possession-hud.exe','qte-playable-v79.dll','prepare-local-assets159.exe'):
+    for name in ('possession-v46.dll','possession-hud.exe','qte-playable-v79.dll','prepare-local-assets159.exe','shogun2-unit-possession-launcher.exe'):
         leaves=resources(folder/name)
         assert all(key[0] in (16,24) for key in leaves), 'Unexpected embedded data/artwork: '+name
         rows[name]={'sha256':hashlib.sha256((folder/name).read_bytes()).hexdigest(),'resource_keys':[str(k) for k in leaves]}

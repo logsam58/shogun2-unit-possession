@@ -56,7 +56,7 @@ def main():
     parser.add_argument('--release', action='store_true', help='Use release metadata without installing or publishing')
     parser.add_argument('--vcvars', type=Path)
     parser.add_argument('--tests', action='store_true')
-    parser.add_argument('--candidate', type=int, default=160)
+    parser.add_argument('--candidate', type=int, default=161)
     args = parser.parse_args()
     config = ROOT / 'tools/local.json'
     settings = json.loads(config.read_text(encoding='utf-8')) if config.is_file() else {}

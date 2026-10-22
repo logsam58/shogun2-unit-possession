@@ -1,6 +1,6 @@
-# Shogun 2 Unit Possession v0.30
+# Shogun 2 Unit Possession v0.31 (Test161 candidate)
 
-Launch the original Shogun 2 normally through Steam. Choose Third-Person or First-Person in the startup window; P can switch during possession. In a single-player land
+After setup, paste its Steam Launch Options line into **Shogun 2 > Properties > Launch Options**. Steam Play then shows the camera chooser before starting the original game. Choose Third-Person or First-Person; closing the chooser cancels launch. P can switch during possession. Without the helper launch option, the game starts normally with a first-person default and no popup. In a single-player land
 battle, select a friendly unit and press **F9**. At the closest RTS zoom, point
 the mouse cursor at the soldier you want; from higher up, one is picked for you.
 **F10** or **Escape** returns to your previous RTS view.
@@ -23,7 +23,7 @@ the mouse cursor at the soldier you want; from higher up, one is picked for you.
 | K | Hide/show RTS and possession HUD; melee prompts remain visible |
 | F12 | Disable the mod until the game restarts |
 
-Close the game before an update or uninstall. Use **Windows Settings → Apps →
+Close the game before an update or uninstall. Remove this mod's Steam Launch Options line before uninstalling, so Steam no longer points at the removed helper. Setup saves the line in Steam-Launch-Options.txt in the installed mod folder. Existing game arguments belong after %command%; another custom launch wrapper needs separate compatibility review. Use **Windows Settings → Apps →
 Installed apps → Shogun 2 Unit Possession → Uninstall** to remove this setup.
 Unknown replacement files are preserved. Earlier snapshots remain in the setup
 records folder's versioned rollback directory; uninstall does not delete runtime caches.
