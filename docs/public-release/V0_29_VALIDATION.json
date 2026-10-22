@@ -1,5 +1,5 @@
 {
-  "version": "1.0",
+  "version": "0.29",
   "gameplay_candidate": 159,
   "gameplay_source_changed": false,
   "retained_exact_accepted_binaries": {
@@ -13,17 +13,19 @@
     "qte_executables": 50,
     "hud_executables": 8,
     "local_resource_formats_and_both_production_renderers": true,
-    "freshly_executed_for_v1_0": false,
-    "scope": "Retained Test159 evidence; all accepted gameplay/extractor source hashes and exact binary identities verified before promotion."
+    "freshly_executed_for_v0_29": false,
+    "scope": "Retained Test159 evidence; all accepted gameplay/extractor source hashes and exact binary identities verified before promotion.",
+    "previous_source_build": "The v1.0 source kit built independently from an extracted archive; retained evidence. v0.29 changes metadata/docs and the separately compiled/tested installer predecessor recognition, with exact gameplay source/binaries preserved."
   },
   "fresh_checks": {
     "loader_executables": 2,
     "native_current_installer_executables": 2,
     "owned_child_kills": 15,
-    "standard_installer_groups": 28,
+    "standard_installer_groups": 29,
     "standard_installer_checks": [
       "exact accepted158 upgrade and complete rollback",
       "exact accepted159 upgrade and complete rollback",
+      "exact former v1.0 upgrade and complete rollback",
       "utf8: install, repeat repair, uninstall, repeat uninstall, engine preservation",
       "utf8-bom: install, repeat repair, uninstall, repeat uninstall, engine preservation",
       "utf16le: install, repeat repair, uninstall, repeat uninstall, engine preservation",
@@ -53,17 +55,15 @@
     ],
     "python_tests": 15,
     "generated_roles": true,
-    "canonical_headers": 6,
-    "extracted_source_build_all_release": true,
-    "extracted_source_build_scope": "Fresh source export, separate native build directory, default local resources; all gameplay/loader targets compiled and resource format/render checks passed. Full 96/50/8 suites were retained for accepted release payloads, not repeated by this closure check."
+    "canonical_headers": 6
   },
   "setup": {
-    "name": "Shogun2-First-Person-v1.0-Setup.exe",
-    "sha256": "3b1bc79d71bc80128975409a6f6fa6b9a561fea039022a42599eda49db6d7f1b",
-    "bytes": 2728576,
+    "name": "Shogun2-First-Person-v0.29-Setup.exe",
+    "sha256": "8b389d4e810b6ab6709737eb73b41dad3987ee302120c1e4c7c7e65114f40593",
+    "bytes": 2729349,
     "game_resources_shipped": false,
     "payload_audit_passed": true,
-    "helper_sha256": "58b1e7291124dbcad8c93fac25693f2bc1d8807850dbf96f18e358b8fc97c5fe",
+    "helper_sha256": "a996db0a246ff3e559d99f5c7f94cf52b37c2b52699f1335c13dd8cfaa0ce0c0",
     "fixture_production_helper_exact": true,
     "production_wrapper_executed": false,
     "signed": false,
@@ -73,12 +73,12 @@
   },
   "release_payloads": {
     "dinput8.dll": {
-      "sha256": "583b12f04734b8e5db59cad9f909b3a2f1c32773d5f5513008e4601d9f317af3",
+      "sha256": "6e2bec13bdf74795e48281bdade07fa8a2c101ca7993ea2765679d7e5abd5af0",
       "bytes": 1867264
     },
     "marker.pack": {
-      "sha256": "024eb40e5298e80fd817a95c13cf703de396ef741df2edb2aa1c46ac2d23573e",
-      "bytes": 1308
+      "sha256": "21c8e04b83437b1b1f29c4c27e61b9e84d4002862e74f94296c53b95375bf235",
+      "bytes": 1310
     },
     "possession-hud.exe": {
       "sha256": "dc188065717ab8b2ffbd613b7f1a43aa78b38e0521c29d6f50a9625520f58f4b",
@@ -100,8 +100,8 @@
   "live": {
     "owner_accepted_Test159_manual_trial": true,
     "Test159_formal_preplay_gate_completed": false,
-    "v1_0_wrapper_installed": false,
-    "v1_0_wrapper_live_tested": false,
+    "v0_29_wrapper_installed": false,
+    "v0_29_wrapper_live_tested": false,
     "owner_game_changed_by_packaging": false
   },
   "limits": [

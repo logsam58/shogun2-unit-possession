@@ -1,6 +1,6 @@
 # Build and test
 
-main builds **v1.0** using the accepted Test159 gameplay schema and the local-resource player installer. A build never launches or installs into the game. Historical directory suffixes and the number 159 describe implementation formats, not a separate product branch.
+main builds **v0.29** using the accepted Test159 gameplay schema and the local-resource player installer. A build never launches or installs into the game. Historical directory suffixes and the number 159 describe implementation formats, not a separate product branch.
 
 ## Build the player installer
 
@@ -19,7 +19,7 @@ From PowerShell in this source folder, replace these example paths:
     py -3.12 tools/installer/verify_local_setup159.py --build "$work\setup-fixture" --engine "$game\Empire.Retail.dll" --game $game --assets "$work\native\local-assets" --output "$work\setup-tests"
     py -3.12 tools/installer/build_local_setup159.py --build "$work\native" --vcvars $vc --iscc $iscc --verified-fixture "$work\setup-tests" --output "$work\setup"
 
-Every output folder must be new and outside the game. The final output is **output/Shogun2-First-Person-v1.0-Setup.exe**. Local resources are always enabled; --local-assets remains a compatibility flag. The --release flag selects product metadata, without installing or publishing anything.
+Every output folder must be new and outside the game. The final output is **output/Shogun2-First-Person-v0.29-Setup.exe**. Local resources are always enabled; --local-assets remains a compatibility flag. The --release flag selects product metadata, without installing or publishing anything.
 
 The build snapshots source and records hashes/logs. Generated .s2fp bundles in bin, tests and local-assets are private test inputs; **do not distribute those folders**. The standard setup audits PE resources and packages code, extraction metadata and notices only. Game images, fonts and audio are prepared on each player's computer.
 
@@ -31,7 +31,7 @@ The build snapshots source and records hashes/logs. Generated .s2fp bundles in b
 
 Native --tests checks include 96 adapter, 50 QTE, 8 HUD, 2 loader and 2 current installer executables, plus local-resource format and production renderer checks. The retained installer transaction suite covers 15 actual child kills, not physical power loss. Optional historical archives are separate and absence is reported as skipped.
 
-The standard fixture has a separate HKCU uninstall identity and mandatory synthetic profile. It uses legitimate pack/engine files read-only, never executes the game, and verifies backup, repair, rollback, unknown-file preservation and real Inno install/uninstall. Optional --previous-bin, --previous159-bin and --previous-setup accept retained known preview inputs for upgrade checks. These archives are not prerequisites for a new contributor's mandatory current tests. Production setup is not executed by the suite.
+The standard fixture has a separate HKCU uninstall identity and mandatory synthetic profile. It uses legitimate pack/engine files read-only, never executes the game, and verifies backup, repair, rollback, unknown-file preservation and real Inno install/uninstall. Optional --previous-bin, --previous159-bin, --previous-release-bin and --previous-setup accept retained known preview inputs for upgrade checks. These archives are not prerequisites for a new contributor's mandatory current tests. Production setup is not executed by the suite.
 
 ## Resources and source export
 
@@ -39,4 +39,4 @@ The native extractor uses checked-in entry hashes and atlas coordinates, with no
 
     py -3.12 tools/package_source.py --output-dir "$work\source-export"
 
-The export contains Shogun2-First-Person-v1.0-Source.zip, a file/hash manifest and no game resources or compiled payloads. Player builds use the standard local-resource setup exclusively. Legacy native installer primitives remain for fingerprints and transaction tests; the old embedded-resource setup scripts are retired. See [setup](docs/public-release/STANDARD_SETUP.md) and [releasing](docs/public-release/RELEASING.md).
+The export contains Shogun2-First-Person-v0.29-Source.zip, a file/hash manifest and no game resources or compiled payloads. Player builds use the standard local-resource setup exclusively. Legacy native installer primitives remain for fingerprints and transaction tests; the old embedded-resource setup scripts are retired. See [setup](docs/public-release/STANDARD_SETUP.md) and [releasing](docs/public-release/RELEASING.md).

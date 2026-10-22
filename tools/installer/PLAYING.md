@@ -1,4 +1,4 @@
-# Shogun 2 First-Person Mod v1.0
+# Shogun 2 First-Person Mod v0.29
 
 Launch the original Shogun 2 normally through Steam. In a single-player land
 battle, select a friendly unit and press **F9**. At the closest RTS zoom, point

@@ -1,0 +1,156 @@
+{
+  "scope": "Owner-authorized deletion of historical game-resource-containing release downloads; source, notices, metadata, release bodies and tags retained.",
+  "deleted_downloads": [
+    {
+      "release": "v0.28",
+      "name": "Shogun2-First-Person-v0.28-Setup.exe",
+      "asset_id": 663790071,
+      "sha256": "3f0dd8299a06f86ebc89588e98dba3e8f29aa2f6205d19c77d632f13dc22c17e"
+    },
+    {
+      "release": "v0.28",
+      "name": "Shogun2-First-Person-v0.28-Windows.zip",
+      "asset_id": 663790472,
+      "sha256": "c30345a8512dfb92760ee280a5e88ed35de01d6d7670825e5cf661ce5f703083"
+    },
+    {
+      "release": "v0.27",
+      "name": "Shogun2-First-Person-v0.27-Setup.exe",
+      "asset_id": 661359675,
+      "sha256": "bcce809633339d84f882d9f30bc4cc804863db3b4432ee9661c906b1deca9f33"
+    },
+    {
+      "release": "v0.27",
+      "name": "Shogun2-First-Person-v0.27-Windows.zip",
+      "asset_id": 661359951,
+      "sha256": "bfe6181d84e80f84fb2416b9068e7b7fe2b5fde511cf1ed8f8fed27c718ee3af"
+    },
+    {
+      "release": "v0.26",
+      "name": "Shogun2-First-Person-v0.26-Setup.exe",
+      "asset_id": 660701644,
+      "sha256": "ea58ca075d9dd1307ba840a96f9eef11677f165dd1152ddcd0cbc595c22b4beb"
+    },
+    {
+      "release": "v0.26",
+      "name": "Shogun2-First-Person-v0.26-Windows.zip",
+      "asset_id": 660701846,
+      "sha256": "1fd93c02b0bc1a899504d84bb882a5a61883b72a151880b5d3bb495803de6b14"
+    },
+    {
+      "release": "v0.25",
+      "name": "Shogun2-First-Person-v0.25-Setup.exe",
+      "asset_id": 659900075,
+      "sha256": "3b8416d25f9702bac5a4a0f4fbb800ae6a8fe4b4ebbc522d1604bdb2e481a5a6"
+    },
+    {
+      "release": "v0.25",
+      "name": "Shogun2-First-Person-v0.25-Windows.zip",
+      "asset_id": 659900325,
+      "sha256": "5f15eef14910550d454806a89043edc30e3662597ef02e1238fcd656a7cca3b5"
+    },
+    {
+      "release": "v0.24",
+      "name": "Shogun2-First-Person-v0.24-Setup.exe",
+      "asset_id": 659437570,
+      "sha256": "baee5426b77019cb6ebf752059e3cce55625fc9de6380499df0204319c8aed76"
+    },
+    {
+      "release": "v0.24",
+      "name": "Shogun2-First-Person-v0.24-Windows.zip",
+      "asset_id": 659437935,
+      "sha256": "0ab1edecc6a7eabe31b48cf3f1573d7cd668583acb9da40f6d5214792537acbf"
+    },
+    {
+      "release": "v0.23",
+      "name": "Shogun2-First-Person-v0.23-Setup.exe",
+      "asset_id": 657688806,
+      "sha256": "4a792217e202892ae90f41e1cb72955652235cbd550ef8a39d556c2a3b69ae43"
+    },
+    {
+      "release": "v0.23",
+      "name": "Shogun2-First-Person-v0.23-Windows.zip",
+      "asset_id": 657689033,
+      "sha256": "ddfd32ebd98a5e7bc183b9f5953c402a7dd6a69530c7a1abc90e6d8eb0ecdf7f"
+    },
+    {
+      "release": "v0.22",
+      "name": "Shogun2-First-Person-v0.22-Setup.exe",
+      "asset_id": 656887644,
+      "sha256": "1914257996026ec6d85338dd278e1a1ae1597abd94beafd82100b3a957e77a0d"
+    },
+    {
+      "release": "v0.22",
+      "name": "Shogun2-First-Person-v0.22-Windows.zip",
+      "asset_id": 656887970,
+      "sha256": "e8225d15854de6cc07b188ef34b353dabab326275219d3aafb36fde0b3065c46"
+    },
+    {
+      "release": "v0.21",
+      "name": "Shogun2-First-Person-v0.21-Setup.exe",
+      "asset_id": 655384797,
+      "sha256": "2d6f5a9fb22420ae6e000e584b69a03275ffb7cd06158db76199893873279ac7"
+    },
+    {
+      "release": "v0.21",
+      "name": "Shogun2-First-Person-v0.21-Windows.zip",
+      "asset_id": 655385044,
+      "sha256": "903d01b4888f62bebb39d59421f4baa1bf01c1653b54fb3af6d48a31b1dd21d3"
+    },
+    {
+      "release": "v0.20",
+      "name": "Shogun2-First-Person-v0.20-Setup.exe",
+      "asset_id": 654683137,
+      "sha256": "8777b8a288cbcf4fe123a254196dae5940c1265c634a779d0bc3b251c98281fa"
+    },
+    {
+      "release": "v0.20",
+      "name": "Shogun2-First-Person-v0.20-Windows.zip",
+      "asset_id": 654683463,
+      "sha256": "24b97c3dd5a6da82ead941db61f904e8aca31069767c6771b323d244bb2037d3"
+    },
+    {
+      "release": "v0.18",
+      "name": "Shogun2-First-Person-v0.18-Setup.exe",
+      "asset_id": 652531324,
+      "sha256": "d063211dc57acd1b67d70db5a51bd4c1cc4cd9ce8b7eb68321435122f347dff1"
+    },
+    {
+      "release": "v0.18",
+      "name": "Shogun2-First-Person-v0.18-Windows.zip",
+      "asset_id": 652531701,
+      "sha256": "d433ffa2fb5f5e5f3b671d279f8c67b0c948fde76074b9bd1f79529542ab7d02"
+    },
+    {
+      "release": "v0.17",
+      "name": "Shogun2-First-Person-v0.17-Setup.exe",
+      "asset_id": 652200539,
+      "sha256": "e76802ac147d2efabae57fccfb5e347c9d927a3d3bd6c7c31112e931652dd3aa"
+    },
+    {
+      "release": "v0.17",
+      "name": "Shogun2-First-Person-v0.17-Windows.zip",
+      "asset_id": 652200782,
+      "sha256": "6979bae4a95f9144d5ffbb92ec9d2c47945abcf7f6af43d61d2e2cb3b1e7d9f4"
+    },
+    {
+      "release": "v0.15",
+      "name": "Shogun2-First-Person-v0.15-Setup.exe",
+      "asset_id": 651556774,
+      "sha256": "f07df253f30802856447a44e4d70ef5bdbd76e11ce0caa34eb113de1e7d5ad96"
+    },
+    {
+      "release": "v0.15",
+      "name": "Shogun2-First-Person-v0.15-Windows.zip",
+      "asset_id": 651557018,
+      "sha256": "b958f972f8aa4beffe76d2fe9e80ac9fc330fa6b006d521a1873b171b21fa49a"
+    }
+  ],
+  "count": 24,
+  "verified_private_local_backups": true,
+  "remote_bytes_verified_before_each_delete": true,
+  "remaining_old_source_archives_text_only": true,
+  "old_source_and_license_notices_preserved": true,
+  "latest_distribution": "Code-only standard setup; Shogun artwork/fonts/audio prepared from the player game.",
+  "legal_scope": "This records shipped-resource removal and file audits, not a legal opinion or ownership grant."
+}

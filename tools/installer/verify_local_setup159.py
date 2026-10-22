@@ -27,6 +27,7 @@ def main():
     p.add_argument("--previous-bin", type=Path)
     p.add_argument("--previous159-bin", type=Path)
     p.add_argument("--previous-setup", type=Path)
+    p.add_argument("--previous-release-bin", type=Path)
     a = p.parse_args()
     version=json.loads((a.build/'package-receipt.json').read_text())['version']
     assert digest(a.engine) == "022fae2e2da92b59b8b1b8ee52887003c624e3c8eca060b209f5d792a7f874f5"
@@ -87,6 +88,17 @@ def main():
         action('prepare',f);copy_payload(f);action('finish',f);action('rollback',f)
         assert baseline==[digest(t) for t in f[4]]
         results.append('exact accepted159 upgrade and complete rollback')
+
+    if a.previous_release_bin:
+        f=fixture('former-release-upgrade')
+        for name,target in zip(('dinput8.dll','marker.pack'),f[4][:2]):shutil.copyfile(a.previous_release_bin/name,target)
+        for target in f[4][4:]:shutil.copyfile(a.assets/target.name,target)
+        baseline=[digest(t) for t in f[4]]
+        assert baseline[0]=='583b12f04734b8e5db59cad9f909b3a2f1c32773d5f5513008e4601d9f317af3'
+        assert baseline[1]=='024eb40e5298e80fd817a95c13cf703de396ef741df2edb2aa1c46ac2d23573e'
+        action('prepare',f);copy_payload(f);action('finish',f);action('rollback',f)
+        assert baseline==[digest(t) for t in f[4]]
+        results.append('exact former v1.0 upgrade and complete rollback')
 
     encodings = {
         "utf8": 'mod other.pack;\r\n// naïve comment\r\n'.encode(),

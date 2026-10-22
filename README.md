@@ -20,11 +20,11 @@ The HUD puts your unit's condition, weapon, ammo, abilities and orders within re
 
 ## Install and play
 
-**v1.0.** Download **`Shogun2-First-Person-v1.0-Setup.exe`** from the [latest release](https://github.com/logsam58/shogun2-first-person/releases/tag/v1.0). The repository remains private until its owner opens access.
+**v0.29.** Download **`Shogun2-First-Person-v0.29-Setup.exe`** from the [latest release](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.29). The repository remains private until its owner opens access. Older embedded-resource installers have been removed; only the current release provides an installer.
 
 You need an installed, owned copy of the **original Windows Steam version of Total War: SHOGUN 2**. The installer checks the supported game build and runs on Windows 10 or later. No compiler, Python installation or separate mod launcher is needed to play.
 
-1. Open the [v1.0 release](https://github.com/logsam58/shogun2-first-person/releases/tag/v1.0) and download **`Shogun2-First-Person-v1.0-Setup.exe`** from **Assets**. You need to be signed into GitHub with repository access.
+1. Open the [v0.29 release](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.29) and download **`Shogun2-First-Person-v0.29-Setup.exe`** from **Assets**. You need to be signed into GitHub with repository access.
 2. Close Shogun 2 completely. Run setup and choose the folder containing **Shogun2.exe** and **Empire.Retail.dll**.
 3. Launch the game normally **through Steam**. In a single-player land battle, select one of your units and press **F9**.
 
@@ -87,7 +87,7 @@ Start with the [source map](SOURCE_MAP.md) and [build guide](BUILD_AND_TEST.md),
 - [Architecture and subsystem relationships](docs/ARCHITECTURE.md)
 - [Native interfaces, ownership, lifetime and threading contracts](docs/public-release/NATIVE_CONTRACTS.md)
 - [Local build dependencies](docs/LOCAL_DEPENDENCIES.md) and [owned-game resource preparation](docs/public-release/RESOURCES.md)
-- [Validation and test coverage](VALIDATION.md), including [v1.0 release checks](docs/public-release/V1_0_VALIDATION.json)
+- [Validation and test coverage](VALIDATION.md), including [v0.29 release checks](docs/public-release/V0_29_VALIDATION.json)
 - [Standard Windows setup packaging](docs/public-release/STANDARD_SETUP.md)
 - [Optional crash diagnostics](tools/diagnostics/README.md) and [contributing](CONTRIBUTING.md)
 
