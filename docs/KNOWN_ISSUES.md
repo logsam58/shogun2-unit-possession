@@ -49,7 +49,7 @@ Multiplayer and overhaul mods need separate testing. Ship possession and ship co
 
 **An old build still seems active:** close Shogun 2 completely before updating, then launch it again through Steam.
 
-**Turning it off or removing it:** F12 turns the mod off for the current session. There isn't an uninstall wizard yet. Permanent removal or rollback needs the game closed and the installer-managed files restored or removed carefully. Keep the installation receipt and backups; don't remove unrelated mods or Windows files.
+**Turning it off or removing it:** F12 turns the mod off for the current session. The new standard setup provides a Windows uninstall entry; close the game, then use Settings → Apps → Installed apps → Shogun 2 First-Person Mod → Uninstall. It preserves unknown replacement files and retains rollback snapshots. Older custom installers require careful manual removal or restoration. See [standard setup](public-release/STANDARD_SETUP.md).
 
 ## Reporting a problem
 
@@ -62,4 +62,4 @@ Please include:
 - Army count and unit size for slowdowns, plus whether the same nearby fight is smooth in RTS mode.
 - For a crash, any error message or exception/module information you have.
 
-The optional [crash recorder](../tools/diagnostics/README.md) can collect more detail. Full dumps and input recordings can contain private data, so review them before sharing. The [contributing guide](../CONTRIBUTING.md#useful-bug-reports) has more reporting detail.
+The optional [crash recorder](../tools/diagnostics/README.md) can collect more detail. Full dumps and input recordings can contain private data, so review them before sharing. The [contributing guide](../CONTRIBUTING.md) has more reporting detail.

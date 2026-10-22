@@ -1,88 +1,98 @@
-# Shogun 2 First-Person Possession
+# Shogun 2 First-Person Mod
 
-Take control of a soldier in your army and fight your **Total War: SHOGUN 2** battles from the front line. Select a unit and press **F9** to jump in. Press **F10** when you want to return to commanding the army.
+Command the army. Then join the fight.
 
-Fight in first or third person, on foot or horseback, fire bows and guns, and face enemy soldiers in melee. Your unit fights alongside you, and you can give them orders without leaving first person.
+Select one of your units in **Total War: SHOGUN 2**, press **F9**, and take control of a soldier on the battlefield. Fight with the weapon they're carrying, ride with the cavalry, or lead your men from the front. Your army keeps fighting around you. **F10** takes you back to your RTS camera whenever you want to command from above.
 
-**Public-release preparation branch:** this is a source/local-resource build kit, based on accepted v0.28. It is not installed or live accepted. See [build instructions](BUILD_AND_TEST.md).
+**[Install and play](#install-and-play)** · **[Controls](#controls)** · **[Known issues](docs/KNOWN_ISSUES.md)** · **[Build and source](#for-developers)**
 
-**[Download v0.28](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.28)** · [v0.28 notes](https://github.com/logsam58/shogun2-first-person/blob/v0.28/docs/releases/v0.28.md) · [Known problems](docs/KNOWN_ISSUES.md)
+## On the battlefield
 
-**v0.28** adds third-person play. Press **P** to switch views, scroll to change the distance, and hold the **middle mouse button** to look around your soldier while moving.
+- **First or third person.** Play through your soldier's eyes, or pull the camera back and orbit around them. Switch views without giving up control.
+- **Choose your soldier.** At the closest RTS zoom, point the cursor at someone in your selected unit and press F9. Generals, officers, flag bearers and musicians are included, using their own equipment. From further above, a soldier is picked for you.
+- **Aim, draw and fire.** Use bows, guns and thrown weapons. Hold and release to vary a bow shot's strength. Unit accuracy affects your spread; firearm crosshairs open and close to show it, while projectile sights help you allow for drop.
+- **Fight up close.** Time the indicated mouse click during melee, with Shogun 2's own combat animations playing out around you. Running at an enemy can lead into a native charge encounter; the game decides the attack, defense and outcome.
+- **Keep your unit with you.** Point out a move or attack, drag a formation, hold a position, call your men alongside you, and choose when they fire. Their formation, pathfinding, morale and fatigue still matter.
+- **Use the unit's abilities.** Cycle the abilities and special ammunition the unit actually has. Target friendlies for abilities such as Inspire, with the game's restrictions and cooldowns.
+- **Fight through sieges.** Climb castle walls, move through the fortifications, and mount or dismount where the game supports it.
 
-You can also choose who you play: zoom all the way in, point the mouse cursor at a soldier in your selected unit, and press **F9**. Generals, officers, flag bearers and musicians are included, with their own equipment. From high above, F9 still picks a soldier for you.
+The HUD puts your unit's condition, weapon, ammo, abilities and orders within reach. Press **K** for a clearer view; melee timing prompts stay visible. And if one of your own shots hits an ally, expect **“SHAMEFUL DISPLAY!”**
 
-This update also improves climbing, dismounting and camera continuity during combat. Crashes and some first-person weapon clipping remain open; see the [known problems](docs/KNOWN_ISSUES.md).
+## Install and play
 
-## Playing the mod
+**v0.28 — private preview.** The standard Windows installer is prepared locally and has not been uploaded. Public download availability will be announced by the repository owner.
 
-- **Your view:** Play in first or third person, choose your soldier up close, and orbit the camera while moving.
-- **Ranged combat:** Aim and fire your soldier's weapon, switch ammunition and manage reloads. Shot spread depends on your unit's accuracy.
-- **Unit abilities:** Use your unit’s native abilities, with their usual restrictions and cooldowns. They apply to the whole unit, including your soldier.
-- **Melee combat:** Time your mouse clicks with the on-screen prompts to fight at close quarters.
-- **Unit commands:** Order moves and attacks, drag out formations, hold a position, follow you and choose when to fire.
-- **Siege battles:** Climb castle walls and fight inside the fortifications.
-- **HUD:** See your unit's condition, weapon, ammo and controls in a style that fits the game.
+You need an installed, owned copy of the **original Windows Steam version of Total War: SHOGUN 2**. The installer checks the supported game build and runs on Windows 10 or later. No compiler, Python installation or separate mod launcher is needed to play.
 
-And if you shoot one of your own men, you'll hear **“SHAMEFUL DISPLAY!”**
+1. Get **`Shogun2-First-Person-v0.28-Setup.exe`** from the supplied private preview package. Once a download is published, this is the player installer to choose from the release's **Assets**.
+2. Close Shogun 2 completely. Run setup and choose the folder containing **Shogun2.exe** and **Empire.Retail.dll**.
+3. Launch the game normally **through Steam**. In a single-player land battle, select one of your units and press **F9**.
 
-## Getting started
-
-You'll need the Windows Steam version of **Total War: SHOGUN 2**.
-
-1. Open the [release page](https://github.com/logsam58/shogun2-first-person/releases/tag/v0.28) and download **Shogun2-First-Person-v0.28-Setup.exe**.
-2. Close the game completely, run setup and choose your Shogun 2 folder.
-3. Launch through Steam. In a land battle, select one of your units and press **F9**.
-
-Close the game before installing an update, then start it again afterward.
+Close the game before updating or removing the mod, and start a fresh game process afterward. To remove this setup, open **Windows Settings → Apps → Installed apps → Shogun 2 First-Person Mod → Uninstall**. Setup preserves unknown replacement files and retains rollback snapshots. The optional crash recorder is separate and isn't installed or removed with the mod.
 
 ## Controls
 
-| Key | What it does |
+### Your soldier and camera
+
+| Key | Action |
 | --- | --- |
-| **F9** | Possess a soldier in the selected unit; at closest RTS zoom, aim the mouse cursor at who you want |
-| **F10 / Escape** | Return to your previous RTS camera view |
+| **F9** | Possess a soldier in the selected unit; at closest RTS zoom, point the mouse cursor at who you want |
+| **F10 / Escape** | Return to your previous RTS camera |
 | **WASD** | Move |
-| **Shift** | Run; hold W + Shift toward an enemy to charge |
+| **Shift** | Run; hold **W + Shift** toward an enemy to attempt a charge |
 | **Mouse** | Look around |
 | **P** | Switch first/third person |
-| **Mouse wheel** in third person | Change camera distance |
-| **Hold middle mouse** in third person | Orbit your soldier without changing movement direction |
-| **M** | Mount/dismount the unit, where supported |
-| **Hold RMB** | Ready or draw your ranged weapon |
-| **LMB** | Fire guns/thrown weapons; hold and release for bow strength |
-| **1** | Toggle the unit between native melee and ranged mode, when supported |
-| **T** | Cycle the unit’s available abilities and special ammunition |
-| **G** | Use or end the selected ability; aim at a friendly unit for Inspire |
+| **Mouse wheel** in third person | Move the camera closer or further away |
+| **Hold middle mouse** in third person | Orbit your soldier while keeping your movement direction |
+| **M** | Order the unit to mount/dismount, where supported |
+| **Hold RMB** | Ready your ranged weapon |
+| **LMB** | Fire guns or thrown weapons; hold and release for bow draw strength |
+| **1** | Toggle the whole unit's native melee/ranged mode, where supported |
+| **T / G** | Select an ability or special ammunition / use or end it; aim at friendlies for targeted abilities |
 | **Hold Ctrl** | Crouch to fire, where supported |
-| **LMB / RMB prompt** | Click the shown button when the marker reaches the highlighted zone |
-| **F** near a wall | Start climbing |
+| **Shown LMB / RMB prompt** | Click the indicated button as the marker reaches the highlighted zone |
+| **F** near a wall | Begin climbing |
 | **W / S** while climbing | Climb up / down; release both to hold position |
-| **K** | Hide/show the HUD in RTS and possession; melee prompts remain visible |
-| **F12** | Turn the mod off for the rest of the session |
+| **K** | Hide/show the RTS and possession HUD; melee prompts remain visible |
+| **F12** | Disable the mod until the game restarts |
 
-### Unit orders
+### Your unit
 
 | Key | Order |
 | --- | --- |
-| **Q — Move / Attack** | Aim at the ground to move, or at an enemy or supported breakable target to attack. Tap to walk; double-tap to run or charge. Hold Q and drag left to right to set the formation, then release. |
+| **Q — Move / Attack** | Point at the ground to move, or an enemy or supported breakable target to attack. Tap to walk; double-tap to run or charge. Hold Q and drag left to right to set the formation, then release. |
 | **E — Stop** | Stop the unit. |
-| **Z — Hold Here** | Form up where you're standing, facing the direction you're looking when you press Z. Tap to walk there; double-tap to run. |
-| **C — Follow Me** | Form up beside you. Run to catch up if left behind, then match your pace. When you stop, the unit finishes forming up around you. |
+| **Z — Hold Here** | Form up at your current position, facing the direction you're looking when you press Z. Tap to walk there; double-tap to run. |
+| **C — Follow Me** | Form up beside you. Run to catch up when needed, then match your pace. When you stop, your men finish forming up around you. |
 | **R — Fire orders** | Cycle **Hold Fire → Fire at Will → Fire on Command**. Fire on Command tells the unit to fire when you fire. |
 
-You can't issue these orders while locked in a melee animation, climbing or landing.
+Unit orders are unavailable while you're locked in a melee animation, climbing or landing.
 
-## Known problems and compatibility
+## Compatibility and limits
 
-**Large units, one full army per side and maximum graphics in DX11** have been reported smooth. Ultra units with several armies or heavy fighting nearby can still slow down badly. v0.28 retains those optimizations, the audio guard and a correction for one captured detached-soldier crash. Other crashes remain unresolved. Mounted bows can look wrong, and some weapon or arm clipping remains. See the [known problems and reporting guide](docs/KNOWN_ISSUES.md).
+This mod is intended for **single-player land battles and sieges**. It recognises weapons from Shogun 2, Rise of the Samurai and Fall of the Samurai, but not every unit, weapon, ability or castle layout has been tested. Multiplayer and overhaul compatibility are unconfirmed. Ship possession isn't included; artillery keeps the game's own first-person mode.
 
-The mod is intended for single-player land battles and sieges. It supports weapons from the base game, Rise of the Samurai and Fall of the Samurai, though not every unit, ammo type or castle layout has been tested. Multiplayer and overhaul mods haven't been confirmed to work. Ship possession isn't included; artillery uses the game's existing first-person mode.
+Battle crashes remain unresolved. **Ultra unit size with several armies or dense fighting can still cause serious slowdowns**, even on low graphics settings. Large units with one full army per side have been reported smooth, but that isn't a performance guarantee. Some first-person weapons and arms can clip, and mounted bows still have presentation issues. Bow draw audio follows the native animation rather than the variable draw input.
 
-## For contributors
+See [known issues and troubleshooting](docs/KNOWN_ISSUES.md) for the remaining combat, targeting, camera and display limitations. Setup also refuses an unrelated **DINPUT8.dll** rather than overwriting another mod.
 
-The mod is written in C++, with Python build and debugging tools. Start with the [source map](SOURCE_MAP.md), [build guide](BUILD_AND_TEST.md) and [contributing guide](CONTRIBUTING.md). The [architecture](docs/ARCHITECTURE.md), [v0.28 technical notes](https://github.com/logsam58/shogun2-first-person/blob/v0.28/docs/releases/v0.28-technical.md) and [validation records](VALIDATION.md) cover implementation, tests and ongoing investigations.
+## For developers
 
-The [local resource pipeline](docs/public-release/RESOURCES.md) recreates the HUD/QTE fonts, artwork and cropped voice from your owned supported game using declared public tools. The optional [crash recorder](tools/diagnostics/README.md) is separate from the player installer. Public kits contain source and recipes, not game assets or resource-containing binaries.
+This is a native C++ mod running inside the original game, with a separate HUD and Python build/diagnostic tools. The source includes the possession adapter, camera and movement handling, combat/QTE integration, unit commands, abilities, loader and installer components.
 
-First-party code uses the [MIT license](LICENSE). Game material and vendored code retain their own rights; see [provenance](docs/public-release/PROVENANCE.md) and [third-party notices](THIRD_PARTY_NOTICES.md). This is an unofficial Shogun 2 mod.
+Start with the [source map](SOURCE_MAP.md) and [build guide](BUILD_AND_TEST.md), then use the documentation that fits what you're changing:
+
+- [Architecture and subsystem relationships](docs/ARCHITECTURE.md)
+- [Native interfaces, ownership, lifetime and threading contracts](docs/public-release/NATIVE_CONTRACTS.md)
+- [Local build dependencies](docs/LOCAL_DEPENDENCIES.md) and [owned-game resource preparation](docs/public-release/RESOURCES.md)
+- [Validation and test coverage](VALIDATION.md), including [current results](docs/public-release/VALIDATION_RESULTS.json)
+- [Standard Windows setup packaging](docs/public-release/STANDARD_SETUP.md)
+- [Optional crash diagnostics](tools/diagnostics/README.md) and [contributing](CONTRIBUTING.md)
+
+The source kit prepares game fonts, artwork and audio locally from your owned installation. It doesn't include the engine, private crash recordings or the complete decoding databases. The prepared player installer contains game-derived resources and is currently a private preview; see [resource provenance and distribution status](docs/public-release/PROVENANCE.md).
+
+## Make it your own
+
+Explore it, fork it, improve it, or take it in your own direction. First-party code is available under the **[MIT license](LICENSE)**. Community development is welcome; ongoing maintenance, updates and individual support aren't promised.
+
+Total War: SHOGUN 2 and its game material belong to Creative Assembly, SEGA and their respective rights holders. MinHook and its disassembler code retain their own notices. See [third-party notices](THIRD_PARTY_NOTICES.md). This is an unofficial mod, with no affiliation or endorsement implied.
