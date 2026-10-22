@@ -33,6 +33,7 @@ def selected(root=ROOT):
             if (len(parts)==2 and path.name in DOCS) or (len(parts)>2 and parts[1]=='public-release'):yield path
         elif parts[0]=='tools':
             if len(parts)==2 and path.name in TOOLS:yield path
+            elif parts[1]=='installer':yield path
             elif parts[1] in ('data','assets'):yield path
             elif parts[1]=='diagnostics' and path.name not in DIAGNOSTICS_EXCLUDE and path.suffix!='.cmd':yield path
 

@@ -19,3 +19,5 @@ MIT was selected for straightforward community reuse, including permissive reuse
 Public packaging must exclude unresolved derived resources, even when they are embedded in an executable rather than present as loose files. Local reproduction and authorization to redistribute are separate questions. This branch is not yet an approved open-source release or a grant from Creative Assembly/SEGA.
 
 Owner approved local-resource source kit and native status icon profile on 2026-10-21. No public prebuilt resource redistribution is approved or inferred. The prepared native aliases deliberately differ from the private restored status artwork; all other native sprite geometry is checked.
+
+Test159 implements the code-only player route: setup prepares the original resources locally from each player’s copy, using a native read-only extractor. Runtime binaries and setup contain metadata and code rather than game pixels/fonts/audio. Earlier private embedded-resource binaries are not changed by this implementation. No public publication or repository visibility change is authorized.

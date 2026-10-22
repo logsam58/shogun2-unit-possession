@@ -1,16 +1,11 @@
-# Prepare a release
+# Releasing
 
-The approved public format is a source/local-resource kit. Local setup/HUD/loader binaries embed game resources; do not upload them publicly while redistribution permission is unresolved. The owner separately approved the private preview draft; that is not public distribution clearance. Build tools are obtained separately.
+Keep the repository private and draft ID420192018 unpublished until the owner explicitly decides otherwise. Do not change main, merge the public branch, overwrite published versions or silently replace old asset identities.
 
-1. Read current-release.json, choose a branch/candidate and preserve published tags.
-2. Regenerate roles/tables/resources, then run current native/Python/diagnostic checks from a fresh source export with explicit paths.
-3. Record source revision/content digest, tools, resources, results, explicit optional skips and live limits. Update acceptance.
-4. Run tools/package_source.py --output-dir with a new directory. Curated selection excludes assets/binaries/private evidence; audit checks paths, secrets and binary signatures. A SHA-256 manifest and notices are included.
-5. Extract and verify the kit, then build independently. Inspect its ZIP list for private/proprietary payloads.
-6. Review the local commit and kit. Obtain owner approval before push/publication/visibility/release changes. The packager performs none of those operations.
+For Test159, build using the local-assets profile and run native, Python, asset comparison and isolated standard-installer checks. Audit the loader's embedded component closure and every runtime PE: no Shogun image/font/audio resources may be included. Distribute only the standard LocalAssets setup and audited source kit/checksums, never the generated local bundles or the native build folder.
 
-    py -3.12 tools/package_source.py --output-dir 'D:\Shogun Source Release'
+Use distinct `Shogun2-First-Person-v0.28-LocalAssets-Setup.exe` and `Shogun2FP-Public-Source-Kit-Test159.zip` names. Preserve the earlier Test158 standard setup and frozen source kit as historical private artifacts. Published v0.28/v0.27 remain immutable. Retain their explicit distinction in draft wording.
 
-Git exports record revision and selected-source changes; an archive uses a content digest and must not invent a revision. Byte-identical binaries are not promised: compiler paths/timestamps and packing can differ. Validate meaningful resource geometry, source hashes and tests.
+The Test159 package is offline-validated, not installed or live-accepted. A real swap needs a fresh CLOSED and safe rollback; a fresh process needs READY/IN BATTLE, exact loaded hashes/native hooks and actual capture verification. Do not invent that gate from Test158's reported finished battle.
 
-Keep v0.28 immutable. Test158 is development, not a replacement for accepted Test157. Live validation has a separate fresh loaded-hash/capture gate. Historical operator publication helpers remain in Git, outside this kit and procedure.
+Changing repository visibility would expose its existing history/releases too. Those older private binaries contain game resources; preparing the new code-only candidate does not change their contents or redistribution status. Keep private publication and public launch separate.

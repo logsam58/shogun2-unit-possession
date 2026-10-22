@@ -1,0 +1,251 @@
+{
+  "schema": 1,
+  "candidate": 159,
+  "version": "0.28",
+  "branch": "public-release",
+  "offline_passed": true,
+  "installed": false,
+  "live_accepted": false,
+  "published": false,
+  "private": true,
+  "game_resources_shipped": false,
+  "local_source_entries": 615,
+  "native_results": [
+    {
+      "name": "local-assets-extractor",
+      "passed": true,
+      "seconds": 4.673
+    },
+    {
+      "name": "local-assets-prepare",
+      "passed": true,
+      "seconds": 2.6
+    },
+    {
+      "name": "local-assets-format-render-tests",
+      "passed": true,
+      "seconds": 8.048
+    },
+    {
+      "name": "minhook",
+      "passed": true,
+      "seconds": 3.097
+    },
+    {
+      "name": "adapter",
+      "passed": true,
+      "seconds": 7.892
+    },
+    {
+      "name": "adapter-tests",
+      "passed": true,
+      "seconds": 276.585,
+      "executables": 96
+    },
+    {
+      "name": "qte",
+      "passed": true,
+      "seconds": 5.763
+    },
+    {
+      "name": "qte-tests",
+      "passed": true,
+      "seconds": 144.96,
+      "executables": 50
+    },
+    {
+      "name": "hud",
+      "passed": true,
+      "seconds": 4.083
+    },
+    {
+      "name": "hud-tests",
+      "passed": true,
+      "seconds": 11.367,
+      "executables": 8
+    },
+    {
+      "name": "loader",
+      "passed": true,
+      "seconds": 3.944
+    },
+    {
+      "name": "loader-tests",
+      "passed": true,
+      "seconds": 6.547
+    },
+    {
+      "name": "installer",
+      "passed": true,
+      "seconds": 7.834
+    },
+    {
+      "name": "installer-current-tests",
+      "passed": true,
+      "seconds": 17.314,
+      "executables": 2
+    },
+    {
+      "name": "installer-historical-compatibility",
+      "status": "skipped",
+      "reason": "Optional archived fingerprints are not prerequisites for current transaction tests. Run the documented historical target with a complete verified archive."
+    }
+  ],
+  "python_tests": 15,
+  "role_table_checks": true,
+  "local_asset_comparison": {
+    "passed": true,
+    "comparisons": [
+      {
+        "image": "game-atlas-0.png",
+        "visible_pixels_equal": true,
+        "dimensions": [
+          2048,
+          2048
+        ]
+      },
+      {
+        "image": "game-atlas-1.png",
+        "visible_pixels_equal": true,
+        "dimensions": [
+          2037,
+          2044
+        ]
+      },
+      {
+        "image": "game-atlas-2.png",
+        "visible_pixels_equal": true,
+        "dimensions": [
+          816,
+          2040
+        ]
+      },
+      {
+        "image": "qte-atlas.png",
+        "visible_pixels_equal": true,
+        "dimensions": [
+          512,
+          204
+        ]
+      },
+      {
+        "image": "ability141-30.png",
+        "visible_pixels_equal": true,
+        "dimensions": [
+          56,
+          56
+        ]
+      },
+      {
+        "image": "ability141-31.png",
+        "visible_pixels_equal": true,
+        "dimensions": [
+          56,
+          56
+        ]
+      },
+      {
+        "fonts_byte_equal": 20
+      },
+      {
+        "voice_seconds": 1.55,
+        "reference_correlation": 0.9999999199091497,
+        "decoder_offset_samples": -528,
+        "not_claimed_byte_identical": true
+      }
+    ],
+    "game_launched": false
+  },
+  "native_extraction_two_runs_byte_identical": true,
+  "standard_installer": {
+    "passed": true,
+    "checks": [
+      "exact accepted158 upgrade and complete rollback",
+      "utf8: install, repeat repair, uninstall, repeat uninstall, engine preservation",
+      "utf8-bom: install, repeat repair, uninstall, repeat uninstall, engine preservation",
+      "utf16le: install, repeat repair, uninstall, repeat uninstall, engine preservation",
+      "utf16be: install, repeat repair, uninstall, repeat uninstall, engine preservation",
+      "empty: install, repeat repair, uninstall, repeat uninstall, engine preservation",
+      "interrupted prefix 0: exact baseline restored twice",
+      "interrupted prefix 1: exact baseline restored twice",
+      "interrupted prefix 2: exact baseline restored twice",
+      "interrupted prefix 3: exact baseline restored twice",
+      "interrupted prefix 4: exact baseline restored twice",
+      "interrupted prefix 5: exact baseline restored twice",
+      "interrupted prefix 6: exact baseline restored twice",
+      "foreign DINPUT8 refused without changes",
+      "foreign pack refused without changes",
+      "unknown post-install binary blocks uninstall and rollback without changes",
+      "uninstall preserves script and launcher entries added afterward",
+      "adopt exact pre-existing mod, exact rollback, uninstall and reinstall with retained prior snapshot",
+      "malformed launcher data refused without changes",
+      "changed rollback snapshot refused without game-file changes",
+      "unknown local asset refused without game changes: 4",
+      "unknown local asset refused without game changes: 5",
+      "post-install asset changes preserved and refused",
+      "real Inno install + repeat install + Windows uninstall registration",
+      "real Inno uninstall removes fixture registration and mod, retains rollback and other mods",
+      "real Inno missing original input fails before deployment/registration"
+    ],
+    "count": 26,
+    "real_game_modified": false,
+    "production_setup_executed": false,
+    "fixture_setup_sha256": "65e972c92e5bc2c8d7176593ab5637bdba9b0ad8c9522b15a39d6200fdae94f9",
+    "helper_sha256": "1215678b1029c81ecce3b154df550fb352af14a5a608a7d7995435d5ae4269b1",
+    "integration_source_sha256": "9277b4313857ee6a57c3becaf4bf539006a362e5566400963dc94f1c4664f54d",
+    "source_attestation": "Read from the package receipt for the exact fixture-tested helper after verification; no test result altered."
+  },
+  "production_setup": {
+    "name": "Shogun2-First-Person-v0.28-LocalAssets-Setup.exe",
+    "sha256": "bb534d9f6f1261a3c1c0325c3a571a3f4f6b145376c0f4fa33d31e5f86107f38",
+    "bytes": 2728452,
+    "unsigned": true,
+    "production_wrapper_executed": false,
+    "exact_fixture_tested_helper": true
+  },
+  "payload_audit": {
+    "passed": true,
+    "game_images_fonts_audio_embedded": false,
+    "files": {
+      "possession-v46.dll": {
+        "sha256": "ca21a0727602382833e2d996ecea14cdfa6e137e457ebee96b9bf232783df3c9",
+        "resource_keys": []
+      },
+      "possession-hud.exe": {
+        "sha256": "dc188065717ab8b2ffbd613b7f1a43aa78b38e0521c29d6f50a9625520f58f4b",
+        "resource_keys": []
+      },
+      "qte-playable-v79.dll": {
+        "sha256": "ea3adb3485649857be3c42ae3e35469f689596dc0d1d1f3bd1c06d2e9c4b88a6",
+        "resource_keys": []
+      },
+      "prepare-local-assets159.exe": {
+        "sha256": "711643926023c0e182780912328602149fbdce4ce7d1ae77d11b5938e2ba4c0f",
+        "resource_keys": []
+      },
+      "dinput8.dll": {
+        "embedded_first_party_components_only": true,
+        "sha256": "13e9097a3965d9a8a3fb054c1dd9dfe30c0591eba22fda678ab736b036251c44"
+      }
+    }
+  },
+  "preserved": {
+    "personal_checkout_commit": "24d31a2f5e5c2cf84a42c459a69bdcd9bd86c600",
+    "installed158_loader_sha256": "936bb2cd09bfb57ba4a703a3dbdb7ca682d8df4e92a7feaf8b3738d8493a26c2",
+    "installed158_marker_sha256": "3db77b196bc9fb3ded51ac6e850a386a2b8cc30cf9e97011b1babf88d5e2753b",
+    "real_game_install_or_launch": false,
+    "recorder_debugger_settings_changed": false
+  },
+  "limitations": [
+    "No new live gameplay test; future swap and loaded/capture gate remain separate.",
+    "Original supported Windows Steam engine and pinned English data/local_en packs required.",
+    "Windows N requires Media Feature Pack.",
+    "Older private embedded-resource downloads/history remain unchanged.",
+    "Original crash, Ultra crowd slowdown and clipping issues remain open."
+  ],
+  "earlier_failures_retained": [
+    "initial Media Foundation include compile failure",
+    "duplicate packaging header inclusion compile failures before corrected final build"
+  ],
+  "raw_evidence": "Private Test159 artifacts; generated game resources and raw logs excluded from source kit."
+}

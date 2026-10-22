@@ -8,10 +8,19 @@
 #include <map>
 #include <string>
 #include <algorithm>
+#ifdef S2FP_LOCAL_ASSETS
+#include "../../../common/local_assets159.h"
+#ifdef HUD80_QTE_ONLY
+#include "../../../common/qte_sprites159.h"
+#else
+#include "../../../common/hud_sprites159.h"
+#endif
+#else
 #ifdef HUD80_QTE_ONLY
 #include "qte-sprites.generated.h"
 #else
 #include "sprites.generated.h"
+#endif
 #endif
 #include "unit_art.generated.h"
 #ifdef HUD80_QTE_ONLY
@@ -40,6 +49,20 @@ class Assets {
 public:
     bool load(HMODULE module){
         if(!native_fonts.load(module))return false;
+#ifdef S2FP_LOCAL_ASSETS
+        for(int i=0;i<atlas_count;++i){
+            auto b=assets159::resource(module,101+i);if(!b.bytes||!b.width)return false;
+            auto bitmap=std::make_unique<Bitmap>(b.width,b.height,b.width*4,PixelFormat32bppARGB,const_cast<BYTE*>(b.bytes));
+            if(bitmap->GetLastStatus()!=Ok)return false;atlases.push_back(std::move(bitmap));
+        }
+#ifndef HUD80_QTE_ONLY
+        for(unsigned id:{30u,31u}){
+            auto b=assets159::resource(module,400+id);if(!b.bytes||!b.width)return false;
+            auto bitmap=std::make_unique<Bitmap>(b.width,b.height,b.width*4,PixelFormat32bppARGB,const_cast<BYTE*>(b.bytes));
+            if(bitmap->GetLastStatus()!=Ok)return false;tiles.emplace(L"native-ability141-"+std::to_wstring(id),std::move(bitmap));
+        }
+#endif
+#else
         for(int i=0;i<atlas_count;++i){
             HRSRC r=FindResourceW(module,MAKEINTRESOURCEW(101+i),MAKEINTRESOURCEW(10));
             if(!r)return false;
@@ -52,7 +75,9 @@ public:
             streams.push_back(stream);auto bitmap=std::make_unique<Bitmap>(stream);
             if(bitmap->GetLastStatus()!=Ok)return false;
             atlases.push_back(std::move(bitmap));
-        }return true;
+        }
+#endif
+        return true;
     }
     void clear(){tiles.clear();atlases.clear();for(auto stream:streams)stream->Release();streams.clear();native_fonts.clear();}
     ~Assets(){clear();}

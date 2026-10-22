@@ -1,106 +1,21 @@
 # Standard Windows setup
 
-The private v0.28 preview uses **Inno Setup 7.1.0**, with a normal setup wizard
-and Windows uninstall entry. It packages the accepted Test158 payload without
-rebuilding the loader, adapter, HUD or QTE component. This is an unsigned mod
-installer, not a Microsoft/Creative Assembly certified product.
+The current candidate is **v0.28 / Test159**, using Inno Setup 7.1.0. Download `Shogun2-First-Person-v0.28-LocalAssets-Setup.exe`. It is unsigned and remains a private preview pending the owner's decision.
 
-## What it installs
+## Installation
 
-The single player download is **`Shogun2-First-Person-v0.28-Setup.exe`**.
+Close Shogun 2, select the supported original Steam folder, and let setup prepare resources from that copy. It first validates the game/profile, then runs the native extractor into fresh temporary staging. Failure here leaves game files unchanged. No game artwork, fonts or voice are shipped inside the setup or runtime code.
 
-Inno Setup copies the existing loader to `DINPUT8.dll` beside the game's
-executable and the existing marker pack to
-`data/shogun2_possession_checkpoint45.pack`. The loader already contains the
-runtime components. The standard installer also stores its helper, notices,
-playing guide, manifest and uninstaller in its own program folder.
+Inno owns the wizard, file deployment and Windows uninstall entry. It installs the loader, marker pack and two locally generated data files, with normal program records/notices in its own folder. A narrow integration helper manages only six targets: `DINPUT8.dll`, the marker pack, two activation files and the HUD/QTE local resource files. It uses the retained fingerprint, encoding, JSON and safe-file primitives. The old custom wizard/CLI is not invoked.
 
-The integration helper enables only this pack in the current Windows profile's
-`user.script.txt` and Shogun 2 launcher selection. It reuses the existing
-fingerprint, encoding, JSON and safe-file primitives. It does **not** run the old
-custom wizard or `install_cli.exe`. Inno owns the UI, payload copying and Windows
-uninstall registration; the helper handles the game-specific ownership checks,
-activation and rollback snapshots.
+All before/after snapshots are identified and hash-checked before game-file deployment. Interrupted prefixes can restore the exact baseline when targets still match known before/after identities. Unknown changes, snapshots and unidentified directories are preserved and stop recovery. This is not a claim of power-loss testing. Repeat install repairs the same identified installation; earlier snapshots remain after removal and reinstall.
 
-It doesn't launch the game, start/stop a recorder or debugger, prune runtime
-caches, change CPU/graphics settings, touch saves or alter Steam prerequisite
-flags. Run it from the Windows account used to play; administrator access is
-requested for protected game/program folders.
+Use Windows Settings > Apps > Shogun 2 First-Person Mod > Uninstall with the game closed. Only unchanged current mod/local-resource files are removed; unrelated mods and later activation entries survive. Unknown replacement files stop uninstall. Rollback snapshots and old runtime caches are retained. Setup does not touch saves, graphics/CPU/Steam settings, recorder or debugger, and never launches the game.
 
-## Backup and removal
+Run setup from the Windows account used to play. It requests administrator access for protected installation folders. The fixture wrapper has a distinct HKCU identity and mandatory synthetic profile, and must not be confused with production setup.
 
-Before game-file deployment, the helper saves identified, hash-checked before
-and after images for the two mod files and two activation files. Snapshot intent
-is flushed before Inno copies anything into the game. Failed installation
-attempts restore the previous bytes when every affected file still has an
-expected before/after identity. Unknown edits stop restoration and are preserved.
+## Build and verify
 
-After interruption, rerunning setup uses that identified snapshot to recover or
-repair the same installation. An incomplete snapshot without its final identity
-is preserved rather than guessed at; no game file is changed during snapshot
-creation. Choose a fresh setup records directory or inspect the old record in
-that case. Different game/profile bindings are rejected.
+See [BUILD_AND_TEST.md](../../BUILD_AND_TEST.md). `build_local_setup159.py` accepts a successful isolated local-assets Test159 build, audits PE resource closure and packages code/notices only. It deliberately excludes the privately generated `local-assets`, `bin/*.s2fp` and `tests/*.s2fp` inputs. The fixture verification runs the actual Inno engine against isolated read-only game-input views, including preparation on the test computer.
 
-Use **Windows Settings → Apps → Installed apps → Shogun 2 First-Person Mod →
-Uninstall**, with the game closed. Removal deletes only unchanged current mod
-files, removes this pack's activation statements/launcher entries, and preserves
-other mods, including entries added after setup. Unknown replacement binaries
-stop uninstall before game-file changes. Uninstall does not reinstall an older
-mod version. Earlier snapshots remain in the setup folder's `rollback` directory
-for explicit recovery; caches and the separate diagnostics installation remain.
-
-## Build the wrapper
-
-Obtain the compiler from the [official Inno Setup download page](https://jrsoftware.org/isdl.php).
-The tested compiler was the publisher-signed 7.1.0 x64 distribution, prepared in
-portable mode. Python 3.12 and the existing MSVC x86 Build Tools compile only the
-new packaging helper. No Inno/Python/compiler runtime is required on a player's
-machine.
-
-From the repository root, supply your completed, isolated Test158 build:
-
-```powershell
-python tools/installer/build_setup.py `
-  --prepared-source '<finished-build>/source' `
-  --bin-dir '<finished-build>/bin' `
-  --vcvars '<BuildTools>/VC/Auxiliary/Build/vcvars32.bat' `
-  --iscc '<InnoSetup>/ISCC.exe' `
-  --output '<separate-packaging-output>' `
-  --private-preview
-```
-
-The command pins the accepted payload hashes, refuses a changed payload and
-writes `output/Shogun2-First-Person-v0.28-Setup.exe` plus a package receipt. Output
-must be separate from the finished source and binaries. The script deliberately
-requires `--private-preview`: the embedded artwork/fonts/audio have unresolved
-public redistribution status. It is not a replacement for the source-kit public
-resource gate.
-
-## Validation scope
-
-The final package passed [19 grouped checks](STANDARD_SETUP_VALIDATION.json).
-
-`tools/installer/verify_setup.py` checks the helper in synthetic game/profile
-folders using the supported engine only as a read-only fingerprint input. A
-separately compiled `--fixture` setup has a distinct per-user uninstall identity
-and mandatory isolated profile override. The production setup has no profile
-override and is not run by these checks.
-
-Checks cover five script encodings/initial states; install and repeat repair;
-uninstall and repeat uninstall; exact rollback at every four-file mutation
-prefix; foreign DLL/pack refusal; post-install unknown edits; preservation of
-later mod selections; and real Inno installation, repeat installation, Windows
-registration and removal. These prefix checks simulate interrupted states; they
-are not a claim of power-loss or killed-process coverage for this new wrapper.
-
-The original Test158 game binaries retain their earlier offline validation and
-the owner's completed-battle acceptance. That is separate from this wrapper's
-fixture tests. No new real-game installation, launch, loaded-hook verification
-or gameplay test is claimed for this setup.
-
-## Files and distribution
-
-Packaging source lives under `tools/installer/`. New executables, compiler tools,
-fixture folders and logs belong in ignored `artifacts/standard-setup/`, not Git.
-The original accepted build, previous installer, source ZIP and published v0.28
-assets are not overwritten. See [publication handoff](PUBLICATION_HANDOFF.md).
+The earlier `Shogun2-First-Person-v0.28-Setup.exe` is a separate historical private preview containing embedded resources. Its identity and previous assets are preserved. It is not the local-resource download.

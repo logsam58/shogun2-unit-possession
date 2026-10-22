@@ -4,6 +4,9 @@
 #include "embedded_hashes.h"
 #include <shlobj.h>
 #include <regex>
+#ifdef S2FP_LOCAL_ASSETS
+#include "../../common/local_assets159.h"
+#endif
 static volatile LONG autoload_stage,autoload_error;
 static std::wstring runtime_folder;
 static std::wstring read_text(const std::wstring& path){
@@ -48,6 +51,21 @@ static std::wstring extract(HMODULE module,int id,const wchar_t* name,const char
     DWORD written=0;require(WriteFile(file.h,bytes,size,&written,nullptr)&&written==size,"Cannot write mod component");
     CloseHandle(file.h);file.h=nullptr;require(hash_file(path)==expected,"Extracted mod component failed integrity check");return path;
 }
+#ifdef S2FP_LOCAL_ASSETS
+static void cache_local159(const std::wstring& source,const std::wstring& target,unsigned kind){
+    assets159::Store input;require(input.load(source,kind),"Local game resources missing or corrupt; run the local-assets setup again");
+    if(GetFileAttributesW(target.c_str())==INVALID_FILE_ATTRIBUTES){
+        auto stage=target+L".local159-"+std::to_wstring(GetCurrentProcessId())+L"-"+std::to_wstring(GetTickCount64())+L".new";
+        require(CopyFileW(source.c_str(),stage.c_str(),TRUE)!=0,"Cannot stage local resource cache");
+        try{
+            require(hash_file(stage)==hash_file(source),"Staged local resources differ");
+            require(MoveFileExW(stage.c_str(),target.c_str(),MOVEFILE_WRITE_THROUGH)!=0,"Cannot commit local resource cache; existing files preserved");
+        }catch(...){DeleteFileW(stage.c_str());throw;}
+    }
+    require(hash_file(source)==hash_file(target),"Local resource cache differs; preserved without overwrite");
+    assets159::Store output;require(output.load(target,kind),"Local resource cache failed integrity check");
+}
+#endif
 static uint32_t local_u32(uintptr_t address){uint32_t value=0;SIZE_T read=0;require(address>=65536&&ReadProcessMemory(GetCurrentProcess(),reinterpret_cast<void*>(address),&value,4,&read)&&read==4,"Battle not ready");return value;}
 static bool battle_ready(uintptr_t base){try{auto root=local_u32(base+0x1bc8180);auto env=local_u32(root+0x110);auto common=local_u32(env+8);auto phase=local_u32(common+0xb4);auto id=local_u32(phase+0x14);return id>=5&&id<=8;}catch(...){return false;}}
 static bool other_adapter(){Handle snap(CreateToolhelp32Snapshot(TH32CS_SNAPMODULE,GetCurrentProcessId()));require(snap.h!=INVALID_HANDLE_VALUE,"Module inventory failed");MODULEENTRY32W entry{};entry.dwSize=sizeof entry;
@@ -69,6 +87,14 @@ static DWORD WINAPI integrated_worker(void* argument){try{
     std::wstring game=exe;game=game.substr(0,game.find_last_of(L'\\'));
 #ifndef POSSESSION_WORKSHOP_BUILD
     require(hash_file(game+L"\\data\\shogun2_possession_checkpoint45.pack")==EMBEDDED_PACK_SHA,"Selected mod pack differs");
+#endif
+#ifdef S2FP_LOCAL_ASSETS
+    // Prepare outside the game process during setup; validate before any native hook loads.
+    for(unsigned kind:{1u,2u}){
+        const wchar_t* file=kind==1?L"hud-assets159.s2fp":L"qte-assets159.s2fp";
+        std::wstring source=game+L"\\data\\shogun2_possession_local_assets159\\"+file;
+        cache_local159(source,runtime_folder+L"\\"+file,kind);
+    }
 #endif
     auto adapter=extract(static_cast<HMODULE>(argument),101,L"possession-v46.dll",EMBEDDED_ADAPTER_SHA);
     auto hud=extract(static_cast<HMODULE>(argument),102,L"possession-hud.exe",EMBEDDED_HUD_SHA);

@@ -8,15 +8,13 @@
   },
   "development": {
     "branch": "public-release",
-    "candidate": 158,
-    "format": "source/local-resource-kit",
-    "installed": true,
-    "live_accepted": true,
-    "pushed": true,
+    "candidate": 159,
+    "format": "standard setup with install-time local assets",
+    "installed": false,
+    "live_accepted": false,
+    "pushed": false,
     "published": false,
-    "acceptance_scope": "User reported one completed battle with everything working.",
-    "formal_preplay_gate_completed": false,
-    "recorded_component_hashes_match": true,
+    "game_resources_shipped": false,
     "private_draft": {
       "url": "https://github.com/logsam58/shogun2-first-person/releases/tag/untagged-ccbcd8419ff6f2951702",
       "release_id": 420192018,
@@ -36,5 +34,23 @@
     "isolated enemy acquisition",
     "permission for resource-containing public binaries",
     "Formal native-hook/preplay capture gate not completed for accepted Test158 battle; future testing needs fresh cue."
-  ]
+  ],
+  "previous_candidate": {
+    "branch": "public-release",
+    "candidate": 158,
+    "format": "source/local-resource-kit",
+    "installed": true,
+    "live_accepted": true,
+    "pushed": true,
+    "published": false,
+    "acceptance_scope": "User reported one completed battle with everything working.",
+    "formal_preplay_gate_completed": false,
+    "recorded_component_hashes_match": true,
+    "private_draft": {
+      "url": "https://github.com/logsam58/shogun2-first-person/releases/tag/untagged-ccbcd8419ff6f2951702",
+      "release_id": 420192018,
+      "label": "v0.28-private-preview",
+      "public": false
+    }
+  }
 }

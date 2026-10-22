@@ -1,3 +1,6 @@
+#ifdef S2FP_LOCAL_ASSETS
+#include "../../../common/local_assets159.h"
+#endif
 #pragma once
 // Native Creative Assembly Unicode Font masks, metrics and pair kerning.
 // Format reference: Europa Barbarorum CUFReader/FormatConstants (2010-2012).
@@ -32,8 +35,12 @@ class NativeFont {
 public:
     unsigned nominal{};
     bool load(HMODULE module,int id,unsigned size){
+#ifdef S2FP_LOCAL_ASSETS
+        auto blob=assets159::resource(module,id);data=blob.bytes;length=blob.size;
+#else
         HRSRC r=FindResourceW(module,MAKEINTRESOURCEW(id),MAKEINTRESOURCEW(10));if(!r)return false;
         length=SizeofResource(module,r);data=static_cast<const BYTE*>(LockResource(LoadResource(module,r)));
+#endif
         if(!data||length<0x20020||memcmp(data,"CUF0",4))return false;
         nominal=size;glyph_count=u16(26);bitmap_start=0x20020+glyph_count*8;bitmap_end=bitmap_start+u32(28);
         if(!glyph_count||bitmap_end+4>length)return false;

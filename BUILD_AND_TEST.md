@@ -1,44 +1,36 @@
 # Build and test
 
-This public-release branch builds unpublished Test158. Accepted v0.28/Test157 and the installed mod stay unchanged. See [dependencies](docs/LOCAL_DEPENDENCIES.md), [resources](docs/public-release/RESOURCES.md) and [current status](docs/current-release.json).
+The public-release branch builds **Test159**, a v0.28 candidate that prepares artwork, fonts and audio on the player's PC during setup. The accepted personal build and installation are separate. No game launch or real installation is part of a build.
 
-Use Windows x64, Python 3.12.10, MSVC x86/Windows SDK, ImageMagick 7.1.2-24 Q16-HDRI, Node 24.16.0, locked npm dependencies and FFmpeg 9.0.2. The legitimate game's Empire.Retail.dll must have SHA-256:
+## Build the local-resource player installer
+
+Builders need Windows 10/11, Python 3.12, MSVC x86 Build Tools and Windows SDK, and Inno Setup 7.1.0. Players need none of those tools. Windows N needs the Media Feature Pack. Use the original supported Windows Steam game with `data.pack` and the supported English `local_en.pack`. The engine SHA-256 is:
 
     022fae2e2da92b59b8b1b8ee52887003c624e3c8eca060b209f5d792a7f874f5
 
-Other images/platforms/remasters are unsupported. Never bypass fingerprint failures.
-
-## Clone or extract, then build
-
-Run in PowerShell at the source root. Replace these example paths. Output directories must be new; spaces are supported. Keep paths within normal Windows file API limits. Setup refuses UNC/reparse installation paths.
+From PowerShell in this source folder, replace these example paths:
 
     $game = 'D:\Steam Library\steamapps\common\Total War SHOGUN 2'
     $work = 'D:\Shogun Mod Build'
     $vc = 'C:\BuildTools\VC\Auxiliary\Build\vcvars32.bat'
-    $node = 'C:\Tools\node\node.exe'
-    $magick = 'C:\Program Files\ImageMagick-7.1.2-Q16-HDRI\magick.exe'
-    $ffmpeg = 'C:\Tools\ffmpeg\bin\ffmpeg.exe'
-    & $node 'C:\Tools\node\node_modules\npm\bin\npm-cli.js' ci --prefix tools/assets --ignore-scripts --no-audit --no-fund
-    py -3.12 tools/prepare_resources.py --game $game --output-dir "$work\resources" --magick $magick --node $node --packer tools/assets/node_modules/free-tex-packer-cli/index.js --ffmpeg $ffmpeg
-    py -3.12 tools/generate_roles.py --check
-    py -3.12 tools/generate_tables.py --check
-    py -3.12 -m unittest discover -s tests -v
-    py -3.12 tools/build.py all --tests --candidate 158 --game $game --resources "$work\resources" --output-dir "$work\native" --vcvars $vc
+    $iscc = 'C:\Tools\Inno Setup 7\ISCC.exe'
+    py -3.12 tools/build.py all --local-assets --tests --candidate 159 --game $game --output-dir "$work\native" --vcvars $vc
+    py -3.12 tools/installer/build_local_setup159.py --build "$work\native" --vcvars $vc --iscc $iscc --output "$work\setup"
 
-Optional tools/configure.py accepts --game, --resources and --vcvars, writing ignored tools/local.json. Explicit arguments override it. Automatic MSVC discovery uses Visual Studio Installer's vswhere.exe.
+Every output folder must be new and outside the game. The build snapshots source and records hashes/logs. Local bundles in the build's `bin`, `tests` and `local-assets` folders are private test inputs; **do not distribute those folders**. The setup builder audits PE resources and packages only the loader/marker, native extraction tool, integration helper and notices. The result is `output/Shogun2-First-Person-v0.28-LocalAssets-Setup.exe`.
 
-The builder snapshots source into the chosen output, overlays locally prepared resources and builds adapter → QTE → HUD → loader → installer. Inputs, logs and artifact hashes are recorded. It never runs the player installer or game. Adapter-only builds can omit UI; complete integration uses all.
+Run `py -3.12 -m unittest discover -s tests -v` and the generated role/table checks as well. Native checks include the 96 adapter, 50 QTE, 8 HUD, 2 loader and 2 current installer executables, plus native resource format and both production renderer checks. Existing installer child-kill tests cover 15 boundaries, not physical power loss. Optional historical archives remain separate; absence is reported as skipped.
 
-Current checks: 96 adapter, 50 QTE, 8 HUD, 2 loader fixtures and 2 installer executables. The transaction executable kills only its own children at 15 boundaries. This tests process termination, not physical power loss. Exact-native instructions use the fingerprinted engine; synthetic world/render/pathfinding providers remain finite boundaries.
+## Test the standard setup safely
 
-Historical installer compatibility is optional and explicitly skipped without its verified archive. Missing current sources/resources/tests is fatal. See [historical fixtures](docs/public-release/HISTORICAL_TESTS.md). The optional recorder has its own [isolated checks](tools/diagnostics/README.md).
+Build a second wrapper with `--fixture`. It uses a different HKCU uninstall identity and requires an isolated profile override. Then run:
 
-## Install, upgrade, repair and rollback
+    py -3.12 tools/installer/verify_local_setup159.py --build "$work\setup-fixture" --engine "$game\Empire.Retail.dll" --game $game --assets "$work\native\local-assets" --output "$work\setup-tests"
 
-These are separate operator actions requiring approval. Close the game before DLL replacement, then launch a fresh process through Steam. Run the locally built bin/Shogun2-Possession-Setup.exe and choose the supported game. It refuses unrelated same-name files.
+This hard-links legitimate pack/engine inputs for read-only fixture use, never executes the game, and exercises six-target backup, repair, rollback, unknown-edit preservation and real Inno install/uninstall. Production setup is not executed by these tests. Real installation and gameplay need separate authorization and a fresh loaded-build/capture check.
 
-Repair uses the same installer. Recovery restores an uncommitted transaction's five managed targets and two fixed Steam prerequisite values before retrying; a committed transaction completes backup retention. Unknown changes stop recovery and remain intact. Preserve unfamiliar journals for inspection rather than deleting them.
+## Metadata and older build profiles
 
-Changed existing targets retain .possession-previous snapshots; unfamiliar older backups get preserved under identified suffixes. Prefer a reviewed earlier installer for deliberate rollback. Keep journals/backups until acceptance. This branch has no automatic uninstall/rollback CLI. Do not overwrite another mod's DINPUT8.dll or restore an entire profile.
+The native extractor uses checked-in entry hashes and atlas coordinates, with no asset bytes. To regenerate these coordinates, first use the independent [resource preparation pipeline](docs/public-release/RESOURCES.md), then run `tools/installer/generate_asset_recipe159.py --prepared-source <prepared tree>`. Review metadata changes and compare pixels before accepting them.
 
-Locally built binaries embed game resources and must not be publicly uploaded while permission is unresolved. The approved public format is a source/local-resource kit. See [release procedure](docs/public-release/RELEASING.md).
+The older `--resources` embedded profile, `build_setup.py --private-preview` and custom setup/CLI remain historical developer tools. They are not the local-resource player distribution. Their resource-containing binaries must stay private. See [standard setup](docs/public-release/STANDARD_SETUP.md) and [release procedure](docs/public-release/RELEASING.md).

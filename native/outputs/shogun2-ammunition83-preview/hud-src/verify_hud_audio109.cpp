@@ -1,5 +1,8 @@
 #include "../../shogun2-possession-cleanup-v46/src/friendly_fire_protocol109.h"
 #include <iostream>
+#ifdef S2FP_LOCAL_ASSETS
+#include "../../../common/local_assets159.h"
+#endif
 #include <stdexcept>
 static void check(bool b,const char* why){if(!b)throw std::runtime_error(why);}
 int main(){try{
@@ -13,8 +16,12 @@ int main(){try{
     ++s.event;check(!c.take(s,7,2,0,9,1200,true),"Stale notification played");
     ++s.event;check(!c.take(s,7,2,0,9,99,true),"Future notification played");
     ++s.event;s.magic=0;check(!c.take(s,7,2,0,9,120,true),"Invalid notification played");
+#ifdef S2FP_LOCAL_ASSETS
+    auto blob=assets159::resource(nullptr,301);auto bytes=blob.bytes;auto size=blob.size;
+#else
     auto resource=FindResourceW(nullptr,MAKEINTRESOURCEW(301),L"WAVE");check(resource!=nullptr,"Cropped voice resource missing");
     auto bytes=static_cast<const unsigned char*>(LockResource(LoadResource(nullptr,resource)));auto size=SizeofResource(nullptr,resource);
+#endif
     check(bytes&&size==136754&&!memcmp(bytes,"RIFF",4)&&!memcmp(bytes+8,"WAVE",4),"Voice resource is not the pinned cropped WAV");
     bool format=false,data=false;for(unsigned i=12;i+8<=size;){uint32_t n=0;memcpy(&n,bytes+i+4,4);check(n<=size-i-8,"Invalid WAV chunk");
         if(!memcmp(bytes+i,"fmt ",4)){check(n>=16,"Truncated audio format");uint16_t codec=0,channels=0,bits=0;uint32_t rate=0;

@@ -3,7 +3,9 @@ import argparse,hashlib,json,os,shutil,subprocess,sys,time
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1];NATIVE=ROOT/'native';OUT=Path(os.environ.get('SHOGUN2_BUILD_OUTPUT',str(ROOT/'artifacts')));BIN=OUT/'bin';OBJ=OUT/'obj';TEST=OUT/'tests';LOG=OUT/'logs'
 ADAPTER=NATIVE/'outputs/shogun2-accuracy90-preview';QTE=NATIVE/'outputs/shogun2-authentic-hud80-preview';HUD=NATIVE/'outputs/shogun2-ammunition83-preview';AUTO=NATIVE/'work/autoload99-preview';INSTALL=NATIVE/'work/installer-siege99'
+LOCAL=os.environ.get('SHOGUN2_LOCAL_ASSETS')=='1'
 COMMON=['/nologo','/std:c++17','/EHsc','/O2','/MT','/W4'];BASE_LIBS=['bcrypt.lib','user32.lib','gdi32.lib'];ADAPTER_LIBS=BASE_LIBS+['d3d11.lib','d3d9.lib','dxgi.lib','d3dcompiler.lib'];QTE_LIBS=BASE_LIBS+['gdiplus.lib','ole32.lib'];SETUP_LIBS=['bcrypt.lib','shell32.lib','advapi32.lib','comdlg32.lib','user32.lib','gdi32.lib']
+if LOCAL:COMMON+=['/DS2FP_LOCAL_ASSETS','/DNOMINMAX']
 receipts=[];hooks=[];CANDIDATE=None;RELEASE=False
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 def quote(command):
@@ -46,22 +48,28 @@ def adapter(tests):
   run('adapter-tests',commands);receipts[-1]['executables']=len(sources)
 def qte(tests):
  minhook()
- required=json.loads(Path(os.environ['SHOGUN2_PREPARED_MANIFEST']).read_text(encoding='utf-8'))['files'];missing=[i['path'] for i in required if not (ROOT/i['path']).exists()]
- if missing:raise SystemExit('Missing local game UI inputs. Run tools/prepare_resources.py from the supported game. First: '+missing[0])
- resources=rc(QTE/'qte-src/qte-assets.rc','qte');run('qte',[compile_cpp(QTE/'qte-src/playable_runtime.cpp',BIN/'qte-playable-v79.dll',[resources,*hooks],QTE_LIBS,['/LD'])])
+ resources=[]
+ if not LOCAL:
+  required=json.loads(Path(os.environ['SHOGUN2_PREPARED_MANIFEST']).read_text(encoding='utf-8'))['files'];missing=[i['path'] for i in required if not (ROOT/i['path']).exists()]
+  if missing:raise SystemExit('Missing prepared local resource: '+missing[0])
+  resources=[rc(QTE/'qte-src/qte-assets.rc','qte')]
+ run('qte',[compile_cpp(QTE/'qte-src/playable_runtime.cpp',BIN/'qte-playable-v79.dll',[*resources,*hooks],QTE_LIBS,['/LD'])])
  if tests:
   commands=[];sources=sorted((QTE/'qte-src').glob('verify_*.cpp'))
   for source in sources:
-   target=TEST/('qte-'+source.stem+'.exe');commands.extend([compile_cpp(source,target,[resources,*hooks],QTE_LIBS),[target]])
+   target=TEST/('qte-'+source.stem+'.exe');commands.extend([compile_cpp(source,target,[*resources,*hooks],QTE_LIBS),[target]])
   run('qte-tests',commands);receipts[-1]['executables']=len(sources)
 def hud(tests):
- spec=json.loads((ROOT/'tools/audio109.json').read_text());voice=ROOT/spec['wave_path']
- if not voice.is_file() or sha(voice)!=spec['wave_sha256']:raise SystemExit('Missing/corrupt local voice dependency: run tools/prepare_audio109.py --game <game> --ffmpeg <ffmpeg.exe>')
- resources=rc(HUD/'hud-src/hud-assets.rc','hud');run('hud',[compile_cpp(HUD/'hud-src/hud.cpp',BIN/'possession-hud.exe',[resources],QTE_LIBS+['winmm.lib'])])
+ resources=[]
+ if not LOCAL:
+  spec=json.loads((ROOT/'tools/audio109.json').read_text());voice=ROOT/spec['wave_path']
+  if not voice.is_file() or sha(voice)!=spec['wave_sha256']:raise SystemExit('Missing prepared local voice')
+  resources=[rc(HUD/'hud-src/hud-assets.rc','hud')]
+ run('hud',[compile_cpp(HUD/'hud-src/hud.cpp',BIN/'possession-hud.exe',resources,QTE_LIBS+['winmm.lib'])])
  if tests:
   commands=[];sources=sorted((HUD/'hud-src').glob('verify_hud_*.cpp'))
   for source in sources:
-   target=TEST/(source.stem+'.exe');production=source.stem=='verify_hud_roles';audio=source.stem=='verify_hud_audio109';commands.extend([compile_cpp(source,target,[resources] if audio else (),QTE_LIBS+['winmm.lib'] if production else BASE_LIBS),[target]])
+   target=TEST/(source.stem+'.exe');production=source.stem=='verify_hud_roles';audio=source.stem=='verify_hud_audio109';commands.extend([compile_cpp(source,target,resources if audio else (),QTE_LIBS+['winmm.lib'] if production else BASE_LIBS),[target]])
   run('hud-tests',commands);receipts[-1]['executables']=len(sources)
 def loader(tests):
  payload=NATIVE/'outputs/shogun2-siege99-preview';payload.mkdir(parents=True,exist_ok=True)
@@ -88,6 +96,20 @@ def installer(tests):
   run('installer-current-tests',commands);receipts[-1]['executables']=2
   receipts.append({'name':'installer-historical-compatibility','status':'skipped','reason':'Optional archived fingerprints are not prerequisites for current transaction tests. Run the documented historical target with a complete verified archive.'})
 
+def local_assets():
+ tool=BIN/'prepare-local-assets159.exe'
+ run('local-assets-extractor',[compile_cpp(ROOT/'tools/installer/prepare_local_assets159.cpp',tool,(),['bcrypt.lib','ole32.lib','mfplat.lib','mfreadwrite.lib','mfuuid.lib','shell32.lib'],['/DUNICODE','/D_UNICODE'])])
+ stage=OUT/'local-assets'
+ run('local-assets-prepare',[[tool,os.environ['SHOGUN2_GAME_DIR'],stage]])
+ for name in ['hud-assets159.s2fp','qte-assets159.s2fp']:
+  for folder in [BIN,TEST]:shutil.copyfile(stage/name,folder/name)
+ commands=[compile_cpp(ROOT/'tools/installer/verify_asset_format159.cpp',TEST/'verify-asset-format159.exe',(),['bcrypt.lib','ole32.lib','mfplat.lib','mfreadwrite.lib','mfuuid.lib','shell32.lib'],['/DUNICODE','/D_UNICODE']),[TEST/'verify-asset-format159.exe']]
+ for label,options in [('hud',[]),('qte',['/DHUD80_QTE_ONLY'])]:
+  target=TEST/('verify-asset-renderer159-'+label+'.exe')
+  commands.extend([compile_cpp(ROOT/'tools/installer/verify_asset_renderer159.cpp',target,(),QTE_LIBS,options),[target]])
+ run('local-assets-format-render-tests',commands)
+
+
 def find_vcvars():
  config=ROOT/'tools/local.json';settings=json.loads(config.read_text()) if config.exists() else {};p=os.environ.get('SHOGUN2_VCVARS',settings.get('vcvars',''))
  if p and Path(p).is_file():return Path(p)
@@ -103,6 +125,7 @@ def main():
  VCVARS=find_vcvars()
  for p in [BIN,OBJ,TEST,LOG]:p.mkdir(parents=True,exist_ok=True)
  targets=['adapter','qte','hud','loader','installer'] if args.target=='all' else [args.target]
+ if LOCAL:local_assets()
  for target in targets:globals()[target](args.tests)
  binaries=[{'file':str(p.relative_to(OUT)),'bytes':p.stat().st_size,'sha256':sha(p)} for p in BIN.iterdir() if p.suffix in {'.dll','.exe','.pack'}]
  (OUT/'build-results.json').write_text(json.dumps({'candidate':CANDIDATE,'development_candidate':not RELEASE,'results':receipts,'binaries':binaries,'game_installed_or_launched':False,'rebuilt_payload_is_not_the_installed_hash_identity':True},indent=2)+'\n');print('Build complete: '+str(BIN)+'. No installer or game was launched.')

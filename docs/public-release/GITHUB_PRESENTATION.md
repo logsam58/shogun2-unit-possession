@@ -33,7 +33,4 @@ reverse-engineering
 - [Standard setup build and validation](STANDARD_SETUP.md)
 - [Publication handoff](PUBLICATION_HANDOFF.md)
 
-No new version number is assigned. v0.28 is the current version; Test158 is the
-accepted candidate inside the new setup. Existing v0.28 tags and assets stay
-immutable. The new setup is in a separate private draft and has not replaced an existing
-GitHub download.
+Product version remains v0.28. Test159 is the separate local-resource installer candidate, not installed or live-accepted. The existing private draft receives distinct new candidate filenames; older setup/source assets retain their identities. Keep the repository private and the draft unpublished.

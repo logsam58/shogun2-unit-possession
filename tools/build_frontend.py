@@ -17,7 +17,7 @@ def source_files(root):
     # Works from a source archive as well as a Git checkout. Exclude all build,
     # game, vendor-runtime and local configuration material independently of Git.
     tops = ('native', 'tools', 'tests', 'docs')
-    suffixes = {'.cpp', '.c', '.h', '.py', '.ps1', '.cmd', '.def', '.rc', '.md', '.txt', '.json', '.csv', '.mjs', '.js'}
+    suffixes = {'.cpp', '.c', '.h', '.py', '.ps1', '.cmd', '.def', '.rc', '.md', '.txt', '.json', '.csv', '.mjs', '.js', '.iss'}
     for folder in tops:
         for path in sorted((root / folder).rglob('*')):
             relative = path.relative_to(root)
@@ -52,6 +52,7 @@ def main():
     parser.add_argument('--game', type=Path)
     parser.add_argument('--output-dir', type=Path, required=True)
     parser.add_argument('--resources', type=Path)
+    parser.add_argument('--local-assets', action='store_true', help='Ship code only; prepare owned-game resources locally')
     parser.add_argument('--vcvars', type=Path)
     parser.add_argument('--tests', action='store_true')
     parser.add_argument('--candidate', type=int, default=158)
@@ -65,8 +66,11 @@ def main():
         game = game.resolve()
         require_game(game)
     resources = args.resources or (Path(settings['resources']) if settings.get('resources') else None)
-    if args.target != 'adapter' and not resources:
+    if args.target != 'adapter' and not resources and not args.local_assets:
         parser.error('Run tools/prepare_resources.py, then supply --resources <output>')
+    if args.local_assets:
+        resources = None
+        if not game: parser.error('--local-assets requires the supported --game for offline extraction/tests')
     resource_receipt = resource_inputs(resources.resolve()) if resources else None
     vcvars = (args.vcvars or find_vcvars()).resolve()
     if not vcvars.is_file():
@@ -92,12 +96,14 @@ def main():
             shutil.copy2(resources / 'prepared' / row['path'], target)
     source_digest = hashlib.sha256(json.dumps(inputs, sort_keys=True).encode()).hexdigest()
     manifest = {'schema': 1, 'source_digest': source_digest, 'source_files': inputs,
-                'resources': resource_receipt, 'candidate': args.candidate,
+                'resources': resource_receipt, 'local_assets': args.local_assets, 'candidate': args.candidate,
                 'game_changed': False, 'installed': False, 'game_launched': False,
                 'historical_compatibility': {'status': 'skipped', 'mandatory': False, 'reason': 'No optional archive requested'},
                 'live_validation': 'not performed; requires fresh separate authorization'}
     (output / 'build-inputs.json').write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
     environment = dict(os.environ, SHOGUN2_BUILD_OUTPUT=str(output), SHOGUN2_VCVARS=str(vcvars), SHOGUN2_ISOLATED_BUILD='1')
+    if args.local_assets:
+        environment['SHOGUN2_LOCAL_ASSETS'] = '1'
     if game:
         environment['SHOGUN2_GAME_DIR'] = str(game)
     if resources:

@@ -4,12 +4,30 @@
 #include "install.h"
 
 namespace standard_setup {
+#ifdef S2FP_LOCAL_ASSETS
+const char* owner="shogun2-first-person-inno-local159";
+constexpr size_t file_count=6;
+#else
 const char* owner="shogun2-first-person-inno-v1";
+constexpr size_t file_count=4;
+#endif
 std::wstring state,game,profile;
 std::vector<std::wstring> targets;
 std::string manifest;
 std::vector<std::string> before,after,old_hash,new_hash;
 std::vector<bool> existed;
+void validate_standard_game(){
+#ifdef S2FP_LOCAL_ASSETS
+    // Exact accepted Test158 predecessor. Other unknown injectors still fail.
+    if(durable::digest(game+L"\\DINPUT8.dll")=="936bb2cd09bfb57ba4a703a3dbdb7ca682d8df4e92a7feaf8b3738d8493a26c2"){
+        require(hash_file(game+L"\\Empire.Retail.dll")==EXPECTED_HASH,"Unsupported game version");
+        auto pack=durable::digest(game+L"\\data\\"+PACK);
+        require(pack=="absent"||pack==EMBEDDED_PACK_SHA||pack=="3db77b196bc9fb3ded51ac6e850a386a2b8cc30cf9e97011b1babf88d5e2753b","Unrecognized marker pack; preserved");
+        return;
+    }
+#endif
+    validate_game(game);
+}
 std::wstring item(const wchar_t* stem,size_t i){return state+L"\\"+stem+std::to_wstring(i)+L".bin";}
 std::string digest(const std::wstring& p){safe_target(p);return durable::digest(p);}
 void erase(const std::wstring& p){safe_target(p);if(durable::exists(p))require(DeleteFileW(p.c_str())!=0,"Cannot remove owned file; close the game and retry");}
@@ -20,8 +38,8 @@ void load(){
     auto j=JsonReader{manifest}.document();
     require(durable::field(j,"owner")==owner,"Unrecognized rollback owner; preserved");
     require(durable::wide(durable::field(j,"game"))==game&&durable::wide(durable::field(j,"profile"))==profile,"This setup belongs to a different game or Windows profile");
-    auto rows=j.fields.at("files").items;require(rows.size()==4,"Invalid rollback file count");
-    for(size_t i=0;i<4;++i){
+    auto rows=j.fields.at("files").items;require(rows.size()==file_count,"Invalid rollback file count");
+    for(size_t i=0;i<file_count;++i){
         existed.push_back(durable::flag(rows[i],"existed"));
         old_hash.push_back(durable::field(rows[i],"before"));new_hash.push_back(durable::field(rows[i],"after"));
         require(digest(item(L"before-",i))==old_hash.back()&&digest(item(L"after-",i))==new_hash.back(),"Rollback snapshot changed; preserved");
@@ -30,16 +48,16 @@ void load(){
     require(new_hash[0]==SETUP_BOOTSTRAP_SHA&&new_hash[1]==EMBEDDED_PACK_SHA,"Rollback build differs from this setup");
 }
 void preflight_rollback(){
-    for(size_t i=0;i<4;++i){auto h=digest(targets[i]);require(h==new_hash[i]||h==(existed[i]?old_hash[i]:"absent"),"A managed file changed outside setup; it has been preserved. See the rollback folder.");}
+    for(size_t i=0;i<file_count;++i){auto h=digest(targets[i]);require(h==new_hash[i]||h==(existed[i]?old_hash[i]:"absent"),"A managed file changed outside setup; it has been preserved. See the rollback folder.");}
 }
 void rollback(){
     preflight_rollback();
-    for(size_t i=0;i<4;++i){if(digest(targets[i])==(existed[i]?old_hash[i]:"absent"))continue;
+    for(size_t i=0;i<file_count;++i){if(digest(targets[i])==(existed[i]?old_hash[i]:"absent"))continue;
         if(existed[i])atomic_bytes(targets[i],before[i]);else erase(targets[i]);}
     erase(state+L"\\active");
 }
 void prepare(){
-    validate_game(game);
+    validate_standard_game();
     require(plain_ancestors(game),"Use a normal local Steam game directory");
     for(auto& p:targets)safe_target(p);
     if(GetFileAttributesW((state+L"\\ready").c_str())!=INVALID_FILE_ATTRIBUTES){
@@ -67,9 +85,19 @@ void prepare(){
     wchar_t module[32768];require(GetModuleFileNameW(nullptr,module,32768)!=0,"Cannot locate setup custom action");
     auto source=std::wstring(module);source=source.substr(0,source.find_last_of(L"\\"));
     after[0]=read_bytes(source+L"\\dinput8.dll");after[1]=read_bytes(source+L"\\marker.pack");
+#ifdef S2FP_LOCAL_ASSETS
+    for(unsigned kind:{1u,2u}){
+        auto filename=kind==1?L"hud-assets159.s2fp":L"qte-assets159.s2fp";
+        auto path=source+L"\\local-assets\\"+filename;assets159::Store resources;
+        require(resources.load(path,kind),"Prepared local game resources are missing or corrupt");
+        auto bytes=read_bytes(path);size_t i=kind+3;
+        require(!existed[i]||before[i]==bytes,"An unknown local resource file exists; preserved");
+        after.push_back(std::move(bytes));
+    }
+#endif
     atomic_bytes(state+L"\\manifest.pending","Identified snapshots are being prepared; no game file has changed.\r\n");
     manifest="{\"owner\":"+json_string(owner)+",\"game\":"+json_string(utf8(game))+",\"profile\":"+json_string(utf8(profile))+",\"files\":[";
-    for(size_t i=0;i<4;++i){atomic_bytes(item(L"before-",i),before[i]);atomic_bytes(item(L"after-",i),after[i]);
+    for(size_t i=0;i<file_count;++i){atomic_bytes(item(L"before-",i),before[i]);atomic_bytes(item(L"after-",i),after[i]);
         auto a=digest(item(L"before-",i)),b=digest(item(L"after-",i));
         if(i==0)require(b==SETUP_BOOTSTRAP_SHA,"Loader payload differs");if(i==1)require(b==EMBEDDED_PACK_SHA,"Pack payload differs");
         if(i)manifest+=",";manifest+="{\"existed\":"+std::string(existed[i]?"true":"false")+",\"before\":"+json_string(a)+",\"after\":"+json_string(b)+"}";}
@@ -78,7 +106,7 @@ void prepare(){
 void finish(){
     load();preflight_rollback();require(digest(targets[0])==SETUP_BOOTSTRAP_SHA&&digest(targets[1])==EMBEDDED_PACK_SHA,"Inno file copy did not complete; restoring previous installation");
     atomic_bytes(targets[2],after[2]);atomic_bytes(targets[3],after[3]);
-    for(size_t i=0;i<4;++i)require(digest(targets[i])==new_hash[i],"Installed integration differs");
+    for(size_t i=0;i<file_count;++i)require(digest(targets[i])==new_hash[i],"Installed integration differs");
     atomic_bytes(state+L"\\active",hash_file(state+L"\\manifest.json"));
 }
 std::string remove_script(std::string bytes){
@@ -105,7 +133,7 @@ std::string remove_launcher(std::string bytes){
 }
 void uninstall(bool apply){
     load();
-    for(size_t i=0;i<2;++i){auto h=digest(targets[i]);require(h=="absent"||h==new_hash[i],"An installed mod file was replaced or changed. Uninstall stopped and preserved it.");}
+    for(size_t i=0;i<file_count;++i){if(i==2||i==3)continue;auto h=digest(targets[i]);require(h=="absent"||h==new_hash[i],"An installed mod file was replaced or changed. Uninstall stopped and preserved it.");}
     // Parse everything before removing anything. Other mods' current entries
     // survive, including entries added after this setup completed.
     auto script=read_bytes(targets[2]),launcher=read_bytes(targets[3]);
@@ -113,7 +141,7 @@ void uninstall(bool apply){
     if(!apply)return;
     if(clean_script!=script)atomic_bytes(targets[2],clean_script);
     if(clean_launcher!=launcher)atomic_bytes(targets[3],clean_launcher);
-    erase(targets[0]);erase(targets[1]);
+    for(size_t i=0;i<file_count;++i)if(i!=2&&i!=3)erase(targets[i]);
     atomic_bytes(state+L"\\uninstalled","Mod removed. Previous snapshots retained for manual recovery.\r\n");
     erase(state+L"\\active");
 }
@@ -124,8 +152,12 @@ int wmain(int argc,wchar_t** argv){
         using namespace standard_setup;game=durable::absolute(argv[2]);profile=durable::absolute(argv[3]);state=durable::absolute(argv[4]);report=argv[5];
         require(!running(),"Close Shogun 2 completely, then run setup again.");durable::Lock lock;
         targets={game+L"\\DINPUT8.dll",game+L"\\data\\"+PACK,profile+L"\\The Creative Assembly\\Shogun2\\scripts\\user.script.txt",profile+L"\\The Creative Assembly\\Launcher\\20190104-moddata.dat"};
+#ifdef S2FP_LOCAL_ASSETS
+        targets.push_back(game+L"\\data\\shogun2_possession_local_assets159\\hud-assets159.s2fp");
+        targets.push_back(game+L"\\data\\shogun2_possession_local_assets159\\qte-assets159.s2fp");
+#endif
         std::wstring command=argv[1];
-        if(command==L"check"){validate_game(game);for(auto& p:targets)safe_target(p);launcher_selection(read_bytes(targets[3]),game);}
+        if(command==L"check"){validate_standard_game();for(auto& p:targets)safe_target(p);launcher_selection(read_bytes(targets[3]),game);}
         else if(command==L"prepare")prepare();else if(command==L"finish")finish();else if(command==L"rollback"){load();rollback();}
         else if(command==L"uninstall-check")uninstall(false);else if(command==L"uninstall")uninstall(true);else throw std::runtime_error("Unknown integration command");
         atomic_bytes(report,"OK\r\n");return 0;

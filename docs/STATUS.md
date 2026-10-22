@@ -1,11 +1,7 @@
-# Current status
+# Status
 
-[current-release.json](current-release.json) is authoritative.
+Published v0.28/Test157 and the original main branch remain unchanged. Installed Test158 was accepted after one reported completed battle; its missing formal preplay gate remains explicit.
 
-Accepted baseline: v0.28/Test157, commit 24d31a2f5e5c2cf84a42c459a69bdcd9bd86c600. Published tag/assets and installed accepted build stay unchanged.
+The public-release branch now prepares Test159: a standard Inno installer that reads each player’s own game resources during installation. No Shogun image/font/audio payload ships in the new candidate. See [local-resource validation](public-release/LOCAL_ASSETS159_VALIDATION.json), [setup](public-release/STANDARD_SETUP.md) and [current identity](current-release.json).
 
-This branch prepares Test158 as a source/local-resource kit. Shared roles, durable setup recovery, deployment closure and resource regeneration are implemented. See [validation](../VALIDATION.md) and [acceptance](public-release/PLAN.md).
-
-Test158 is installed locally and accepted after the owner reported one completed battle with everything working. Existing recording metadata matched the loader, adapter, QTE and HUD hashes. The formal preplay gate was not completed and is not retroactively claimed. Push/publication awaits owner approval. Prebuilt resource-containing binaries remain blocked by unresolved redistribution permission. The owner approved MIT for first-party code, local resource preparation and original native status icons in this public profile.
-
-Crashes, Ultra multi-army slowdown, clipping and isolated enemy acquisition remain open. Acceptance does not imply universal unit, naval or castle coverage.
+Test159 has not been installed into the real game or live-accepted. The repository and preview draft remain private. Earlier embedded-resource previews and published historical assets are retained separately. Crashes, Ultra crowd slowdown, clipping and isolated acquisition remain open; no gameplay or crash fix is claimed here.
