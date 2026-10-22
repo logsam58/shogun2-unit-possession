@@ -20,11 +20,11 @@ The HUD puts your unit's condition, weapon, ammo, abilities and orders within re
 
 ## Install and play
 
-**v0.28 — current build.** Use **`Shogun2-First-Person-v0.28-LocalAssets-Setup.exe`** under **Assets** in the [private draft release](https://github.com/logsam58/shogun2-first-person/releases/tag/untagged-ccbcd8419ff6f2951702). This repository and its downloads remain private.
+**v1.0.** Download **`Shogun2-First-Person-v1.0-Setup.exe`** from the [latest release](https://github.com/logsam58/shogun2-first-person/releases/tag/v1.0). The repository remains private until its owner opens access.
 
 You need an installed, owned copy of the **original Windows Steam version of Total War: SHOGUN 2**. The installer checks the supported game build and runs on Windows 10 or later. No compiler, Python installation or separate mod launcher is needed to play.
 
-1. Open the [private draft release](https://github.com/logsam58/shogun2-first-person/releases/tag/untagged-ccbcd8419ff6f2951702) and download **`Shogun2-First-Person-v0.28-LocalAssets-Setup.exe`** from **Assets**. You need to be signed into GitHub with access to this draft.
+1. Open the [v1.0 release](https://github.com/logsam58/shogun2-first-person/releases/tag/v1.0) and download **`Shogun2-First-Person-v1.0-Setup.exe`** from **Assets**. You need to be signed into GitHub with repository access.
 2. Close Shogun 2 completely. Run setup and choose the folder containing **Shogun2.exe** and **Empire.Retail.dll**.
 3. Launch the game normally **through Steam**. In a single-player land battle, select one of your units and press **F9**.
 
@@ -87,11 +87,11 @@ Start with the [source map](SOURCE_MAP.md) and [build guide](BUILD_AND_TEST.md),
 - [Architecture and subsystem relationships](docs/ARCHITECTURE.md)
 - [Native interfaces, ownership, lifetime and threading contracts](docs/public-release/NATIVE_CONTRACTS.md)
 - [Local build dependencies](docs/LOCAL_DEPENDENCIES.md) and [owned-game resource preparation](docs/public-release/RESOURCES.md)
-- [Validation and test coverage](VALIDATION.md), including [current results](docs/public-release/VALIDATION_RESULTS.json)
+- [Validation and test coverage](VALIDATION.md), including [v1.0 release checks](docs/public-release/V1_0_VALIDATION.json)
 - [Standard Windows setup packaging](docs/public-release/STANDARD_SETUP.md)
 - [Optional crash diagnostics](tools/diagnostics/README.md) and [contributing](CONTRIBUTING.md)
 
-The source kit prepares game fonts, artwork and audio locally from your owned installation. It doesn't include the engine, private crash recordings or the complete decoding databases. The prepared player installer contains game-derived resources and is currently a private preview; see [resource provenance and distribution status](docs/public-release/PROVENANCE.md).
+The source kit prepares game fonts, artwork and audio locally from your owned installation. It doesn't include the engine, private crash recordings or the complete decoding databases. The installer prepares those resources from each player’s game, including ability icons and the advisor voice. They are not included in the download. See [resource provenance and distribution status](docs/public-release/PROVENANCE.md).
 
 ## Make it your own
 

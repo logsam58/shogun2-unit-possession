@@ -1,4 +1,4 @@
-# Shogun 2 First-Person Mod v0.28
+# Shogun 2 First-Person Mod v1.0
 
 Launch the original Shogun 2 normally through Steam. In a single-player land
 battle, select a friendly unit and press **F9**. At the closest RTS zoom, point
@@ -26,8 +26,9 @@ the mouse cursor at the soldier you want; from higher up, one is picked for you.
 Close the game before an update or uninstall. Use **Windows Settings → Apps →
 Installed apps → Shogun 2 First-Person Mod → Uninstall** to remove this setup.
 Unknown replacement files are preserved. Earlier snapshots remain in the setup
-records folder's `rollback` directory; uninstall does not delete runtime caches.
+records folder's versioned rollback directory; uninstall does not delete runtime caches.
 
+Charging and castle wall climbing are intermittent known bugs.
 Battle crashes, crowd slowdowns with Ultra units, and some first-person weapon
 clipping remain known limitations. Single-player land battles and sieges are the
 intended use; multiplayer, overhaul compatibility and ship possession are not
@@ -35,4 +36,4 @@ promised. The separate diagnostics recorder is not part of this setup.
 
 First-party code is MIT licensed. See LICENSE, THIRD_PARTY_NOTICES.md and
 MinHook-LICENSE.txt. Shogun 2 artwork, fonts, audio and other game material retain
-their owners' rights. This private preview is not cleared for public redistribution.
+their owners' rights. Generated game resources stay on your computer and are not included in this setup download.

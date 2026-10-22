@@ -3,7 +3,7 @@ import argparse,hashlib,json,os,shutil,subprocess,sys,time
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1];NATIVE=ROOT/'native';OUT=Path(os.environ.get('SHOGUN2_BUILD_OUTPUT',str(ROOT/'artifacts')));BIN=OUT/'bin';OBJ=OUT/'obj';TEST=OUT/'tests';LOG=OUT/'logs'
 ADAPTER=NATIVE/'outputs/shogun2-accuracy90-preview';QTE=NATIVE/'outputs/shogun2-authentic-hud80-preview';HUD=NATIVE/'outputs/shogun2-ammunition83-preview';AUTO=NATIVE/'work/autoload99-preview';INSTALL=NATIVE/'work/installer-siege99'
-LOCAL=os.environ.get('SHOGUN2_LOCAL_ASSETS')=='1'
+LOCAL=True
 COMMON=['/nologo','/std:c++17','/EHsc','/O2','/MT','/W4'];BASE_LIBS=['bcrypt.lib','user32.lib','gdi32.lib'];ADAPTER_LIBS=BASE_LIBS+['d3d11.lib','d3d9.lib','dxgi.lib','d3dcompiler.lib'];QTE_LIBS=BASE_LIBS+['gdiplus.lib','ole32.lib'];SETUP_LIBS=['bcrypt.lib','shell32.lib','advapi32.lib','comdlg32.lib','user32.lib','gdi32.lib']
 if LOCAL:COMMON+=['/DS2FP_LOCAL_ASSETS','/DNOMINMAX']
 receipts=[];hooks=[];CANDIDATE=None;RELEASE=False
@@ -77,7 +77,7 @@ def loader(tests):
   source=BIN/name
   if not source.is_file():raise SystemExit('Build adapter, qte and hud first: '+name)
   shutil.copy2(source,payload/name)
- subprocess.run([sys.executable,str(AUTO/'prepare_embedded.py'),*(['--release'] if RELEASE else ['--candidate',str(CANDIDATE)])],check=True)
+ subprocess.run([sys.executable,str(AUTO/'prepare_embedded.py'),'--candidate',str(CANDIDATE),*(['--release'] if RELEASE else [])],check=True)
  resources=rc(AUTO/'payload.rc','loader');run('loader',[compile_cpp(AUTO/'bootstrap.cpp',BIN/'dinput8.dll',[resources],['/DEF:'+str(AUTO/'dinput8.def'),'bcrypt.lib','shell32.lib'],['/LD'])]);shutil.copy2(BIN/'dinput8.dll',AUTO/'dinput8.dll');shutil.copy2(AUTO/'marker.pack',BIN/'marker.pack')
  (AUTO/'setup_hashes.h').write_text('#pragma once\nstatic const char* SETUP_BOOTSTRAP_SHA="'+sha(BIN/'dinput8.dll')+'";\n')
  if tests:
@@ -87,7 +87,7 @@ def installer(tests):
  baseline=INSTALL/'previous_cache_catalog.h';text=baseline.read_text();assert text.rstrip().endswith('};');hashes=(AUTO/'embedded_hashes.h').read_text();import re
  cache=re.search(r'EMBEDDED_BUILD=L"([a-f0-9]+)"',hashes).group(1);entry='{L"'+cache+'",{'+','.join('{L"'+n+'","'+sha(BIN/n)+'"}' for n in ['possession-v46.dll','possession-hud.exe','qte-playable-v79.dll'])+'}},\n';(INSTALL/'cache_catalog.h').write_text(text.rstrip()[:-2]+entry+'};\n')
  resources=rc(INSTALL/'setup.rc','installer');wizard=BIN/'Shogun2-Possession-Setup.exe';cli=BIN/'install_cli.exe'
- run('installer',[compile_cpp(INSTALL/'wizard.cpp',wizard,[resources],['/MANIFEST:EMBED','/SUBSYSTEM:WINDOWS',"/MANIFESTUAC:level='requireAdministrator' uiAccess='false'",*SETUP_LIBS]),compile_cpp(INSTALL/'install_cli.cpp',cli,[resources],['/SUBSYSTEM:CONSOLE','/ENTRY:wmainCRTStartup','/MANIFEST:EMBED',"/MANIFESTUAC:level='asInvoker' uiAccess='false'",*SETUP_LIBS])])
+ if not LOCAL:run('installer',[compile_cpp(INSTALL/'wizard.cpp',wizard,[resources],['/MANIFEST:EMBED','/SUBSYSTEM:WINDOWS',"/MANIFESTUAC:level='requireAdministrator' uiAccess='false'",*SETUP_LIBS]),compile_cpp(INSTALL/'install_cli.cpp',cli,[resources],['/SUBSYSTEM:CONSOLE','/ENTRY:wmainCRTStartup','/MANIFEST:EMBED',"/MANIFESTUAC:level='asInvoker' uiAccess='false'",*SETUP_LIBS])])
  if tests:
   commands=[]
   for name in ('verify_current','verify_transaction'):
@@ -120,7 +120,7 @@ def find_vcvars():
  raise SystemExit('Set SHOGUN2_VCVARS to vcvars32.bat or run tools/configure.py --vcvars <path>.')
 def main():
  global VCVARS,CANDIDATE,RELEASE
- parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('target',choices=['adapter','qte','hud','loader','installer','all']);parser.add_argument('--tests',action='store_true');mode=parser.add_mutually_exclusive_group();mode.add_argument('--candidate',type=int,default=158,help='Distinct unpublished Test number (100 or later)');mode.add_argument('--release',action='store_true',help='Package v0.28/Test157 gameplay with release metadata; does not publish or install');args=parser.parse_args();CANDIDATE=args.candidate;RELEASE=args.release
+ parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('target',choices=['adapter','qte','hud','loader','installer','all']);parser.add_argument('--tests',action='store_true');mode=parser;mode.add_argument('--candidate',type=int,default=159,help='Distinct unpublished Test number (100 or later)');mode.add_argument('--release',action='store_true',help='Use release metadata; does not publish or install');args=parser.parse_args();CANDIDATE=args.candidate;RELEASE=args.release
  if CANDIDATE is not None and CANDIDATE<100:parser.error('--candidate must be 100 or later')
  VCVARS=find_vcvars()
  for p in [BIN,OBJ,TEST,LOG]:p.mkdir(parents=True,exist_ok=True)

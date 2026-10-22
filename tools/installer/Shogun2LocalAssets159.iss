@@ -11,15 +11,22 @@
   #define Identity "{{E5F27095-5890-47A2-BA9F-159A233BB196}"
 #endif
 
+#ifndef ProductVersion
+  #error Supply /DProductVersion
+#endif
+#ifndef ProductFileVersion
+  #error Supply /DProductFileVersion
+#endif
+
 [Setup]
 AppId={#Identity}
 AppName=Shogun 2 First-Person Mod
-AppVersion=0.28
-AppVerName=Shogun 2 First-Person Mod v0.28
+AppVersion={#ProductVersion}
+AppVerName=Shogun 2 First-Person Mod v{#ProductVersion}
 AppPublisher=logsam58
 AppPublisherURL=https://github.com/logsam58/shogun2-first-person
-AppSupportURL=https://github.com/logsam58/shogun2-first-person/blob/public-release/docs/KNOWN_ISSUES.md
-DefaultDirName={autopf}\Shogun 2 First-Person Mod Local Assets
+AppSupportURL=https://github.com/logsam58/shogun2-first-person/blob/main/docs/KNOWN_ISSUES.md
+DefaultDirName={autopf}\Shogun 2 First-Person Mod
 DisableDirPage=yes
 DisableProgramGroupPage=yes
 UsePreviousAppDir=yes
@@ -29,14 +36,14 @@ LicenseFile={#PayloadDir}\LICENSE
 InfoBeforeFile={#PayloadDir}\BeforeInstall.txt
 InfoAfterFile={#PayloadDir}\AfterInstall.txt
 OutputDir={#OutputDir}
-OutputBaseFilename=Shogun2-First-Person-v0.28-LocalAssets-Setup
+OutputBaseFilename=Shogun2-First-Person-v{#ProductVersion}-Setup
 Compression=lzma2
 SolidCompression=yes
 SetupLogging=yes
 UninstallDisplayName=Shogun 2 First-Person Mod
 UninstallFilesDir={app}
 UninstallLogMode=overwrite
-VersionInfoVersion=0.28.0.159
+VersionInfoVersion={#ProductFileVersion}
 VersionInfoDescription=Shogun 2 First-Person Mod Setup
 CloseApplications=no
 RestartApplications=no
@@ -75,6 +82,7 @@ Source: "{tmp}\local-assets\qte-assets159.s2fp"; DestDir: "{code:GameFolder}\dat
 [INI]
 Filename: "{app}\installation.ini"; Section: "Installation"; Key: "Game"; String: "{code:GameFolder}"
 Filename: "{app}\installation.ini"; Section: "Installation"; Key: "Profile"; String: "{code:ProfileFolder}"
+Filename: "{app}\installation.ini"; Section: "Installation"; Key: "Rollback"; String: "rollback-v{#ProductVersion}"
 
 [Code]
 var
@@ -108,8 +116,8 @@ var
   Bytes: AnsiString;
 begin
   Report := ExpandConstant('{tmp}\integration-result.txt');
-  if IsUninstaller then RollbackFolder := ExpandConstant('{app}\rollback')
-  else RollbackFolder := AddBackslash(WizardDirValue) + 'rollback';
+  if IsUninstaller then RollbackFolder := AddBackslash(ExpandConstant('{app}')) + GetIniString('Installation', 'Rollback', 'rollback-v{#ProductVersion}', ExpandConstant('{app}\installation.ini'))
+  else RollbackFolder := AddBackslash(WizardDirValue) + 'rollback-v{#ProductVersion}';
   DeleteFile(Report);
   Result := Exec(Executable, Command + ' ' + Quoted(Game) + ' ' + Quoted(Profile) + ' ' +
     Quoted(RollbackFolder) + ' ' + Quoted(Report), '', SW_HIDE, ewWaitUntilTerminated, ExitCode);

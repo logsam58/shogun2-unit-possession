@@ -1,11 +1,9 @@
-# Private release handoff
+# v1.0 release handoff
 
-The owner accepted the clean manual Test159 installer trial and requested that it become the current public-release build. Product version remains **v0.28**. The standard setup reads game artwork, cards, ability/status icons, fonts and voice from the player's own installation; those assets are excluded from the download.
+The owner authorized main as the sole branch and v1.0 as the next release. The repository remains private; only the owner decides its public visibility. Previous published releases/tags are immutable and branch history is backed up before consolidation.
 
-The private draft is still release ID420192018. Current downloads are the LocalAssets setup, `Shogun2FP-Public-Source-Kit-v0.28.zip` and `SHA256SUMS.txt`. Superseded draft previews are archived locally before retirement. The exact tested setup is reused without rebuilding gameplay. Main and published v0.28/v0.27 releases/tags are unchanged.
+Current release downloads are Shogun2-First-Person-v1.0-Setup.exe, Shogun2-First-Person-v1.0-Source.zip and SHA256SUMS.txt. Setup prepares artwork, cards, ability/status icons, fonts and the cropped advisor voice from each player's game. No game image/font/audio payload is included. Earlier private embedded-resource history is not converted by this task.
 
-User acceptance is scoped to the reported manual trial. Installed-file and existing recorded backing-file identities match Test159; the formal preplay/native-hook gate was not completed and must not be fabricated. No new live read, trace, installation, recorder/settings change or game launch was performed for this update.
+The accepted Test159 adapter, HUD, QTE and native extractor are retained exactly. v1.0 loader/metadata and standard setup integration have fresh offline validation, including preview upgrades and separate rollback records. See [v1.0 validation](V1_0_VALIDATION.json). No real install/game launch/settings/recorder change is part of release packaging.
 
-**Charging and castle wall climbing are intermittent.** Both are listed in the README, known issues and release notes. Other crash/performance/POV/acquisition limitations remain open.
-
-The repository stays private and the release stays draft/prerelease. Only the owner decides the public launch. Older published/private history has not been converted into code-only downloads by this task.
+Test159 acceptance covers the reported manual trial; its formal preplay gate was missed and must not be fabricated. The v1.0 wrapper is not live-tested. **Charging and castle wall climbing are intermittent**, and crash/performance/POV/acquisition limitations remain open.

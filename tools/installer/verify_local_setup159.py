@@ -25,7 +25,10 @@ def main():
     p.add_argument("--assets", type=Path, required=True)
     p.add_argument("--output", type=Path, required=True)
     p.add_argument("--previous-bin", type=Path)
+    p.add_argument("--previous159-bin", type=Path)
+    p.add_argument("--previous-setup", type=Path)
     a = p.parse_args()
+    version=json.loads((a.build/'package-receipt.json').read_text())['version']
     assert digest(a.engine) == "022fae2e2da92b59b8b1b8ee52887003c624e3c8eca060b209f5d792a7f874f5"
     a.output.mkdir(parents=True, exist_ok=False)
     helper_dir=a.output/'helper';helper_dir.mkdir()
@@ -74,6 +77,16 @@ def main():
         action('prepare',f);copy_payload(f);action('finish',f);action('rollback',f)
         assert baseline==[digest(t) for t in f[4]]
         results.append('exact accepted158 upgrade and complete rollback')
+
+    if a.previous159_bin:
+        f=fixture('accepted159-upgrade')
+        for name,target in zip(('dinput8.dll','marker.pack'),f[4][:2]):shutil.copyfile(a.previous159_bin/name,target)
+        for target in f[4][4:]:shutil.copyfile(a.assets/target.name,target)
+        baseline=[digest(t) for t in f[4]]
+        assert baseline[0]=='13e9097a3965d9a8a3fb054c1dd9dfe30c0591eba22fda678ab736b036251c44'
+        action('prepare',f);copy_payload(f);action('finish',f);action('rollback',f)
+        assert baseline==[digest(t) for t in f[4]]
+        results.append('exact accepted159 upgrade and complete rollback')
 
     encodings = {
         "utf8": 'mod other.pack;\r\n// naïve comment\r\n'.encode(),
@@ -185,7 +198,7 @@ def main():
     # Run the real Inno engine against fixture paths, with its separate registry
     # identity. Never execute the production administrator installer in tests.
     f = fixture("inno-end-to-end")
-    setup = (a.build / "fixture-output/Shogun2-First-Person-v0.28-LocalAssets-Setup.exe").resolve()
+    setup = (a.build / f"fixture-output/Shogun2-First-Person-v{version}-Setup.exe").resolve()
     options = ["/VERYSILENT", "/SUPPRESSMSGBOXES", "/SP-", "/NORESTART", "/NOCLOSEAPPLICATIONS", "/NORESTARTAPPLICATIONS",
                f"/DIR={f[3].resolve()}", f"/GAME={f[1].resolve()}", f"/PROFILE={f[2].resolve()}"]
     for attempt in range(2):
@@ -209,7 +222,7 @@ def main():
     else:
         raise AssertionError("Fixture uninstall registration left behind")
     assert all(not f[4][i].exists() for i in (0,1,4,5))
-    assert (f[3] / "rollback/manifest.json").exists()
+    assert (f[3] / f"rollback-v{version}/manifest.json").exists()
     assert "other.pack" in f[4][3].read_text()
     results.append("real Inno uninstall removes fixture registration and mod, retains rollback and other mods")
     failed=fixture('inno-missing-original-pack')
@@ -225,6 +238,28 @@ def main():
     except FileNotFoundError:pass
     else:raise AssertionError('Failed preparation registered an installation')
     results.append('real Inno missing original input fails before deployment/registration')
+
+    if a.previous_setup:
+        upgraded=fixture('real-preview-upgrade')
+        opt=["/VERYSILENT","/SUPPRESSMSGBOXES","/SP-","/NORESTART",f"/DIR={upgraded[3].resolve()}",f"/GAME={upgraded[1].resolve()}",f"/PROFILE={upgraded[2].resolve()}"]
+        subprocess.run([str(a.previous_setup.resolve()),*opt],check=True,timeout=60)
+        old_records={str(p.relative_to(upgraded[3])):digest(p) for p in (upgraded[3]/'rollback').rglob('*') if p.is_file()}
+        assert old_records and digest(upgraded[4][0])=='13e9097a3965d9a8a3fb054c1dd9dfe30c0591eba22fda678ab736b036251c44'
+        subprocess.run([str(setup),*opt],check=True,timeout=60)
+        assert digest(upgraded[4][0])==digest(a.build/'stage/dinput8.dll')
+        assert all(digest(upgraded[3]/p)==h for p,h in old_records.items())
+        assert (upgraded[3]/f'rollback-v{version}/manifest.json').is_file()
+        with winreg.OpenKey(winreg.HKEY_CURRENT_USER,key) as k:assert winreg.QueryValueEx(k,'DisplayVersion')[0]==version
+        subprocess.run([str((upgraded[3]/'unins000.exe').resolve()),'/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART'],check=True,timeout=60)
+        for _ in range(100):
+            try:
+                with winreg.OpenKey(winreg.HKEY_CURRENT_USER,key):pass
+            except FileNotFoundError:break
+            time.sleep(.1)
+        else:raise AssertionError('Upgrade fixture registration retained')
+        assert all(not upgraded[4][i].exists() for i in (0,1,4,5))
+        assert all(digest(upgraded[3]/p)==h for p,h in old_records.items())
+        results.append('real Inno preview-to-release upgrade preserves old rollback and removes new mod safely')
 
     report = {"passed": True, "checks": results, "count": len(results), "real_game_modified": False,
               "production_setup_executed": False, "fixture_setup_sha256": digest(setup), "helper_sha256": digest(helper), "integration_source_sha256": digest(Path(__file__).parent / "game_integration.cpp")}

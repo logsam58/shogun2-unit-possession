@@ -1,0 +1,113 @@
+{
+  "version": "1.0",
+  "gameplay_candidate": 159,
+  "gameplay_source_changed": false,
+  "retained_exact_accepted_binaries": {
+    "possession-v46.dll": "ca21a0727602382833e2d996ecea14cdfa6e137e457ebee96b9bf232783df3c9",
+    "possession-hud.exe": "dc188065717ab8b2ffbd613b7f1a43aa78b38e0521c29d6f50a9625520f58f4b",
+    "qte-playable-v79.dll": "ea3adb3485649857be3c42ae3e35469f689596dc0d1d1f3bd1c06d2e9c4b88a6",
+    "prepare-local-assets159.exe": "711643926023c0e182780912328602149fbdce4ce7d1ae77d11b5938e2ba4c0f"
+  },
+  "retained_test_evidence": {
+    "adapter_executables": 96,
+    "qte_executables": 50,
+    "hud_executables": 8,
+    "local_resource_formats_and_both_production_renderers": true,
+    "freshly_executed_for_v1_0": false,
+    "scope": "Retained Test159 evidence; all accepted gameplay/extractor source hashes and exact binary identities verified before promotion."
+  },
+  "fresh_checks": {
+    "loader_executables": 2,
+    "native_current_installer_executables": 2,
+    "owned_child_kills": 15,
+    "standard_installer_groups": 28,
+    "standard_installer_checks": [
+      "exact accepted158 upgrade and complete rollback",
+      "exact accepted159 upgrade and complete rollback",
+      "utf8: install, repeat repair, uninstall, repeat uninstall, engine preservation",
+      "utf8-bom: install, repeat repair, uninstall, repeat uninstall, engine preservation",
+      "utf16le: install, repeat repair, uninstall, repeat uninstall, engine preservation",
+      "utf16be: install, repeat repair, uninstall, repeat uninstall, engine preservation",
+      "empty: install, repeat repair, uninstall, repeat uninstall, engine preservation",
+      "interrupted prefix 0: exact baseline restored twice",
+      "interrupted prefix 1: exact baseline restored twice",
+      "interrupted prefix 2: exact baseline restored twice",
+      "interrupted prefix 3: exact baseline restored twice",
+      "interrupted prefix 4: exact baseline restored twice",
+      "interrupted prefix 5: exact baseline restored twice",
+      "interrupted prefix 6: exact baseline restored twice",
+      "foreign DINPUT8 refused without changes",
+      "foreign pack refused without changes",
+      "unknown post-install binary blocks uninstall and rollback without changes",
+      "uninstall preserves script and launcher entries added afterward",
+      "adopt exact pre-existing mod, exact rollback, uninstall and reinstall with retained prior snapshot",
+      "malformed launcher data refused without changes",
+      "changed rollback snapshot refused without game-file changes",
+      "unknown local asset refused without game changes: 4",
+      "unknown local asset refused without game changes: 5",
+      "post-install asset changes preserved and refused",
+      "real Inno install + repeat install + Windows uninstall registration",
+      "real Inno uninstall removes fixture registration and mod, retains rollback and other mods",
+      "real Inno missing original input fails before deployment/registration",
+      "real Inno preview-to-release upgrade preserves old rollback and removes new mod safely"
+    ],
+    "python_tests": 15,
+    "generated_roles": true,
+    "canonical_headers": 6,
+    "extracted_source_build_all_release": true,
+    "extracted_source_build_scope": "Fresh source export, separate native build directory, default local resources; all gameplay/loader targets compiled and resource format/render checks passed. Full 96/50/8 suites were retained for accepted release payloads, not repeated by this closure check."
+  },
+  "setup": {
+    "name": "Shogun2-First-Person-v1.0-Setup.exe",
+    "sha256": "3b1bc79d71bc80128975409a6f6fa6b9a561fea039022a42599eda49db6d7f1b",
+    "bytes": 2728576,
+    "game_resources_shipped": false,
+    "payload_audit_passed": true,
+    "helper_sha256": "58b1e7291124dbcad8c93fac25693f2bc1d8807850dbf96f18e358b8fc97c5fe",
+    "fixture_production_helper_exact": true,
+    "production_wrapper_executed": false,
+    "signed": false,
+    "versioned_rollback_records": true,
+    "actual_inno_preview_upgrade_tested": true,
+    "final_wrapper_delta_from_fixture": "Production identity/elevation, notices and payload manifest; same tested helper and native payloads."
+  },
+  "release_payloads": {
+    "dinput8.dll": {
+      "sha256": "583b12f04734b8e5db59cad9f909b3a2f1c32773d5f5513008e4601d9f317af3",
+      "bytes": 1867264
+    },
+    "marker.pack": {
+      "sha256": "024eb40e5298e80fd817a95c13cf703de396ef741df2edb2aa1c46ac2d23573e",
+      "bytes": 1308
+    },
+    "possession-hud.exe": {
+      "sha256": "dc188065717ab8b2ffbd613b7f1a43aa78b38e0521c29d6f50a9625520f58f4b",
+      "bytes": 505344
+    },
+    "possession-v46.dll": {
+      "sha256": "ca21a0727602382833e2d996ecea14cdfa6e137e457ebee96b9bf232783df3c9",
+      "bytes": 607232
+    },
+    "prepare-local-assets159.exe": {
+      "sha256": "711643926023c0e182780912328602149fbdce4ce7d1ae77d11b5938e2ba4c0f",
+      "bytes": 370688
+    },
+    "qte-playable-v79.dll": {
+      "sha256": "ea3adb3485649857be3c42ae3e35469f689596dc0d1d1f3bd1c06d2e9c4b88a6",
+      "bytes": 436736
+    }
+  },
+  "live": {
+    "owner_accepted_Test159_manual_trial": true,
+    "Test159_formal_preplay_gate_completed": false,
+    "v1_0_wrapper_installed": false,
+    "v1_0_wrapper_live_tested": false,
+    "owner_game_changed_by_packaging": false
+  },
+  "limits": [
+    "Finite native and synthetic fixture boundaries",
+    "No claim of race freedom, power-loss recovery or complete unit/map coverage",
+    "Charging and castle wall climbing intermittent",
+    "Crashes, Ultra slowdowns, POV and isolated acquisition remain open"
+  ]
+}

@@ -18,11 +18,14 @@ std::vector<std::string> before,after,old_hash,new_hash;
 std::vector<bool> existed;
 void validate_standard_game(){
 #ifdef S2FP_LOCAL_ASSETS
-    // Exact accepted Test158 predecessor. Other unknown injectors still fail.
-    if(durable::digest(game+L"\\DINPUT8.dll")=="936bb2cd09bfb57ba4a703a3dbdb7ca682d8df4e92a7feaf8b3738d8493a26c2"){
+    // Exact accepted preview predecessors; unknown injectors still fail.
+    auto predecessor=durable::digest(game+L"\\DINPUT8.dll");
+    const char* previous_pack=predecessor=="936bb2cd09bfb57ba4a703a3dbdb7ca682d8df4e92a7feaf8b3738d8493a26c2"?"3db77b196bc9fb3ded51ac6e850a386a2b8cc30cf9e97011b1babf88d5e2753b":
+        predecessor=="13e9097a3965d9a8a3fb054c1dd9dfe30c0591eba22fda678ab736b036251c44"?"6706393a2b4756765d76a894849fe34052d1ce22eabffdd35ae23965c8a587b2":nullptr;
+    if(previous_pack){
         require(hash_file(game+L"\\Empire.Retail.dll")==EXPECTED_HASH,"Unsupported game version");
         auto pack=durable::digest(game+L"\\data\\"+PACK);
-        require(pack=="absent"||pack==EMBEDDED_PACK_SHA||pack=="3db77b196bc9fb3ded51ac6e850a386a2b8cc30cf9e97011b1babf88d5e2753b","Unrecognized marker pack; preserved");
+        require(pack=="absent"||pack==EMBEDDED_PACK_SHA||pack==previous_pack,"Unrecognized marker pack; preserved");
         return;
     }
 #endif

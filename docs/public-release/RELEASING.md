@@ -1,13 +1,13 @@
 # Releasing
 
-The owner accepted Test159 after trying the standard installer from a clean starting point. Use the exact tested `Shogun2-First-Person-v0.28-LocalAssets-Setup.exe`, the current `Shogun2FP-Public-Source-Kit-v0.28.zip` and `SHA256SUMS.txt` in private draft ID420192018.
+main is the canonical branch. v1.0 promotes the accepted local-resource gameplay and retires the separate public-release branch. The owner authorized the v1.0 release inside the private repository, with a verified full-history backup before branch consolidation. Repository visibility remains an independent owner decision.
 
-Keep the repository private and the draft unpublished until the owner explicitly decides otherwise. Do not change main, merge the public branch or overwrite the published v0.28/v0.27 releases. The owner authorized replacing superseded draft previews; retain verified local copies and the asset retirement receipt.
+Build the standard local-resource setup using [BUILD_AND_TEST.md](../../BUILD_AND_TEST.md). Complete native/Python/resource checks appropriate to changes and isolated Inno install/uninstall checks. Audit PE resources: no game images/fonts/audio may be shipped. Do not distribute generated .s2fp files or complete build directories. Documentation-only updates reuse the appropriate verified setup.
 
-For future software changes, use the local-assets build profile and complete its native/Python/asset/isolated installer checks. Audit the PE component closure: no game image/font/audio resources may be shipped. Never distribute generated local resource bundles or the complete build folder. Documentation-only updates reuse the accepted setup without rebuilding gameplay.
+Review the final source, commit it, create the curated source ZIP from that clean commit, audit its hash/CRC/file closure and links, then tag the same commit. Upload the versioned Setup.exe, Source.zip and SHA256SUMS.txt; independently download and verify them. Keep published versions immutable. Retire superseded draft assets only with verified backups and explicit authorization.
 
-Record user acceptance and formal preplay verification separately. Test159's manual trial was accepted, but its formal native-hook/capture gate was not completed. A future real swap needs fresh CLOSED and rollback; a new live process/test needs fresh READY/IN BATTLE and exact loaded identities plus actual capture verification.
+v1.0 reuses exact accepted Test159 adapter/HUD/QTE/extractor binaries with retained native evidence; loader and setup tests are fresh. Never describe retained tests as freshly executed. Keep user acceptance separate from formal preplay verification. Test159's formal gate was missed. A future real swap needs fresh CLOSED and rollback; a new live process needs fresh READY/IN BATTLE and exact loaded/native-hook/actual-capture verification.
 
-Charging and castle wall climbing are intermittent known bugs. Do not remove these warnings based only on prior acceptance or offline checks.
+Charging and castle wall climbing are intermittent known bugs. Do not remove warnings based on offline tests or broad acceptance. Crashes/Ultra/POV/acquisition remain open.
 
-Changing repository visibility exposes existing history/releases too. Older resource-containing published/private history is unchanged. Public launch remains a separate owner decision.
+Changing visibility exposes existing history/releases too. Older embedded-resource releases remain private historical material, and their redistribution status is separate from current code-only downloads. Review those before any public visibility change; do not silently erase or rewrite history.

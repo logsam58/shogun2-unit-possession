@@ -1,66 +1,48 @@
 {
-  "schema": 1,
-  "published": {
-    "version": "0.28",
-    "test": 157,
-    "commit": "24d31a2f5e5c2cf84a42c459a69bdcd9bd86c600",
-    "immutable": true
-  },
-  "development": {
-    "branch": "public-release",
-    "candidate": 159,
-    "format": "standard setup with install-time local assets",
-    "installed": true,
-    "live_accepted": true,
-    "pushed": true,
-    "published": false,
-    "game_resources_shipped": false,
-    "private_draft": {
-      "url": "https://github.com/logsam58/shogun2-first-person/releases/tag/untagged-ccbcd8419ff6f2951702",
-      "release_id": 420192018,
-      "label": "v0.28-private-preview",
-      "public": false,
-      "candidate": 159,
-      "installer": "Shogun2-First-Person-v0.28-LocalAssets-Setup.exe",
-      "source_kit": "Shogun2FP-Public-Source-Kit-v0.28.zip"
-    },
+  "schema": 2,
+  "version": "1.0",
+  "branch": "main",
+  "tag": "v1.0",
+  "release_url": "https://github.com/logsam58/shogun2-first-person/releases/tag/v1.0",
+  "repository_visibility": "private; owner controls public launch",
+  "installer": "Shogun2-First-Person-v1.0-Setup.exe",
+  "source_kit": "Shogun2-First-Person-v1.0-Source.zip",
+  "format": "standard Windows setup; resources prepared from each owned game",
+  "game_resources_shipped": false,
+  "gameplay": {
+    "accepted_candidate": 159,
+    "user_accepted": true,
     "acceptance_scope": "Owner accepted the manual clean-install/game trial; individual unit/map/feature coverage unspecified.",
     "formal_preplay_gate_completed": false,
-    "installed_component_hashes_match": true,
-    "recorded_component_hashes_match": true
+    "recorded_component_hashes_match": true,
+    "v1_0_gameplay_binaries": "exact accepted Test159 adapter, HUD and QTE; no gameplay source changes"
+  },
+  "release_wrapper": {
+    "version": "1.0",
+    "installed_on_owner_game": false,
+    "live_tested": false,
+    "offline_validation": "docs/public-release/V1_0_VALIDATION.json"
+  },
+  "owner_installation": {
+    "version": "0.28",
+    "candidate": 159,
+    "changed_by_release_packaging": false
   },
   "owner_decisions": {
     "first_party_license": "MIT",
     "resource_format": "prepare from each owned game",
-    "status_icons": "original native icons in public profile"
+    "status_icons": "original native icons",
+    "branch_policy": "main only"
   },
   "open": [
-    "intermittent castle wall climbing",
     "intermittent charging",
+    "intermittent castle wall climbing",
     "unresolved game crashes",
     "Ultra multi-army slowdown",
     "some first-person clipping",
     "isolated enemy acquisition",
-    "permission for resource-containing public binaries",
-    "Test159 formal preplay gate was not completed; acceptance is user-reported and future live tests require a fresh gate."
+    "bow audio follows the native animation",
+    "Test159 formal preplay gate missed; future live tests require a fresh gate"
   ],
-  "previous_candidate": {
-    "branch": "public-release",
-    "candidate": 158,
-    "format": "source/local-resource-kit",
-    "installed": false,
-    "live_accepted": true,
-    "pushed": true,
-    "published": false,
-    "acceptance_scope": "User reported one completed battle with everything working.",
-    "formal_preplay_gate_completed": false,
-    "recorded_component_hashes_match": true,
-    "private_draft": {
-      "url": "https://github.com/logsam58/shogun2-first-person/releases/tag/untagged-ccbcd8419ff6f2951702",
-      "release_id": 420192018,
-      "label": "v0.28-private-preview",
-      "public": false
-    },
-    "removed_with_verified_rollback": true
-  }
+  "history": "Previous published tags/releases are immutable; older embedded-resource downloads remain private historical artifacts."
 }

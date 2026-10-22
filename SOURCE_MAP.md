@@ -18,4 +18,4 @@
 
 Build-generated hashes belong in the build snapshot. See [native contracts](docs/public-release/NATIVE_CONTRACTS.md) and [derived data](docs/public-release/DERIVED_DATA.md).
 
-Versioned docs/development and docs/releases are historical evidence, excluded from the curated source kit. They can describe earlier machines/limits and do not override current instructions. The original implementation/research remains in baseline commit 24d31a2f5e5c2cf84a42c459a69bdcd9bd86c600.
+Versioned docs/development and older docs/releases are historical evidence, excluded from the curated source kit; current v1.0 release notes are included. They can describe earlier machines/limits and do not override current instructions. The original implementation/research remains in baseline commit 24d31a2f5e5c2cf84a42c459a69bdcd9bd86c600.

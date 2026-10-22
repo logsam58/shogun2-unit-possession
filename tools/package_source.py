@@ -30,7 +30,7 @@ def selected(root=ROOT):
             if path.suffix!='.cmd':yield path
         elif parts[0]=='tests':yield path
         elif parts[0]=='docs':
-            if (len(parts)==2 and path.name in DOCS) or (len(parts)>2 and parts[1]=='public-release') or rel.as_posix()=='docs/releases/v0.28-public-preview.md':yield path
+            if (len(parts)==2 and path.name in DOCS) or (len(parts)>2 and parts[1]=='public-release') or rel.as_posix()=='docs/releases/v'+(ROOT/'VERSION').read_text().strip()+'.md':yield path
         elif parts[0]=='tools':
             if len(parts)==2 and path.name in TOOLS:yield path
             elif parts[1]=='installer':yield path
@@ -77,10 +77,10 @@ def main():
               'content_sha256':hashlib.sha256(json.dumps(rows,sort_keys=True).encode()).hexdigest(),
               'files':rows,'game_assets_included':False,'compiled_binaries_included':False,'published':False,
               'license':'MIT for first-party code; vendor/game-material exclusions in THIRD_PARTY_NOTICES.md',
-              'validation':'See docs/public-release/VALIDATION_RESULTS.json; live candidate acceptance pending',
+              'validation':'See docs/public-release/V1_0_VALIDATION.json; accepted gameplay retained, release wrapper offline-tested only',
               'excluded':['prepared resources','all compiled payloads','private diagnostics/configuration/dumps',
                           'historical operator docs/receipts','legacy owner publication/deployment helpers']}
-    out.mkdir(parents=True);archive=out/'Shogun2FP-Public-Source-Kit.zip'
+    out.mkdir(parents=True);archive=out/('Shogun2-First-Person-v'+(ROOT/'VERSION').read_text().strip()+'-Source.zip')
     with zipfile.ZipFile(archive,'w',zipfile.ZIP_DEFLATED) as z:
         for path in paths:z.write(path,path.relative_to(ROOT).as_posix())
         z.writestr('source-manifest.json',json.dumps(manifest,indent=2)+'\n')

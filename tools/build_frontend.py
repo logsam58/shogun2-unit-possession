@@ -52,10 +52,11 @@ def main():
     parser.add_argument('--game', type=Path)
     parser.add_argument('--output-dir', type=Path, required=True)
     parser.add_argument('--resources', type=Path)
-    parser.add_argument('--local-assets', action='store_true', help='Ship code only; prepare owned-game resources locally')
+    parser.add_argument('--local-assets', action='store_true', default=True, help='Local resources are always enabled')
+    parser.add_argument('--release', action='store_true', help='Use release metadata without installing or publishing')
     parser.add_argument('--vcvars', type=Path)
     parser.add_argument('--tests', action='store_true')
-    parser.add_argument('--candidate', type=int, default=158)
+    parser.add_argument('--candidate', type=int, default=159)
     args = parser.parse_args()
     config = ROOT / 'tools/local.json'
     settings = json.loads(config.read_text(encoding='utf-8')) if config.is_file() else {}
@@ -71,7 +72,7 @@ def main():
     if args.local_assets:
         resources = None
         if not game: parser.error('--local-assets requires the supported --game for offline extraction/tests')
-    resource_receipt = resource_inputs(resources.resolve()) if resources else None
+    resource_receipt = None
     vcvars = (args.vcvars or find_vcvars()).resolve()
     if not vcvars.is_file():
         parser.error('--vcvars must name vcvars32.bat')
@@ -109,6 +110,8 @@ def main():
     if resources:
         environment['SHOGUN2_PREPARED_MANIFEST'] = str(resources.resolve() / 'resource-manifest.json')
     command = [sys.executable, '-B', str(snapshot / 'tools/native_build.py'), args.target, '--candidate', str(args.candidate)]
+    if args.release:
+        command += ['--release']
     if args.tests:
         command += ['--tests']
     result = subprocess.run(command, cwd=snapshot, env=environment)
