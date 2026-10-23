@@ -64,5 +64,18 @@
     "close_cancels_launch": true,
     "quick_start_guide": true,
     "without_helper": "normal launch with first-person default and no popup"
+  },
+  "development_candidate": {
+    "version": "0.32",
+    "candidate": 162,
+    "published": false,
+    "installed": false,
+    "live_tested": false,
+    "design": "docs/public-release/STARTUP162.md",
+    "changes": [
+      "automatic Steam connection through setup",
+      "signed native CA launcher support",
+      "friendly-fire playback in game process"
+    ]
   }
 }

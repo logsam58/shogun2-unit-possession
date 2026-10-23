@@ -1,5 +1,7 @@
 # Repository instructions
 
+Current owner task: unpublished Test162/v0.32. Fresh CLOSED granted. Implement automatic setup-managed Steam chooser connection (no manual script/launch-option entry), support the signed native CA launcher, and move friendly-fire playback into the game process. This specific Steam LaunchOptions edit is authorized by the new startup request; CPU/graphics/recorder/debugger settings remain outside scope. Real installation/live testing still require their own gates. Previous release instructions and receipts below describe immutable v0.31.
+
 The canonical repository is logsam58/shogun2-unit-possession, on main only. The owner authorized renaming the project/repository to Shogun 2 Unit Possession, updating the GitHub release, adding clear support warnings and a startup view chooser. The owner freshly confirmed CLOSED for this build. v0.31/Test161 adds a prelaunch quick-start guide and replaces the in-game popup; prior releases remain historical. The owner authorized committing and releasing v0.31 privately. Keep repository visibility private until explicitly authorized.
 
 Current support is single-player land battles and sieges. Naval possession does not work and is planned for later. Multiplayer is not implemented: Versus and campaign drop-in are under consideration. Visual/gameplay bugs and occasional crashes are expected. Charging/climbing, Ultra slowdown, clipping and isolated acquisition remain open. No feature or stability guarantees from offline tests.

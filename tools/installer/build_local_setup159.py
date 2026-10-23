@@ -10,7 +10,7 @@ import sys
 ROOT=Path(__file__).resolve().parents[2]
 VERSION=(ROOT/'VERSION').read_text().strip()
 sys.path.insert(0,str(Path(__file__).parent))
-from audit_local_payload159 import audit
+from audit_local_payload159 import audit, resources
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 def main():
     p=argparse.ArgumentParser(description=__doc__)
@@ -25,7 +25,7 @@ def main():
     result=json.loads((build/'build-results.json').read_text())
     assert inputs['local_assets'] and inputs['native_build_passed'] and result['candidate']>=160
     assert all(r.get('passed',True) for r in result['results'])
-    assert {'local-assets-format-render-tests','adapter-tests','qte-tests','hud-tests','loader-tests','installer-current-tests','startup-view-tests','prelaunch-tests'} <= {r['name'] for r in result['results']}
+    assert {'local-assets-format-render-tests','adapter-tests','qte-tests','hud-tests','loader-tests','installer-current-tests','startup-view-tests','prelaunch-tests','game-audio-tests','steam-launch-tests','audio-capture-tests'} <= {r['name'] for r in result['results']}
     checked=audit(binaries)
     out.mkdir(parents=True);stage=out/'stage';stage.mkdir()
     for value in (out,source,a.vcvars,ROOT):
@@ -45,15 +45,28 @@ def main():
         shutil.copyfile(fixture_helper,helper)
     else:
         subprocess.run(['cmd.exe','/d','/c',str(batch)],check=True)
+    steam_helper=stage/'steam-launch162.exe'
+    steam_batch=out/'compile-steam.cmd'
+    steam_batch.write_text('@echo off\n'+f'call "{a.vcvars.resolve()}" >nul\nif errorlevel 1 exit /b 1\n'+
+        'cl /nologo /O2 /MT /EHsc /std:c++17 '+('/DSTEAM162_FIXTURE ' if a.fixture else '')+
+        f'"{ROOT / "tools/installer/steam_launch162.cpp"}" /Fe:"{steam_helper}" /Fo:"{out / "steam-launch162.obj"}" /link bcrypt.lib advapi32.lib\n')
+    subprocess.run(['cmd.exe','/d','/c',str(steam_batch)],check=True)
+    assert all(k[0] in (16,24) for k in resources(steam_helper)), 'Unexpected data in native Steam helper'
+    steam_test=out/'verify-steam162.exe';steam_test_batch=out/'verify-steam162.cmd'
+    steam_test_batch.write_text('@echo off\n'+f'call "{a.vcvars.resolve()}" >nul\nif errorlevel 1 exit /b 1\n'+
+        'cl /nologo /O2 /MT /EHsc /std:c++17 '+f'"{ROOT / "tools/installer/verify_steam_launch162.cpp"}" /Fe:"{steam_test}" /Fo:"{out / "verify-steam162.obj"}" /link bcrypt.lib advapi32.lib\nif errorlevel 1 exit /b 1\n'+
+        f'"{steam_test}" "{out / "steam core fixture"}"\n')
+    subprocess.run(['cmd.exe','/d','/c',str(steam_test_batch)],check=True)
     for name in ('dinput8.dll','marker.pack','prepare-local-assets159.exe','shogun2-unit-possession-launcher.exe'):shutil.copyfile(binaries/name,stage/name)
     for name in ('LICENSE','THIRD_PARTY_NOTICES.md'):shutil.copyfile(ROOT/name,stage/name)
     shutil.copyfile(ROOT/'native/outputs/shogun2-possession-cleanup-v46/vendor/LICENSE.txt',stage/'MinHook-LICENSE.txt')
     shutil.copyfile(ROOT/'tools/installer/PLAYING.md',stage/'PLAYING.md')
-    (stage/'BeforeInstall.txt').write_text(f'Shogun 2 Unit Possession v{VERSION}\n\nClose Shogun 2. Select your original Steam installation. Setup reads artwork, unit cards, ability icons, fonts and the advisor voice from your own game. It does not download or ship those resources. No Python or developer tools are needed.\n\nWindows N editions need the Media Feature Pack. Saves, graphics, CPU settings and other mods are preserved. The separate recorder/debugger is not installed or changed.\n',encoding='utf-8')
-    (stage/'AfterInstall.txt').write_text('Before the next launch, set the Steam Launch Options line shown on the setup page. Steam Play will show the camera choice first, then start the game. Closing the choice cancels launch. P switches views during possession. In a land battle, select a friendly unit and press F9. F10 returns to RTS.\n\nTo remove the mod, close the game and use Windows Settings > Apps > Shogun 2 Unit Possession. Rollback snapshots remain in the setup records folder.\n',encoding='utf-8')
+    (stage/'BeforeInstall.txt').write_text(f'Shogun 2 Unit Possession v{VERSION}\n\nExit Shogun 2 and Steam. Select your original Steam installation. Setup connects the native camera chooser automatically to your most recent Steam account and backs up the previous Launch Options. Setup reads artwork, unit cards, ability icons, fonts and the advisor voice from your own game. It does not download or ship those resources. No Python or developer tools are needed.\n\nWindows N editions need the Media Feature Pack. Saves, graphics, CPU settings and other mods are preserved. The separate recorder/debugger is not installed or changed.\n',encoding='utf-8')
+    (stage/'AfterInstall.txt').write_text('Open Steam normally. Setup has connected the native camera chooser automatically; no script or pasted launch option is needed. Steam Play will show the camera choice first, then start the native Creative Assembly launcher/game. Closing the choice cancels launch. P switches views during possession. In a land battle, select a friendly unit and press F9. F10 returns to RTS.\n\nTo remove the mod, exit the game and Steam, then use Windows Settings > Apps > Shogun 2 Unit Possession. Rollback snapshots remain in the setup records folder.\n',encoding='utf-8')
     receipt={'version':VERSION,'candidate':result['candidate'],'game_resources_shipped':False,'assets_prepared_at_install':True,
              'asset_audit':checked,'fixture':a.fixture,'installed_or_launched':False,'signed':False,
              'payloads':{x.name:sha(x) for x in stage.iterdir()},
+             'steam_unit_test_passed':True,'steam_helper_sha256':sha(steam_helper),'steam_source_sha256':sha(ROOT/'tools/installer/steam_launch162.cpp'),'steam_header_sha256':sha(ROOT/'tools/installer/steam_launch162.h'),
              'packaging_sources':{x:sha(ROOT/'tools/installer'/x) for x in ('build_local_setup159.py','Shogun2LocalAssets159.iss','game_integration.cpp','audit_local_payload159.py')}}
     (stage/'payload-manifest.json').write_text(json.dumps(receipt,indent=2)+'\n')
     output=out/('fixture-output' if a.fixture else 'output')

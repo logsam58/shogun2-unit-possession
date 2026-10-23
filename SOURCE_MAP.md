@@ -4,11 +4,11 @@
 
 | Component | Active source | Responsibility |
 | --- | --- | --- |
-| Loader | native/work/autoload99-preview | DInput forwarding, payload checks, inherited camera default, versioned cache, delayed startup; launch161.cpp shows the chooser before starting the Steam game command |
+| Loader | native/work/autoload99-preview | DInput forwarding, payload checks, inherited camera default, versioned cache, delayed startup and game-process callout; launch161.cpp shows the chooser before starting the Steam game command |
 | Adapter | native/outputs/shogun2-accuracy90-preview/src | Actor lease, native movement/weapons/orders/camera/charge/climbing |
 | Shared | native/outputs/shogun2-possession-cleanup-v46/src and native/common | Identity, protocols, visibility and final-human roles |
 | QTE | native/outputs/shogun2-authentic-hud80-preview/qte-src | Native pairs, response/input timing, animation camera |
-| HUD | native/outputs/shogun2-ammunition83-preview/hud-src | Read-only measurement, artwork, controls, audio |
+| HUD | native/outputs/shogun2-ammunition83-preview/hud-src | Read-only measurement, artwork and controls; friendly-fire playback belongs to the game loader worker |
 | Installer | native/work/installer-siege99 | Fingerprints, durable journals, repair, conservative retention |
 | Player setup/local assets | tools/installer, native/common/local_assets159.h | Inno wizard, read-only native extraction, six-target rollback, external resource mapping |
 | Diagnostics | tools/diagnostics/source | Optional external capture, telemetry and dump inspection |

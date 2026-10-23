@@ -1,5 +1,7 @@
 # Status
 
+Unpublished Test162/v0.32 is prepared with automatic setup-managed launcher configuration and game-process friendly-fire audio. Offline checks pass; no real installation or live acceptance is claimed. See [candidate validation](public-release/TEST162_VALIDATION.json). The latest published release remains v0.31.
+
 v0.31 / Test161 adds a quick-start controls guide and moves the camera chooser before the original game starts. Setup provides a one-time Steam Launch Options line. Steam Play then opens the guide; either camera button starts the game, while closing cancels. The loader no longer opens a popup over the fullscreen game.
 
 The repository remains private and main is the only branch. The owner requested this release. This update has offline validation only; it has not been installed or live-tested on the owner's game. File readback confirms the installed v0.30/Test160 loader and marker; the owner reported a positive manual trial, but a complete loaded-hook/capture gate was not performed.

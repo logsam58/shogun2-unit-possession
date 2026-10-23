@@ -78,14 +78,17 @@ def loader(tests):
   if not source.is_file():raise SystemExit('Build adapter, qte and hud first: '+name)
   shutil.copy2(source,payload/name)
  subprocess.run([sys.executable,str(AUTO/'prepare_embedded.py'),'--candidate',str(CANDIDATE),*(['--release'] if RELEASE else [])],check=True)
- resources=rc(AUTO/'payload.rc','loader');run('loader',[compile_cpp(AUTO/'bootstrap.cpp',BIN/'dinput8.dll',[resources],['/DEF:'+str(AUTO/'dinput8.def'),'bcrypt.lib','shell32.lib','user32.lib'],['/LD'])]);shutil.copy2(BIN/'dinput8.dll',AUTO/'dinput8.dll');shutil.copy2(AUTO/'marker.pack',BIN/'marker.pack')
+ resources=rc(AUTO/'payload.rc','loader');run('loader',[compile_cpp(AUTO/'bootstrap.cpp',BIN/'dinput8.dll',[resources],['/DEF:'+str(AUTO/'dinput8.def'),'bcrypt.lib','shell32.lib','user32.lib','winmm.lib'],['/LD'])]);shutil.copy2(BIN/'dinput8.dll',AUTO/'dinput8.dll');shutil.copy2(AUTO/'marker.pack',BIN/'marker.pack')
  (AUTO/'setup_hashes.h').write_text('#pragma once\nstatic const char* SETUP_BOOTSTRAP_SHA="'+sha(BIN/'dinput8.dll')+'";\n')
- run('prelaunch-helper',[compile_cpp(AUTO/'launch161.cpp',BIN/'shogun2-unit-possession-launcher.exe',(),['user32.lib','shell32.lib','bcrypt.lib','gdi32.lib'],['/SUBSYSTEM:WINDOWS'])])
+ run('prelaunch-helper',[compile_cpp(AUTO/'launch161.cpp',BIN/'shogun2-unit-possession-launcher.exe',(),['user32.lib','shell32.lib','bcrypt.lib','gdi32.lib','wintrust.lib','crypt32.lib'],['/SUBSYSTEM:WINDOWS'])])
  if tests:
-  a=BIN/'verify_bootstrap.exe';b=BIN/'verify_integrated.exe';run('loader-tests',[compile_cpp(AUTO/'verify_bootstrap.cpp',a,(),['dinput8.lib']),[a],compile_cpp(AUTO/'verify_integrated.cpp',b,[resources],['bcrypt.lib','shell32.lib','user32.lib']),[b]])
+  a=BIN/'verify_bootstrap.exe';b=BIN/'verify_integrated.exe';run('loader-tests',[compile_cpp(AUTO/'verify_bootstrap.cpp',a,(),['dinput8.lib']),[a],compile_cpp(AUTO/'verify_integrated.cpp',b,[resources],['bcrypt.lib','shell32.lib','user32.lib','winmm.lib']),[b]])
   ui=BIN/'verify_startup160.exe';run('startup-view-tests',[compile_cpp(AUTO/'verify_startup160.cpp',ui,(),['user32.lib','gdi32.lib','gdiplus.lib']),[ui,BIN/'startup-guide.png']]);receipts[-1]['executables']=1
+  steam=TEST/'verify-steam-launch162.exe';run('steam-launch-tests',[compile_cpp(ROOT/'tools/installer/verify_steam_launch162.cpp',steam,(),['bcrypt.lib','advapi32.lib']),[steam,TEST/'steam config fixtures']]);receipts[-1]['executables']=1
+  capture=TEST/'verify-audio-capture162.exe';run('audio-capture-tests',[compile_cpp(AUTO/'verify_audio_capture162.cpp',capture,(),['ole32.lib','mmdevapi.lib','winmm.lib']),[capture,TEST/'synthetic-process-capture162.wav']]);receipts[-1]['executables']=1
+  audio=TEST/'verify-game-audio162.exe';run('game-audio-tests',[compile_cpp(AUTO/'verify_game_audio162.cpp',audio,(),BASE_LIBS+['winmm.lib']),[audio]]);receipts[-1]['executables']=1
   toy=TEST/'launch-toy161.exe';fixture=TEST/'verify-launch161.exe'
-  run('prelaunch-tests',[compile_cpp(AUTO/'launch_toy161.cpp',toy),compile_cpp(AUTO/'verify_launch161.cpp',fixture,(),['user32.lib','shell32.lib','bcrypt.lib','gdi32.lib']),[fixture,toy,TEST/'prelaunch output with spaces']]);receipts[-1]['executables']=1
+  run('prelaunch-tests',[compile_cpp(AUTO/'launch_toy161.cpp',toy),compile_cpp(AUTO/'verify_launch161.cpp',fixture,(),['user32.lib','shell32.lib','bcrypt.lib','gdi32.lib','wintrust.lib','crypt32.lib']),[fixture,toy,TEST/'prelaunch output with spaces',os.environ['SHOGUN2_GAME_DIR']]]);receipts[-1]['executables']=1
 def installer(tests):
  if not (AUTO/'setup_hashes.h').exists():raise SystemExit('Build loader first')
  baseline=INSTALL/'previous_cache_catalog.h';text=baseline.read_text();assert text.rstrip().endswith('};');hashes=(AUTO/'embedded_hashes.h').read_text();import re
@@ -124,7 +127,7 @@ def find_vcvars():
  raise SystemExit('Set SHOGUN2_VCVARS to vcvars32.bat or run tools/configure.py --vcvars <path>.')
 def main():
  global VCVARS,CANDIDATE,RELEASE
- parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('target',choices=['adapter','qte','hud','loader','installer','all']);parser.add_argument('--tests',action='store_true');mode=parser;mode.add_argument('--candidate',type=int,default=161,help='Distinct unpublished Test number (100 or later)');mode.add_argument('--release',action='store_true',help='Use release metadata; does not publish or install');args=parser.parse_args();CANDIDATE=args.candidate;RELEASE=args.release
+ parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('target',choices=['adapter','qte','hud','loader','installer','all']);parser.add_argument('--tests',action='store_true');mode=parser;mode.add_argument('--candidate',type=int,default=162,help='Distinct unpublished Test number (100 or later)');mode.add_argument('--release',action='store_true',help='Use release metadata; does not publish or install');args=parser.parse_args();CANDIDATE=args.candidate;RELEASE=args.release
  if CANDIDATE is not None and CANDIDATE<100:parser.error('--candidate must be 100 or later')
  VCVARS=find_vcvars()
  for p in [BIN,OBJ,TEST,LOG]:p.mkdir(parents=True,exist_ok=True)

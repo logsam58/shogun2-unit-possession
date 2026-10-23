@@ -62,9 +62,11 @@ PrivilegesRequired=admin
 ; Temporary copies allow all checks and snapshots before Inno deploys files.
 Source: "{#PayloadDir}\prepare-local-assets159.exe"; Flags: dontcopy
 Source: "{#PayloadDir}\game-integration.exe"; Flags: dontcopy
+Source: "{#PayloadDir}\steam-launch162.exe"; Flags: dontcopy
 Source: "{#PayloadDir}\dinput8.dll"; Flags: dontcopy
 Source: "{#PayloadDir}\marker.pack"; Flags: dontcopy
 Source: "{#PayloadDir}\game-integration.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#PayloadDir}\steam-launch162.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#PayloadDir}\shogun2-unit-possession-launcher.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#PayloadDir}\LICENSE"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#PayloadDir}\THIRD_PARTY_NOTICES.md"; DestDir: "{app}"; Flags: ignoreversion
@@ -88,11 +90,14 @@ Filename: "{app}\installation.ini"; Section: "Installation"; Key: "Game"; String
 Filename: "{app}\installation.ini"; Section: "Installation"; Key: "Profile"; String: "{code:ProfileFolder}"
 Filename: "{app}\installation.ini"; Section: "Installation"; Key: "Rollback"; String: "rollback-v{#ProductVersion}"
 
+#ifdef Fixture
+Filename: "{app}\installation.ini"; Section: "Installation"; Key: "FixtureSteam"; String: "{param:STEAMROOT}"
+#endif
+
 [Code]
 var
   GamePage: TInputDirWizardPage;
-  LaunchPage: TInputQueryWizardPage;
-  Prepared, Completed: Boolean;
+  Prepared, Completed, SteamPrepared: Boolean;
   RemovalGame, RemovalProfile: String;
 
 function GameFolder(Param: String): String;
@@ -106,6 +111,16 @@ begin
   Result := ExpandConstant('{param:PROFILE}');
 #else
   Result := ExpandConstant('{userappdata}');
+#endif
+end;
+
+function SteamFixtureRoot: String;
+begin
+#ifdef Fixture
+  if IsUninstaller then Result := GetIniString('Installation', 'FixtureSteam', '', ExpandConstant('{app}\installation.ini'))
+  else Result := ExpandConstant('{param:STEAMROOT}');
+#else
+  Result := '';
 #endif
 end;
 
@@ -132,13 +147,35 @@ begin
   Log(Command + ': ' + ErrorText);
 end;
 
+function SteamIntegration(Command: String; var ErrorText: String): Boolean;
+var Executable, AppFolder, Report, Arguments: String; ExitCode: Integer; Bytes: AnsiString;
+begin
+  Report := ExpandConstant('{tmp}\steam-result162.txt');
+  if IsUninstaller then begin
+    AppFolder := ExpandConstant('{app}'); Executable := AppFolder + '\steam-launch162.exe';
+  end else begin
+    AppFolder := WizardDirValue; ExtractTemporaryFile('steam-launch162.exe');
+    Executable := ExpandConstant('{tmp}\steam-launch162.exe');
+  end;
+  Arguments := Command + ' ' + Quoted(AppFolder) + ' ' + Quoted(ExpandConstant('{tmp}\steam-transaction162.dat')) + ' ' + Quoted(Report);
+#ifdef Fixture
+  Arguments := Arguments + ' ' + Quoted(SteamFixtureRoot);
+#endif
+  DeleteFile(Report);
+  Result := Exec(Executable, Arguments, '', SW_HIDE, ewWaitUntilTerminated, ExitCode);
+  Result := Result and (ExitCode = 0);
+  ErrorText := 'Could not configure the camera chooser. Exit Steam using Steam > Exit, then retry. Existing settings are preserved.';
+  if LoadStringFromFile(Report, Bytes) then ErrorText := String(Bytes);
+  Log('Steam ' + Command + ': ' + ErrorText);
+end;
+
 procedure InitializeWizard;
 var
   Steam, DefaultGame: String;
 begin
   GamePage := CreateInputDirPage(wpInfoBefore, 'Choose your Shogun 2 folder',
     'Where is the original game installed?',
-    'Choose the folder containing Shogun2.exe and Empire.Retail.dll. Close the game before continuing.', False, '');
+    'Choose the folder containing Shogun2.exe and Empire.Retail.dll. Exit Shogun 2 and Steam before continuing. Setup connects the camera chooser automatically for your most recent Steam account.', False, '');
   GamePage.Add('Total War: SHOGUN 2 folder:');
   DefaultGame := GetIniString('Installation', 'Game', '', AddBackslash(WizardDirValue) + 'installation.ini');
   if DefaultGame = '' then begin
@@ -147,12 +184,7 @@ begin
     DefaultGame := Steam + '\steamapps\common\Total War SHOGUN 2';
   end;
   GamePage.Values[0] := ExpandConstant('{param:GAME|' + DefaultGame + '}');
-  LaunchPage := CreateInputQueryPage(GamePage.ID, 'Show the camera chooser before launch',
-    'One-time Steam setup',
-    'After installation, right-click Shogun 2 in Steam, choose Properties, then paste this line into Launch Options. Keep existing game arguments after %command%. If you already use another launcher, review compatibility first.');
-  LaunchPage.Add('Steam Launch Options (select and press Ctrl+C):', False);
-  LaunchPage.Values[0] := Quoted(AddBackslash(WizardDirValue) + 'shogun2-unit-possession-launcher.exe') + ' %command%';
-  LaunchPage.Edits[0].ReadOnly := True;
+
 end;
 
 function NextButtonClick(CurPageID: Integer): Boolean;
@@ -162,6 +194,7 @@ begin
   if CurPageID = GamePage.ID then begin
     ExtractTemporaryFile('game-integration.exe');
     Result := Integration(ExpandConstant('{tmp}\game-integration.exe'), 'check', GameFolder(''), ProfileFolder(''), ErrorText);
+    if Result then Result := SteamIntegration('check', ErrorText);
     if not Result then MsgBox(ErrorText, mbError, MB_OK);
   end;
 end;
@@ -176,6 +209,7 @@ begin
   if not Integration(ExpandConstant('{tmp}\game-integration.exe'), 'check', GameFolder(''), ProfileFolder(''), ErrorText) then begin
     Result := ErrorText; exit;
   end;
+  if not SteamIntegration('check', ErrorText) then begin Result := ErrorText; exit; end;
   ExtractTemporaryFile('prepare-local-assets159.exe');
   WizardForm.StatusLabel.Caption := 'Preparing artwork and audio from your installed Shogun 2...';
   if not Exec(ExpandConstant('{tmp}\prepare-local-assets159.exe'), Quoted(GameFolder('')) + ' ' +
@@ -187,6 +221,8 @@ begin
   end;
   if Integration(ExpandConstant('{tmp}\game-integration.exe'), 'prepare', GameFolder(''), ProfileFolder(''), ErrorText) then
     Prepared := True
+  else begin Result := ErrorText; exit; end;
+  if SteamIntegration('prepare', ErrorText) then SteamPrepared := True
   else Result := ErrorText;
 end;
 
@@ -194,9 +230,9 @@ procedure CurStepChanged(CurStep: TSetupStep);
 var ErrorText: String;
 begin
   if CurStep = ssPostInstall then begin
-    SaveStringToFile(ExpandConstant('{app}\Steam-Launch-Options.txt'), Utf8Encode(LaunchPage.Values[0] + #13#10), False);
     if not Integration(ExpandConstant('{tmp}\game-integration.exe'), 'finish', GameFolder(''), ProfileFolder(''), ErrorText) then
       RaiseException(ErrorText);
+    if not SteamIntegration('install', ErrorText) then RaiseException(ErrorText);
     Completed := True;
   end;
 end;
@@ -204,6 +240,9 @@ end;
 procedure DeinitializeSetup;
 var ErrorText: String;
 begin
+  if SteamPrepared and not Completed then
+    if not SteamIntegration('rollback', ErrorText) then
+      MsgBox('Steam rollback preserved the existing setting: ' + ErrorText, mbError, MB_OK);
   if Prepared and not Completed then
     if not Integration(ExpandConstant('{tmp}\game-integration.exe'), 'rollback', GameFolder(''), ProfileFolder(''), ErrorText) then
       MsgBox('Setup stopped. Previous files are backed up in the rollback folder, but automatic restoration stopped: ' + ErrorText, mbError, MB_OK);
@@ -217,15 +256,16 @@ begin
   Result := (RemovalGame <> '') and (RemovalProfile <> '');
   if Result then Result := Integration(ExpandConstant('{app}\game-integration.exe'), 'uninstall-check', RemovalGame, RemovalProfile, ErrorText)
   else ErrorText := 'The installation record is missing. Files have been preserved.';
+  if Result then Result := SteamIntegration('uninstall-check', ErrorText);
   if not Result then MsgBox(ErrorText, mbError, MB_OK);
-  if Result and not UninstallSilent then
-    Result := MsgBox('Remove this mod''s camera-chooser line from Shogun 2 > Properties > Launch Options in Steam before continuing. This lets Steam launch the game normally after uninstall.', mbConfirmation, MB_OKCANCEL) = IDOK;
 end;
 
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
 var ErrorText: String;
 begin
-  if CurUninstallStep = usUninstall then
+  if CurUninstallStep = usUninstall then begin
+    if not SteamIntegration('uninstall', ErrorText) then RaiseException(ErrorText);
     if not Integration(ExpandConstant('{app}\game-integration.exe'), 'uninstall', RemovalGame, RemovalProfile, ErrorText) then
       RaiseException(ErrorText);
+  end;
 end;

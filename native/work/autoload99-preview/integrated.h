@@ -3,6 +3,7 @@
 #include "../../outputs/shogun2-possession-cleanup-v46/src/protocol.h"
 #include "embedded_hashes.h"
 #include "../../common/startup_view160.h"
+#include "game_audio162.h"
 #include <shlobj.h>
 #include <regex>
 #ifdef S2FP_LOCAL_ASSETS
@@ -127,6 +128,25 @@ static DWORD WINAPI integrated_worker(void* argument){try{
     STARTUPINFOW startup{};startup.cb=sizeof startup;startup.dwFlags=STARTF_USESHOWWINDOW;startup.wShowWindow=SW_HIDE;PROCESS_INFORMATION child{};std::wstring command=L"\""+hud+L"\"";
     require(CreateProcessW(hud.c_str(),&command[0],nullptr,nullptr,FALSE,CREATE_NO_WINDOW,nullptr,runtime_folder.c_str(),&startup,&child)!=0,"Embedded HUD failed to start");
     CloseHandle(child.hThread);DWORD result=WaitForSingleObject(child.hProcess,1500);if(result==WAIT_OBJECT_0){DWORD code=0;GetExitCodeProcess(child.hProcess,&code);CloseHandle(child.hProcess);require(code==0,"Embedded HUD exited with an error");}else CloseHandle(child.hProcess);
-    record(6,"Ready: equipment81, authentic HUD81 and restyled QTE79 started automatically");return 0;
+    record(6,"Ready: equipment81, authentic HUD81 and restyled QTE79 started automatically");
+#ifdef S2FP_LOCAL_ASSETS
+    // This existing loader worker owns the audio stream for the game process.
+    // Keep only the verified PCM alive until the voice handle has closed.
+    assets159::Store audio_store;
+    if(!audio_store.load(runtime_folder+L"\\hud-assets159.s2fp",1)){record(6,"Friendly-fire audio unavailable: local resources rejected");return 0;}
+    auto blob=audio_store.get(301);
+    std::vector<unsigned char> voice(blob.bytes,blob.bytes+blob.size);
+    audio_store.clear(); // retain only the 134 KiB voice, not artwork/fonts in a 32-bit game
+    gameaudio162::Feedback feedback;
+    wchar_t owner_name[80];mapping_name(owner_name,GetCurrentProcessId());
+    Handle owner_map(OpenFileMappingW(FILE_MAP_READ,FALSE,owner_name));
+    auto owner=owner_map.h?static_cast<const Status*>(MapViewOfFile(owner_map.h,FILE_MAP_READ,0,0,sizeof(Status))):nullptr;
+    if(!owner){record(6,"Friendly-fire audio unavailable: possession status missing");return 0;}
+    record(6,"Friendly-fire voice uses the game-process Windows audio stream");
+    for(;;){Status status{};bool stable=gameaudio162::snapshot(owner,status);if(stable&&status.stop)break;
+        feedback.poll(status,stable,voice.data(),voice.size());Sleep(20);}
+    UnmapViewOfFile(owner);
+#endif
+    return 0;
 }catch(const std::exception& error){InterlockedExchange(&autoload_error,LONG(GetLastError()));record(7,error.what());return 1;}}
 

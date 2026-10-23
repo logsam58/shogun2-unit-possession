@@ -1,0 +1,84 @@
+{
+  "status": "unpublished Test162 / v0.32 candidate",
+  "installed_or_live_tested": false,
+  "game_or_steam_settings_changed_by_build": false,
+  "github_changed": false,
+  "private_repository_policy_unchanged": true,
+  "changes": [
+    "setup-managed native Steam launch connection",
+    "signed Creative Assembly launcher support before game creation",
+    "friendly-fire playback in game process; no HUD playback"
+  ],
+  "fresh": {
+    "loader": 2,
+    "native_guide": 1,
+    "prelaunch_dialog_and_toy_child_grandchild": 1,
+    "game_audio_guards": 1,
+    "process_only_audio_capture": 1,
+    "current_native_installer": 2,
+    "actual_owned_child_terminations": 15,
+    "standard_inno_grouped_checks": 27,
+    "native_steam_editor_core": true,
+    "actual_v031_fixture_upgrade": {
+      "passed": true,
+      "old_snapshot_files_preserved": 16,
+      "previous_app_directory_retained": true,
+      "manual031_wrapper_migrated": true,
+      "steam_uninstall_restores_arguments_and_retains_unrelated_changes": true,
+      "actual_fixture_upgrade": true,
+      "production_installer_executed": false,
+      "real_game_or_steam_modified": false
+    },
+    "production_helper_closed_steam_and_no_override_guards": {
+      "passed": true,
+      "production_helper_sha256": "1a6d2827afbff89d942ad502de948d64abeb349321711c80d9bce56496116550",
+      "steam_running_refused": true,
+      "synthetic_root_override_refused": true,
+      "no_setup_executed": true,
+      "no_steam_or_game_changes": true
+    }
+  },
+  "retained_exact_from_initial_Test162_build": {
+    "adapter": 97,
+    "QTE": 50,
+    "HUD": 8,
+    "resource_format_and_production_renderers": true,
+    "compiled_protected_sources_and_payload_bytes_verified_unchanged": true,
+    "not_rerun_as_fresh_in_final_loader_build": true
+  },
+  "additional": {
+    "python_tests": 15,
+    "role_policy": true,
+    "generated_tables": 6,
+    "PE_import_audit": "loader imports waveform output; HUD has no PlaySound/waveOut playback imports"
+  },
+  "package": {
+    "name": "Shogun2-Unit-Possession-v0.32-Setup.exe",
+    "sha256": "b348f8a0a0655be37166d7d5558e2003c9698ad07d03f166c94f117e9a738281",
+    "bytes": 2797754,
+    "signed": false,
+    "production_setup_executed": false,
+    "game_assets_shipped": false,
+    "standard_game_integration_helper_sha256": "a5847d45f72e32d3a4175e25449e557c121225c83ff174e8cea7f94ff0b6d0a5",
+    "production_steam_helper_sha256": "1a6d2827afbff89d942ad502de948d64abeb349321711c80d9bce56496116550"
+  },
+  "runtime": {
+    "bin\\dinput8.dll": "8ce6d69cada96e8c344e3dab06db9242fa406201e08df8c3fbf80be982b89045",
+    "bin\\marker.pack": "fa250bf95991b75b5f34b33cbd572550f8bcb31e30b46763e733220dcdcd8bae",
+    "bin\\possession-hud.exe": "cfdd8c84256931c30630a473889a7aa388f0e49d05190fb008586818147652b3",
+    "bin\\possession-v46.dll": "df7189d7ff2a04cc8ad91a2511a98f423a941b8f91a4d88f0988979115113fc1",
+    "bin\\qte-playable-v79.dll": "d4f9dfaf79c77bd673b404ca7bc655defec10a828e35125b1e0d52d0e9e11ebf",
+    "bin\\shogun2-unit-possession-launcher.exe": "b16941aeee4c5e829f40c3387a26693f41eb4e4e1109d0fce9e901f356da4295"
+  },
+  "limitations": [
+    "Actual Steam expansion, CA launcher child behavior, DRM, overlay, fullscreen and real game recording require separate live acceptance.",
+    "Capture regression uses synthetic tone in its own process only, not the game.",
+    "No new gameplay, charging/climbing, crash, Ultra crowd or POV fix claimed."
+  ],
+  "iteration_notes": [
+    "Build-1 full gameplay/HUD/resource checks passed before an audio fixture compile failed for a missing standard header; original failed logs retained.",
+    "Build-2 completed new fixtures; build-3 further limits retained game audio data to cropped PCM.",
+    "First standard fixture refused its CRLF marker; corrected synthetic marker encoding passed.",
+    "Final native Steam unit and Inno checks include empty-vs-absent Steam Clear equivalence; earlier native Steam fixture retained separately."
+  ]
+}

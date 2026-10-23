@@ -1,5 +1,7 @@
 # Validation
 
+The current source also contains unpublished Test162 / v0.32. See [automatic launch and audio changes](docs/public-release/STARTUP162.md) and the [candidate validation](docs/public-release/TEST162_VALIDATION.json). The v0.31 release receipts below remain historical; they do not validate the new candidate.
+
 Test161 / v0.31 is the startup-guide update. It moves camera selection into a Steam launch helper before the game process starts, with one-time Steam Launch Options setup. Its fresh and retained checks are recorded in [v0.31 validation](docs/public-release/V0_31_VALIDATION.json). No Test161 live acceptance is claimed.
 
 [v0.30 release checks](docs/public-release/V0_30_VALIDATION.json) distinguish fresh wrapper tests from the current native build evidence. That record describes release-time offline evidence. Subsequent file readback matches the installed v0.30 loader/marker and the owner reported a positive manual trial; a complete loaded-hook/capture gate is not claimed.

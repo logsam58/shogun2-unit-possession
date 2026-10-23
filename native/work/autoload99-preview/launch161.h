@@ -3,6 +3,7 @@
 #include "../../outputs/shogun2-possession-cleanup-v46/src/identity.h"
 #include <shellapi.h>
 #include <filesystem>
+#include "signed_launcher162.h"
 // Steam supplies its original command through %command%. No shell evaluation,
 // game executable replacement, registry interception or Steam config editing.
 namespace launch161 {
@@ -20,10 +21,13 @@ inline bool game_name(const std::wstring& path){
     return !_wcsicmp(name.c_str(),L"shogun2.exe")||!_wcsicmp(name.c_str(),L"shogun2.retail.exe");
 }
 inline void validate(const Plan& plan){
-    require(game_name(plan.application),"Use this helper with Shogun 2's original Steam game command");
     auto folder=std::filesystem::path(plan.application).parent_path();
+    const bool launcher=!_wcsicmp(std::filesystem::path(plan.application).filename().c_str(),L"launcher.exe")&&
+        !_wcsicmp(folder.filename().c_str(),L"launcher");
+    require(game_name(plan.application)||launcher,"Use this helper with Shogun 2's original Steam game or Creative Assembly launcher");
+    if(launcher)folder=folder.parent_path();
     require(hash_file((folder/L"Empire.Retail.dll").wstring())==EXPECTED_HASH,"Unsupported Shogun 2 engine");
-    require(hash_file(plan.application)=="0ab284186e0be3fbcde34e2f800e3c0328008f3219490c7c25e822add837c4a9","Unsupported Shogun 2 executable");
+    require(launcher?launch162::signed_ca(plan.application):hash_file(plan.application)=="0ab284186e0be3fbcde34e2f800e3c0328008f3219490c7c25e822add837c4a9","Unsupported or untrusted Shogun 2 executable");
     wchar_t app[32]{};auto n=GetEnvironmentVariableW(L"SteamAppId",app,32);
     require(n>0&&n<32&&!wcscmp(app,L"34330"),"Launch from Shogun 2's Steam Play button so Steam and DLC are initialized");
 }

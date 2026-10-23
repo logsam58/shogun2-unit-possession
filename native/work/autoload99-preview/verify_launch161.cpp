@@ -16,14 +16,18 @@ static std::wstring quote(const std::wstring& value){
     out.append(slashes*2,L'\\');return out+L'\"';
 }
 int wmain(int argc,wchar_t** argv){try{
-    check(argc==3,"Supply toy and new output directory");
+    check(argc==4,"Supply toy, new output directory and owned game directory");
     auto root=std::filesystem::absolute(argv[2]);check(std::filesystem::create_directory(root),"Fixture output must be new");
     auto toy=root/L"toy path with spaces.exe";std::filesystem::copy_file(argv[1],toy);
     wchar_t cwd[32768]{};GetCurrentDirectoryW(32768,cwd);
     SetEnvironmentVariableW(L"SteamAppId",L"34330");
-    for(int button:{startupdialog160::third_button,startupdialog160::first_button,IDCANCEL}){
-        auto report=root/(std::to_wstring(button)+L".txt");
-        auto command=quote(toy.wstring())+L" "+quote(report.wstring())+L" "+quote(L"unicode \u65e5\u672c")+L" "+quote(L"literal \"quote\" and \\tail\\")+L" \"\"";
+    auto original_game=std::filesystem::path(argv[3]);
+    launch161::validate({(original_game/L"shogun2.exe").wstring(),L"not executed"});
+    launch161::validate({(original_game/L"launcher/launcher.exe").wstring(),L"not executed"});
+    check(!launch162::signed_ca(toy.wstring()),"Unsigned toy was accepted as the CA launcher");
+    for(bool relay:{false,true})for(int button:{startupdialog160::third_button,startupdialog160::first_button,IDCANCEL}){
+        auto report=root/(std::to_wstring(button)+(relay?L"-relay.txt":L".txt"));
+        auto command=quote(toy.wstring())+(relay?L" --relay ":L" ")+quote(report.wstring())+L" "+quote(L"unicode \u65e5\u672c")+L" "+quote(L"literal \"quote\" and \\tail\\")+L" \"\"";
         auto plan=launch161::parse(command);check(plan.command==command&&plan.application==toy,"Original Steam command was changed");
         Action action{button,report};startupdialog160::Observer observer{select,&action};
         auto status=launch161::choose_then_start(GetModuleHandleW(nullptr),plan,&observer);

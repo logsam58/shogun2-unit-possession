@@ -30,6 +30,7 @@ def main():
     p.add_argument("--previous-release-bin", type=Path)
     p.add_argument("--previous029-bin", type=Path)
     p.add_argument("--previous030-bin", type=Path)
+    p.add_argument("--previous031-bin", type=Path)
     a = p.parse_args()
     version=json.loads((a.build/'package-receipt.json').read_text())['version']
     assert digest(a.engine) == "022fae2e2da92b59b8b1b8ee52887003c624e3c8eca060b209f5d792a7f874f5"
@@ -48,6 +49,11 @@ def main():
         (profile / "The Creative Assembly/Shogun2/scripts").mkdir(parents=True)
         (profile / "The Creative Assembly/Launcher").mkdir(parents=True)
         app.mkdir()
+        steam=root/'synthetic-steam162'
+        (steam/'config').mkdir(parents=True);(steam/'userdata/123/config').mkdir(parents=True)
+        (steam/'.unit-possession-fixture162').write_bytes(b'synthetic only\n')
+        (steam/'config/loginusers.vdf').write_text('"users" { "76561197960265851" { "MostRecent" "1" } }')
+        (steam/'userdata/123/config/localconfig.vdf').write_text('"UserLocalConfigStore" { "Other" "keep" }\n')
         os.link(a.engine, game / "Empire.Retail.dll")
         for pack in ('data.pack','local_en.pack'):os.link(a.game/'data'/pack,game/'data'/pack)
         script = profile / "The Creative Assembly/Shogun2/scripts/user.script.txt"
@@ -111,6 +117,17 @@ def main():
         action('prepare',f);copy_payload(f);action('finish',f);action('rollback',f)
         assert baseline==[digest(t) for t in f[4]]
         results.append('exact v0.29 upgrade and complete rollback')
+
+    if a.previous031_bin:
+        f=fixture('previous031-upgrade')
+        for name,target in zip(('dinput8.dll','marker.pack'),f[4][:2]):shutil.copyfile(a.previous031_bin/name,target)
+        for target in f[4][4:]:shutil.copyfile(a.assets/target.name,target)
+        baseline=[digest(t) for t in f[4]]
+        assert baseline[0]=='9c1471e8dea6bae0f21dec152fc092e1858e680a878a74fa282d1f1b8bda1f64'
+        assert baseline[1]=='7835ea6cab325d8823be27e1a19476e4c0cabf826db52c1258e7ce4c8dcf12ca'
+        action('prepare',f);copy_payload(f);action('finish',f);action('rollback',f)
+        assert baseline==[digest(t) for t in f[4]]
+        results.append('exact v0.31 upgrade and complete rollback')
 
     if a.previous030_bin:
         f=fixture('previous030-upgrade')
@@ -235,13 +252,15 @@ def main():
     f = fixture("inno-end-to-end")
     setup = (a.build / f"fixture-output/Shogun2-Unit-Possession-v{version}-Setup.exe").resolve()
     options = ["/VERYSILENT", "/SUPPRESSMSGBOXES", "/SP-", "/NORESTART", "/NOCLOSEAPPLICATIONS", "/NORESTARTAPPLICATIONS",
-               f"/DIR={f[3].resolve()}", f"/GAME={f[1].resolve()}", f"/PROFILE={f[2].resolve()}"]
+               f"/DIR={f[3].resolve()}", f"/GAME={f[1].resolve()}", f"/PROFILE={f[2].resolve()}", f"/STEAMROOT={f[0].resolve()/'synthetic-steam162'}"]
     for attempt in range(2):
         subprocess.run([str(setup), *options, f"/LOG={f[0].resolve() / ('install-' + str(attempt) + '.log')}"], check=True, timeout=60)
         assert (f[3] / "unins000.exe").exists()
         assert digest(f[3]/'shogun2-unit-possession-launcher.exe')==digest(a.build/'stage/shogun2-unit-possession-launcher.exe')
-        line=(f[3]/'Steam-Launch-Options.txt').read_text(encoding='utf-8')
-        assert line.strip()=='"'+str(f[3].resolve()/'shogun2-unit-possession-launcher.exe')+'" %command%'
+        configured=(f[0]/'synthetic-steam162/userdata/123/config/localconfig.vdf').read_text()
+        assert 'LaunchOptions' in configured and '%command%' in configured and 'shogun2-unit-possession-launcher.exe' in configured
+        assert (f[3]/'steam-launch162.state').exists()
+        assert digest(f[3]/'steam-launch162.exe')==digest(a.build/'stage/steam-launch162.exe')
         assert digest(f[4][0]) == digest(a.build / "stage/dinput8.dll")
         for i in (4,5):assert digest(f[4][i])==digest(a.assets/f[4][i].name)
     key = r"Software\Microsoft\Windows\CurrentVersion\Uninstall\Shogun2FirstPerson-LocalAssetsFixture159_is1"
@@ -262,6 +281,8 @@ def main():
     assert all(not f[4][i].exists() for i in (0,1,4,5))
     assert not (f[3]/"shogun2-unit-possession-launcher.exe").exists()
     assert not (f[3]/"Steam-Launch-Options.txt").exists()
+    assert 'LaunchOptions' not in (f[0]/'synthetic-steam162/userdata/123/config/localconfig.vdf').read_text()
+    assert '"Other" "keep"' in (f[0]/'synthetic-steam162/userdata/123/config/localconfig.vdf').read_text()
     assert (f[3] / f"rollback-v{version}/manifest.json").exists()
     assert "other.pack" in f[4][3].read_text()
     results.append("real Inno uninstall removes fixture registration and mod, retains rollback and other mods")
@@ -269,7 +290,7 @@ def main():
     # Remove only this fixture's hardlink, never modify the real pack inode.
     (failed[1]/'data/local_en.pack').unlink()
     baseline=[digest(t) for t in failed[4]]
-    bad_options=["/VERYSILENT","/SUPPRESSMSGBOXES","/SP-","/NORESTART",f"/DIR={failed[3].resolve()}",f"/GAME={failed[1].resolve()}",f"/PROFILE={failed[2].resolve()}",f"/LOG={failed[0].resolve()/'failed.log'}"]
+    bad_options=["/VERYSILENT","/SUPPRESSMSGBOXES","/SP-","/NORESTART",f"/DIR={failed[3].resolve()}",f"/GAME={failed[1].resolve()}",f"/PROFILE={failed[2].resolve()}",f"/STEAMROOT={failed[0].resolve()/'synthetic-steam162'}",f"/LOG={failed[0].resolve()/'failed.log'}"]
     result=subprocess.run([str(setup),*bad_options],timeout=60)
     assert result.returncode!=0 and baseline==[digest(t) for t in failed[4]]
     assert not (failed[3]/'unins000.exe').exists()
@@ -281,7 +302,7 @@ def main():
 
     if a.previous_setup:
         upgraded=fixture('real-preview-upgrade')
-        opt=["/VERYSILENT","/SUPPRESSMSGBOXES","/SP-","/NORESTART",f"/DIR={upgraded[3].resolve()}",f"/GAME={upgraded[1].resolve()}",f"/PROFILE={upgraded[2].resolve()}"]
+        opt=["/VERYSILENT","/SUPPRESSMSGBOXES","/SP-","/NORESTART",f"/DIR={upgraded[3].resolve()}",f"/GAME={upgraded[1].resolve()}",f"/PROFILE={upgraded[2].resolve()}",f"/STEAMROOT={upgraded[0].resolve()/'synthetic-steam162'}"]
         subprocess.run([str(a.previous_setup.resolve()),*opt],check=True,timeout=60)
         old_records={str(p.relative_to(upgraded[3])):digest(p) for p in (upgraded[3]/'rollback').rglob('*') if p.is_file()}
         assert old_records and digest(upgraded[4][0])=='13e9097a3965d9a8a3fb054c1dd9dfe30c0591eba22fda678ab736b036251c44'

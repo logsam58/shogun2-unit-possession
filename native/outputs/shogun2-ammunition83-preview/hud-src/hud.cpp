@@ -6,7 +6,6 @@
 #include "../../shogun2-possession-cleanup-v46/src/overlay_surface106.h"
 #include "hud_renderer.h"
 #include "hud_surface100.h"
-#include "audio_feedback109.h"
 #include "accuracy_protocol90.h"
 #include "../../shogun2-accuracy90-preview/src/climb_protocol97.h"
 #include "../src/equipment_protocol81.h"
@@ -20,7 +19,6 @@ static accuracy90::Status* accuracy_shared90;
 static climb97::Status* climb_shared97;
 static command100::Status* commands_shared100;static HANDLE commands_map100;static uint64_t commands_retry100;
 static HudSurface100 hud_surface100;
-static AudioFeedback109 audio_feedback109;
 static HWND game,overlay;static bool visible;static hud80::View display;static hud80::Assets assets;
 static HANDLE visibility_mapping148;static const hudvisibility148::Shared* visibility_shared148;
 static uint64_t visibility_retry148;
@@ -145,7 +143,6 @@ static bool paint(){
 }
 static void update(){game=gamewindow105::refresh(game,pid);bool ok=false;try{ok=measure();}catch(...){ok=false;}DWORD fg=0;GetWindowThreadProcessId(GetForegroundWindow(),&fg);
     bool active=ok&&IsWindow(game)&&!IsIconic(game)&&IsWindowVisible(game)&&fg==pid;
-    audio_feedback109.poll(pid,display_key106.lease,display_key106.actor,display_key106.unit,active);
     if(!active){pixels106.hide();if(visible)ShowWindow(overlay,SW_HIDE);visible=false;return;}
     visible=paint();if(!visible)ShowWindow(overlay,SW_HIDE);}
 static LRESULT CALLBACK proc(HWND w,UINT msg,WPARAM wp,LPARAM lp){
