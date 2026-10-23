@@ -6,6 +6,20 @@ int wmain(int argc,wchar_t** argv){try{
     fs::create_directories(root/L"config");fs::create_directories(root/L"userdata/123/config");fs::create_directories(app);
     fresh(root/L"config/loginusers.vdf","\"users\" { \"76561197960265851\" { \"MostRecent\" \"1\" } }");
     check(user(root)=="123","Recent Steam account resolution failed");
+    check(account163("\"users\" { \"76561197960265851\" { \"AutoLogin\" \"1\" \"timestamp\" \"1792761000\" } }")=="123","Single account without MostRecent failed");
+    check(account163("\"users\" { \"76561197960265851\" {} }")=="123","Sole account without optional flags failed");
+    check(account163("\"users\" { \"76561197960265851\" {Timestamp 10} \"76561197960266184\" {timestamp 20} }")=="456","Newest timestamp resolution failed");
+    check(account163("\"users\" { \"76561197960265851\" {MostRecent 1 Timestamp 10} \"76561197960266184\" {timestamp 20} }")=="123","Explicit recent account lost priority");
+    check(account163("\"users\" { \"76561197960265851\" {} \"76561197960266184\" {AutoLogin 1} }")=="456","Automatic account fallback failed");
+    for(const char* bad:{
+        "users {}", "users {bad {MostRecent 1}}", "users {76561197960265851 {MostRecent 2}}",
+        "users {76561197960265851 {Timestamp -1}}", "users {76561197960265851 {Timestamp 18446744073709551616}}",
+        "users {76561197960265851 {MostRecent 1} 76561197960266184 {MostRecent 1}}",
+        "users {76561197960265851 {} 76561197960266184 {}}",
+        "users {76561197960265851 {Timestamp 10} 76561197960266184 {Timestamp 10}}",
+        "users {76561197960265851 {Timestamp 1 timestamp 2}}", "users {76561197960265851 {MostRecent {}}}"}){
+        bool rejected=false;try{account163(bad);}catch(...){rejected=true;}check(rejected,"Ambiguous or corrupt Steam account accepted");}
+
     auto file=root/L"userdata/123/config/localconfig.vdf";
     std::string original="\xef\xbb\xbf// comment\r\n\"UserLocalConfigStore\"\r\n{\r\n\"Software\" { \"Valve\" { \"Steam\" { \"apps\" { \"34330\" { \"LaunchOptions\" \"-dx11 -foo \\\"value\\\"\" \"Other\" \"keep\" } \"9\" {\"LaunchOptions\" \"untouched\"} } } } }\r\n}\r\n";
     fresh(file,original);auto p=prepare(root,app);verify(p,root,app);check(p.original==value(original),"Existing game arguments lost");
@@ -28,5 +42,5 @@ int wmain(int argc,wchar_t** argv){try{
     auto manualApp=base/L"legacy app";fs::create_directories(manualApp);auto launch=utf8((manualApp/L"shogun2-unit-possession-launcher.exe").wstring());
     current=read(file);replace(file,current,edit(current,'"'+launch+"\" %command% -dx9"));auto migrated=prepare(root,manualApp);
     check(migrated.original==std::optional<std::string>("-dx9"),"Exact v0.31 manual wrapper not migrated");
-    std::cout<<"PASS: native VDF preservation, BOM/CRLF/quotes, recent-account selection, nested insert, arguments, repeat repair, uninstall, interrupted repair rollback, foreign wrappers, unknown edits and manual161 migration. No actual Steam setting changed.\n";return 0;
+    std::cout<<"PASS: native VDF preservation, BOM/CRLF/quotes, sole-account/recent/timestamp/automatic selection and ambiguity guards, nested insert, arguments, repeat repair, uninstall, interrupted repair rollback, foreign wrappers, unknown edits and manual161 migration. No actual Steam setting changed.\n";return 0;
 }catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}}

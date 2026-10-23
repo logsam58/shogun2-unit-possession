@@ -1,6 +1,6 @@
 # Status
 
-Unpublished Test162/v0.32 is prepared with automatic setup-managed launcher configuration and game-process friendly-fire audio. Offline checks pass; no real installation or live acceptance is claimed. See [candidate validation](public-release/TEST162_VALIDATION.json). The latest published release remains v0.31.
+Unpublished Test163/v0.32 repairs automatic startup setup, including account files without MostRecent and normal Steam close/reopen during installation. Players install and select their game folder; Steam Play then shows the compiled how-to/perspective chooser before starting the game. Game-process friendly-fire audio is retained. Thirty standard installer groups and the separate native checks pass; no real installation or live acceptance is claimed. See [candidate validation](public-release/TEST163_VALIDATION.json). The latest published release remains v0.31.
 
 v0.31 / Test161 adds a quick-start controls guide and moves the camera chooser before the original game starts. Setup provides a one-time Steam Launch Options line. Steam Play then opens the guide; either camera button starts the game, while closing cancels. The loader no longer opens a popup over the fullscreen game.
 

@@ -1,0 +1,92 @@
+{
+  "status": "unpublished Test163 / v0.32 candidate",
+  "player_steps": [
+    "Close Shogun 2",
+    "Run setup normally and choose the Shogun 2 folder",
+    "Use Steam Play; choose a perspective in the compiled how-to guide to continue launch"
+  ],
+  "manual_script_or_launch_option_entry_required": false,
+  "manual_account_selection_required": false,
+  "steam_close_reopen_managed_by_setup": true,
+  "production_setup_executed": false,
+  "real_game_or_steam_changed_by_build": false,
+  "github_changed": false,
+  "fresh": {
+    "loader": 2,
+    "native_guide": 1,
+    "prelaunch_dialog_toy_child_and_grandchild": 1,
+    "game_audio_guards": 1,
+    "process_only_audio_capture": 1,
+    "native_steam_core": true,
+    "current_native_installer": 2,
+    "actual_owned_child_terminations": 15,
+    "standard_inno_grouped_checks": 30,
+    "actual_v031_fixture_upgrade": {
+      "passed": true,
+      "old_snapshot_files_preserved": 16,
+      "previous_app_directory_retained": true,
+      "manual031_wrapper_migrated": true,
+      "steam_uninstall_restores_arguments_and_retains_unrelated_changes": true,
+      "actual_fixture_upgrade": true,
+      "steam_normal_close_reopen_verified": true,
+      "no_most_recent_field": true,
+      "production_installer_executed": false,
+      "real_game_or_steam_modified": false
+    },
+    "read_only_real_steam_checks": {
+      "passed": true,
+      "actual_account_metadata_resolved_read_only": true,
+      "no_account_identity_output": true,
+      "production_status_running": true,
+      "production_root_override_refused": true,
+      "steam_closed_or_modified": false,
+      "production_setup_executed": false,
+      "production_helper_sha256": "871655252664bd2ed2931014bf5e900f866cf271385939f5be0bf9b3ef83b5d6"
+    }
+  },
+  "retained_exact_gameplay_sources_and_binaries": {
+    "adapter": 97,
+    "QTE": 50,
+    "HUD": 8,
+    "resource_format_and_production_renderers": true,
+    "source": "Test162/build-3; gameplay initially passed in Test162/build-1",
+    "not_freshly_rerun_as_gameplay_suites": true
+  },
+  "additional": {
+    "python_tests": 15,
+    "role_policy_passed": true,
+    "generated_tables": 6,
+    "native_guide_render_inspected": true
+  },
+  "package": {
+    "name": "Shogun2-Unit-Possession-v0.32-Setup.exe",
+    "sha256": "d9f7d2f1b05825a6ecaa4a14f68f42932bff5d1fb17ded5fb564f2990c6093cd",
+    "bytes": 2802417,
+    "signed": false,
+    "game_resources_shipped": false,
+    "toy_client_included": false,
+    "integration_helper_sha256": "a279a14167f9d9743c3e87de793a7a607cd53a38ef7753a8b5b4db826f6b1811",
+    "production_steam_helper_sha256": "871655252664bd2ed2931014bf5e900f866cf271385939f5be0bf9b3ef83b5d6"
+  },
+  "runtime": {
+    "bin\\dinput8.dll": "43b999f178faf2c14dbd4459bd84f5855c08e5509420d32960db94b63d47f88c",
+    "bin\\marker.pack": "e9f3af47cf40dceef673640301446e9a884cc9c0e437394805c317f4d6199e13",
+    "bin\\possession-hud.exe": "cfdd8c84256931c30630a473889a7aa388f0e49d05190fb008586818147652b3",
+    "bin\\possession-v46.dll": "df7189d7ff2a04cc8ad91a2511a98f423a941b8f91a4d88f0988979115113fc1",
+    "bin\\qte-playable-v79.dll": "d4f9dfaf79c77bd673b404ca7bc655defec10a828e35125b1e0d52d0e9e11ebf",
+    "bin\\shogun2-unit-possession-launcher.exe": "0d90195a8a87c8f6e3a4b6ec1f33c521f75de7c7384826ad4c271348e1fa8db8"
+  },
+  "iteration_notes": [
+    "The unbuilt installer-only camera choice draft was abandoned after the owner clarified the required launch flow; preserved privately.",
+    "First post-Steam failure fixture exposed premature synthetic-client restart and an unsuppressed diagnostic dialog. That fixture failed and is retained; its own registration was uninstalled and the dialog dismissed.",
+    "Final fixture moves the Steam apply into preparation, aborts the simulated failure at ssInstall, restores Steam and six targets before reopening its client, and suppresses unattended dialogs.",
+    "Production packaging is bound to the exact fixture-tested integration and Steam source hashes; synthetic and production Steam helpers intentionally differ."
+  ],
+  "limitations": [
+    "Real elevated installer/original-user behavior, Steam expansion, CA launcher/DRM/overlay/fullscreen and application-specific recordings remain live acceptance steps.",
+    "The capture fixture records only its own synthetic tone process.",
+    "Uninstall still requires Steam and Shogun 2 closed.",
+    "Unknown wrappers, ambiguous account metadata, a declined normal Steam shutdown or lost original unelevated user are preserved/refused rather than force-fixed.",
+    "No new gameplay/crash/performance/POV fix claimed. Latest published private release remains immutable v0.31."
+  ]
+}

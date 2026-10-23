@@ -59,6 +59,9 @@ PrivilegesRequired=admin
 #endif
 
 [Files]
+#ifdef Fixture
+Source: "{#PayloadDir}\fixture-steam163.exe"; Flags: dontcopy
+#endif
 ; Temporary copies allow all checks and snapshots before Inno deploys files.
 Source: "{#PayloadDir}\prepare-local-assets159.exe"; Flags: dontcopy
 Source: "{#PayloadDir}\game-integration.exe"; Flags: dontcopy
@@ -88,7 +91,7 @@ Type: files; Name: "{app}\Steam-Launch-Options.txt"
 [INI]
 Filename: "{app}\installation.ini"; Section: "Installation"; Key: "Game"; String: "{code:GameFolder}"
 Filename: "{app}\installation.ini"; Section: "Installation"; Key: "Profile"; String: "{code:ProfileFolder}"
-Filename: "{app}\installation.ini"; Section: "Installation"; Key: "Rollback"; String: "rollback-v{#ProductVersion}"
+Filename: "{app}\installation.ini"; Section: "Installation"; Key: "Rollback"; String: "rollback-v{#ProductVersion}-test163"
 
 #ifdef Fixture
 Filename: "{app}\installation.ini"; Section: "Installation"; Key: "FixtureSteam"; String: "{param:STEAMROOT}"
@@ -97,7 +100,7 @@ Filename: "{app}\installation.ini"; Section: "Installation"; Key: "FixtureSteam"
 [Code]
 var
   GamePage: TInputDirWizardPage;
-  Prepared, Completed, SteamPrepared: Boolean;
+  Prepared, Completed, SteamPrepared, SteamRestartNeeded: Boolean;
   RemovalGame, RemovalProfile: String;
 
 function GameFolder(Param: String): String;
@@ -136,8 +139,8 @@ var
   Bytes: AnsiString;
 begin
   Report := ExpandConstant('{tmp}\integration-result.txt');
-  if IsUninstaller then RollbackFolder := AddBackslash(ExpandConstant('{app}')) + GetIniString('Installation', 'Rollback', 'rollback-v{#ProductVersion}', ExpandConstant('{app}\installation.ini'))
-  else RollbackFolder := AddBackslash(WizardDirValue) + 'rollback-v{#ProductVersion}';
+  if IsUninstaller then RollbackFolder := AddBackslash(ExpandConstant('{app}')) + GetIniString('Installation', 'Rollback', 'rollback-v{#ProductVersion}-test163', ExpandConstant('{app}\installation.ini'))
+  else RollbackFolder := AddBackslash(WizardDirValue) + 'rollback-v{#ProductVersion}-test163';
   DeleteFile(Report);
   Result := Exec(Executable, Command + ' ' + Quoted(Game) + ' ' + Quoted(Profile) + ' ' +
     Quoted(RollbackFolder) + ' ' + Quoted(Report), '', SW_HIDE, ewWaitUntilTerminated, ExitCode);
@@ -162,11 +165,41 @@ begin
   Arguments := Arguments + ' ' + Quoted(SteamFixtureRoot);
 #endif
   DeleteFile(Report);
-  Result := Exec(Executable, Arguments, '', SW_HIDE, ewWaitUntilTerminated, ExitCode);
+  if (Command = 'request-shutdown') or (Command = 'restart') then
+    Result := ExecAsOriginalUser(Executable, Arguments, '', SW_HIDE, ewWaitUntilTerminated, ExitCode)
+  else Result := Exec(Executable, Arguments, '', SW_HIDE, ewWaitUntilTerminated, ExitCode);
   Result := Result and (ExitCode = 0);
   ErrorText := 'Could not configure the camera chooser. Exit Steam using Steam > Exit, then retry. Existing settings are preserved.';
   if LoadStringFromFile(Report, Bytes) then ErrorText := String(Bytes);
   Log('Steam ' + Command + ': ' + ErrorText);
+end;
+
+// The installer launches shutdown/restart as its original unelevated user.
+// Never terminate Steam, start it as administrator, or touch config while it runs.
+function CloseSteamForSetup(var ErrorText: String): Boolean;
+var Status: String;
+begin
+  Result := SteamIntegration('status', Status);
+  if not Result then begin ErrorText := Status; exit; end;
+  if Status = 'CLOSED' then exit;
+  if Status <> 'RUNNING' then begin Result := False; ErrorText := 'Unrecognized Steam status; settings preserved.'; exit; end;
+#ifdef Fixture
+  ExtractTemporaryFile('fixture-steam163.exe');
+  if not FileCopy(ExpandConstant('{tmp}\fixture-steam163.exe'), AddBackslash(SteamFixtureRoot) + 'fixture-steam163.exe', False) then begin Result := False; ErrorText := 'Fixture client staging failed.'; exit; end;
+#endif
+  WizardForm.StatusLabel.Caption := 'Closing Steam normally to connect the camera chooser...';
+  Result := SteamIntegration('request-shutdown', ErrorText);
+  if not Result then exit;
+  SteamRestartNeeded := True;
+  Result := SteamIntegration('wait-closed', ErrorText);
+end;
+
+procedure RestartSteamAfterSetup;
+var Status: String;
+begin
+  if not SteamRestartNeeded then exit;
+  if SteamIntegration('restart', Status) then SteamRestartNeeded := False
+  else Log('Steam could not be reopened automatically: ' + Status);
 end;
 
 procedure InitializeWizard;
@@ -175,7 +208,7 @@ var
 begin
   GamePage := CreateInputDirPage(wpInfoBefore, 'Choose your Shogun 2 folder',
     'Where is the original game installed?',
-    'Choose the folder containing Shogun2.exe and Empire.Retail.dll. Exit Shogun 2 and Steam before continuing. Setup connects the camera chooser automatically for your most recent Steam account.', False, '');
+    'Choose the folder containing Shogun2.exe and Empire.Retail.dll. Close Shogun 2 before continuing. Setup connects the guide and camera chooser automatically. If Steam is open, setup closes it normally and reopens it afterward.', False, '');
   GamePage.Add('Total War: SHOGUN 2 folder:');
   DefaultGame := GetIniString('Installation', 'Game', '', AddBackslash(WizardDirValue) + 'installation.ini');
   if DefaultGame = '' then begin
@@ -194,8 +227,7 @@ begin
   if CurPageID = GamePage.ID then begin
     ExtractTemporaryFile('game-integration.exe');
     Result := Integration(ExpandConstant('{tmp}\game-integration.exe'), 'check', GameFolder(''), ProfileFolder(''), ErrorText);
-    if Result then Result := SteamIntegration('check', ErrorText);
-    if not Result then MsgBox(ErrorText, mbError, MB_OK);
+    if not Result then SuppressibleMsgBox(ErrorText, mbError, MB_OK, IDOK);
   end;
 end;
 
@@ -209,7 +241,8 @@ begin
   if not Integration(ExpandConstant('{tmp}\game-integration.exe'), 'check', GameFolder(''), ProfileFolder(''), ErrorText) then begin
     Result := ErrorText; exit;
   end;
-  if not SteamIntegration('check', ErrorText) then begin Result := ErrorText; exit; end;
+  if not CloseSteamForSetup(ErrorText) then begin Result := ErrorText; exit; end;
+  if not SteamIntegration('check', ErrorText) then begin Result := ErrorText; RestartSteamAfterSetup; exit; end;
   ExtractTemporaryFile('prepare-local-assets159.exe');
   WizardForm.StatusLabel.Caption := 'Preparing artwork and audio from your installed Shogun 2...';
   if not Exec(ExpandConstant('{tmp}\prepare-local-assets159.exe'), Quoted(GameFolder('')) + ' ' +
@@ -223,18 +256,25 @@ begin
     Prepared := True
   else begin Result := ErrorText; exit; end;
   if SteamIntegration('prepare', ErrorText) then SteamPrepared := True
-  else Result := ErrorText;
+  else begin Result := ErrorText; exit; end;
+  // Steam is closed. Connect its owned option before deployment so native
+  // Inno cancellation/failure can roll the preparatory transaction back.
+  if not SteamIntegration('install', ErrorText) then Result := ErrorText;
 end;
 
 procedure CurStepChanged(CurStep: TSetupStep);
 var ErrorText: String;
 begin
+#ifdef Fixture
+  if (CurStep = ssInstall) and (ExpandConstant('{param:FAILAFTERSTEAM|0}') = '1') then
+    RaiseException('Synthetic failure after Steam integration, before file deployment');
+#endif
   if CurStep = ssPostInstall then begin
     if not Integration(ExpandConstant('{tmp}\game-integration.exe'), 'finish', GameFolder(''), ProfileFolder(''), ErrorText) then
       RaiseException(ErrorText);
-    if not SteamIntegration('install', ErrorText) then RaiseException(ErrorText);
     Completed := True;
   end;
+  if (CurStep = ssDone) and Completed then RestartSteamAfterSetup;
 end;
 
 procedure DeinitializeSetup;
@@ -242,10 +282,11 @@ var ErrorText: String;
 begin
   if SteamPrepared and not Completed then
     if not SteamIntegration('rollback', ErrorText) then
-      MsgBox('Steam rollback preserved the existing setting: ' + ErrorText, mbError, MB_OK);
+      SuppressibleMsgBox('Steam rollback preserved the existing setting: ' + ErrorText, mbError, MB_OK, IDOK);
   if Prepared and not Completed then
     if not Integration(ExpandConstant('{tmp}\game-integration.exe'), 'rollback', GameFolder(''), ProfileFolder(''), ErrorText) then
-      MsgBox('Setup stopped. Previous files are backed up in the rollback folder, but automatic restoration stopped: ' + ErrorText, mbError, MB_OK);
+      SuppressibleMsgBox('Setup stopped. Previous files are backed up in the rollback folder, but automatic restoration stopped: ' + ErrorText, mbError, MB_OK, IDOK);
+  RestartSteamAfterSetup;
 end;
 
 function InitializeUninstall: Boolean;
@@ -257,7 +298,7 @@ begin
   if Result then Result := Integration(ExpandConstant('{app}\game-integration.exe'), 'uninstall-check', RemovalGame, RemovalProfile, ErrorText)
   else ErrorText := 'The installation record is missing. Files have been preserved.';
   if Result then Result := SteamIntegration('uninstall-check', ErrorText);
-  if not Result then MsgBox(ErrorText, mbError, MB_OK);
+  if not Result then SuppressibleMsgBox(ErrorText, mbError, MB_OK, IDOK);
 end;
 
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);

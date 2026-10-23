@@ -25,7 +25,8 @@ void validate_standard_game(){
         predecessor=="583b12f04734b8e5db59cad9f909b3a2f1c32773d5f5513008e4601d9f317af3"?"024eb40e5298e80fd817a95c13cf703de396ef741df2edb2aa1c46ac2d23573e":
         predecessor=="6e2bec13bdf74795e48281bdade07fa8a2c101ca7993ea2765679d7e5abd5af0"?"21c8e04b83437b1b1f29c4c27e61b9e84d4002862e74f94296c53b95375bf235":
         predecessor=="19f7c9b197cb8128a160aa8bd7b4e930b2612f420a5468413690bea55e791ae7"?"a611fadf4369e7a415aab40099982822c32ba5107c357fea12aadc1c73e81623":
-        predecessor=="9c1471e8dea6bae0f21dec152fc092e1858e680a878a74fa282d1f1b8bda1f64"?"7835ea6cab325d8823be27e1a19476e4c0cabf826db52c1258e7ce4c8dcf12ca":nullptr;
+        predecessor=="9c1471e8dea6bae0f21dec152fc092e1858e680a878a74fa282d1f1b8bda1f64"?"7835ea6cab325d8823be27e1a19476e4c0cabf826db52c1258e7ce4c8dcf12ca":
+        predecessor=="8ce6d69cada96e8c344e3dab06db9242fa406201e08df8c3fbf80be982b89045"?"fa250bf95991b75b5f34b33cbd572550f8bcb31e30b46763e733220dcdcd8bae":nullptr;
     if(previous_pack){
         require(hash_file(game+L"\\Empire.Retail.dll")==EXPECTED_HASH,"Unsupported game version");
         auto pack=durable::digest(game+L"\\data\\"+PACK);

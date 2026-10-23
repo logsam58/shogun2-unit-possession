@@ -20,7 +20,7 @@ Select one of your units in **Total War: SHOGUN 2**, press **F9**, and take cont
 
 The HUD puts your unit's condition, weapon, ammo, abilities and orders within reach. Press **K** for a clearer view; melee timing prompts stay visible. And if one of your own shots hits an ally, expect **“SHAMEFUL DISPLAY!”**
 
-**In development:** Test162 / v0.32 removes the manual launch-option step: setup connects the chooser automatically and supports Creative Assembly's native launcher. It also moves the friendly-fire callout into the game process for application-only recordings. This candidate has not been published or live-tested. The v0.31 download below retains its original manual setup requirements.
+**In development:** Test163 / v0.32 repairs the automatic startup setup. Players only install and select their Shogun 2 folder; setup handles the Steam connection, including a normal Steam close/reopen when needed. Steam Play then shows the how-to and camera choice before starting the game. It retains the game-process friendly-fire audio correction. This candidate is unpublished and needs live acceptance. The v0.31 download below retains its original manual setup requirements.
 
 ## Install and play
 

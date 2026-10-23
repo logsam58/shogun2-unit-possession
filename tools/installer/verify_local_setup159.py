@@ -31,8 +31,9 @@ def main():
     p.add_argument("--previous029-bin", type=Path)
     p.add_argument("--previous030-bin", type=Path)
     p.add_argument("--previous031-bin", type=Path)
+    p.add_argument("--previous162-bin", type=Path)
     a = p.parse_args()
-    version=json.loads((a.build/'package-receipt.json').read_text())['version']
+    package=json.loads((a.build/'package-receipt.json').read_text());version=package['version'];rollback_name=package.get('rollback_directory',f'rollback-v{version}')
     assert digest(a.engine) == "022fae2e2da92b59b8b1b8ee52887003c624e3c8eca060b209f5d792a7f874f5"
     a.output.mkdir(parents=True, exist_ok=False)
     helper_dir=a.output/'helper';helper_dir.mkdir()
@@ -52,7 +53,7 @@ def main():
         steam=root/'synthetic-steam162'
         (steam/'config').mkdir(parents=True);(steam/'userdata/123/config').mkdir(parents=True)
         (steam/'.unit-possession-fixture162').write_bytes(b'synthetic only\n')
-        (steam/'config/loginusers.vdf').write_text('"users" { "76561197960265851" { "MostRecent" "1" } }')
+        (steam/'config/loginusers.vdf').write_text('"users" { "76561197960265851" { "AutoLogin" "1" "timestamp" "1792761000" } }')
         (steam/'userdata/123/config/localconfig.vdf').write_text('"UserLocalConfigStore" { "Other" "keep" }\n')
         os.link(a.engine, game / "Empire.Retail.dll")
         for pack in ('data.pack','local_en.pack'):os.link(a.game/'data'/pack,game/'data'/pack)
@@ -128,6 +129,17 @@ def main():
         action('prepare',f);copy_payload(f);action('finish',f);action('rollback',f)
         assert baseline==[digest(t) for t in f[4]]
         results.append('exact v0.31 upgrade and complete rollback')
+
+    if a.previous162_bin:
+        f=fixture('previous162-upgrade')
+        for name,target in zip(('dinput8.dll','marker.pack'),f[4][:2]):shutil.copyfile(a.previous162_bin/name,target)
+        for target in f[4][4:]:shutil.copyfile(a.assets/target.name,target)
+        baseline=[digest(t) for t in f[4]]
+        assert baseline[0]=='8ce6d69cada96e8c344e3dab06db9242fa406201e08df8c3fbf80be982b89045'
+        assert baseline[1]=='fa250bf95991b75b5f34b33cbd572550f8bcb31e30b46763e733220dcdcd8bae'
+        action('prepare',f);copy_payload(f);action('finish',f);action('rollback',f)
+        assert baseline==[digest(t) for t in f[4]]
+        results.append('exact unpublished Test162 upgrade and complete rollback')
 
     if a.previous030_bin:
         f=fixture('previous030-upgrade')
@@ -253,8 +265,15 @@ def main():
     setup = (a.build / f"fixture-output/Shogun2-Unit-Possession-v{version}-Setup.exe").resolve()
     options = ["/VERYSILENT", "/SUPPRESSMSGBOXES", "/SP-", "/NORESTART", "/NOCLOSEAPPLICATIONS", "/NORESTARTAPPLICATIONS",
                f"/DIR={f[3].resolve()}", f"/GAME={f[1].resolve()}", f"/PROFILE={f[2].resolve()}", f"/STEAMROOT={f[0].resolve()/'synthetic-steam162'}"]
+    steam=f[0]/'synthetic-steam162'
     for attempt in range(2):
+        (steam/'fixture-running163').write_text('synthetic only\n')
         subprocess.run([str(setup), *options, f"/LOG={f[0].resolve() / ('install-' + str(attempt) + '.log')}"], check=True, timeout=60)
+        for _ in range(100):
+            if (steam/'fixture-running163').exists() and (steam/'fixture-lifecycle163.log').exists() and (steam/'fixture-lifecycle163.log').read_text().splitlines().count('-silent')==attempt+1:break
+            time.sleep(.05)
+        else:raise AssertionError('Setup did not reopen its original synthetic Steam client')
+        assert (steam/'fixture-lifecycle163.log').read_text().splitlines()==['-shutdown','-silent']*(attempt+1)
         assert (f[3] / "unins000.exe").exists()
         assert digest(f[3]/'shogun2-unit-possession-launcher.exe')==digest(a.build/'stage/shogun2-unit-possession-launcher.exe')
         configured=(f[0]/'synthetic-steam162/userdata/123/config/localconfig.vdf').read_text()
@@ -266,7 +285,10 @@ def main():
     key = r"Software\Microsoft\Windows\CurrentVersion\Uninstall\Shogun2FirstPerson-LocalAssetsFixture159_is1"
     with winreg.OpenKey(winreg.HKEY_CURRENT_USER, key) as k:
         assert winreg.QueryValueEx(k, "DisplayName")[0] == "Shogun 2 Unit Possession"
-    results.append("real Inno install + repeat install + Windows uninstall registration")
+    results.append("real Inno install + repeat install; automatic original-user synthetic client close/reopen; sole account without MostRecent; Windows registration")
+    # Uninstall retains the explicit Steam-closed requirement; automatic lifecycle
+    # is the install/update path and never starts a client as administrator.
+    (steam/'fixture-running163').unlink()
     subprocess.run([str((f[3] / "unins000.exe").resolve()), "/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART",
                     f"/LOG={f[0].resolve() / 'uninstall.log'}"], check=True, timeout=60)
     for _ in range(50):
@@ -283,22 +305,57 @@ def main():
     assert not (f[3]/"Steam-Launch-Options.txt").exists()
     assert 'LaunchOptions' not in (f[0]/'synthetic-steam162/userdata/123/config/localconfig.vdf').read_text()
     assert '"Other" "keep"' in (f[0]/'synthetic-steam162/userdata/123/config/localconfig.vdf').read_text()
-    assert (f[3] / f"rollback-v{version}/manifest.json").exists()
+    assert (f[3] / f"{rollback_name}/manifest.json").exists()
     assert "other.pack" in f[4][3].read_text()
     results.append("real Inno uninstall removes fixture registration and mod, retains rollback and other mods")
     failed=fixture('inno-missing-original-pack')
     # Remove only this fixture's hardlink, never modify the real pack inode.
     (failed[1]/'data/local_en.pack').unlink()
+    (failed[0]/'synthetic-steam162/fixture-running163').write_text('synthetic only\n')
     baseline=[digest(t) for t in failed[4]]
     bad_options=["/VERYSILENT","/SUPPRESSMSGBOXES","/SP-","/NORESTART",f"/DIR={failed[3].resolve()}",f"/GAME={failed[1].resolve()}",f"/PROFILE={failed[2].resolve()}",f"/STEAMROOT={failed[0].resolve()/'synthetic-steam162'}",f"/LOG={failed[0].resolve()/'failed.log'}"]
     result=subprocess.run([str(setup),*bad_options],timeout=60)
     assert result.returncode!=0 and baseline==[digest(t) for t in failed[4]]
     assert not (failed[3]/'unins000.exe').exists()
+    failed_steam=failed[0]/'synthetic-steam162'
+    for _ in range(100):
+        if (failed_steam/'fixture-lifecycle163.log').read_text().splitlines()==['-shutdown','-silent']:break
+        time.sleep(.05)
+    else:raise AssertionError('Failed setup did not reopen its prior synthetic client')
+    assert (failed_steam/'fixture-running163').exists()
     try:
         with winreg.OpenKey(winreg.HKEY_CURRENT_USER,key):pass
     except FileNotFoundError:pass
     else:raise AssertionError('Failed preparation registered an installation')
     results.append('real Inno missing original input fails before deployment/registration')
+
+    # A failure after both game and Steam changes must restore the complete baseline.
+    broken=fixture('inno-failure-after-steam');baseline=[digest(t) for t in broken[4]]
+    broken_steam=broken[0]/'synthetic-steam162';original_config=(broken_steam/'userdata/123/config/localconfig.vdf').read_bytes()
+    (broken_steam/'fixture-running163').write_text('synthetic only\n')
+    opts=['/VERYSILENT','/SUPPRESSMSGBOXES','/SP-','/NORESTART',f'/DIR={broken[3].resolve()}',f'/GAME={broken[1].resolve()}',f'/PROFILE={broken[2].resolve()}',f'/STEAMROOT={broken_steam.resolve()}','/FAILAFTERSTEAM=1',f'/LOG={broken[0].resolve()/"failed.log"}']
+    failed_run=subprocess.run([str(setup),*opts],timeout=60)
+    assert failed_run.returncode and baseline==[digest(t) for t in broken[4]], 'Failed Inno setup did not restore six targets'
+    # Removing an originally absent value preserves unrelated bytes; whitespace inserted to create its object is not owned.
+    assert 'LaunchOptions' not in (broken_steam/'userdata/123/config/localconfig.vdf').read_text()
+    assert '\"Other\" \"keep\"' in (broken_steam/'userdata/123/config/localconfig.vdf').read_text()
+    for _ in range(100):
+        if (broken_steam/'fixture-lifecycle163.log').read_text().splitlines()==['-shutdown','-silent']:break
+        time.sleep(.05)
+    else:raise AssertionError('Rolled-back setup did not reopen its original client')
+    assert (broken_steam/'fixture-running163').exists()
+    results.append('real Inno post-Steam failure restores six targets and original LaunchOptions, retains unrelated settings, reopens original synthetic client')
+
+    # Steam is allowed to decline normal shutdown; never kill it or deploy files.
+    busy=fixture('inno-client-refuses-normal-exit');busy_steam=busy[0]/'synthetic-steam162'
+    (busy_steam/'fixture-running163').write_text('synthetic only\n');(busy_steam/'fixture-refuse-exit163').write_text('synthetic only\n')
+    baseline=[digest(t) for t in busy[4]];steam_before=(busy_steam/'userdata/123/config/localconfig.vdf').read_bytes()
+    busyopts=['/VERYSILENT','/SUPPRESSMSGBOXES','/SP-','/NORESTART',f'/DIR={busy[3].resolve()}',f'/GAME={busy[1].resolve()}',f'/PROFILE={busy[2].resolve()}',f'/STEAMROOT={busy_steam.resolve()}',f'/LOG={busy[0].resolve()/"busy.log"}']
+    busy_run=subprocess.run([str(setup),*busyopts],timeout=60)
+    assert busy_run.returncode and baseline==[digest(t) for t in busy[4]]
+    assert (busy_steam/'fixture-running163').exists() and (busy_steam/'fixture-lifecycle163.log').read_text().splitlines()==['-shutdown']
+    assert (busy_steam/'userdata/123/config/localconfig.vdf').read_bytes()==steam_before
+    results.append('real Inno normal-shutdown timeout preserves running synthetic client, config and all six targets; no forced termination')
 
     if a.previous_setup:
         upgraded=fixture('real-preview-upgrade')
@@ -309,7 +366,7 @@ def main():
         subprocess.run([str(setup),*opt],check=True,timeout=60)
         assert digest(upgraded[4][0])==digest(a.build/'stage/dinput8.dll')
         assert all(digest(upgraded[3]/p)==h for p,h in old_records.items())
-        assert (upgraded[3]/f'rollback-v{version}/manifest.json').is_file()
+        assert (upgraded[3]/f'{rollback_name}/manifest.json').is_file()
         with winreg.OpenKey(winreg.HKEY_CURRENT_USER,key) as k:assert winreg.QueryValueEx(k,'DisplayVersion')[0]==version
         subprocess.run([str((upgraded[3]/'unins000.exe').resolve()),'/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART'],check=True,timeout=60)
         for _ in range(100):
@@ -322,7 +379,9 @@ def main():
         assert all(digest(upgraded[3]/p)==h for p,h in old_records.items())
         results.append('real Inno preview-to-release upgrade preserves old rollback and removes new mod safely')
 
-    report = {"passed": True, "checks": results, "count": len(results), "real_game_modified": False,
+    report = {"tested_packaging_sources": package['packaging_sources'],
+              "tested_steam_source_sha256":package['steam_source_sha256'],"tested_steam_header_sha256":package['steam_header_sha256'],
+              "tested_steam_session_sha256":package['steam_session_sha256'],"passed": True, "checks": results, "count": len(results), "real_game_modified": False,
               "production_setup_executed": False, "fixture_setup_sha256": digest(setup), "helper_sha256": digest(helper), "integration_source_sha256": digest(Path(__file__).parent / "game_integration.cpp")}
     (a.output / "verification.json").write_text(json.dumps(report, indent=2) + "\n")
     print(json.dumps(report, indent=2))

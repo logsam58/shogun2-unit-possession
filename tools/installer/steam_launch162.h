@@ -76,13 +76,36 @@ inline std::string installed(const std::string& launcher,const std::optional<std
     require(!old||old->find('%')==old->npos,"An existing Steam wrapper or expansion is present; preserved");
     return '"'+launcher+"\" %command%"+(old&&!old->empty()?" "+*old:"");
 }
-inline std::string user(const fs::path& root){
-    auto login=Parser{read(root/L"config/loginusers.vdf")}.document();auto users=child(login,"users");require(users&&users->object,"Sign in to Steam once, then exit Steam before setup");std::string selected;
-    for(auto& u:users->children){auto recent=child(u.children,"MostRecent");if(!recent||recent->value!="1")continue;
-        require(selected.empty()&&u.object&&u.key.size()==17&&u.key.find_first_not_of("0123456789")==u.key.npos,"Ambiguous Steam account; preserved");
-        auto id=std::stoull(u.key);require(id>76561197960265728ull&&id<=76561202255233023ull,"Unsupported Steam account identity");selected=std::to_string(id-76561197960265728ull);}
-    require(!selected.empty(),"No recent Steam account. Sign in once, exit Steam and retry setup");return selected;
+// Some Steam versions omit MostRecent entirely, even for their only account.
+// Resolve from the account metadata after Steam exits; never ask players for IDs.
+inline unsigned long long number163(const Node* n,const char* error){
+    if(!n)return 0;
+    require(!n->object&&!n->value.empty()&&n->value.size()<=20&&n->value.find_first_not_of("0123456789")==n->value.npos,error);
+    unsigned long long result=0;for(char c:n->value){auto digit=unsigned(c-'0');require(result<=(~0ull-digit)/10,error);result=result*10+digit;}return result;
 }
+inline std::string account163(const std::string& text){
+    auto login=Parser{text}.document();auto users=child(login,"users");require(users&&users->object,"Steam has no signed-in account on this Windows profile; setup preserved its settings");
+    struct Account {std::string id;bool recent{},automatic{};unsigned long long stamp{};};std::vector<Account> accounts;
+    for(const auto& u:users->children){
+        require(u.object&&u.key.size()==17&&u.key.find_first_not_of("0123456789")==u.key.npos,"Unsupported Steam account metadata; preserved");
+        auto id=std::stoull(u.key);require(id>76561197960265728ull&&id<=76561202255233023ull,"Unsupported Steam account identity");
+        auto recent=number163(child(u.children,"MostRecent"),"Invalid recent Steam account flag");
+        auto automatic=number163(child(u.children,"AutoLogin"),"Invalid automatic Steam account flag");
+        require(recent<=1&&automatic<=1,"Invalid Steam account flag");
+        accounts.push_back({std::to_string(id-76561197960265728ull),recent==1,automatic==1,number163(child(u.children,"Timestamp"),"Invalid Steam account timestamp")});
+    }
+    require(!accounts.empty(),"Steam has no signed-in account on this Windows profile; settings preserved");
+    std::string recent;for(const auto& a:accounts)if(a.recent){require(recent.empty(),"Conflicting recent Steam accounts; settings preserved");recent=a.id;}
+    if(!recent.empty())return recent;
+    if(accounts.size()==1)return accounts.front().id;
+    unsigned long long newest=0;unsigned ties=0;std::string selected;
+    for(const auto& a:accounts){if(a.stamp>newest){newest=a.stamp;selected=a.id;ties=1;}else if(a.stamp==newest)++ties;}
+    if(newest&&ties==1)return selected;
+    std::string automatic;for(const auto& a:accounts)if(a.automatic){require(automatic.empty(),"Conflicting automatic Steam accounts; settings preserved");automatic=a.id;}
+    if(!newest&&!automatic.empty())return automatic;
+    throw std::runtime_error("Steam account metadata is ambiguous; setup preserved all settings");
+}
+inline std::string user(const fs::path& root){return account163(read(root/L"config/loginusers.vdf"));}
 inline void closed(){Handle snapshot(CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS,0));require(snapshot.h!=INVALID_HANDLE_VALUE,"Cannot check Steam processes");PROCESSENTRY32W e{};e.dwSize=sizeof e;require(Process32FirstW(snapshot.h,&e)!=0,"Cannot check Steam processes");
     do{require(_wcsicmp(e.szExeFile,L"steam.exe")!=0,"Exit Steam using Steam > Exit, then retry setup. Setup never closes Steam for you.");}while(Process32NextW(snapshot.h,&e));}
 inline fs::path registry_root(){wchar_t text[32768];DWORD bytes=sizeof text;require(RegGetValueW(HKEY_CURRENT_USER,L"Software\\Valve\\Steam",L"SteamPath",RRF_RT_REG_SZ,nullptr,text,&bytes)==ERROR_SUCCESS,"Cannot locate Steam for this Windows account");auto path=fs::absolute(text).lexically_normal();plain(path);return path;}

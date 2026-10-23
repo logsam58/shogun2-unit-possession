@@ -67,15 +67,16 @@
   },
   "development_candidate": {
     "version": "0.32",
-    "candidate": 162,
+    "candidate": 163,
     "published": false,
     "installed": false,
     "live_tested": false,
-    "design": "docs/public-release/STARTUP162.md",
+    "design": "docs/public-release/STARTUP163.md",
     "changes": [
-      "automatic Steam connection through setup",
-      "signed native CA launcher support",
-      "friendly-fire playback in game process"
-    ]
+      "automatic startup setup handles Steam account metadata without MostRecent",
+      "setup requests normal Steam close/reopen as its original unelevated user; no player script or launch-option edit",
+      "signed native CA launcher support and game-process friendly-fire audio retained"
+    ],
+    "offline_validation": "docs/public-release/TEST163_VALIDATION.json"
   }
 }

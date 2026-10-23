@@ -10,7 +10,7 @@
 | QTE | native/outputs/shogun2-authentic-hud80-preview/qte-src | Native pairs, response/input timing, animation camera |
 | HUD | native/outputs/shogun2-ammunition83-preview/hud-src | Read-only measurement, artwork and controls; friendly-fire playback belongs to the game loader worker |
 | Installer | native/work/installer-siege99 | Fingerprints, durable journals, repair, conservative retention |
-| Player setup/local assets | tools/installer, native/common/local_assets159.h | Inno wizard, read-only native extraction, six-target rollback, external resource mapping |
+| Player setup/local assets | tools/installer, native/common/local_assets159.h | Inno wizard, read-only native extraction, six-target rollback, external resources; steam_launch162/steam_session163 manage the owned Steam connection and normal install-time client lifecycle |
 | Diagnostics | tools/diagnostics/source | Optional external capture, telemetry and dump inspection |
 | Build | tools/build.py, build_frontend.py, native_build.py | Isolated snapshot, explicit inputs, native checks |
 | Resources | tools/prepare_resources.py, game_packs.py, resource-recipe.json | Owned-game extraction/trim/packing/fonts/icons/voice |
