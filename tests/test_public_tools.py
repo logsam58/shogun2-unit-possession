@@ -10,7 +10,7 @@ import unittest
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'tools'))
 from game_packs import Pack,require_game
-from package_source import audit,verify_archive
+from package_source import audit,selected,verify_archive
 from generate_tables import render
 
 class ResourceBoundaryTests(unittest.TestCase):
@@ -52,5 +52,31 @@ class ResourceBoundaryTests(unittest.TestCase):
             self.assertEqual((ROOT/row['path']).read_text(encoding='utf-8'),render(row))
         broken=dict(data['headers'][0]);broken['template']+='changed'
         with self.assertRaises(ValueError):render(broken)
+
+    def test_source_kit_contains_developer_guides(self):
+        paths = {p.relative_to(ROOT).as_posix() for p in selected()}
+        self.assertTrue({
+            'docs/README.md', 'native/README.md', 'tools/README.md',
+            'docs/development/README.md', 'docs/releases/README.md',
+            'docs/public-release/README.md',
+        } <= paths)
+        self.assertIn('docs/releases/v' + (ROOT / 'VERSION').read_text().strip() + '.md', paths)
+        self.assertNotIn('docs/development/Test157.md', paths)
+        self.assertNotIn('docs/releases/v0.31.md', paths)
+        self.assertNotIn('tools/github_release.py', paths)
+
+    def test_source_selection_uses_requested_root_version(self):
+        # An exported or alternate source tree must select its own release notes,
+        # rather than accidentally using this checkout's product version.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / 'VERSION').write_text('9.99\n')
+            releases = root / 'docs/releases'
+            releases.mkdir(parents=True)
+            (releases / 'v9.99.md').write_text('fixture release')
+            (releases / 'v0.32.md').write_text('other release')
+            paths = {p.relative_to(root).as_posix() for p in selected(root)}
+            self.assertIn('docs/releases/v9.99.md', paths)
+            self.assertNotIn('docs/releases/v0.32.md', paths)
 
 if __name__=='__main__':unittest.main()

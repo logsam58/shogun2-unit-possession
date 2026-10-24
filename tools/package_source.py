@@ -14,6 +14,7 @@ sys.path.insert(0, str(ROOT / 'tools'))
 from build_frontend import source_files
 
 TOOLS = {
+    'README.md',
     'build.py',
     'build_frontend.py',
     'native_build.py',
@@ -62,6 +63,7 @@ ROOT_DOCS = {
     '.gitattributes',
 }
 DOCS = {
+    'README.md',
     'ARCHITECTURE.md',
     'LOCAL_DEPENDENCIES.md',
     'STATUS.md',
@@ -72,6 +74,7 @@ DOCS = {
 
 def selected(root=ROOT):
     """Select portable source and guides; retain full notebooks only in Git."""
+    version = (root / 'VERSION').read_text().strip()
     for path in source_files(root):
         rel = path.relative_to(root)
         parts = rel.parts
@@ -88,7 +91,11 @@ def selected(root=ROOT):
                 (len(parts) == 2 and path.name in DOCS)
                 or (len(parts) > 2 and parts[1] == 'public-release')
                 or rel.as_posix()
-                == 'docs/releases/v' + (ROOT / 'VERSION').read_text().strip() + '.md'
+                in {
+                    'docs/development/README.md',
+                    'docs/releases/README.md',
+                    'docs/releases/v' + version + '.md',
+                }
             ):
                 yield path
         elif parts[0] == 'tools':
