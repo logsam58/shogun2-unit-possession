@@ -1,42 +1,78 @@
 # Shogun 2 Unit Possession
 
-Command the army. Then join the fight.
+Take control of a soldier in **Total War: SHOGUN 2**, fight in first or third person, and command your unit while the battle continues around you. Select a friendly unit and press **F9** to enter possession. Press **F10** or **Escape** to return to your RTS camera.
 
-Select one of your units in **Total War: SHOGUN 2**, press **F9**, and take control of a soldier on the battlefield. Fight with the weapon they're carrying, ride with the cavalry, or lead your men from the front. Your army keeps fighting around you. **F10** takes you back to your RTS camera whenever you want to command from above.
+**For single-player land battles and sieges.** Naval possession and multiplayer are not implemented. Visual bugs, gameplay bugs and occasional crashes remain.
 
-**Naval battles do not support possession.** Naval support is planned for a later update. **Multiplayer is not implemented**; Versus and campaign drop-in support are under consideration. Expect visual bugs, gameplay bugs and occasional crashes. Current support is for single-player land battles and sieges.
+[Download](#download) · [Requirements](#requirements) · [Installation](#installation) · [Controls](#controls) · [Compatibility](#compatibility) · [Known limitations](#known-limitations) · [Troubleshooting](#troubleshooting)
 
-**[Install and play](#install-and-play)** · **[Controls](#controls)** · **[Known issues](docs/KNOWN_ISSUES.md)** · **[Build and source](#for-developers)**
+## Features
 
-## On the battlefield
+- **First- and third-person play:** start in third person, switch with **P**, adjust camera distance, or orbit your soldier.
+- **Soldier selection:** at the closest RTS zoom, point at a soldier in your selected unit and press **F9**. Generals, officers, flag bearers and musicians use their own equipment. From further away, the mod picks a soldier for you.
+- **Ranged combat:** aim and fire bows, guns and thrown weapons. Hold and release bow shots to vary their strength. Unit accuracy affects shot spread; sights help you allow for projectile drop.
+- **Melee combat:** time the displayed mouse-button prompts during the game's combat animations. Running toward an enemy can start a charge, although charging is unreliable.
+- **Unit commands:** issue move and attack orders, drag formations, stop, hold position, follow, and choose fire orders. The game's formations, pathfinding, morale and fatigue still apply.
+- **Abilities and ammunition:** select the options available to your unit, including targeted friendly abilities such as Inspire, subject to the game's restrictions and cooldowns.
+- **Cavalry and sieges:** ride cavalry, order supported units to mount or dismount, and attempt castle-wall climbing. Climbing is intermittent.
+- **Possession HUD:** see unit condition, weapon, ammunition, abilities and orders. **K** hides the ordinary HUD while keeping melee timing prompts visible. Direct hits on allies from your tracked shots can trigger the “Shameful display!” voice.
 
-- **First or third person.** Play through your soldier's eyes, or pull the camera back and orbit around them. Switch views without giving up control.
-- **Choose your soldier.** At the closest RTS zoom, point the cursor at someone in your selected unit and press F9. Generals, officers, flag bearers and musicians are included, using their own equipment. From further above, a soldier is picked for you.
-- **Aim, draw and fire.** Use bows, guns and thrown weapons. Hold and release to vary a bow shot's strength. Unit accuracy affects your spread; firearm crosshairs open and close to show it, while projectile sights help you allow for drop.
-- **Fight up close.** Time the indicated mouse click during melee, with Shogun 2's own combat animations playing out around you. Running at an enemy can lead into a native charge encounter; the game decides the attack, defense and outcome.
-- **Keep your unit with you.** Point out a move or attack, drag a formation, hold a position, call your men alongside you, and choose when they fire. Their formation, pathfinding, morale and fatigue still matter.
-- **Use the unit's abilities.** Cycle the abilities and special ammunition the unit actually has. Target friendlies for abilities such as Inspire, with the game's restrictions and cooldowns.
-- **Fight through sieges.** Climb castle walls, move through the fortifications, and mount or dismount where the game supports it.
+## Download
 
-The HUD puts your unit's condition, weapon, ammo, abilities and orders within reach. Press **K** for a clearer view; melee timing prompts stay visible. And if one of your own shots hits an ally, expect **“SHAMEFUL DISPLAY!”**
+**Current release: v0.32.** [Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3825625050) is the normal installation route.
 
-## Install and play
+The [v0.32 GitHub release](https://github.com/logsam58/shogun2-unit-possession/releases/tag/v0.32) also contains:
 
-**v0.32 is the Workshop release.** [Subscribe on Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3825625050), enable **Shogun 2 Unit Possession** in the launcher, and start the game through Steam. In a single-player land battle or siege, select a friendly unit and press **F9**.
+| Download | Purpose |
+| --- | --- |
+| `Shogun2-Unit-Possession-v0.32-Workshop.zip` | Archive of the Workshop pack, player instructions and license notices |
+| `Shogun2-Unit-Possession-v0.32-Source.zip` | Source code and build instructions; not a ready-to-play installation |
+| `SHA256SUMS.txt` / `release-manifest.json` | Download checksums and build identification |
 
-Possession starts in **third person**. Press **P** to switch to first person. There is no setup program, external script, camera popup or Steam launch-option edit. Restart the game after enabling, disabling or updating the mod.
+Workshop subscribers do not need a separate GitHub download. Access to the Workshop item and repository is controlled by the owner.
 
-You need an owned copy of the **original Windows Steam version of Total War: SHOGUN 2**, using the supported game build. The English `local_en.pack` supplies the advisor voice; Windows N editions need the Media Feature Pack. No compiler or Python installation is needed to play.
+## Requirements
 
-On first launch the mod prepares its artwork, unit cards, ability icons, fonts and cropped “Shameful display!” voice from your installed game, then reuses them. Those game resources are not bundled in the download. The mod loads native code inside the game and runs a separate HUD process. It does **not** install or start a recorder, debugger, hardware monitor or crash-dump collector. Routine gameplay, input and QTE disk logs are disabled; required code and resource caches still use disk space.
+- An owned installation of the **original Windows Steam version of Total War: SHOGUN 2**, using the supported game build.
+- The installed game's `data.pack` and English `local_en.pack`, used to prepare artwork, fonts and the advisor voice.
+- **Windows N editions:** the Media Feature Pack.
 
-The [GitHub release](https://github.com/logsam58/shogun2-unit-possession/releases/tag/v0.32) also provides the matching source kit and an archive of the exact Workshop pack. Existing Workshop users need no separate GitHub download. Repository and Workshop access remain controlled by the owner.
+No compiler or Python installation is needed to play. The mod prepares its resources from your installed game on first launch and caches them for reuse; those resources are not bundled in the download.
 
-To stop using this build, close the game and disable or unsubscribe from the Workshop item. If upgrading from an older setup.exe version, uninstall that version and remove its old camera-helper launch option before enabling Workshop; running both loaders together is unsupported. See [known issues](docs/KNOWN_ISSUES.md).
+<details>
+<summary>Supported game-file fingerprint</summary>
+
+The supported `Empire.Retail.dll` SHA-256 is:
+
+```text
+022fae2e2da92b59b8b1b8ee52887003c624e3c8eca060b209f5d792a7f874f5
+```
+
+</details>
+
+## Installation
+
+1. Close the game. If you used an older setup.exe release, follow the upgrade instructions below first.
+2. [Subscribe to Shogun 2 Unit Possession on Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3825625050).
+3. Enable **Shogun 2 Unit Possession** in the launcher and start the game through Steam.
+4. In a single-player land battle or siege, select a living friendly unit and press **F9**.
+5. Possession starts in **third person**. Press **P** for first person; **F10** or **Escape** returns to RTS control.
+
+The Workshop version needs no setup program, external script, camera chooser or Steam launch-option edit. **Restart the game after enabling, disabling or updating the mod.**
+
+### Upgrading from an older setup.exe release
+
+Close the game, uninstall the older version, and remove its old camera-helper Steam launch option before enabling Workshop. Do not run the older DInput mod loader alongside the Workshop version.
+
+### Disabling or uninstalling
+
+**F12** disables the mod until the game restarts. To stop loading it on future launches, close the game and disable it in the launcher or unsubscribe from the Workshop item.
+
+Local resource caches and rollback backups may remain. Do not delete unfamiliar files blindly.
 
 ## Controls
 
-Third person is the starting view. **P** switches perspectives during possession.
+These controls apply during possession unless stated otherwise. **LMB** means left mouse button; **RMB** means right mouse button.
 
 ### Your soldier and camera
 
@@ -74,34 +110,46 @@ Third person is the starting view. **P** switches perspectives during possession
 
 Unit orders are unavailable while you're locked in a melee animation, climbing or landing.
 
-## Compatibility and limits
+## Compatibility
 
-This mod is intended for **single-player land battles and sieges**. It recognises weapons from Shogun 2, Rise of the Samurai and Fall of the Samurai, but not every unit, weapon, ability or castle layout has been tested. Naval possession is not available and is planned for later. Multiplayer, including Versus and campaign drop-in, is under consideration and is not implemented. Overhaul compatibility is unconfirmed. Artillery keeps the game's own first-person mode.
+| Game mode or mod | Status |
+| --- | --- |
+| Single-player land battles and sieges | Intended use; bugs and crashes remain |
+| Shogun 2, Rise of the Samurai and Fall of the Samurai weapons | Recognised, but not every unit, weapon or ammunition combination has been tested |
+| Artillery | Uses the game's existing first-person mode |
+| Naval battles | Possession and ship commands are not available |
+| Multiplayer, Versus and campaign drop-in | Not implemented |
+| Overhaul mods | Compatibility unconfirmed |
+| Mods replacing the front-end root script entry | Compatibility untested; the Workshop version replaces this same entry |
+| Older DInput installation of this mod | Do not combine with Workshop |
 
-Attack charging is still partly broken and unreliable: it may work in one attempt and fail in another. Castle wall climbing is also intermittent. Both remain known bugs.
+## Known limitations
 
-Battle crashes remain unresolved. **Ultra unit size with several armies or dense fighting can still cause serious slowdowns**, even on low graphics settings. Large units with one full army per side have been reported smooth, but that isn't a performance guarantee. Some first-person weapons and arms can clip, and mounted bows still have presentation issues. Bow draw audio follows the native animation rather than the variable draw input.
+- **Crashes remain unresolved**, including crashes with blood turned off.
+- **Large battles can slow down severely**, especially with Ultra unit size, several armies or dense fighting. Lower graphics settings do not necessarily prevent this.
+- **Charging and castle-wall climbing are unreliable:** either may work on one attempt and fail on another.
+- **First-person arms and weapons can clip.** Mounted bows also have presentation problems.
+- **Bow draw sound follows the native animation**, which begins with RMB, rather than the variable LMB draw input.
+- **Enemy targeting of a player separated from their formation is not fully verified.**
+- Not every unit, ability, castle layout or display configuration has been tested.
 
-See [known issues and troubleshooting](docs/KNOWN_ISSUES.md) for the remaining combat, targeting, camera and display limitations. The Workshop bootstrap replaces the front-end root script entry; compatibility with other mods replacing that entry is untested.
+See [known issues and reporting details](docs/KNOWN_ISSUES.md) for additional combat, camera and targeting limitations.
 
-## For developers
+## Troubleshooting
 
-This is a native C++ mod running inside the original game, with a separate HUD and Python build/diagnostic tools. The source includes the possession adapter, camera and movement handling, combat/QTE integration, unit commands, abilities, Workshop bootstrap and resource preparation. Older loader/installer tools are retained for reference and compatibility work.
+| Problem | What to check |
+| --- | --- |
+| **F9 does nothing** | Select a living friendly unit in a single-player land battle or siege. Check that the mod is enabled, restart after enabling/updating, and confirm you have the supported Windows Steam game build. |
+| **HUD or resources fail to load** | Check that `data.pack` and English `local_en.pack` are present. Windows N needs the Media Feature Pack. Changed or unfamiliar cache files can stop initialization and are preserved; do not delete them blindly. |
+| **Problems after upgrading** | Check that the older setup.exe version is uninstalled and its camera-helper launch option removed. Do not run both loaders. |
+| **Shots or volleys do not fire** | Note the exact unit, weapon and ammunition, and whether the problem affects your soldier, the rest of the unit, or both. Not all combinations have been tested. |
+| **Missing HUD or unusual timing** | Report resolution, fullscreen/windowed mode, Windows scaling, monitor refresh rate, battle speed and whether the whole game slowed down. |
+| **Crashes or severe slowdown** | Report the map, unit size, army count and nearby fighting. Leaving and re-entering possession is not a confirmed fix. |
 
-Start with the [source map](SOURCE_MAP.md) and [build guide](BUILD_AND_TEST.md), then use the documentation that fits what you're changing:
+To [report a problem](https://github.com/logsam58/shogun2-unit-possession/issues), include the mod version, game/expansion, battle type, map, unit, weapon, ammunition, other mods, and what you did before the problem occurred. Add graphics settings for visual issues and any error message for crashes.
 
-- [Architecture and subsystem relationships](docs/ARCHITECTURE.md)
-- [Native interfaces, ownership, lifetime and threading contracts](docs/public-release/NATIVE_CONTRACTS.md)
-- [Local build dependencies](docs/LOCAL_DEPENDENCIES.md) and [owned-game resource preparation](docs/public-release/RESOURCES.md)
-- [Validation and test coverage](VALIDATION.md), including [v0.32 release checks](docs/public-release/V0_32_VALIDATION.json)
-- [Workshop bootstrap](docs/public-release/WORKSHOP165.md) and [storage handling](docs/public-release/WORKSHOP166.md)
-- [Release packaging](docs/public-release/RELEASING.md)
-- [Optional crash diagnostics](tools/diagnostics/README.md) and [contributing](CONTRIBUTING.md)
+## Credits and license
 
-The source kit prepares game fonts, artwork and audio locally from your owned installation. It doesn't include the engine, private crash recordings or the complete decoding databases. The Workshop runtime prepares those resources from each player’s game, including ability icons and the advisor voice. They are not included in the download. See [resource provenance and distribution status](docs/public-release/PROVENANCE.md).
+This is an unofficial mod and is not affiliated with or endorsed by Creative Assembly or SEGA. Total War: SHOGUN 2 and its game material belong to their respective rights holders.
 
-## Make it your own
-
-Explore it, fork it, improve it, or take it in your own direction. First-party code is available under the **[MIT license](LICENSE)**. Community development is welcome; ongoing maintenance, updates and individual support aren't promised.
-
-Total War: SHOGUN 2 and its game material belong to Creative Assembly, SEGA and their respective rights holders. MinHook and its disassembler code retain their own notices. See [third-party notices](THIRD_PARTY_NOTICES.md). This is an unofficial mod, with no affiliation or endorsement implied.
+First-party code is available under the [MIT license](LICENSE). See [third-party notices](THIRD_PARTY_NOTICES.md) for other components. Community contributions are welcome; ongoing maintenance, updates and individual support are not promised.
