@@ -322,7 +322,7 @@ static void command_mapping_publish100(command100::Status sample){
     LONG sequence=InterlockedIncrement(&command_shared100->sequence);sample.sequence=sequence;MemoryBarrier();memcpy(command_shared100,&sample,sizeof sample);MemoryBarrier();InterlockedIncrement(&command_shared100->sequence);
     ReleaseSRWLockExclusive(&command_mapping_lock100);
 }
-static void command_log100(std::ofstream& log){
+static void command_log100(std::ostream& log){
     command100::Status sample{};AcquireSRWLockShared(&command_mapping_lock100);
     if(command_shared100)memcpy(&sample,command_shared100,sizeof sample);ReleaseSRWLockShared(&command_mapping_lock100);
     log<<"{\"event\":\"commands100\",\"tick_ms\":"<<GetTickCount64()<<",\"protocol\":100,\"lease\":"<<sample.lease

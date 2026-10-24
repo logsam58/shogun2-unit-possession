@@ -17,7 +17,7 @@ def source_files(root):
     # Works from a source archive as well as a Git checkout. Exclude all build,
     # game, vendor-runtime and local configuration material independently of Git.
     tops = ('native', 'tools', 'tests', 'docs')
-    suffixes = {'.cpp', '.c', '.h', '.py', '.ps1', '.cmd', '.def', '.rc', '.md', '.txt', '.json', '.csv', '.mjs', '.js', '.iss'}
+    suffixes = {'.cpp', '.c', '.h', '.py', '.lua', '.ps1', '.cmd', '.def', '.rc', '.md', '.txt', '.json', '.csv', '.mjs', '.js', '.iss'}
     for folder in tops:
         for path in sorted((root / folder).rglob('*')):
             relative = path.relative_to(root)
@@ -47,7 +47,7 @@ def resource_inputs(folder):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('target', choices=['adapter', 'qte', 'hud', 'all'],
+    parser.add_argument('target', choices=['adapter', 'qte', 'hud', 'workshop', 'all'],
                         help='Standalone DLL/HUD target, or all (includes loader and installer)')
     parser.add_argument('--game', type=Path)
     parser.add_argument('--output-dir', type=Path, required=True)

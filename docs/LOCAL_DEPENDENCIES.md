@@ -1,6 +1,8 @@
 # Dependencies
 
-Windows x86 native code is built on Windows x64. Tested public prerequisites:
+Windows x86 native code is built on Windows x64. The current Workshop target needs Python, MSVC/SDK and an x86 Lua 5.1 interpreter/compiler using float numbers (chunk header `1b4c75615100010404040400`). The additional image/atlas/audio tools below are for the independent resource-reference pipeline, not routine Workshop extraction. Inno Setup is needed only for the older installer targets. See [build commands](../BUILD_AND_TEST.md).
+
+Tested resource-reference prerequisites:
 
 | Tool | Version | Obtain separately |
 | --- | --- | --- |

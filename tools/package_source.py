@@ -16,9 +16,11 @@ TOOLS={'build.py','build_frontend.py','native_build.py','configure.py','game_pac
        'prepare_resources.py','prepare_audio109.py','audio109.json','resource-recipe.json',
        'generate_roles.py','generate_tables.py','generate_native_inventory.py','package_source.py',
        'check_historical.py','run_historical.py'}
+WORKSHOP={'build_workshop165.py','bootstrap165.lua','entry165.cpp','pack165.h',
+          'verify_bootstrap165.lua','verify_runtime165.cpp','verify_storage166.cpp','owned_toy165.cpp','PLAYING165.md'}
 DIAGNOSTICS_EXCLUDE={'verify_watcher.py','preserve_qte_log.py','deploy110.py','verify_hardening111.py'}
 ROOT_DOCS={'AGENTS.md','README.md','BUILD_AND_TEST.md','SOURCE_MAP.md','VALIDATION.md','CONTRIBUTING.md',
-           'THIRD_PARTY_NOTICES.md','LICENSE','VERSION','.gitignore','.gitattributes'}
+           'THIRD_PARTY_NOTICES.md','LICENSE','VERSION','CHANGELOG.md','.gitignore','.gitattributes'}
 DOCS={'ARCHITECTURE.md','LOCAL_DEPENDENCIES.md','STATUS.md','KNOWN_ISSUES.md','current-release.json'}
 
 def selected(root=ROOT):
@@ -34,6 +36,7 @@ def selected(root=ROOT):
         elif parts[0]=='tools':
             if len(parts)==2 and path.name in TOOLS:yield path
             elif parts[1]=='installer':yield path
+            elif parts[1]=='workshop' and path.name in WORKSHOP:yield path
             elif parts[1] in ('data','assets'):yield path
             elif parts[1]=='diagnostics' and path.name not in DIAGNOSTICS_EXCLUDE and path.suffix!='.cmd':yield path
 
@@ -77,7 +80,7 @@ def main():
               'content_sha256':hashlib.sha256(json.dumps(rows,sort_keys=True).encode()).hexdigest(),
               'files':rows,'game_assets_included':False,'compiled_binaries_included':False,'published':False,
               'license':'MIT for first-party code; vendor/game-material exclusions in THIRD_PARTY_NOTICES.md',
-              'validation':'See docs/public-release/V0_31_VALIDATION.json; fresh startup/installer checks with explicitly retained exact gameplay fixtures; live acceptance pending',
+              'validation':'See docs/public-release/V0_32_VALIDATION.json; accepted Test166 Workshop runtime; retained native checks and manual owner gameplay acceptance are distinguished from release packaging checks',
               'excluded':['prepared resources','all compiled payloads','private diagnostics/configuration/dumps',
                           'historical operator docs/receipts','legacy owner publication/deployment helpers']}
     out.mkdir(parents=True);archive=out/('Shogun2-Unit-Possession-v'+(ROOT/'VERSION').read_text().strip()+'-Source.zip')

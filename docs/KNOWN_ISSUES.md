@@ -8,7 +8,7 @@ The mod is still being worked on. **Visual and gameplay bugs, and some crashes, 
 
 Crashes can still happen during battles, including with blood turned off. The accepted v0.28 playtest also ended in a recorded crash; its cause remains unresolved. v0.24 corrects one captured fault where a detached soldier's native advance task expected a squad. Other captured failures remain unresolved, and this does not establish a shared cause for every crash.
 
-v0.22 was reported smooth with Large units, one massive army per side and maximum graphics in DX11. Ultra units with substantial army presence can still become very slow, as is normal with Total War Shogun 2. The audio guard covers one reproduced fault; it does not resolve all crashes. It can happen without a QTE showing, and sometimes the QTE stays smooth while the battle slows down. Some fights recover on their own. Leaving and re-entering possession isn't a confirmed fix.
+v0.22 was reported smooth with Large units, one massive army per side and maximum graphics in DX11. Ultra units with substantial army presence can still become very slow, and remain an open performance limitation. The audio guard covers one reproduced fault; it does not resolve all crashes. It can happen without a QTE showing, and sometimes the QTE stays smooth while the battle slows down. Some fights recover on their own. Leaving and re-entering possession isn't a confirmed fix.
 
 If you hit either problem, include the unit, map and what was happening nearby. The [technical notes](https://github.com/logsam58/shogun2-first-person/blob/v0.28/docs/releases/v0.24-technical.md#remaining-limits) contain the crash details and investigation limits.
 
@@ -41,17 +41,29 @@ The mod is meant for single-player land battles and sieges. Weapons from Shogun 
 
 Multiplayer is not implemented; Versus and campaign drop-in support are under consideration. Naval possession and ship commands do not work and are planned for later. Overhaul compatibility needs separate testing. Artillery keeps the game's existing first-person mode.
 
-## Setup and updates
+## Workshop setup and updates
 
-**Setup rejects the game:** check your game files and game version. The installer checks for the supported game build. Developers can find its file fingerprint in the [build guide](../BUILD_AND_TEST.md).
+**F9 does nothing:** select a living friendly unit in a land battle, check the
+mod is enabled, and restart the game after enabling or updating it. Include the
+unit and what it was doing if entry keeps failing. The original supported
+Windows Steam game build is required; see the [build guide](../BUILD_AND_TEST.md).
 
-**Setup finds another DINPUT8.dll:** another mod may use the same file. The installer won't overwrite an unknown one. Those mods need a compatible setup before they can be used together.
+**HUD or local resources fail to prepare:** the mod reads the owned data.pack
+and English local_en.pack on first launch. Windows N needs the Media Feature
+Pack. Missing, changed or foreign cache files are preserved and initialization
+may stop; do not delete unfamiliar files blindly.
 
-**F9 does nothing:** select a living unit in a land battle and check that the mod is enabled. Include the unit and what it was doing if entry keeps failing.
+**Other mods:** the Workshop bootstrap replaces the front-end root script
+entry. Compatibility with other mods replacing it has not been tested. Do not
+combine Workshop with the older mod DInput loader. If coming from an old
+setup.exe installation, close the game, uninstall that version and remove its
+camera-helper Steam launch option before enabling Workshop.
 
-**An old build still seems active:** close Shogun 2 completely before updating, then launch it again through Steam.
-
-**Turning it off or removing it:** F12 turns the mod off for the current session. The new standard setup provides a Windows uninstall entry; close the game, then use Settings → Apps → Installed apps → Shogun 2 Unit Possession → Uninstall. Remove the v0.31 camera helper's Steam launch-option line first so Steam resumes its original game command. It preserves unknown replacement files and retains rollback snapshots. Older custom installers require careful manual removal or restoration. See [standard setup](public-release/STANDARD_SETUP.md).
+**Turning it off:** F12 disables the mod for the current session. To stop loading
+it on later launches, close the game and disable it in the launcher or
+unsubscribe. Necessary local caches may remain; the runtime does not prune old
+versions or rollback backups. No recorder or debugger is installed with it,
+and routine gameplay/input/QTE disk logs are disabled.
 
 ## Reporting a problem
 

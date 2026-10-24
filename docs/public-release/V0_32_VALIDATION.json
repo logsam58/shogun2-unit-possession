@@ -1,0 +1,57 @@
+{
+  "version": "0.32",
+  "candidate": 166,
+  "release_scope": "Publish the exact accepted Workshop runtime and matching source; no native rebuild",
+  "pack_sha256": "1aea369421758874470aa28bbdf0cd668d2b2ebbd0082df21e59b91ea11ffe75",
+  "pack_bytes": 2166630,
+  "native_sha256": "8fa4d3a777a7a21d3a16f5ed8ab1c6c0d58eacc138e074bc76342ebdd7af731e",
+  "retained_build_evidence": "docs/public-release/TEST166_VALIDATION.json",
+  "runtime_source_files_compared_to_accepted_build": 447,
+  "retained_checks": {
+    "adapter_executables": 98,
+    "QTE_executables": 50,
+    "HUD_executables": 8,
+    "stock_Lua_callbacks": 37,
+    "distinct_process_startups_without_growth": 9,
+    "normal_receipt_lifetimes": 100,
+    "owned_forced_exit_receipt_checks": 5,
+    "resource_format_and_renderer": true,
+    "hard_link_and_copy_fallback": true,
+    "foreign_files_and_locks_preserved": true,
+    "staging_and_extraction_cleanup": true
+  },
+  "fresh_release_checks": {
+    "python_tests": {
+      "passed": true,
+      "count": 15
+    },
+    "generated_role_and_six_tables": "passed",
+    "source_and_player_archive_integrity": "passed; source CRC/file hashes and exact accepted six-entry pack",
+    "local_document_links": {
+      "passed": true,
+      "count": 48
+    },
+    "source_personal_path_secret_and_game_asset_audit": {
+      "passed": true,
+      "source_kit_files": 577,
+      "changed_repository_files": 55
+    }
+  },
+  "Steam_update_and_exact_download_verified": true,
+  "owner_successful_ingame_report_accepted": true,
+  "formal_Test166_loaded_hash_and_hook_gate_completed": false,
+  "clean_Subscribe_only_Test166_runtime_independently_verified": false,
+  "playtest_timing_relative_to_publisher_cleanup_specified": false,
+  "full_battle_all_feature_or_long_term_stability_claimed": false,
+  "game_install_launch_or_settings_change_for_release": false,
+  "recorder_debugger_or_profiler_started_for_release": false,
+  "new_Workshop_upload_for_release": false,
+  "repository_visibility_change_authorized": false,
+  "historical_releases_to_remain_unchanged": true,
+  "limits": [
+    "Synthetic/offline checks do not prove all runtime situations.",
+    "Owner acceptance does not substitute for the missing formal Test166 loaded-build gate.",
+    "Necessary caches consume disk; no global multi-version storage cap is claimed.",
+    "Charging/climbing, crashes, clipping and Ultra crowd slowdowns remain open."
+  ]
+}

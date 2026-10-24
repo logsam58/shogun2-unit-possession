@@ -1,4 +1,5 @@
 #include "qte_service94.h"
+#include "../../../common/runtime_storage166.h"
 #include "../../shogun2-possession-cleanup-v46/src/identity.h"
 #include "../../shogun2-possession-cleanup-v46/src/game_window105.h"
 #include "../../shogun2-possession-cleanup-v46/src/overlay_surface106.h"
@@ -107,7 +108,7 @@ static volatile LONG registration_ready92,registration_waiting92,registration_re
 static volatile LONG canceled_total92,canceled_reason92;
 static __declspec(align(8)) volatile LONG64 canceled_serial92;
 static volatile LONG owner_rejected[10],bridge_stages[12],foreign_filtered,clock_rejected,owner_accepted,player_polls;
-static std::ofstream log_file;
+static storage166::DiscardLog log_file;
 static double wall(){LARGE_INTEGER value;QueryPerformanceCounter(&value);return double(value.QuadPart)/frequency;}
 static bool read_bytes(void*,uint32_t address,void* out,size_t size){SIZE_T n=0;return
     ReadProcessMemory(GetCurrentProcess(),reinterpret_cast<void*>(address),out,size,&n)&&n==size;}
@@ -837,7 +838,6 @@ static DWORD WINAPI worker(void*){void* targets[10]{};bool hooked=false;HANDLE r
         retarget_ports={native_prepare,native_release_actor,reinterpret_cast<retarget::ReleaseAux>(engine+0x3e18f0),engine};
         session=new Session(reader(),selection_ports.calls(),{nullptr,prepare_port,update_port,routing,facing_ready,retarget_port,effective_pair,retain_selected_pair,routed_prepare152},engine,{0,5,true},true,true,true,true,true);
         wchar_t path[MAX_PATH];GetModuleFileNameW(module,path,MAX_PATH);std::wstring folder=path;folder=folder.substr(0,folder.find_last_of(L'\\'));
-        log_file.open(folder+L"\\private\\qte-playable79-"+std::to_wstring(GetCurrentProcessId())+L".jsonl",std::ios::app);
         log_file<<std::setprecision(12);
         // The renderer reacquires a replaced window and waits through minimization.
         game=gamewindow105::find(GetCurrentProcessId());
@@ -896,7 +896,7 @@ static DWORD WINAPI worker(void*){void* targets[10]{};bool hooked=false;HANDLE r
                     }
                 }else {InterlockedIncrement(&stale_frames93);if((left&&!previous_left)||(right&&!previous_right))InterlockedExchange(&stale_press93,1);}
             }
-            if(input_changed){log_file<<"{\"event\":\"mouse_sample\",\"tick_ms\":"<<GetTickCount64()<<",\"focused\":"<<focus
+            if(log_file.enabled()&&input_changed){log_file<<"{\"event\":\"mouse_sample\",\"tick_ms\":"<<GetTickCount64()<<",\"focused\":"<<focus
                 <<",\"fps\":"<<(possession->mode==2)<<",\"left\":"<<left<<",\"right\":"<<right<<",\"prompt_visible\":"<<show
                 <<",\"prompt_serial\":"<<(show?shown.serial:0)<<",\"prompt_action\":"<<(show?uint32_t(shown.action):0)
                 <<",\"facing_opponent\":"<<(show&&shown.aligning)<<",\"commitment_phase\":"<<recorded_phase
@@ -914,7 +914,7 @@ static DWORD WINAPI worker(void*){void* targets[10]{};bool hooked=false;HANDLE r
             transport::Payload completed;Snapshot feedback;const double now=wall();
             bool feedback_visible=!show&&transport::read(completion_publication,completed)&&
                 now-completed.published_wall<(completed.prompt.result==Result::Canceled?1.1:.45)&&transport::presentation(completed,now,feedback);
-            if(GetTickCount64()>=next_log||logged_serial!=last_serial||logged_acquisitions!=acquisitions||logged_resolutions!=resolutions||logged_playback!=recorded_playback.revision||logged_phase!=recorded_phase){
+            if(log_file.enabled()&&(GetTickCount64()>=next_log||logged_serial!=last_serial||logged_acquisitions!=acquisitions||logged_resolutions!=resolutions||logged_playback!=recorded_playback.revision||logged_phase!=recorded_phase)){
                 const auto registry94=lifetimes.metrics94();
                 ScoreMetrics metrics;const bool metrics_valid=read_score_metrics(metrics);
                 log_file<<"{\"tick_ms\":"<<GetTickCount64()<<",\"ready\":"<<state->ready<<",\"pending\":"<<pending_address<<",\"acquired\":"<<acquisitions<<",\"resolved\":"<<resolutions<<",\"faults\":"<<state->faults

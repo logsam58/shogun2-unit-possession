@@ -16,6 +16,7 @@
 #include "../vendor/include/MinHook.h"
 #include "native_overlay106.h"
 #include "miles_zero123.h"
+#include "../../../common/runtime_storage166.h"
 #include <intrin.h>
 static_assert(sizeof(void*)==4,"Build this adapter for x86");
 static HMODULE self_module;
@@ -958,7 +959,7 @@ static void __fastcall detour(void* actor,void*) {
     }__finally {InterlockedDecrement(&motion_callback_depth);}
 }
 static bool down(int vk){return (GetAsyncKeyState(vk)&0x8000)!=0;}
-static void snapshot_log(std::ofstream& log) {
+static void snapshot_log(std::ostream& log) {
     log<<"{\"event\":\"friendly_fire109\",\"tick_ms\":"<<GetTickCount64()<<",\"hits\":"<<friendly_hits109<<",\"errors\":"<<friendly_errors109<<"}\n";
     nativeoverlay106::log(log);
     command_log100(log);
@@ -1028,7 +1029,7 @@ static void mouse_look101(int dx,int dy,unsigned input,float elapsed){
 }
 
 static DWORD WINAPI worker(void*) {
-    std::ofstream log;
+    storage166::DiscardLog log;
     try {
         view_default160(startup160::third_person());
         wchar_t name[80];mapping_name(name,GetCurrentProcessId());
@@ -1037,8 +1038,6 @@ static DWORD WINAPI worker(void*) {
         state=static_cast<Status*>(MapViewOfFile(mapping,FILE_MAP_ALL_ACCESS,0,0,sizeof(Status)));require(state!=nullptr,"Control mapping failed");
         memset(state,0,sizeof(Status));state->magic=POC_MAGIC;state->version=POC_VERSION;state->size=sizeof(Status);state->pid=GetCurrentProcessId();
         wchar_t dll_path[MAX_PATH];require(GetModuleFileNameW(self_module,dll_path,MAX_PATH)>0,"DLL path failed");
-        std::wstring path=dll_path;path=path.substr(0,path.find_last_of(L"\\/")+1)+L"session-v46-"+std::to_wstring(GetCurrentProcessId())+L".jsonl";
-        log.open(path,std::ios::app);require(bool(log),"Session log failed");
         equipment_initialize_mapping81();accuracy_initialize90();friendly_initialize109();
         Module engine=find_module(GetCurrentProcessId());base=engine.base;
         require(engine.size==0x1d88000 && hash_file(engine.path)==EXPECTED_HASH,"Unsupported engine build");
@@ -1166,7 +1165,14 @@ static DWORD WINAPI worker(void*) {
                     InterlockedExchange(&death_return_pending,0);InterlockedExchange(&state->release,1);
                 }
             }
-            if(GetTickCount64()>=next){snapshot_log(log);next=GetTickCount64()+250;}Sleep(8);
+            if(GetTickCount64()>=next){
+                // This reset used to be hidden inside the logging function.
+                // Keep the HUD maintenance even with all disk logging removed.
+                if(state&&state->mode!=POSSESSED)climb_publish97(climb97::Off);
+                if(log.enabled())snapshot_log(log);
+                else{AcquireSRWLockExclusive(&weapon_observation_lock82);weapon_observation_read82=weapon_observation_write82;ReleaseSRWLockExclusive(&weapon_observation_lock82);}
+                next=GetTickCount64()+250;
+            }Sleep(8);
         }
         InterlockedExchange(&state->release,1);restore_interface_on_window();
         InterlockedExchange(&enabled,0);InterlockedExchange(&state->input,0);

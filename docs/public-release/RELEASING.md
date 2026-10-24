@@ -1,11 +1,32 @@
 # Releasing
 
-The canonical repository is logsam58/shogun2-unit-possession and main is the only maintained branch. The owner authorized this rename and the v0.31 release inside the private repository. Public visibility remains a separate owner decision. Keep old published versions immutable; do not re-upload the retired game-resource-containing downloads.
+The canonical repository is logsam58/shogun2-unit-possession; main is the only
+maintained branch. v0.32 publishes the accepted Test166 Workshop pack and source.
+The owner explicitly authorized this GitHub release. Preserve private repository
+visibility; public visibility and another Workshop upload are separate tasks.
+Historical tags/releases and retired resource-containing downloads stay intact
+or absent as previously authorized; do not replace them.
 
-Build the standard local-resource setup with [BUILD_AND_TEST.md](../../BUILD_AND_TEST.md). Run relevant full native/Python/resource and isolated Inno checks. v0.31 changes the prelaunch chooser, guide, loader startup and setup. Its launch/loader/installer checks are fresh; the exact passing Test161 gameplay binaries and source are retained, with their earlier full suites recorded separately. Record live acceptance separately. Never distribute generated resource bundles or complete build directories.
+For native changes, build/test the isolated Workshop target and pack with
+[BUILD_AND_TEST.md](../../BUILD_AND_TEST.md). Record build checks, Steam delivery
+and owner acceptance separately. If only publishing an accepted build, verify
+its exact pack hash and matching native source instead of rebuilding gameplay.
+Never distribute build/fixture folders or locally extracted game resources.
 
-Commit reviewed source, export the clean source kit, verify CRC/hash/file closure and links, then tag the same commit. Upload versioned Setup.exe, Source.zip and SHA256SUMS.txt and independently download/hash-check all three. Preserve prior tags/releases and repository privacy. Repository rename must preserve its numeric identity, history and source; update remotes and canonical links afterward.
+Update VERSION, README, current-release.json, release notes and validation.
+Review and commit the exact source; export/audit the clean source kit and verify
+archive hashes and file closure. Tag the same commit. Current assets are a
+Workshop ZIP of the exact pack with first-party instructions/notices, a source
+ZIP, SHA256SUMS.txt and release-manifest.json. Verify every uploaded asset by
+downloading and hashing it before completing the release. Preserve prior
+release/tag metadata and repository identity/privacy.
 
-The startup chooser has no game settings side effects. Preserve stable installer AppId, internal ownership/activation identifiers and cache conventions during branding changes. A real swap requires fresh CLOSED and rollback; new live testing requires fresh READY/IN BATTLE plus exact loaded/native-hook/actual recording checks.
+Do not reuse tools/github_release.py's old fixed installer asset list for this
+Workshop release. Its authenticated transport can be reused; credentials remain
+in memory. A release must never edit Steam settings or install into the game.
+Real installs need fresh CLOSED and verified rollback; live checks need fresh
+READY/IN BATTLE and exact loaded hashes/hooks. Recording is a separate choice.
 
-Naval possession is unavailable, multiplayer is under consideration, and visual/gameplay bugs/crashes are expected. Do not remove these notices based on offline tests. Asset exclusion does not establish legal clearance for native hooks; see [provenance](PROVENANCE.md).
+Keep naval/multiplayer, intermittent charge/climb, visual/gameplay bug and crash
+notices. Resource exclusion does not establish legal clearance for native hooks;
+see [provenance](PROVENANCE.md).

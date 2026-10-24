@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.32 - 2026-10-24
+
+- Move the player release to Steam Workshop with automatic owned-game resource preparation.
+- Start in third person, with P to switch views; remove the installer and startup chooser from the current player route.
+- Disable routine gameplay/input/QTE/startup disk logs and remove live receipts on process exit.
+- Share compatible resource caches with verified copy fallback and preserve unknown files.
+- Retain the accepted gameplay, HUD, unit controls, abilities, cropped voice and Miles audio guard.
+
+Uses the exact accepted Test166 Workshop pack. Charging, climbing, crashes,
+clipping and Ultra crowd slowdowns remain open. [Release notes](docs/releases/v0.32.md).
+
 ## v0.28 - 2026-10-21
 
 - Add third person with P, camera distance on the wheel, and middle-mouse orbit while moving.

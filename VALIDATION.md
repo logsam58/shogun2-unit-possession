@@ -1,19 +1,39 @@
 # Validation
 
-The current source also contains unpublished Test163 / v0.32. See [automatic startup installer repair](docs/public-release/STARTUP163.md) and the [candidate validation](docs/public-release/TEST163_VALIDATION.json). The v0.31 release receipts below remain historical; they do not validate the new candidate.
+**v0.32 uses the accepted Test166 Workshop build without rebuilding its native
+payload.** The owner reported that it worked in game. Steam's successful update
+of item 3825625050 and the exact downloaded pack/preview were independently
+verified. The release's [validation record](docs/public-release/V0_32_VALIDATION.json)
+separates packaging checks from earlier build and gameplay evidence.
 
-Test161 / v0.31 is the startup-guide update. It moves camera selection into a Steam launch helper before the game process starts, with one-time Steam Launch Options setup. Its fresh and retained checks are recorded in [v0.31 validation](docs/public-release/V0_31_VALIDATION.json). No Test161 live acceptance is claimed.
+The retained Test166 component suite passed 98 adapter, 50 QTE and 8 HUD
+executables plus resource format/renderer checks. Workshop fixtures passed
+actual float-Lua/loadlib and all 37 stock callbacks, nine process startups
+without cache growth, shared resources and verified copy fallback, foreign-file
+preservation, staging recovery, failed-extraction cleanup, 100 normal receipt
+lifetimes and five owned forced exits. [Exact results](docs/public-release/TEST166_VALIDATION.json)
+and the [storage design](docs/public-release/WORKSHOP166.md) describe the boundaries.
 
-[v0.30 release checks](docs/public-release/V0_30_VALIDATION.json) distinguish fresh wrapper tests from the current native build evidence. That record describes release-time offline evidence. Subsequent file readback matches the installed v0.30 loader/marker and the owner reported a positive manual trial; a complete loaded-hook/capture gate is not claimed.
+Test165 separately passed a fresh subscribed runtime gate: direct Steam content
+path, exact loaded components, status channels and 17 core hook destinations,
+with no old DInput mod loader or local publisher pack. Its owner playtest was
+accepted. That gate does not substitute for a Test166 gate.
 
-[Build commands](BUILD_AND_TEST.md) and [source-kit engineering summary](docs/public-release/VALIDATION_RESULTS.json) and [local-resource installer validation](docs/public-release/LOCAL_ASSETS159_VALIDATION.json) are current. Raw logs, toy dumps and game resources stay out of the source kit.
+Test166's owner gameplay report is accepted, but its formal loaded-hash/hook
+gate was not completed. The playtest timing relative to local publisher-copy
+cleanup was unspecified. Do not claim independent Subscribe-only Test166
+runtime activation, explicit full-battle completion, exhaustive feature
+coverage, second-machine validation or long-term stability from that report.
+There is no need to repeat play merely to acknowledge the owner's acceptance.
 
-HUD tests run production measure() for ten final-human roles and negative identity/liveness/ownership cases. Diagnostic tests run production snapshot logic with synthetic reads and prohibit process access in help smoke tests. Fresh staging includes accuracy_read90.py and actor_roles.py; existing installed recording was not invalidated by the historical deployment omission.
+The v0.32 release rechecks source correspondence, archive contents/checksums,
+Python tests and generated metadata. It does not launch a game, attach a
+debugger or enable recording. Future live investigation requires fresh
+readiness and exact loaded identity/hook checks. Recording remains optional
+and is not shipped or started by the Workshop mod.
 
-Current installer tests cover install, repeated repair, encoding, collisions, exception rollback and 15 actual child kills followed by recovery. Unknown target/registry edits, legacy stages and journal extras remain intact. A filename alone does not authorize deletion. Optional historical compatibility is explicitly skipped when unavailable, never counted as pass.
-
-Fixtures have finite native/synthetic provider boundaries. Passing them does not prove all driver/world/castle behavior, race freedom, absence of leaks, or physical display latency.
-
-The owner subsequently installed Test159 through the standard setup and accepted the manual trial. Readback matches the installed payload/resources and own activation; existing recorder metadata matches all four runtime backing files. The formal preplay native-hook/capture gate was not completed and is not retrospectively claimed. This acceptance does not establish universal unit/map coverage. No new launch, live read, trace or recorder change was performed while recording that feedback. Future testing still needs a fresh cue and exact loaded/capture verification.
-
-Crashes, crowd slowdown and first-person clipping remain open. No review finding established their cause; a native-module fault address alone does not determine causation.
+Older Test159–163 installer/chooser receipts remain historical. Unavailable
+optional archives are skipped, never counted as passing checks. Synthetic
+fixtures do not establish driver/world/castle behavior, race freedom, absence
+of leaks, power-loss recovery or physical display latency. Crashes, crowd
+slowdown, intermittent charging/climbing and first-person clipping remain open.

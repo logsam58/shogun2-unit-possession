@@ -21,8 +21,20 @@ static void write159(const std::filesystem::path& p,const Bytes159& b){
     HANDLE f=CreateFileW(p.c_str(),GENERIC_WRITE,0,nullptr,CREATE_NEW,FILE_ATTRIBUTE_NORMAL|FILE_FLAG_WRITE_THROUGH,nullptr);
     need159(f!=INVALID_HANDLE_VALUE,"Existing output preserved or staging file unavailable");DWORD written=0;
     bool ok=b.size()<=MAXDWORD&&WriteFile(f,b.data(),DWORD(b.size()),&written,nullptr)&&written==b.size()&&FlushFileBuffers(f);
-    CloseHandle(f);need159(ok,"Cannot write local resource staging file");
+    CloseHandle(f);if(!ok){DeleteFileW(p.c_str());need159(false,"Cannot write local resource staging file");}
 }
+struct OutputCleanup166 {
+    std::filesystem::path folder;bool committed=false;
+    ~OutputCleanup166(){if(committed)return;try{
+        // The caller created this new directory for this extraction only.
+        // No recursive deletion, cache pruning or unknown-name cleanup.
+        for(const wchar_t* name:{L"advisor-source.tmp.mp3",L"hud-assets159.s2fp",L"qte-assets159.s2fp"}){
+            auto path=folder/name;DWORD attr=GetFileAttributesW(path.c_str());
+            if(attr!=INVALID_FILE_ATTRIBUTES&&!(attr&(FILE_ATTRIBUTE_DIRECTORY|FILE_ATTRIBUTE_REPARSE_POINT)))DeleteFileW(path.c_str());
+        }
+        RemoveDirectoryW(folder.c_str());
+    }catch(...) {}}
+};
 static void plain159(const std::filesystem::path& p){
     auto absolute=std::filesystem::absolute(p).lexically_normal();need159(absolute.wstring().size()>3&&absolute.wstring()[1]==L':',"Use a local drive path");
     std::filesystem::path current;for(auto& part:absolute){current/=part;auto attr=GetFileAttributesW(current.c_str());
@@ -86,7 +98,7 @@ int wmain(int argc,wchar_t** argv){try{
     auto engine=read159(game/L"Empire.Retail.dll",64*1024*1024);need159(assets159::sha(engine.data(),engine.size())=="022fae2e2da92b59b8b1b8ee52887003c624e3c8eca060b209f5d792a7f874f5","Unsupported original Shogun 2 installation");
     need159(!std::filesystem::exists(out),"Existing resource output preserved; use a new directory");auto g=std::filesystem::weakly_canonical(game).wstring(),o=std::filesystem::weakly_canonical(out.parent_path()).wstring();
     std::transform(g.begin(),g.end(),g.begin(),towlower);std::transform(o.begin(),o.end(),o.begin(),towlower);need159(o!=g&&o.rfind(g+L"\\",0)!=0,"Resource staging must be outside the game directory");
-    std::filesystem::create_directories(out);std::map<std::wstring,std::unique_ptr<Pack159>> packs;std::map<unsigned,Bytes159> inputs;std::map<unsigned,Picture159> images;
+    std::filesystem::create_directories(out);OutputCleanup166 cleanup{out};std::map<std::wstring,std::unique_ptr<Pack159>> packs;std::map<unsigned,Bytes159> inputs;std::map<unsigned,Picture159> images;
     auto input=[&](unsigned i)->const Bytes159&{auto found=inputs.find(i);if(found!=inputs.end())return found->second;auto& spec=inputs159[i];auto& p=packs[spec.pack];if(!p){plain159(game/L"data"/spec.pack);p=std::make_unique<Pack159>(game/L"data"/spec.pack);}return inputs.emplace(i,p->get(spec)).first->second;};
     auto picture=[&](unsigned i)->const Picture159&{auto found=images.find(i);if(found==images.end())found=images.emplace(i,tga159(input(i))).first;return found->second;};
     Bundle159 hud(1),qte(2);
@@ -98,5 +110,6 @@ int wmain(int argc,wchar_t** argv){try{
     for(unsigned i=0;i<2;++i){auto& image=picture(abilities159[i]);hud.add(430+i,image.pixels,image.w,image.h);}
     auto mp3=out/L"advisor-source.tmp.mp3";write159(mp3,input(voice159));auto wav=wave159(mp3);std::filesystem::remove(mp3);hud.add(301,wav);
     hud.save(out/L"hud-assets159.s2fp");qte.save(out/L"qte-assets159.s2fp");assets159::Store a,b;need159(a.load((out/L"hud-assets159.s2fp").wstring(),1)&&b.load((out/L"qte-assets159.s2fp").wstring(),2),"Generated resources failed validation");
+    cleanup.committed=true;
     std::cout<<"Prepared local Shogun 2 artwork, cards, 20 fonts and cropped advisor voice. All "<<inputs.size()<<" source entries hash-verified. Game files unchanged.\n";return 0;
 }catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}}

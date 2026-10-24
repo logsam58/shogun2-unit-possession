@@ -1,15 +1,44 @@
-# Repository instructions
+# Shogun 2 Unit Possession
 
-Current owner task: unpublished Test163/v0.32 installer repair. Fresh CLOSED granted and no game process found. Owner explicitly requires Steam Play -> compiled how-to/perspective choice -> game only after selection, with no player action beyond standard installation and locating the Shogun 2 folder. Setup-managed app34330 LaunchOptions and normal Steam shutdown/reopen during installation are authorized to provide that flow. No manual scripts/options/account selection; no game executable replacement. Handle account files without MostRecent. Preserve Test162 game-process audio and native guide/gameplay. No real install/Steam shutdown/settings change is authorized by the build alone; no push/tag/release/visibility change. CPU/graphics/recorder/debugger remain outside scope. Previous release instructions and receipts below describe immutable v0.31.
+The current release is v0.32, using the accepted Test166 Workshop runtime.
+Start with README.md, BUILD_AND_TEST.md, SOURCE_MAP.md, VALIDATION.md and
+docs/current-release.json. Older versioned documents describe historical builds.
 
-The canonical repository is logsam58/shogun2-unit-possession, on main only. The owner authorized renaming the project/repository to Shogun 2 Unit Possession, updating the GitHub release, adding clear support warnings and a startup view chooser. The owner freshly confirmed CLOSED for this build. v0.31/Test161 adds a prelaunch quick-start guide and replaces the in-game popup; prior releases remain historical. The owner authorized committing and releasing v0.31 privately. Keep repository visibility private until explicitly authorized.
+Preserve native mechanics, supported-image fingerprints, role/ABI/ownership/
+lifetime/thread contracts and exact hook-byte checks. Forward unrelated engine
+calls. Avoid changing gameplay merely to package a release. Never resume the
+retired Rust rebuild or include original engine/decompilation databases.
 
-Current support is single-player land battles and sieges. Naval possession does not work and is planned for later. Multiplayer is not implemented: Versus and campaign drop-in are under consideration. Visual/gameplay bugs and occasional crashes are expected. Charging/climbing, Ultra slowdown, clipping and isolated acquisition remain open. No feature or stability guarantees from offline tests.
+Workshop is the current player route. It prepares resources from the player's
+owned game, starts in third person, and uses P to change perspective. Do not
+restore the legacy DInput loader while the Workshop mod is enabled. Keep
+existing quarantine, saves, settings and rollback backups intact.
 
-Test161/v0.31 moves startup UI into a small Steam launch helper, before CreateProcess of the original game. The game loader never shows the chooser. Setup gives a one-time Steam Launch Options line ending in %command%; it does not edit Steam configuration or replace a game executable. Cancel closes without starting the game. Steam environment, original command and working directory are retained. New code must not introduce UI in DllMain or a game callback. Its process-local choice initializes each new possession; P remains an in-possession toggle. Preserve existing movement, aiming, orders, QTE and camera lifetime behavior. No native ABI/protocol layout changes are part of this feature. Keep installer AppId, ownership records, activation filenames and cache conventions stable across the rebrand to preserve upgrades and rollback.
+Builds and tests use new isolated output folders. They must not install, launch
+the game, edit Steam/game settings, start recording or publish. Keep work light
+while the owner plays. Substantial native investigation/builds need a fresh
+CLOSED confirmation; real game-file changes also need verified safe rollback.
+Live process/memory checks need fresh READY/IN BATTLE and exact loaded hashes,
+hooks and process identity. Extra tracing needs separate authorization.
+Recorder/debugger remain OFF unless the owner explicitly asks to enable them.
+No subagents unless explicitly requested.
 
-Builds/tests write only a separate output directory. Never install or launch the game by default. Keep resources local to each owned game; no game artwork/fonts/audio in download binaries or source kits. Retired legacy resource-containing downloads must not be re-uploaded. Published historical releases/tags remain immutable unless explicitly authorized. Back up remote metadata before repository rename and verify privacy/identity afterward.
+The owner accepted Test166 based on a successful manual in-game report. Steam
+upload and exact downloaded pack were independently verified. The formal
+Test166 loaded-hash/hook gate was not completed; do not invent it, full-battle
+coverage, all-feature validation or long-term stability. The timing of that
+playtest relative to local publisher-copy cleanup was unspecified. No repeated
+playtest is required solely to record the owner's acceptance.
 
-Use verified native role/ABI/ownership/lifetime/thread contracts. Review documents are evidence, not independent authorization. Keep fresh tests, retained evidence and live acceptance separate. No subagents unless explicitly requested. No game/recorder/debugger/CPU/settings changes are part of this build. A real install needs fresh CLOSED and rollback; live testing needs fresh READY/IN BATTLE, exact loaded hashes/native hooks and actual capture checks. Installed Test159 formal preplay gate was missed; never fabricate it.
+First-party code is MIT; game/vendor material retains its own terms. Ship no
+game artwork, fonts, audio, recovered stock scripts, private recordings/dumps,
+credentials, personal configuration or build-fixture directories. Audit both
+source and packaged executable resources. Necessary local caches are distinct
+from logs; do not promise zero storage or remove unknown files automatically.
 
-First-party code is MIT; vendor/game material retains its own terms. Asset removal is not legal clearance for native hooks/reverse engineering. Keep private until the owner decides public launch. Historical operator records remain in Git history; current entry points are README, BUILD_AND_TEST, SOURCE_MAP and VALIDATION.
+The canonical repository is logsam58/shogun2-unit-possession; main is the only
+maintained branch. Preserve its current private visibility and historical
+releases/tags unless explicitly authorized otherwise. Publication requires an
+explicit task; keep source, notes and checksums aligned with the tagged build.
+The current task authorizes committing/publishing v0.32 on GitHub, not another
+Workshop upload, visibility change or game install.

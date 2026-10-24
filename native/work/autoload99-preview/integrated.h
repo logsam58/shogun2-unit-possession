@@ -42,7 +42,7 @@ static bool selected(){
 }
 static void record(LONG stage,const std::string& detail){
     InterlockedExchange(&autoload_stage,stage);
-    if(!runtime_folder.empty()){std::ofstream out(runtime_folder+L"\\autoload-"+std::to_wstring(GetCurrentProcessId())+L".log",std::ios::app);out<<GetTickCount64()<<" stage="<<stage<<" "<<detail<<"\n";}
+    (void)detail; // Stage is observable in memory; routine startup creates no log.
 }
 static std::wstring extract(HMODULE module,int id,const wchar_t* name,const char* expected){
     std::wstring path=runtime_folder+L"\\"+name;
@@ -54,15 +54,21 @@ static std::wstring extract(HMODULE module,int id,const wchar_t* name,const char
     CloseHandle(file.h);file.h=nullptr;require(hash_file(path)==expected,"Extracted mod component failed integrity check");return path;
 }
 #ifdef S2FP_LOCAL_ASSETS
-static void cache_local159(const std::wstring& source,const std::wstring& target,unsigned kind){
+static void cache_local159(const std::wstring& source,const std::wstring& target,unsigned kind,bool share_bytes=false){
     assets159::Store input;require(input.load(source,kind),"Local game resources missing or corrupt; run the local-assets setup again");
     if(GetFileAttributesW(target.c_str())==INVALID_FILE_ATTRIBUTES){
-        auto stage=target+L".local159-"+std::to_wstring(GetCurrentProcessId())+L"-"+std::to_wstring(GetTickCount64())+L".new";
-        require(CopyFileW(source.c_str(),stage.c_str(),TRUE)!=0,"Cannot stage local resource cache");
+        auto stage=target+L".local159.pending166";
+        bool owned=false;
         try{
+            if(GetFileAttributesW(stage.c_str())==INVALID_FILE_ATTRIBUTES){
+                // On the same volume, updates share the immutable bytes.
+                if(!share_bytes||!CreateHardLinkW(stage.c_str(),source.c_str(),nullptr))
+                    require(CopyFileW(source.c_str(),stage.c_str(),TRUE)!=0,"Cannot stage local resource cache");
+                owned=true;
+            }
             require(hash_file(stage)==hash_file(source),"Staged local resources differ");
             require(MoveFileExW(stage.c_str(),target.c_str(),MOVEFILE_WRITE_THROUGH)!=0,"Cannot commit local resource cache; existing files preserved");
-        }catch(...){DeleteFileW(stage.c_str());throw;}
+        }catch(...){if(owned)DeleteFileW(stage.c_str());throw;}
     }
     require(hash_file(source)==hash_file(target),"Local resource cache differs; preserved without overwrite");
     assets159::Store output;require(output.load(target,kind),"Local resource cache failed integrity check");
@@ -72,6 +78,9 @@ static uint32_t local_u32(uintptr_t address){uint32_t value=0;SIZE_T read=0;requ
 static bool battle_ready(uintptr_t base){try{auto root=local_u32(base+0x1bc8180);auto env=local_u32(root+0x110);auto common=local_u32(env+8);auto phase=local_u32(common+0xb4);auto id=local_u32(phase+0x14);return id>=5&&id<=8;}catch(...){return false;}}
 static bool other_adapter(){Handle snap(CreateToolhelp32Snapshot(TH32CS_SNAPMODULE,GetCurrentProcessId()));require(snap.h!=INVALID_HANDLE_VALUE,"Module inventory failed");MODULEENTRY32W entry{};entry.dwSize=sizeof entry;
     require(Module32FirstW(snap.h,&entry)!=0,"Module inventory unavailable");do{std::wstring name=entry.szModule;std::transform(name.begin(),name.end(),name.begin(),towlower);if(name.find(L"possession-v")==0)return true;}while(Module32NextW(snap.h,&entry));return false;}
+#if defined(POSSESSION_WORKSHOP_BUILD) && defined(S2FP_LOCAL_ASSETS)
+static void workshop_assets165(HMODULE module,const std::wstring& game);
+#endif
 static DWORD WINAPI integrated_worker(void* argument){try{
     wchar_t exe[MAX_PATH];require(GetModuleFileNameW(nullptr,exe,MAX_PATH)>0,"Game path unavailable");
     const wchar_t* name=wcsrchr(exe,L'\\');name=name?name+1:exe;
@@ -91,12 +100,16 @@ static DWORD WINAPI integrated_worker(void* argument){try{
     require(hash_file(game+L"\\data\\shogun2_possession_checkpoint45.pack")==EMBEDDED_PACK_SHA,"Selected mod pack differs");
 #endif
 #ifdef S2FP_LOCAL_ASSETS
+#ifdef POSSESSION_WORKSHOP_BUILD
+    workshop_assets165(static_cast<HMODULE>(argument),game);
+#else
     // Prepare outside the game process during setup; validate before any native hook loads.
     for(unsigned kind:{1u,2u}){
         const wchar_t* file=kind==1?L"hud-assets159.s2fp":L"qte-assets159.s2fp";
         std::wstring source=game+L"\\data\\shogun2_possession_local_assets159\\"+file;
         cache_local159(source,runtime_folder+L"\\"+file,kind);
     }
+#endif
 #endif
     auto adapter=extract(static_cast<HMODULE>(argument),101,L"possession-v46.dll",EMBEDDED_ADAPTER_SHA);
     auto hud=extract(static_cast<HMODULE>(argument),102,L"possession-hud.exe",EMBEDDED_HUD_SHA);
@@ -113,7 +126,6 @@ static DWORD WINAPI integrated_worker(void* argument){try{
     wchar_t map_name[80];mapping_name(map_name,GetCurrentProcessId());bool ready=false;
     for(int i=0;i<200;++i){Handle map(OpenFileMappingW(FILE_MAP_READ,FALSE,map_name));if(map.h){auto state=static_cast<const Status*>(MapViewOfFile(map.h,FILE_MAP_READ,0,0,sizeof(Status)));if(state){bool valid=state->magic==POC_MAGIC&&state->version==46&&state->pid==GetCurrentProcessId()&&state->size==sizeof(Status);bool error=valid&&state->error!=0;ready=valid&&state->ready&&!state->stop;UnmapViewOfFile(state);require(!error,"Possession engine rejected initialization");if(ready)break;}}Sleep(50);}
     require(ready,"Possession engine did not become ready");
-    require(CreateDirectoryW((runtime_folder+L"\\private").c_str(),nullptr)||GetLastError()==ERROR_ALREADY_EXISTS,"QTE log folder unavailable");
     require(GetModuleHandleW(L"qte-playable-v79.dll")==nullptr,"Another QTE79 is already resident; restart first");
     require(LoadLibraryW(qte.c_str())!=nullptr,"Embedded QTE failed to load");
     struct QtePrefix {uint32_t magic,version,pid,size;LONG stop,ready,mode,error;};
@@ -122,7 +134,7 @@ static DWORD WINAPI integrated_worker(void* argument){try{
         auto q=static_cast<const QtePrefix*>(MapViewOfFile(map.h,FILE_MAP_READ,0,0,sizeof(QtePrefix)));
         if(q){bool valid=q->magic==0x31545153&&q->version==79&&q->pid==GetCurrentProcessId()&&q->size>=sizeof(QtePrefix)&&q->size<4096;
             bool error=valid&&q->error!=0;qte_ready=valid&&q->ready&&!q->stop;UnmapViewOfFile(q);
-            require(!error,"QTE rejected initialization; see private QTE log");if(qte_ready)break;}}
+            require(!error,"QTE rejected initialization");if(qte_ready)break;}}
         Sleep(50);}
     require(qte_ready,"Embedded QTE did not become ready");
     STARTUPINFOW startup{};startup.cb=sizeof startup;startup.dwFlags=STARTF_USESHOWWINDOW;startup.wShowWindow=SW_HIDE;PROCESS_INFORMATION child{};std::wstring command=L"\""+hud+L"\"";

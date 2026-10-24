@@ -1,0 +1,183 @@
+{
+  "test": 166,
+  "scope": "Workshop storage only",
+  "pack": "shogun2_unit_possession_workshop165.pack",
+  "pack_bytes": 2166630,
+  "pack_sha256": "1aea369421758874470aa28bbdf0cd668d2b2ebbd0082df21e59b91ea11ffe75",
+  "native_sha256": "8fa4d3a777a7a21d3a16f5ed8ab1c6c0d58eacc138e074bc76342ebdd7af731e",
+  "embedded_build": "166-90286da88c4c05b2",
+  "components": {
+    "possession-v46.dll": "357d82be62d0555ade59a4e8c1e865c2c25cdd02420dd98e887fc43ed2602e2a",
+    "possession-hud.exe": "6a96182470234cd21c6d7f932d69b2614948151bd10a1def91f26796fb90a3da",
+    "qte-playable-v79.dll": "c59d97ba5a1c48bfa308839f73b6afb321098498a391d11148df3ec716674cd1",
+    "prepare-local-assets159.exe": "70967b656e86cab5c2b93ace0aeb106a50dbb1089e80dab310bfb131ac35beaa"
+  },
+  "fresh_component_checks": [
+    {
+      "name": "local-assets-extractor",
+      "passed": true,
+      "seconds": 4.243,
+      "log": "logs\\local-assets-extractor.log"
+    },
+    {
+      "name": "local-assets-prepare",
+      "passed": true,
+      "seconds": 2.47,
+      "log": "logs\\local-assets-prepare.log"
+    },
+    {
+      "name": "local-assets-format-render-tests",
+      "passed": true,
+      "seconds": 7.681,
+      "log": "logs\\local-assets-format-render-tests.log"
+    },
+    {
+      "name": "minhook",
+      "passed": true,
+      "seconds": 2.979,
+      "log": "logs\\minhook.log"
+    },
+    {
+      "name": "adapter",
+      "passed": true,
+      "seconds": 7.377,
+      "log": "logs\\adapter.log"
+    },
+    {
+      "name": "adapter-tests",
+      "passed": true,
+      "seconds": 277.815,
+      "log": "logs\\adapter-tests.log",
+      "executables": 98
+    },
+    {
+      "name": "qte",
+      "passed": true,
+      "seconds": 5.564,
+      "log": "logs\\qte.log"
+    },
+    {
+      "name": "qte-tests",
+      "passed": true,
+      "seconds": 141.611,
+      "log": "logs\\qte-tests.log",
+      "executables": 50
+    },
+    {
+      "name": "hud",
+      "passed": true,
+      "seconds": 3.964,
+      "log": "logs\\hud.log"
+    },
+    {
+      "name": "hud-tests",
+      "passed": true,
+      "seconds": 10.942,
+      "log": "logs\\hud-tests.log",
+      "executables": 8
+    }
+  ],
+  "fresh_workshop_checks": [
+    {
+      "name": "compile",
+      "passed": true,
+      "seconds": 11.172,
+      "log": "logs\\compile.log"
+    },
+    {
+      "name": "lua-bridge",
+      "passed": true,
+      "seconds": 2.094,
+      "log": "logs\\lua-bridge.log"
+    },
+    {
+      "name": "repeat-startup",
+      "passed": true,
+      "seconds": 3.016,
+      "log": "logs\\repeat-startup.log"
+    },
+    {
+      "name": "runtime-resources",
+      "passed": true,
+      "seconds": 5.296,
+      "log": "logs\\runtime-resources.log"
+    },
+    {
+      "name": "storage-lifetime",
+      "passed": true,
+      "seconds": 2.235,
+      "log": "logs\\storage-lifetime.log"
+    }
+  ],
+  "python_tests": 15,
+  "generated_role_policy": "passed",
+  "generated_tables": 6,
+  "routine_gameplay_input_QTE_startup_disk_logs": false,
+  "external_debugger_recorder_profiler_dump_collector_shipped": false,
+  "live_check_receipt_maximum_bytes": 4096,
+  "receipts_removed_on_normal_and_forced_exit": true,
+  "normal_receipt_lifetimes_checked": 100,
+  "owned_forced_exits_checked": 5,
+  "distinct_startup_processes_without_growth": 9,
+  "resource_cross_build_same_file_identity_verified": true,
+  "copy_fallback_verified": true,
+  "unknown_files_and_locks_preserved": true,
+  "staging_recovery_and_failed_extraction_cleanup_verified": true,
+  "resource_payloads_byte_exact_to_accepted165": {
+    "hud-assets159.s2fp": {
+      "bytes": 48199192,
+      "sha256": "b6843525f7062f3abc6c8dd1b063d26dce634ace9dd6fddc3a7d84ebcb6bec6e"
+    },
+    "qte-assets159.s2fp": {
+      "bytes": 8364434,
+      "sha256": "57536979649cdae7fe5bd0ad53b9146c66731f8b53f70b5d34a02d189e499ec4"
+    }
+  },
+  "Miles_guard_and_protocol_sources_unchanged": true,
+  "required_resource_bytes": 56563626,
+  "prior165_pack_unchanged": true,
+  "shipped_entries": [
+    "possession/PLAYING.md",
+    "possession/licenses/LICENSE.txt",
+    "possession/licenses/MinHook-LICENSE.txt",
+    "possession/licenses/THIRD_PARTY_NOTICES.md",
+    "possession/workshop165.json",
+    "ui/frontend ui/layout_scripts/root.luac"
+  ],
+  "no_game_assets_in_pack": true,
+  "game_installed_or_launched": false,
+  "workshop_uploaded": true,
+  "github_changed": false,
+  "recorder_or_debugger_started": false,
+  "live_validation": false,
+  "previous_uninstall_and_rollback_preserved": true,
+  "limitations": [
+    "Owner accepted an in-game trial; the formal Test166 loaded-hash/hook gate was not completed.",
+    "Old caches and rollback archives are preserved, not automatically purged.",
+    "Hard-link support is filesystem dependent; verified copy fallback uses additional space per component cache.",
+    "Different gameplay versions keep separate code caches; no global lifetime cap across arbitrary future versions.",
+    "Unknown or corrupt incomplete staging is preserved and further preparation is refused rather than deleting unknown data."
+  ],
+  "failed_attempts": [
+    {
+      "build": "components-1",
+      "stage": "compile",
+      "cause": "Two diagnostic helpers required ofstream references; corrected to ostream before the passing component rebuild."
+    }
+  ],
+  "workshop_item": "3825625050",
+  "steam_content_manifest": "4652996597420225958",
+  "steam_download_pack_and_preview_match": true,
+  "visibility_changed_by_agent": false,
+  "current_remote_visibility_not_independently_read": true,
+  "clean_subscription_only_test_pending": true,
+  "local_publisher_copies_removed_after_upload": true,
+  "Steam_download_and_subscription_preserved": true,
+  "clean_subscription_only_launch_prepared": true,
+  "owner_playtest_accepted": true,
+  "owner_reports_successful_ingame_test": true,
+  "owner_report_clarifies_previous_worked_great_was_gameplay": true,
+  "formal_loaded_hash_and_hook_gate_completed": false,
+  "clean_subscription_only_activation_independently_verified": false,
+  "further_test_requested_by_owner": false
+}

@@ -1,82 +1,71 @@
 {
-  "schema": 2,
-  "version": "0.31",
+  "schema": 3,
+  "product": "Shogun 2 Unit Possession",
+  "version": "0.32",
   "branch": "main",
-  "tag": "v0.31",
-  "release_url": "https://github.com/logsam58/shogun2-unit-possession/releases/tag/v0.31",
+  "tag": "v0.32",
+  "release_url": "https://github.com/logsam58/shogun2-unit-possession/releases/tag/v0.32",
   "repository_visibility": "private; owner controls public launch",
-  "installer": "Shogun2-Unit-Possession-v0.31-Setup.exe",
-  "source_kit": "Shogun2-Unit-Possession-v0.31-Source.zip",
-  "format": "standard Windows setup; resources prepared from each owned game",
+  "format": "Steam Workshop; automatic resources from each owned game",
+  "workshop": {
+    "item": "3825625050",
+    "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3825625050",
+    "candidate": 166,
+    "pack": "shogun2_unit_possession_workshop165.pack",
+    "pack_sha256": "1aea369421758874470aa28bbdf0cd668d2b2ebbd0082df21e59b91ea11ffe75",
+    "pack_bytes": 2166630,
+    "steam_manifest": "4652996597420225958",
+    "uploaded_and_exact_download_verified": true,
+    "visibility_owner_report": "hidden",
+    "visibility_independently_verified": false
+  },
+  "source_kit": "Shogun2-Unit-Possession-v0.32-Source.zip",
+  "player_archive": "Shogun2-Unit-Possession-v0.32-Workshop.zip",
+  "installer": null,
   "game_resources_shipped": false,
-  "gameplay": {
-    "candidate": 161,
-    "live_accepted": false,
-    "changes": "Prelaunch camera chooser with quick-start guide; gameplay source retained unchanged from the passing Test161 build.",
-    "accepted_baseline": {
-      "candidate": 159,
-      "user_accepted": true,
-      "scope": "Owner accepted the manual clean-install/game trial; individual unit/map/feature coverage unspecified.",
-      "formal_preplay_gate_completed": false,
-      "recorded_component_hashes_match": true
-    }
+  "startup": {
+    "steam_launch_option_required": false,
+    "camera_chooser": false,
+    "starting_view": "third-person",
+    "perspective_key": "P",
+    "resources": "automatically prepared from owned game and cached"
   },
-  "release_wrapper": {
-    "version": "0.31",
-    "installed_on_owner_game": false,
-    "live_tested": false,
-    "offline_validation": "docs/public-release/V0_31_VALIDATION.json"
+  "storage": {
+    "routine_gameplay_input_QTE_startup_disk_logs": false,
+    "recorder_debugger_profiler_dump_collector_shipped": false,
+    "live_receipts_deleted_on_process_exit": true,
+    "resources_shared_where_supported": true,
+    "required_resource_bytes": 56563626,
+    "unknown_files_and_old_caches_automatically_deleted": false
   },
-  "owner_installation": {
-    "version": "0.30",
-    "candidate": 160,
-    "changed_by_release_packaging": false,
-    "last_check": "Installed loader and marker match packaged Test160. No loaded/native-hook/live-capture gate completed."
+  "acceptance": {
+    "owner_reports_successful_ingame_test": true,
+    "formal_Test166_loaded_hash_and_hook_gate_completed": false,
+    "Subscribe_only_Test166_runtime_independently_verified": false,
+    "full_feature_coverage_or_long_term_stability_proven": false
   },
+  "validation": "docs/public-release/V0_32_VALIDATION.json",
   "owner_decisions": {
     "first_party_license": "MIT",
-    "resource_format": "prepare from each owned game",
+    "resources": "from owned game",
     "status_icons": "original native icons",
     "branch_policy": "main only"
   },
-  "open": [
-    "attack charging remains partly broken and unreliable",
-    "intermittent castle wall climbing",
-    "unresolved game crashes",
-    "Ultra multi-army slowdown",
-    "some first-person clipping",
-    "isolated enemy acquisition",
-    "bow audio follows the native animation",
-    "Test159 formal preplay gate missed; future live tests require a fresh gate"
-  ],
-  "history": "Legacy embedded-resource downloads remain removed; previous releases/tags/downloads preserved. v0.29 replaced the former v1.0 label.",
-  "legal_clearance": "Not established by resource removal; native-hook/reverse-engineering permission remains a separate question. See docs/public-release/PROVENANCE.md.",
-  "product": "Shogun 2 Unit Possession",
   "support": {
-    "naval_possession": "not supported; planned for later",
+    "naval_possession": "not supported; planned later",
     "multiplayer": "not implemented; Versus and campaign drop-in under consideration",
     "expected": "visual/gameplay bugs and occasional crashes"
   },
-  "startup": {
-    "steam_launch_option_required": true,
-    "configured_by": "player; exact line provided by setup",
-    "selection_before_game_creation": true,
-    "close_cancels_launch": true,
-    "quick_start_guide": true,
-    "without_helper": "normal launch with first-person default and no popup"
-  },
-  "development_candidate": {
-    "version": "0.32",
-    "candidate": 163,
-    "published": false,
-    "installed": false,
-    "live_tested": false,
-    "design": "docs/public-release/STARTUP163.md",
-    "changes": [
-      "automatic startup setup handles Steam account metadata without MostRecent",
-      "setup requests normal Steam close/reopen as its original unelevated user; no player script or launch-option edit",
-      "signed native CA launcher support and game-process friendly-fire audio retained"
-    ],
-    "offline_validation": "docs/public-release/TEST163_VALIDATION.json"
-  }
+  "open": [
+    "intermittent attack charging",
+    "intermittent wall climbing",
+    "unresolved crashes",
+    "Ultra multi-army slowdown",
+    "first-person clipping",
+    "mounted-bow presentation",
+    "isolated enemy acquisition",
+    "bow audio follows native animation"
+  ],
+  "history": "Earlier installer releases remain historical. Retired game-resource-containing downloads remain absent.",
+  "legal_clearance": "Resource exclusion is not legal clearance for native hooks/reverse engineering; see PROVENANCE.md."
 }

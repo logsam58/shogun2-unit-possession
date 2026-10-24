@@ -1,0 +1,136 @@
+{
+  "test": 165,
+  "pack_sha256": "7d4986b4fb7e447a25cb0132a28507ecd1845a27c913871441be2e62af259740",
+  "pack": "shogun2_unit_possession_workshop165.pack",
+  "native_sha256": "9589acd6ae208ecd50c93f1c52266f8f640ac1f453ae01ec6997c929354516b5",
+  "native_bytes": 2229248,
+  "embedded_build": "165-24fa1b03a990c660",
+  "first_party_code_only": true,
+  "game_script_artwork_fonts_audio_shipped": false,
+  "owned_script_read_locally": true,
+  "chooser": false,
+  "starting_view": "third-person",
+  "P_switches_view": true,
+  "components": {
+    "possession-v46.dll": "df7189d7ff2a04cc8ad91a2511a98f423a941b8f91a4d88f0988979115113fc1",
+    "possession-hud.exe": "cfdd8c84256931c30630a473889a7aa388f0e49d05190fb008586818147652b3",
+    "qte-playable-v79.dll": "d4f9dfaf79c77bd673b404ca7bc655defec10a828e35125b1e0d52d0e9e11ebf",
+    "prepare-local-assets159.exe": "6df191856882cea9e3fd63f7e73f291a4bb1171072796bae8b8e82581920552c"
+  },
+  "protected_component_source_count": 403,
+  "fresh_checks": [
+    {
+      "name": "compile",
+      "passed": true,
+      "seconds": 9.297,
+      "log": "logs\\compile.log"
+    },
+    {
+      "name": "lua-bridge",
+      "passed": true,
+      "seconds": 2.203,
+      "log": "logs\\lua-bridge.log"
+    },
+    {
+      "name": "runtime-resources",
+      "passed": true,
+      "seconds": 3.406,
+      "log": "logs\\runtime-resources.log"
+    }
+  ],
+  "live_validation": {
+    "native_entry": true,
+    "automatic_owned_resource_preparation": true,
+    "menu_custom_battle_owner_report": true,
+    "matching_native_and_component_backing_hashes": true,
+    "legacy_mod_DInput_excluded": true,
+    "gameplay": true,
+    "ordinary_capture": false,
+    "publication": false,
+    "matching_loaded_gameplay_and_HUD_hashes": true,
+    "status_channels_healthy": true,
+    "status_heartbeats_advancing": true,
+    "core_hook_destinations_verified": 17,
+    "ordinary_capture_intentionally_off_by_owner": true,
+    "owner_possession_report": true,
+    "full_battle_acceptance": false,
+    "actual_workshop_subscription_delivery_tested": true,
+    "owner_playtest_accepted": true
+  },
+  "game_installed_or_launched": true,
+  "steam_settings_changed": false,
+  "uploaded": true,
+  "retained_component_source": "Test163/build-1; component gameplay initially checked in Test162/build-1, retained exact through Test162/build-3",
+  "retained_not_rerun": {
+    "adapter_executables": 97,
+    "QTE_executables": 50,
+    "HUD_executables": 8,
+    "resource_renderers": true
+  },
+  "staging_fixture_checks": 11,
+  "new_Lua_API": {
+    "rva": "0xea2d60",
+    "signature": "cdecl int(lua_State*)",
+    "bytes": "8b4c24048b41082b410cc1f803c3",
+    "thread": "calling Lua thread",
+    "effect": "read-only stack argument count",
+    "one_argument_result_contract": true
+  },
+  "cache_exclusive_mode_native_evidence": {
+    "rva": "0x151f328",
+    "symbol": "__acrt_stdio_parse_mode_x",
+    "from_pinned_engine": true,
+    "standalone_float_Lua_check": true,
+    "new_live_check_pending": false,
+    "production_cache_created_and_loaded_live": true
+  },
+  "authoritative_build": "Test165/export-build-1 from independently exported source-kit-2",
+  "live_resource_preparation": {
+    "source_entries_hash_verified": 615,
+    "fonts": 20,
+    "from_owned_game": true,
+    "downloaded_game_resources": false,
+    "chooser": false
+  },
+  "operator_evidence": "Private Test165/live-test-1/menu-observation.json, menu-verified.json and battle-verified.json; not part of player package",
+  "ordinary_recorder": "Owner explicitly selected keep recording off for this test; no recorder or debugger started",
+  "live_scope": "Original local Test165 and actual subscribed Workshop play tests accepted by owner. Steam download, direct Workshop search path, fresh loaded hashes/status and17 core hook destinations verified without installer loader or local data pack. Extended stability, all feature combinations and second-machine delivery remain untested.",
+  "reversible_test_rollback": {
+    "verified": true,
+    "previous_loader_and_selection_restored": true,
+    "test_pack_removed": true,
+    "watcher_errors": false
+  },
+  "private_workshop_upload_preparation": {
+    "ready": true,
+    "pack_sha256": "8f26c9b14a4c732e90a207f2384afdc56958dfc3f23215d21a829b64c028a7f4",
+    "packaging_only": true,
+    "accepted_original_archive_entries_byte_exact": true,
+    "license_and_control_text_entries_added": 4,
+    "uploaded": true,
+    "subscription_tested": false,
+    "subscription_download_hash_verified": true,
+    "subscription_playtest_verified": true,
+    "workshop_item_id": "3825625050",
+    "visibility_owner_report": "hidden",
+    "visibility_independently_verified": false,
+    "subscribed_gameplay_load_verified": true
+  },
+  "clean_subscribed_test": {
+    "prepared": true,
+    "old_installer_loader_excluded_with_verified_rollback": true,
+    "local_pre_upload_pack_and_preview_quarantined": true,
+    "Steam_download_untouched": true,
+    "launcher_deployment_verified": true,
+    "fresh_loaded_gameplay_verified": true,
+    "automatic_exit_rollback": false,
+    "ordinary_recording_and_debugger": "off by owner decision",
+    "swap_safety_checks": 9,
+    "launch_path": "used_mods add_working_directory points directly at Steam workshop/content/34330/3825625050",
+    "local_data_pack_absent": true,
+    "core_hook_destinations_verified": 17,
+    "owner_playtest_feedback_pending": false,
+    "owner_subscribed_playtest_accepted": true,
+    "owner_report": "Worked"
+  }
+}

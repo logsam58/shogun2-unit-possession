@@ -1,0 +1,580 @@
+{
+  "schema": 1,
+  "candidate": 164,
+  "phase": "Native entry verified without mod DInput; both menus and no chooser accepted; rolled back; full Workshop implementation next",
+  "public_workshop_package_ready": false,
+  "gameplay_built_or_changed": false,
+  "steam_settings_changed": false,
+  "uploaded": false,
+  "entry_probe": {
+    "test": 164,
+    "status": "OFFLINE PROBE CHECKS PASS; NO LIVE ENTRY PROOF",
+    "pack": "shogun2_unit_possession_entry_probe164.pack",
+    "pack_sha256": "af833a4a5469681a6a50f9bdba99bedaab1a3353453821665ab778e62f5837fa",
+    "native_sha256": "5f3807bf0b180612b621a1d5716fcab198f2ed4dacae911d3416197a8213d050",
+    "native_bytes": 109568,
+    "original_frontend_bytes": 99281,
+    "original_frontend_sha256": "8839d40e12e0141f6a5d967f278cc584c488e8a8527324b20c248412f5a3ffd1",
+    "stock_prefix_unchanged": true,
+    "coreutils_overridden": false,
+    "sources": {
+      "probe164.cpp": "7ca458e259fb39ecd857aa33e0e235b4991e82c239672d4b193709a47ab9f559",
+      "probe164.lua": "f425b668ca6228afda4697ac3a23f3b0113a13816be5c7796a52e58717b037e9",
+      "build_probe164.py": "ae0539e93a21e82b42f8d31836d29acb96a763741835dc3de04a22e8dcd6e60c"
+    },
+    "lua_sha256": "a3cd56550d994421021805c2fba762c6b0d86655b86c96d6ab4826ffaadf86cd",
+    "luac_sha256": "15da8511ce2e86a2400472ce35f6351f62df2452e6bc3868e8651435a246814e",
+    "fresh_checks": [
+      "x86 native compile",
+      "matching float Lua syntax",
+      "actual loadlib plus worker receipt",
+      "repeated entry starts once",
+      "non-game host rejected",
+      "denied writes and missing loader contained",
+      "foreign cache preserved",
+      "stock prefix exact",
+      "PFH3 roundtrip"
+    ],
+    "fixture_native_receipt": {
+      "schema": 1,
+      "test": 164,
+      "pid": 12464,
+      "native_entry": true,
+      "supported_game_host": false,
+      "gameplay_loaded": false,
+      "hooks_installed": false,
+      "engine_sha256": ""
+    },
+    "game_changed": false,
+    "steam_changed": false,
+    "game_launched": false,
+    "uploaded": false,
+    "contains_local_copyrighted_script": true,
+    "public_package_ready": false,
+    "warning": "PRIVATE diagnostic pack. Do not upload or distribute. Not a gameplay build."
+  },
+  "staging_checks": {
+    "checks": [
+      {
+        "encoding": "utf-8",
+        "prepare_no_change": true,
+        "stage": true,
+        "rollback": true,
+        "external_comment_preserved": false
+      },
+      {
+        "encoding": "utf-16-le",
+        "prepare_no_change": true,
+        "stage": true,
+        "rollback": true,
+        "external_comment_preserved": true
+      },
+      {
+        "encoding": "utf-16-be",
+        "prepare_no_change": true,
+        "stage": true,
+        "rollback": true,
+        "external_comment_preserved": false
+      }
+    ],
+    "foreign_edit_refused_without_changes": true,
+    "real_game_changed": false
+  },
+  "game_state_confirmation": "Fresh owner CLOSED granted for reversible probe",
+  "actual_stage": {
+    "pack_sha256": "af833a4a5469681a6a50f9bdba99bedaab1a3353453821665ab778e62f5837fa",
+    "owned_directive_added": true,
+    "rollback_journal": "artifacts/Test164/live-probe-1",
+    "automatic_exit_rollback_armed": false,
+    "watcher_helper_sha256": "be4a84cec9345c63e10c5a4ca3f780a62b47ea857e7a6e9873a1a49f0fc9288c",
+    "launch_timeout_seconds": 900,
+    "installed_original_game_loader_marker_hashes_unchanged": true,
+    "rolled_back": true,
+    "rollback_verified": true
+  },
+  "live_native_entry_verified": true,
+  "actual_gameplay_recording_verified": false,
+  "next_gate": "Test165 resource-safe full Workshop implementation, offline checks and separately cued clean live gameplay; owner fresh CLOSED granted",
+  "sources": {
+    "tools/workshop/build_probe164.py": "74db6ea5470255348b83284b1e7a68c6e06e2483ad2b72fc8237d43cf8de2a34",
+    "tools/workshop/probe164.cpp": "7ca458e259fb39ecd857aa33e0e235b4991e82c239672d4b193709a47ab9f559",
+    "tools/workshop/probe164.lua": "f425b668ca6228afda4697ac3a23f3b0113a13816be5c7796a52e58717b037e9",
+    "tools/workshop/stage_probe164.py": "17b59bcb6cee30b3f826efb635800eed6013bf2a4562e6688cc8e9c9f5c6f2ca",
+    "tools/workshop/retimestamp_probe164.py": "d6623c204b14b12537b8a81542540da1adc268c90992cd9971785c74a00c64b2",
+    "tools/workshop/verify_stage_probe164.py": "733cf68259c19bdf37e530f68e556a595ad953a9845f3e38c23af0448a357765"
+  },
+  "retry_candidate": {
+    "test": 164,
+    "status": "OFFLINE PROBE CHECKS PASS; NO LIVE ENTRY PROOF",
+    "pack": "shogun2_unit_possession_entry_probe164.pack",
+    "pack_sha256": "08d55b47e8800958f32e2598e93360d24cbbca24d571339a15ca987f2e7e9d69",
+    "native_sha256": "f5ba535779cd6b11b20780d22a88a02d2851776f42de6299537585dd436a8481",
+    "native_bytes": 109568,
+    "original_frontend_bytes": 99281,
+    "original_frontend_sha256": "8839d40e12e0141f6a5d967f278cc584c488e8a8527324b20c248412f5a3ffd1",
+    "stock_prefix_unchanged": true,
+    "coreutils_overridden": false,
+    "sources": {
+      "probe164.cpp": "7ca458e259fb39ecd857aa33e0e235b4991e82c239672d4b193709a47ab9f559",
+      "probe164.lua": "d9387b196bc6aa0ffc3c15cdee9e38a562ca4fadea26245fe33e573a3223a9d2",
+      "build_probe164.py": "ae0539e93a21e82b42f8d31836d29acb96a763741835dc3de04a22e8dcd6e60c"
+    },
+    "lua_sha256": "a3cd56550d994421021805c2fba762c6b0d86655b86c96d6ab4826ffaadf86cd",
+    "luac_sha256": "15da8511ce2e86a2400472ce35f6351f62df2452e6bc3868e8651435a246814e",
+    "fresh_checks": [
+      "x86 native compile",
+      "matching float Lua syntax",
+      "actual loadlib plus worker receipt",
+      "repeated entry starts once",
+      "non-game host rejected",
+      "denied writes and missing loader contained",
+      "foreign cache preserved",
+      "stock prefix exact",
+      "PFH3 roundtrip"
+    ],
+    "fixture_native_receipt": {
+      "schema": 1,
+      "test": 164,
+      "pid": 12388,
+      "native_entry": true,
+      "supported_game_host": false,
+      "gameplay_loaded": false,
+      "hooks_installed": false,
+      "engine_sha256": ""
+    },
+    "game_changed": false,
+    "steam_changed": false,
+    "game_launched": false,
+    "uploaded": false,
+    "contains_local_copyrighted_script": true,
+    "public_package_ready": false,
+    "warning": "PRIVATE diagnostic pack. Do not upload or distribute. Not a gameplay build."
+  },
+  "retry_staged": true,
+  "retry_actual_stage": {
+    "journal": "artifacts/Test164/live-probe-2",
+    "pack_sha256": "08d55b47e8800958f32e2598e93360d24cbbca24d571339a15ca987f2e7e9d69",
+    "fresh_closed_confirmed": true,
+    "pack_readback_verified": true,
+    "protected_installed_files_unchanged": true,
+    "automatic_rollback_armed": false,
+    "watcher_helper_sha256": "be4a84cec9345c63e10c5a4ca3f780a62b47ea857e7a6e9873a1a49f0fc9288c",
+    "launch_timeout_seconds": 900,
+    "rolled_back": true
+  },
+  "retry_live_result": {
+    "pid": 17072,
+    "owner_main_menu_ready": true,
+    "owner_custom_battle_opened_normally": true,
+    "probe_file_correct": true,
+    "game_used_mods_recorded_probe_only": true,
+    "native_probe_loaded": false,
+    "probe_cache_or_lua_log_observed": false,
+    "native_entry_proven": false,
+    "read_only_lua_libraries_present": [
+      "package.loadlib",
+      "io.open",
+      "os.getenv",
+      "loadstring"
+    ],
+    "observed_ui_root_source": "ui/frontend ui/layout_scripts/root.luac",
+    "ui_source_observation": "observed-ui-script-sources.json",
+    "memory_writes": false,
+    "debugger_attached_by_agent": false,
+    "ordinary_recording_verified": false,
+    "formal_gameplay_test": false,
+    "rolled_back": true,
+    "retired_probe_sha256": "08d55b47e8800958f32e2598e93360d24cbbca24d571339a15ca987f2e7e9d69",
+    "rollback_selection_sha256": "0c19a8253b56f0792cfa3047127b8bf183a2aa92f031793ad00dceb61c248293",
+    "interpretation": "Legacy front-end script probe did not demonstrate startup; live callback source points to compiled UI root for next candidate."
+  },
+  "ui_root_candidate": {
+    "test": 164,
+    "status": "OFFLINE PROBE CHECKS PASS; NO LIVE ENTRY PROOF",
+    "pack": "shogun2_unit_possession_entry_probe164.pack",
+    "pack_sha256": "ad1c83ed730666cc305a8922336e009ca06c9ab9355e0c449d9ac91a3fb9a42b",
+    "native_sha256": "afb6d20584b21e90b1b1f070321649e38530f330d3566f4f2808b358b1b69852",
+    "native_bytes": 109568,
+    "entry": "ui/frontend ui/layout_scripts/root.luac",
+    "original_script_bytes": 13739,
+    "original_script_sha256": "255b305cefb24a68cf6d2fc79d07efad7c0252acfd98ecd3ad10fa55c959cae8",
+    "stock_prefix_unchanged": false,
+    "coreutils_overridden": false,
+    "ui_root_callbacks_byte_exact": true,
+    "ui_root_environment_and_ordering_checks_passed": true,
+    "sources": {
+      "probe164.cpp": "7ca458e259fb39ecd857aa33e0e235b4991e82c239672d4b193709a47ab9f559",
+      "probe164.lua": "d9387b196bc6aa0ffc3c15cdee9e38a562ca4fadea26245fe33e573a3223a9d2",
+      "build_probe164.py": "bdc46c8423ede7903ead05374a8ee233f061535b6418e4133f85da55580601ef",
+      "ui_wrapper164.lua": "5f851771eb4cda0e5078fdc7e488d50efe7fbbbad518560611725a657dbe9250",
+      "verify_ui_wrapper164.lua": "5a57de748e5b182a3484540167581c4fe892b9f356a367dcf2b3313b13173a5c"
+    },
+    "lua_sha256": "a3cd56550d994421021805c2fba762c6b0d86655b86c96d6ab4826ffaadf86cd",
+    "luac_sha256": "15da8511ce2e86a2400472ce35f6351f62df2452e6bc3868e8651435a246814e",
+    "fresh_checks": [
+      "x86 native compile",
+      "matching float Lua syntax",
+      "actual loadlib plus worker receipt",
+      "repeated entry starts once",
+      "non-game host rejected",
+      "denied writes and missing loader contained",
+      "foreign cache preserved",
+      "all37 root callbacks/environment/order/failure",
+      "PFH3 roundtrip"
+    ],
+    "fixture_native_receipt": {
+      "schema": 1,
+      "test": 164,
+      "pid": 11472,
+      "native_entry": true,
+      "supported_game_host": false,
+      "gameplay_loaded": false,
+      "hooks_installed": false,
+      "engine_sha256": ""
+    },
+    "game_changed": false,
+    "steam_changed": false,
+    "game_launched": false,
+    "uploaded": false,
+    "contains_local_copyrighted_script": true,
+    "public_package_ready": false,
+    "warning": "PRIVATE diagnostic pack. Do not upload or distribute. Not a gameplay build."
+  },
+  "ui_root_actual_stage": {
+    "journal": "artifacts/Test164/live-probe-3",
+    "fresh_closed_confirmed": true,
+    "pack_readback_verified": true,
+    "automatic_rollback_armed": false,
+    "watcher_helper_sha256": "be4a84cec9345c63e10c5a4ca3f780a62b47ea857e7a6e9873a1a49f0fc9288c",
+    "protected_game_loader_marker_unchanged": true,
+    "rolled_back": true
+  },
+  "ui_root_live_observation": {
+    "pid": 1756,
+    "owner_ready_main_menu": true,
+    "pack_file_correct": true,
+    "game_used_mods_recorded_probe_only": true,
+    "native_module_observed": false,
+    "native_cache_or_lua_log_observed": false,
+    "native_entry_proven": false,
+    "memory_write": false,
+    "debugger_attached_by_agent": false,
+    "formal_gameplay_test": false,
+    "confirmed_packaging_discrepancy": "Forward-slash raw PFH paths differ from stock/backslash original probe paths",
+    "path_observation": "artifacts/Test164/pack-path-observation.json",
+    "causal_boundary": "Effect of separator correction remains unproven until corrected live comparison"
+  },
+  "path_corrected_candidate": {
+    "test": 164,
+    "status": "RAW INDEX CORRECTION PASS; exact native/Lua evidence retained, not freshly rerun",
+    "pack": "shogun2_unit_possession_entry_probe164.pack",
+    "pack_sha256": "1aeb5cf16684ea13b6312e55568f756f5d7fda7b58df183915ea88feff157c0f",
+    "native_sha256": "afb6d20584b21e90b1b1f070321649e38530f330d3566f4f2808b358b1b69852",
+    "native_bytes": 109568,
+    "entry": "ui/frontend ui/layout_scripts/root.luac",
+    "original_script_bytes": 13739,
+    "original_script_sha256": "255b305cefb24a68cf6d2fc79d07efad7c0252acfd98ecd3ad10fa55c959cae8",
+    "stock_prefix_unchanged": false,
+    "coreutils_overridden": false,
+    "ui_root_callbacks_byte_exact": true,
+    "ui_root_environment_and_ordering_checks_passed": true,
+    "sources": {
+      "probe164.cpp": "7ca458e259fb39ecd857aa33e0e235b4991e82c239672d4b193709a47ab9f559",
+      "probe164.lua": "d9387b196bc6aa0ffc3c15cdee9e38a562ca4fadea26245fe33e573a3223a9d2",
+      "build_probe164.py": "bdc46c8423ede7903ead05374a8ee233f061535b6418e4133f85da55580601ef",
+      "ui_wrapper164.lua": "5f851771eb4cda0e5078fdc7e488d50efe7fbbbad518560611725a657dbe9250",
+      "verify_ui_wrapper164.lua": "5a57de748e5b182a3484540167581c4fe892b9f356a367dcf2b3313b13173a5c"
+    },
+    "lua_sha256": "a3cd56550d994421021805c2fba762c6b0d86655b86c96d6ab4826ffaadf86cd",
+    "luac_sha256": "15da8511ce2e86a2400472ce35f6351f62df2452e6bc3868e8651435a246814e",
+    "fresh_checks": [
+      "raw index target spelling matches stock",
+      "only slash-to-backslash bytes changed inside index",
+      "complete payload region byte-exact",
+      "every entry hash retained"
+    ],
+    "fixture_native_receipt": {
+      "schema": 1,
+      "test": 164,
+      "pid": 11472,
+      "native_entry": true,
+      "supported_game_host": false,
+      "gameplay_loaded": false,
+      "hooks_installed": false,
+      "engine_sha256": ""
+    },
+    "game_changed": false,
+    "steam_changed": false,
+    "game_launched": false,
+    "uploaded": false,
+    "contains_local_copyrighted_script": true,
+    "public_package_ready": false,
+    "warning": "PRIVATE diagnostic pack. Do not upload or distribute. Not a gameplay build.",
+    "repacked_from_sha256": "ad1c83ed730666cc305a8922336e009ca06c9ab9355e0c449d9ac91a3fb9a42b",
+    "retained_native_lua_verification": {
+      "test": 164,
+      "status": "OFFLINE PROBE CHECKS PASS; NO LIVE ENTRY PROOF",
+      "pack": "shogun2_unit_possession_entry_probe164.pack",
+      "pack_sha256": "ad1c83ed730666cc305a8922336e009ca06c9ab9355e0c449d9ac91a3fb9a42b",
+      "native_sha256": "afb6d20584b21e90b1b1f070321649e38530f330d3566f4f2808b358b1b69852",
+      "native_bytes": 109568,
+      "entry": "ui/frontend ui/layout_scripts/root.luac",
+      "original_script_bytes": 13739,
+      "original_script_sha256": "255b305cefb24a68cf6d2fc79d07efad7c0252acfd98ecd3ad10fa55c959cae8",
+      "stock_prefix_unchanged": false,
+      "coreutils_overridden": false,
+      "ui_root_callbacks_byte_exact": true,
+      "ui_root_environment_and_ordering_checks_passed": true,
+      "sources": {
+        "probe164.cpp": "7ca458e259fb39ecd857aa33e0e235b4991e82c239672d4b193709a47ab9f559",
+        "probe164.lua": "d9387b196bc6aa0ffc3c15cdee9e38a562ca4fadea26245fe33e573a3223a9d2",
+        "build_probe164.py": "bdc46c8423ede7903ead05374a8ee233f061535b6418e4133f85da55580601ef",
+        "ui_wrapper164.lua": "5f851771eb4cda0e5078fdc7e488d50efe7fbbbad518560611725a657dbe9250",
+        "verify_ui_wrapper164.lua": "5a57de748e5b182a3484540167581c4fe892b9f356a367dcf2b3313b13173a5c"
+      },
+      "lua_sha256": "a3cd56550d994421021805c2fba762c6b0d86655b86c96d6ab4826ffaadf86cd",
+      "luac_sha256": "15da8511ce2e86a2400472ce35f6351f62df2452e6bc3868e8651435a246814e",
+      "fresh_checks": [
+        "x86 native compile",
+        "matching float Lua syntax",
+        "actual loadlib plus worker receipt",
+        "repeated entry starts once",
+        "non-game host rejected",
+        "denied writes and missing loader contained",
+        "foreign cache preserved",
+        "all37 root callbacks/environment/order/failure",
+        "PFH3 roundtrip"
+      ],
+      "fixture_native_receipt": {
+        "schema": 1,
+        "test": 164,
+        "pid": 11472,
+        "native_entry": true,
+        "supported_game_host": false,
+        "gameplay_loaded": false,
+        "hooks_installed": false,
+        "engine_sha256": ""
+      },
+      "game_changed": false,
+      "steam_changed": false,
+      "game_launched": false,
+      "uploaded": false,
+      "contains_local_copyrighted_script": true,
+      "public_package_ready": false,
+      "warning": "PRIVATE diagnostic pack. Do not upload or distribute. Not a gameplay build."
+    },
+    "changed_byte_offsets": [
+      38,
+      50,
+      65,
+      90
+    ],
+    "entries": [
+      {
+        "name": "ui/frontend ui/layout_scripts/root.luac",
+        "bytes": 127127,
+        "sha256": "851b7e55f6270128b9e174919f1a37cbef4ccc01b230ae712833c5e16fe5cfd4"
+      },
+      {
+        "name": "possession/workshop164.json",
+        "bytes": 127,
+        "sha256": "1a4cf0f5e659cc6fb575edb93f6b56c1d5959d259e680d58df152e4d973b2852"
+      }
+    ],
+    "raw_entry_names": [
+      "ui\\frontend ui\\layout_scripts\\root.luac",
+      "possession\\workshop164.json"
+    ],
+    "repacker_sha256": "b133b4afa14b83ad538977d5ee5476bd71fa8d39882dad58d81adc46e7e8f1e0"
+  },
+  "path_corrected_candidate_staged": false,
+  "path_corrected_actual_stage": {
+    "journal": "artifacts/Test164/live-probe-4",
+    "fresh_closed_confirmed": true,
+    "pack_readback_verified": true,
+    "automatic_rollback_armed": false,
+    "watcher_helper_sha256": "be4a84cec9345c63e10c5a4ca3f780a62b47ea857e7a6e9873a1a49f0fc9288c",
+    "protected_game_loader_marker_unchanged": true,
+    "rolled_back": true
+  },
+  "path_corrected_live_result": {
+    "pid": 21648,
+    "owner_main_and_custom_menus_worked": true,
+    "native_entry_proven": false,
+    "native_module_cache_log_observed": false,
+    "archive_root_map_probe_first": true,
+    "registered_lua_nodes_inspected": 390,
+    "root_callbacks_observed": false,
+    "interpretation": "Archive registration and absent root callbacks suggest initialization failure; exact engine error not established.",
+    "memory_writes": false,
+    "engine_functions_called_by_agent": false,
+    "rolled_back_verified": true
+  },
+  "native_logging_retry": {
+    "journal": "artifacts/Test164/live-probe-5",
+    "pack_sha256": "1aeb5cf16684ea13b6312e55568f756f5d7fda7b58df183915ea88feff157c0f",
+    "same_pack_unchanged": true,
+    "fresh_closed_confirmed": true,
+    "pack_readback_verified": true,
+    "temporary_native_lua_logging": true,
+    "owned_lines": [
+      "mod shogun2_unit_possession_entry_probe164.pack;",
+      "log_lua_errors_to_file;",
+      "log_lua_output_to_file;"
+    ],
+    "prior_lua_logs_backed_up": [],
+    "protected_game_loader_marker_unchanged": true,
+    "automatic_rollback_armed": false,
+    "watcher_pid": 20056,
+    "watcher_helper_sha256": "d66bc2f14de1fd683cc2629bc0d9a3152d1062c5c41e1864c8a16a47bbea5859",
+    "new_live_result": {
+      "pid": 15348,
+      "owner_menus_worked": true,
+      "probe_only_in_used_mods": true,
+      "native_error_and_output_flags_readback_enabled": true,
+      "lua_log_bytes_after_exit": 0,
+      "native_entry_verified": false,
+      "memory_writes": false,
+      "engine_calls_by_agent": false,
+      "gameplay_test": false
+    },
+    "recorder_or_debugger_changed": false,
+    "fresh_staging_checks": "artifacts/Test164/native-logging-staging-checks-2/verification.json",
+    "failed_fixture_preserved": "artifacts/Test164/native-logging-staging-checks-1/failed.json",
+    "rolled_back_verified": true
+  },
+  "timestamp_corrected_candidate": {
+    "pack_sha256": "48158631774ad991e2808ee2adf2d3fc0616187c50d25598e710385dd4cbc500",
+    "native_sha256": "afb6d20584b21e90b1b1f070321649e38530f330d3566f4f2808b358b1b69852",
+    "stock_timestamp_hex": "1c5c6bc40985d901",
+    "changed_byte_offsets": [
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31
+    ],
+    "fresh_checks": [
+      "only timestamp bytes changed",
+      "raw index byte-exact",
+      "complete payload byte-exact",
+      "all entry offsets/sizes retained",
+      "actual Windows CompareFileTime branch comparison"
+    ],
+    "native_windows_comparisons": {
+      "zero": 0,
+      "corrected": -1
+    },
+    "live_causality_verified": true
+  },
+  "timestamp_evidence": "artifacts/Test164/pack-timestamp-observation.json",
+  "timestamp_actual_stage": {
+    "journal": "artifacts/Test164/live-probe-6",
+    "fresh_closed_confirmed": true,
+    "pack_readback_verified": true,
+    "protected_targets_unchanged": true,
+    "automatic_rollback_armed": false,
+    "watcher_pid": 20632,
+    "same_native_and_lua_bytes": true,
+    "live_result": {
+      "pid": 10596,
+      "process_created": "2026-10-23T16:31:34.542753-04:00",
+      "native_sha256": "afb6d20584b21e90b1b1f070321649e38530f330d3566f4f2808b358b1b69852",
+      "engine_sha256": "022fae2e2da92b59b8b1b8ee52887003c624e3c8eca060b209f5d792a7f874f5",
+      "native_entry_verified": true,
+      "owner_ready_main_menu": true,
+      "corrected_timestamp_only_pack_verified": true,
+      "gameplay_loaded": false,
+      "hooks_installed": false,
+      "formal_gameplay_test": false,
+      "ordinary_capture_verified": false,
+      "installed_dinput_present": true,
+      "clean_workshop_gameplay_verified": false,
+      "native_receipt": {
+        "schema": 1,
+        "test": 164,
+        "pid": 10596,
+        "native_entry": true,
+        "supported_game_host": true,
+        "gameplay_loaded": false,
+        "hooks_installed": false,
+        "engine_sha256": "022fae2e2da92b59b8b1b8ee52887003c624e3c8eca060b209f5d792a7f874f5"
+      },
+      "owner_custom_battle_menu_worked": true
+    },
+    "rolled_back_verified": true
+  },
+  "owner_requires_workshop_camera_chooser_removed": true,
+  "clean_dinput_free_native_startup_verified": true,
+  "clean_workshop_gameplay_verified": false,
+  "dinput_free_actual_stage": {
+    "journal": "artifacts/Test164/live-probe-7",
+    "fresh_closed_confirmed": true,
+    "pack_sha256": "48158631774ad991e2808ee2adf2d3fc0616187c50d25598e710385dd4cbc500",
+    "working_pack_unchanged": true,
+    "legacy_loader_excluded": true,
+    "legacy_backup_sha256": "19f7c9b197cb8128a160aa8bd7b4e930b2612f420a5468413690bea55e791ae7",
+    "original_game_and_marker_unchanged": true,
+    "automatic_exit_rollback_armed": false,
+    "watcher_pid": 13008,
+    "watcher_helper_sha256": "17b59bcb6cee30b3f826efb635800eed6013bf2a4562e6688cc8e9c9f5c6f2ca",
+    "real_game_launch_or_termination_by_agent": false,
+    "live_result": {
+      "processes": [
+        {
+          "Name": "shogun2.exe",
+          "ProcessId": 18356,
+          "ExecutablePath": "<OWNED_GAME>\\Shogun2.exe",
+          "CreationDate": "2026-10-23T16:40:53.285568-04:00"
+        }
+      ],
+      "modules": [
+        {
+          "ModuleName": "Empire.Retail.dll",
+          "FileName": "<OWNED_GAME>\\Empire.Retail.dll",
+          "ModuleMemorySize": 30965760
+        },
+        {
+          "ModuleName": "DINPUT8.dll",
+          "FileName": "C:\\WINDOWS\\SYSTEM32\\DINPUT8.dll",
+          "ModuleMemorySize": 229376
+        },
+        {
+          "ModuleName": "S2UP-Workshop-Probe164-afb6d20584b21e90b1b1f070321649e38530f330d3566f4f2808b358b1b69852.dll",
+          "FileName": "<LOCALAPPDATA>\\S2UP-Workshop-Probe164-afb6d20584b21e90b1b1f070321649e38530f330d3566f4f2808b358b1b69852.dll",
+          "ModuleMemorySize": 126976
+        }
+      ],
+      "pack_sha256": "48158631774ad991e2808ee2adf2d3fc0616187c50d25598e710385dd4cbc500",
+      "native_sha256": "afb6d20584b21e90b1b1f070321649e38530f330d3566f4f2808b358b1b69852",
+      "engine_sha256": "022fae2e2da92b59b8b1b8ee52887003c624e3c8eca060b209f5d792a7f874f5",
+      "native_entry_verified": true,
+      "mod_dinput_loaded": false,
+      "mod_dinput_on_disk": false,
+      "owner_no_chooser": true,
+      "owner_ready_main_menu": true,
+      "used_mods": "mod \"shogun2_unit_possession_entry_probe164.pack\";",
+      "gameplay_hooks_loaded": false,
+      "clean_workshop_gameplay_verified": false,
+      "ordinary_recording_verified": false,
+      "receipt": {
+        "schema": 1,
+        "test": 164,
+        "pid": 18356,
+        "native_entry": true,
+        "supported_game_host": true,
+        "gameplay_loaded": false,
+        "hooks_installed": false,
+        "engine_sha256": "022fae2e2da92b59b8b1b8ee52887003c624e3c8eca060b209f5d792a7f874f5"
+      },
+      "watcher_stderr": null,
+      "owner_custom_and_campaign_menus_worked": true
+    },
+    "isolated_staging_checks": "artifacts/Test164/legacy-exclusion-staging-checks-2/verification.json",
+    "rolled_back_verified": true,
+    "exact_legacy_dinput_restored": true
+  }
+}
