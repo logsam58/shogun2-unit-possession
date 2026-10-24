@@ -1,3 +1,9 @@
+> **Historical record:** This page describes the Test163 Steam-client lifecycle repair.
+> The current release is v0.32 / Test166 Workshop. Use the
+> [developer guide](../README.md), [release identity](../current-release.json),
+> and [release procedure](RELEASING.md) for current work. Commands, pending
+> tasks and approvals below apply only to the recorded session.
+
 # Automatic startup installer repair — Test163
 
 Unpublished v0.32 candidate; no real installation or live acceptance is implied by offline tests.

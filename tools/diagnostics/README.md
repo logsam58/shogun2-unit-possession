@@ -1,6 +1,9 @@
 # Optional crash diagnostics
 
-Diagnostics is separate from the player installer. Normal build/configuration/import/help commands do not start a watcher, attach a debugger or change autorun. Existing installed recording is untouched by this branch.
+Diagnostics is separate from the current Workshop player pack and the historical
+installer. Normal build/configuration/import/help commands do not start a
+watcher, attach a debugger or change autorun. These sources are optional
+developer tools; see the [tool guide](../README.md) for their scope.
 
 Use the public Python/MSVC prerequisites from the main build guide. Build into a new directory:
 

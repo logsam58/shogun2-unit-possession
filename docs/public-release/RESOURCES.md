@@ -2,11 +2,24 @@
 
 v0.32 uses the accepted Test159 resource format through the Test166 Workshop bootstrap. The download contains no Shogun images, unit cards, ability icons, CUF fonts, advisor audio or original UI script. On first launch, the native bootstrap prepares resources from the player’s owned game; later launches reuse validated caches. No placeholders replace them. Compatible builds share a recipe-keyed resource directory using verified hard links, with a tested copy fallback. See [storage handling](WORKSHOP166.md). The installer paragraphs below describe the earlier setup route, retained for reference.
 
-`prepare-local-assets159.exe` runs outside the game during setup. It checks the supported engine, reads `data.pack` and `local_en.pack` without changing them, and verifies all 615 original entries against metadata-only hashes. Its bounded PFH3/TGA reader builds the accepted HUD and QTE atlas layout, copies 20 fonts, prepares native ability/status icons and crops the English advisor voice to 3.25–4.80 seconds. Windows Media Foundation decodes the MP3; no Python, FFmpeg, ImageMagick, Node or compiler is needed by players. Windows N requires the Media Feature Pack.
+## Shared native extractor
+
+`prepare-local-assets159.exe` runs as a separate process, requested by the
+Workshop startup worker or the historical setup program. It checks the supported
+engine, reads `data.pack` and `local_en.pack` without changing them, and verifies
+all 615 original entries against metadata-only hashes. Its bounded PFH3/TGA
+reader builds the accepted HUD and QTE atlas layout, copies 20 fonts, prepares
+native ability/status icons and crops the English advisor voice to 3.25–4.80
+seconds. Windows Media Foundation decodes the MP3; no Python, FFmpeg, ImageMagick,
+Node or compiler is needed by players. Windows N requires the Media Feature Pack.
+
+## Historical installer deployment
 
 Two data files are prepared in temporary staging before deployment: `hud-assets159.s2fp` and `qte-assets159.s2fp`. They are installed under `data/shogun2_possession_local_assets159`. The loader validates them before loading gameplay hooks, then copies them atomically to its distinct runtime cache. HUD/QTE use read-only mapped files with the existing rendering and font code. There is no embedded asset fallback or new per-frame extraction.
 
 Each file binds its format/kind, extraction recipe, IDs, dimensions, sizes and payload hashes. Missing/corrupt/foreign files fail before mod initialization. Existing changed cache files are preserved; an operator must inspect them rather than deleting unfamiliar caches. Setup/uninstall includes the two local files in its identified ownership/rollback checks. Generated resources stay on the player's computer and must not be uploaded as release assets.
+
+## Independent resource-reference pipeline
 
 The independent developer preparation pipeline remains available in `tools/prepare_resources.py`: ImageMagick TGA/trim, Free Texture Packer PNG+JSON and FFmpeg crop. Its 594 sprites are 592 originals plus two approved native aliases. It provides the comparison/reference and metadata regeneration path. Historical AI-restored icons are not inputs. Fonts compare byte for byte; visible atlas/icon pixels compare exactly. Windows and FFmpeg audio decoding differ slightly in sample alignment/rounding, so the audio comparison verifies duration and PCM correlation rather than claiming identical WAV bytes. Bow animation audio is untouched.
 

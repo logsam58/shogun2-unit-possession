@@ -1,6 +1,9 @@
 # GitHub presentation
 
-The landing page is on main, the sole maintained branch. The owner authorized the v0.31 release inside the private repository. Do not change repository visibility without a new explicit instruction.
+The landing page is on main, the sole maintained branch. The current product
+release is v0.32 / Test166 Workshop. Repository visibility remains private;
+changing it is a separate owner action. This file documents presentation and
+navigation, not authorization to change GitHub settings.
 
 ## Repository name
 
@@ -17,8 +20,9 @@ total-war, shogun-2, game-mod, first-person, third-person, cpp, windows, reverse
 ## Files
 
 - [Landing page and controls](../../README.md)
-- [v0.31 release notes](../releases/v0.31.md)
-- [Standard setup](STANDARD_SETUP.md)
-- [Release handoff](PUBLICATION_HANDOFF.md)
+- [Developer reading path](../README.md)
+- [v0.32 release notes](../releases/v0.32.md)
+- [Current release procedure](RELEASING.md)
+- [Release engineering and history](README.md)
 
 Charging and castle wall climbing remain intermittent known bugs. Older resource-containing installers/ZIPs have been removed by explicit owner request; source/history remain. Public visibility is a separate owner decision.

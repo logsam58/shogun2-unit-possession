@@ -1,3 +1,9 @@
+> **Historical record:** This page describes the v0.31 installer release handoff.
+> The current release is v0.32 / Test166 Workshop. Use the
+> [developer guide](../README.md), [release identity](../current-release.json),
+> and [release procedure](RELEASING.md) for current work. Commands, pending
+> tasks and approvals below apply only to the recorded session.
+
 # v0.31 release handoff
 
 The owner requested the quick-start schematic and instructions in the camera chooser, followed by a v0.31 commit and release. main remains the only branch and repository visibility stays private. The existing v0.30 release, earlier tags and downloads remain unchanged. A concurrent owner edit to the slowdown notes was preserved.

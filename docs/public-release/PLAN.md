@@ -1,3 +1,9 @@
+> **Historical record:** This page describes source-kit engineering and v0.30/v0.31 planning.
+> The current release is v0.32 / Test166 Workshop. Use the
+> [developer guide](../README.md), [release identity](../current-release.json),
+> and [release procedure](RELEASING.md) for current work. Commands, pending
+> tasks and approvals below apply only to the recorded session.
+
 # Current v0.31 update
 
 The owner requested a quick-start control schematic in the prelaunch chooser, then authorized committing and releasing v0.31 privately. See [V0_31_VALIDATION.json](V0_31_VALIDATION.json) for fresh startup/installer checks, retained exact gameplay evidence and live-test limits.

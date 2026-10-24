@@ -15,4 +15,8 @@ git push -u origin describe-your-change
 
 Open a pull request with the behavior change and checks actually run. See [CONTRIBUTING.md](../CONTRIBUTING.md) for project-specific expectations. Generated outputs and local resources are ignored. Never force-add game files, recordings, dumps or credentials.
 
-Git tracks source; changing a commit does not replace a game's loaded DLLs. Builds, closed-game installation and a fresh live session are separate steps. Product releases use reviewed tags, attached installers and checksum manifests; development commits are not automatically installed or published.
+Git tracks source; changing a commit does not replace a game's loaded DLLs.
+Builds, closed-game installation and a fresh live session are separate steps.
+Current product releases use reviewed tags, Workshop/source archives and
+checksum manifests; development commits are not automatically installed or
+published. See the [release procedure](public-release/RELEASING.md).

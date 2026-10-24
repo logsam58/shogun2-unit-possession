@@ -1,3 +1,9 @@
+> **Historical record:** This page describes the Test161 prelaunch chooser.
+> The current release is v0.32 / Test166 Workshop. Use the
+> [developer guide](../README.md), [release identity](../current-release.json),
+> and [release procedure](RELEASING.md) for current work. Commands, pending
+> tasks and approvals below apply only to the recorded session.
+
 # Test161 — choose the camera before launching the game
 
 v0.31 / Test161. The published v0.30 tag and downloads are unchanged.

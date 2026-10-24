@@ -1,3 +1,9 @@
+> **Historical record:** This page describes the Test164 inert Workshop entry investigation.
+> The current release is v0.32 / Test166 Workshop. Use the
+> [developer guide](../README.md), [release identity](../current-release.json),
+> and [release procedure](RELEASING.md) for current work. Commands, pending
+> tasks and approvals below apply only to the recorded session.
+
 # Workshop-only investigation
 
 The requested player flow is **subscribe, enable, launch normally**. Native

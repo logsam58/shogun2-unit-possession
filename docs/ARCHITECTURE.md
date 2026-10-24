@@ -2,9 +2,24 @@
 
 ## Runtime components
 
-The game loads the mod through a game-local DINPUT8.dll bootstrap that forwards the Windows DInput interface. The integrated loader checks the selected mod and supported engine, verifies embedded component fingerprints and starts the possession adapter, QTE runtime and HUD from a versioned cache. Players launch through Steam after setup; no separate manual companion startup is required.
+The current v0.32 release uses the Test166 Workshop runtime. The enabled pack
+replaces the front-end root Lua entry. Its first-party wrapper stages and checks
+its embedded native bridge, then calls that bridge to recover the original UI
+script from the player's owned game. The original script runs before the wrapper
+requests gameplay startup. See the [bridge design](public-release/WORKSHOP165.md)
+and [Test166 storage changes](public-release/WORKSHOP166.md).
+
+The bridge checks the supported host and engine fingerprint, pins its module,
+and starts the shared worker once. The worker verifies embedded component
+fingerprints, prepares or reuses validated local resources, and starts the
+possession adapter, QTE runtime and HUD from a versioned cache. Workshop starts
+in third person; P changes perspective. No installer, DInput bootstrap, camera
+chooser or Steam launch-option edit participates in this route.
 
 The possession adapter and QTE DLL run as x86 native code in the game process. The HUD is a separate process consuming numeric publications. MinHook supplies native trampolines. Native hook addresses and structure assumptions target one fingerprinted Empire.Retail.dll build; a changed engine requires analysis and validation before support can be added.
+
+The [source map](../SOURCE_MAP.md) and [native guide](../native/README.md) locate
+these entry points. Historical directory suffixes are not product versions.
 
 ## Ownership and native forwarding
 
@@ -32,10 +47,39 @@ Input polling requests 1 ms pacing; native ownership/publication services reques
 
 Shared HUD/status, equipment, ammo, accuracy and climb messages carry numeric data. Protocol sizes/versions are compatibility contracts shared by producers and consumers; internal filenames can retain older suffixes across product releases. QTE Publication91 is internal DLL storage, not a named mapping. Private telemetry records additional timing, ownership, ranged-task and traversal diagnostics without changing public layouts.
 
-The optional external recorder is independent of mod readiness. It watches launches, attaches a debugger and records available core resources/input immediately; native channels can become available later. Capture never depends on pause or a READY response. Backing-file hashes identify loaded images, while a dump preserves patched runtime memory. A native fault address establishes where the failure surfaced, not which component caused the preceding bad state.
+The Workshop runtime keeps status channels and numeric diagnostics, but disables
+routine gameplay, input, QTE and startup disk logs. Its small live-entry receipt
+uses a delete-on-close handle. Code/resource caches remain; compatible builds
+share verified resources where supported. Unknown files and old caches are not
+automatically removed.
 
-## Setup and release
+The optional [external recorder](../tools/diagnostics/README.md) is a separate
+developer tool, absent from the player pack and inactive unless explicitly
+started. Once started, it watches launches, attaches a debugger and records
+available core resources/input; native channels can become available later.
+Backing-file hashes identify loaded images, while a dump preserves patched
+runtime memory. A native fault address establishes where the failure surfaced,
+not which component caused the preceding bad state.
+
+## Build and release
+
+Builds use explicit inputs and isolated source/output snapshots. The Workshop
+builder checks payload closure and pack contents, then exercises matching
+float-Lua startup and synthetic resource/storage fixtures. The distributable
+`package` directory is separate from private fixtures containing locally
+recovered scripts and resources. See [build and test](../BUILD_AND_TEST.md).
+
+The current release distributes the accepted Workshop pack and matching source;
+game scripts, artwork, fonts and voice are prepared locally rather than shipped.
+No publication or installation is implied by a build. See the [release
+procedure](public-release/RELEASING.md), [validation](../VALIDATION.md), and
+[native contracts](public-release/NATIVE_CONTRACTS.md).
+
+## Historical installer route
 
 The installer verifies the retail engine and payload, refuses unrelated same-name injection files, updates managed files and mod selection transactionally, and records flushed identified snapshots before mutation. Uncommitted killed-process recovery restores prior files and registry; committed recovery completes backup retention. Unknown edits stop recovery. Cache cleanup removes only recognized unchanged caches; locked, modified and unknown items are deferred.
 
-Builds use explicit inputs and isolated output snapshots. Game resources are prepared locally; public packaging is source-only while binary redistribution permission is unresolved. See [current release procedure](public-release/RELEASING.md) and [native contracts](public-release/NATIVE_CONTRACTS.md). No publication or installation is implied by a build.
+That older route used a game-local DINPUT8.dll forwarding bootstrap and, in
+later setup revisions, a prelaunch camera chooser. Its retained sources and
+transaction tests remain useful, but its installation steps do not apply to
+Workshop. Do not run the old loader alongside the Workshop mod.

@@ -1,10 +1,17 @@
 # Source map
 
-[Current status](docs/current-release.json) is authoritative. Directory suffixes are historical implementation names.
+[Release identity](docs/current-release.json) is authoritative. Start with the
+[developer reading path](docs/README.md), [architecture](docs/ARCHITECTURE.md),
+[native guide](native/README.md), or [tool guide](tools/README.md).
+
+Directory suffixes are historical implementation names. `native/outputs` and
+`native/work` contain source inputs, not disposable build artifacts. The current
+Workshop route shares some code with older installers; the responsibility column
+distinguishes those uses.
 
 | Component | Active source | Responsibility |
 | --- | --- | --- |
-| Runtime worker / legacy loader | native/work/autoload99-preview | Shared delayed startup, payload checks, cache and game-process callout. DInput forwarding and launch161.cpp belong to older installer builds |
+| Runtime worker / legacy loader | native/work/autoload99-preview | Shared delayed startup, payload checks, cache and game-process audio. DInput forwarding and launch161.cpp belong to older installer builds |
 | Workshop entry | tools/workshop and native/work/autoload99-preview/workshop_assets165.h | Current Test166 entry, owned-script recovery, automatic local resources and existing worker; no chooser or Steam setting edits |
 | Adapter | native/outputs/shogun2-accuracy90-preview/src | Actor lease, native movement/weapons/orders/camera/charge/climbing |
 | Shared | native/outputs/shogun2-possession-cleanup-v46/src and native/common | Identity, protocols, visibility and final-human roles |
@@ -20,4 +27,9 @@
 
 Build-generated hashes belong in the build snapshot. See [native contracts](docs/public-release/NATIVE_CONTRACTS.md) and [derived data](docs/public-release/DERIVED_DATA.md).
 
-Versioned docs/development and older docs/releases are historical evidence, excluded from the curated source kit; current v0.32 release notes are included. They can describe earlier machines/limits and do not override current instructions. The original implementation/research remains in baseline commit 24d31a2f5e5c2cf84a42c459a69bdcd9bd86c600.
+The [development](docs/development/README.md) and [release](docs/releases/README.md)
+indexes explain historical evidence. Full development notebooks and older
+release notes are excluded from the curated source kit; the indexes and current
+v0.32 notes are included. Earlier machine paths, limits and session requests do
+not override current instructions. The original implementation/research remains
+in baseline commit 24d31a2f5e5c2cf84a42c459a69bdcd9bd86c600.

@@ -1,3 +1,9 @@
+> **Historical record:** This page describes the Test163 installer repair.
+> The current release is v0.32 / Test166 Workshop. Use the
+> [developer guide](../README.md), [release identity](../current-release.json),
+> and [release procedure](RELEASING.md) for current work. Commands, pending
+> tasks and approvals below apply only to the recorded session.
+
 # Standard Windows setup
 
 This checkout prepares the unpublished v0.32 / Test163 installer repair with Inno Setup 7.1.0. The published private release is still v0.31. Setup is unsigned. See [startup design](STARTUP163.md) for the current development flow and [v0.31 validation](V0_31_VALIDATION.json) for the immutable published build.

@@ -3,6 +3,8 @@
 The current release is v0.32, using the accepted Test166 Workshop runtime.
 Start with README.md, BUILD_AND_TEST.md, SOURCE_MAP.md, VALIDATION.md and
 docs/current-release.json. Older versioned documents describe historical builds.
+docs/README.md, native/README.md and tools/README.md provide the developer
+reading path and distinguish current/shared code from historical helpers.
 
 Preserve native mechanics, supported-image fingerprints, role/ABI/ownership/
 lifetime/thread contracts and exact hook-byte checks. Forward unrelated engine
@@ -40,5 +42,6 @@ The canonical repository is logsam58/shogun2-unit-possession; main is the only
 maintained branch. Preserve its current private visibility and historical
 releases/tags unless explicitly authorized otherwise. Publication requires an
 explicit task; keep source, notes and checksums aligned with the tagged build.
-The current task authorizes committing/publishing v0.32 on GitHub, not another
-Workshop upload, visibility change or game install.
+Historical release authorizations in notes apply only to their recorded tasks.
+Repository cleanup does not authorize a new product release, Workshop upload,
+visibility change or game install.

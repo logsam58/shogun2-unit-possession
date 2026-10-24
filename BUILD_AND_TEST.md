@@ -3,6 +3,9 @@
 v0.32 uses the accepted **Test166 Workshop runtime**. Directory suffixes such as
 45, 99, 159 and 165 are historical implementation names, not product versions.
 A build never installs, launches the game, edits Steam settings or publishes.
+Use the [developer guide](docs/README.md) for the reading path and the
+[tool guide](tools/README.md) to distinguish current commands from operator and
+historical helpers.
 
 ## Build the Workshop pack
 
@@ -41,6 +44,12 @@ design](docs/public-release/WORKSHOP165.md) and [storage changes](docs/public-re
     py -3.12 -m unittest discover -s tests -v
     py -3.12 tools/generate_roles.py --check
     py -3.12 tools/generate_tables.py --check
+    py -3.12 tools/generate_native_inventory.py --check
+
+These Python and metadata checks need no installed game or native compiler.
+The inventory is a source index; after relevant native source changes, regenerate
+it with `py -3.12 tools/generate_native_inventory.py` and review its diff. Do not
+regenerate factual tables merely to make a regression pass.
 
 The accepted component build passed 98 adapter, 50 QTE and 8 HUD executables,
 plus local-resource format/renderer checks. Separate pack fixtures cover actual
