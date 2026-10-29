@@ -1,11 +1,11 @@
 # Releasing
 
 The canonical repository is logsam58/shogun2-unit-possession; main is the only
-maintained branch. v0.32 publishes the accepted Test166 Workshop pack and source.
-The owner explicitly authorized this GitHub release. Preserve private repository
-visibility; public visibility and another Workshop upload are separate tasks.
-Historical tags/releases and retired resource-containing downloads stay intact
-or absent as previously authorized; do not replace them.
+maintained branch. v0.33 packages the exact Test173 build with matching source.
+GitHub publication and Steam Workshop upload are separate tasks. Preserve the
+repository's actual visibility and historical tags/releases. No installer
+downloads are permitted; obsolete installer assets have been removed with
+private backups.
 
 For native changes, build/test the isolated Workshop target and pack with
 [BUILD_AND_TEST.md](../../BUILD_AND_TEST.md). Record build checks, Steam delivery
@@ -19,7 +19,7 @@ archive hashes and file closure. Tag the same commit. Current assets are a
 Workshop ZIP of the exact pack with first-party instructions/notices, a source
 ZIP, SHA256SUMS.txt and release-manifest.json. Verify every uploaded asset by
 downloading and hashing it before completing the release. Preserve prior
-release/tag metadata and repository identity/privacy.
+release/tag metadata and repository identity/visibility.
 
 Do not reuse tools/github_release.py's old fixed installer asset list for this
 Workshop release. Its authenticated transport can be reused; credentials remain

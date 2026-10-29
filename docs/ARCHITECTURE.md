@@ -2,21 +2,21 @@
 
 ## Runtime components
 
-The current v0.32 release uses the Test166 Workshop runtime. The enabled pack
+The current v0.33 release packages Test173. The enabled pack
 replaces the front-end root Lua entry. Its first-party wrapper stages and checks
 its embedded native bridge, then calls that bridge to recover the original UI
 script from the player's owned game. The original script runs before the wrapper
 requests gameplay startup. See the [bridge design](public-release/WORKSHOP165.md)
 and [Test166 storage changes](public-release/WORKSHOP166.md).
 
-The bridge checks the supported host and engine fingerprint, pins its module,
+The bridge checks the host and shared engine contract, pins its module,
 and starts the shared worker once. The worker verifies embedded component
 fingerprints, prepares or reuses validated local resources, and starts the
 possession adapter, QTE runtime and HUD from a versioned cache. Workshop starts
 in third person; P changes perspective. No installer, DInput bootstrap, camera
 chooser or Steam launch-option edit participates in this route.
 
-The possession adapter and QTE DLL run as x86 native code in the game process. The HUD is a separate process consuming numeric publications. MinHook supplies native trampolines. Native hook addresses and structure assumptions target one fingerprinted Empire.Retail.dll build; a changed engine requires analysis and validation before support can be added.
+The possession adapter and QTE DLL run as x86 native code in the game process. The HUD is a separate process consuming numeric publications. MinHook supplies native trampolines. Native hook addresses and structures target the original x86 engine family. A shared contract admits the stock/reviewed Bugfix image or a coherently compatible protected-region basis; exact loaded hook prefixes are checked separately. See [engine compatibility](public-release/WORKSHOP172.md).
 
 The [source map](../SOURCE_MAP.md) and [native guide](../native/README.md) locate
 these entry points. Historical directory suffixes are not product versions.
@@ -69,7 +69,7 @@ float-Lua startup and synthetic resource/storage fixtures. The distributable
 `package` directory is separate from private fixtures containing locally
 recovered scripts and resources. See [build and test](../BUILD_AND_TEST.md).
 
-The current release distributes the accepted Workshop pack and matching source;
+The current release distributes the offline-checked Test173 pack and matching source;
 game scripts, artwork, fonts and voice are prepared locally rather than shipped.
 No publication or installation is implied by a build. See the [release
 procedure](public-release/RELEASING.md), [validation](../VALIDATION.md), and

@@ -44,10 +44,10 @@ public:
             if(!((id>=101&&id<=103)||(id>=201&&id<=220)||id==301||id==430||id==431)){clear();return false;}
             entries.emplace(id,Blob{bytes,size,w,h});p+=84+size;
         }
-        if(p!=n||entries.size()!=(kind==1?26u:21u)){clear();return false;}
+        if(p!=n||(kind==1?(entries.size()!=25u&&entries.size()!=26u):entries.size()!=21u)){clear();return false;}
         for(unsigned i=201;i<=220;++i)if(!get(i).bytes){clear();return false;}
         for(unsigned i=101;i<=(kind==1?103u:101u);++i)if(!get(i).width){clear();return false;}
-        if(kind==1&&(!get(301).bytes||!get(430).width||!get(431).width)){clear();return false;}
+        if(kind==1&&(!get(430).width||!get(431).width)){clear();return false;}
         return true;
     }
     Blob get(unsigned id)const{auto it=entries.find(id);return it==entries.end()?Blob{}:it->second;}

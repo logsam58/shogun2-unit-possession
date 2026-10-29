@@ -39,7 +39,10 @@ v0.24 gameplay was accepted, with first-person weapon/arm poses and clipping lef
 
 The mod is meant for single-player land battles and sieges. Weapons from Shogun 2, Rise of the Samurai and Fall of the Samurai are recognised, but not every unit and ammo combination has been tested.
 
-Multiplayer is not implemented; Versus and campaign drop-in support are under consideration. Naval possession and ship commands do not work and are planned for later. Overhaul compatibility needs separate testing. Artillery keeps the game's existing first-person mode.
+Multiplayer is not implemented; Versus and campaign drop-in support are under consideration. Naval possession and ship commands do not work and are planned for later. Overhaul compatibility needs separate testing. The original and reviewed
+Bugfix engine are supported; neither Bugfix nor Shogun2 Loader is required.
+Compatible engine edits may pass the shared checks, while conflicting code or
+hooks still refuse. Include the exact engine/startup error in a report. Artillery keeps the game's existing first-person mode.
 
 ## Workshop setup and updates
 
@@ -49,18 +52,18 @@ unit and what it was doing if entry keeps failing. The original supported
 Windows Steam game build is required; see the [build guide](../BUILD_AND_TEST.md).
 
 **HUD or local resources fail to prepare:** the mod reads the owned data.pack
-and English local_en.pack on first launch. Windows N needs the Media Feature
-Pack. Missing, changed or foreign cache files are preserved and initialization
+and compatible native fonts from the installed language pack on first launch.
+English advisor voice and its decoder are optional; the HUD remains English. Missing, changed or foreign cache files are preserved and initialization
 may stop; do not delete unfamiliar files blindly.
 
 **Other mods:** the Workshop bootstrap replaces the front-end root script
-entry. Compatibility with other mods replacing it has not been tested. Do not
+entry. One enabled UI root can be preserved when our bootstrap runs;
+different competing roots can still conflict. Do not
 combine Workshop with the older mod DInput loader. If coming from an old
 setup.exe installation, close the game, uninstall that version and remove its
 camera-helper Steam launch option before enabling Workshop.
 
-**Turning it off:** F12 disables the mod for the current session. To stop loading
-it on later launches, close the game and disable it in the launcher or
+**Turning it off:** Close the game and disable the mod in the launcher or
 unsubscribe. Necessary local caches may remain; the runtime does not prune old
 versions or rollback backups. No recorder or debugger is installed with it,
 and routine gameplay/input/QTE disk logs are disabled.

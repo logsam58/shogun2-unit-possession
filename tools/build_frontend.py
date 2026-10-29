@@ -133,6 +133,9 @@ def main():
     parser.add_argument('--tests', action='store_true')
     parser.add_argument('--candidate', type=int, default=163)
     args = parser.parse_args()
+    sys.path.insert(0,str(ROOT/'tools/workshop'))
+    from check_engine_contract172 import check as check_engine172
+    check_engine172()
     config = ROOT / 'tools/local.json'
     settings = (
         json.loads(config.read_text(encoding='utf-8')) if config.is_file() else {}

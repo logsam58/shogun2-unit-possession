@@ -1,0 +1,43 @@
+{
+  "version": "0.33",
+  "candidate": 173,
+  "release_scope": "Publish exact Test173 and matching source without native rebuild, game changes or Steam upload",
+  "pack_sha256": "5a79a2b8de38ee69e0cf104b93e7df24a55d1d71aab3f4bf79a7364ee0b0a6c0",
+  "native_sha256": "ef404f843ad18f46128dab17e19e5e6b66df49e676d5b6dd1bb28ed611d6b0a1",
+  "embedded_build": "173-c85044f55f448f36",
+  "retained_build_evidence": "docs/public-release/TEST173_VALIDATION.json",
+  "retained_native_checks": {
+    "adapter_executables": 100,
+    "QTE_executables": 50,
+    "HUD_executables": 8,
+    "workshop_checks": 16,
+    "engine_contract_controls": 48,
+    "update_rollback_checks": 8
+  },
+  "Test172_owner_gameplay_accepted": true,
+  "Test172_formal_loaded_gate_completed": false,
+  "Test173_live_gameplay_accepted": false,
+  "Steam_last_verified_candidate": 172,
+  "new_Workshop_upload": false,
+  "native_rebuilt_for_release": false,
+  "installer_game_assets_recorder_debugger_shipped": false,
+  "game_install_launch_settings_change_for_release": false,
+  "repository_visibility_changed": false,
+  "fresh_release_checks": {
+    "python_tests_passed": 20,
+    "roles_and_six_tables_passed": true,
+    "native_inventory_passed": true,
+    "engine_contract_source_audit_passed": true,
+    "runtime_source_correspondence_passed": true,
+    "source_asset_secret_path_audit_passed": true,
+    "curated_source_files": 628,
+    "maintained_local_links_passed": 122,
+    "final_archive_and_remote_hash_verification": "required by publication gate; private receipt records completion"
+  },
+  "limits": [
+    "No universal engine/mod/platform/language compatibility claim.",
+    "Offline fixtures do not establish every gameplay case or long-term stability.",
+    "Test173 live acceptance remains pending; Test172 acceptance is a separate report.",
+    "Charging, climbing, crashes, clipping and Ultra crowd slowdown remain open."
+  ]
+}

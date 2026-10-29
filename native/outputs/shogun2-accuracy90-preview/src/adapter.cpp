@@ -8,6 +8,8 @@
 #include "combat_focus125.h"
 #include "view152.h"
 #include "../../../common/startup_view160.h"
+#include "../../../common/startup_gate168.h"
+#include "../../../common/component_error168.h"
 #include "possession_lease.h"
 #include "control_metrics.h"
 #include "camera_entry_gate.h"
@@ -110,6 +112,7 @@ static void climb_adopt98(uintptr_t actor);
 static void climb_observe98(uintptr_t actor);
 static bool climb_pending153(uintptr_t actor);
 static void request_possession(){
+    if(!startup168::can_possess())return;
     if(!enabled||!state||state->stop||state->release||state->mode==POSSESSED||state->mode==ARMED)return;
     InterlockedExchange(&entry_attempted,0);
     InterlockedExchange(&state->acquire,1);InterlockedExchange(&state->mode,ARMED);
@@ -134,7 +137,7 @@ static LRESULT CALLBACK weapon_window_proc(HWND window,UINT message,WPARAM w,LPA
         return 0;
     }
     if(message==WM_KEYDOWN&&w==VK_F9&&!(l&(1L<<30))){request_possession();return 0;}
-    if(state&&message==WM_KEYDOWN&&(w==VK_F10||w==VK_ESCAPE||w==VK_INSERT||w==VK_F12)){
+    if(state&&message==WM_KEYDOWN&&(w==VK_F10||w==VK_ESCAPE||w==VK_INSERT)){
         command_native_cancel100();InterlockedExchange(&state->release,1);interface_restore();
     }
     if(state&&(message==WM_KILLFOCUS||(message==WM_ACTIVATEAPP&&!w))){
@@ -401,7 +404,7 @@ static bool camera_owned(uintptr_t camera) {
         if(!enabled || state->stop || state->release || GetTickCount64()-state->heartbeat>500
             || (!state->acquire&&!possessed))return false;
         if((GetAsyncKeyState(VK_INSERT)&0x8000)||(GetAsyncKeyState(VK_F10)&0x8000)
-            ||(GetAsyncKeyState(VK_F12)&0x8000)||(GetAsyncKeyState(VK_ESCAPE)&0x8000))return false;
+            ||(GetAsyncKeyState(VK_ESCAPE)&0x8000))return false;
         if(dead_view())return death_context(camera);
         if(field<uintptr_t>(camera,0)!=base+0x15d22e8)return false;
         if(possessed&&possession_lease.active&&camera==possession_lease.identity.camera&&
@@ -1040,7 +1043,9 @@ static DWORD WINAPI worker(void*) {
         wchar_t dll_path[MAX_PATH];require(GetModuleFileNameW(self_module,dll_path,MAX_PATH)>0,"DLL path failed");
         equipment_initialize_mapping81();accuracy_initialize90();friendly_initialize109();
         Module engine=find_module(GetCurrentProcessId());base=engine.base;
-        require(engine.size==0x1d88000 && hash_file(engine.path)==EXPECTED_HASH,"Unsupported engine build");
+        const auto engine_sha170=hash_file(engine.path);
+        require(engine.size==0x1d88000,"Unsupported engine address layout");
+        const auto binding172=engine172::admit(engine.path,engine_sha170);engine172::live_hooks(base,1,binding172);
         require(accuracy_signatures90(),"Native accuracy/projection/camera signatures differ");
         require(native_bow_signatures(base),"Native bow signatures differ");
         require(native_movement_signatures(base),"Native movement signatures differ");
@@ -1103,8 +1108,8 @@ static DWORD WINAPI worker(void*) {
         const auto audio_guard123=mileszero123::install();
         log<<"{\"event\":\"miles_zero123\",\"status\":"<<audio_guard123<<"}\n";log.flush();
         InterlockedExchange(&state->ready,1);
-        log<<"{\"event\":\"hook_ready\",\"pid\":"<<GetCurrentProcessId()<<",\"sha256\":\""<<EXPECTED_HASH<<"\",\"motion_rva\":\"0x367600\"}\n";log.flush();
-        bool f9=false,f10=false,f12=false,was_focus=false,mouse_captured=false,left_mouse=false;uint64_t next=0,last_mouse=GetTickCount64();
+        log<<"{\"event\":\"hook_ready\",\"pid\":"<<GetCurrentProcessId()<<",\"sha256\":\""<<engine_sha170<<"\",\"motion_rva\":\"0x367600\"}\n";log.flush();
+        bool f9=false,f10=false,was_focus=false,mouse_captured=false,left_mouse=false;uint64_t next=0,last_mouse=GetTickCount64();
         // Release builds remain available until explicit disable or game exit.
         while(!state->stop) {
             DWORD foreground_pid=0;DWORD foreground_thread=GetWindowThreadProcessId(GetForegroundWindow(),&foreground_pid);bool focus=foreground_pid==GetCurrentProcessId();
@@ -1125,19 +1130,18 @@ static DWORD WINAPI worker(void*) {
                 state->window_thread=foreground_thread;
                 if(down('W'))input|=FORWARD;if(down('S'))input|=BACKWARD;if(down('A'))input|=LEFT;if(down('D'))input|=RIGHT;
                 if(down(VK_SHIFT))input|=RUN;
-                bool a=down(VK_F9),b=down(VK_F10),c=down(VK_F12);
+                bool a=down(VK_F9),b=down(VK_F10);
                 if(a&&!f9)request_possession();
                 if(b&&!f10)InterlockedExchange(&state->release,1);
-                if(c&&!f12)InterlockedExchange(&state->stop,1);
                 if(down(VK_ESCAPE))InterlockedExchange(&state->release,1);
-                f9=a;f10=b;f12=c;
+                f9=a;f10=b;
                 if(state->acquire&&state->mode==ARMED&&!entry_attempted&&input_window&&
                     camera_entry_owner(foreground_thread,state->camera_callback_thread,state->camera_input_thread)&&
                     !InterlockedCompareExchange(&entry_pending,1,0)){
                     if(PostMessageW(input_window,ENTER_SOLDIER_MESSAGE,0,0))++state->acquisition_posts;
                     else {InterlockedExchange(&entry_pending,0);entry_failed(14);}
                 }
-            }else {if(was_focus)InterlockedExchange(&state->release,1);f9=f10=f12=false;}
+            }else {if(was_focus)InterlockedExchange(&state->release,1);f9=f10=false;}
             if(!focus){left_mouse=false;InterlockedExchange(&state->aiming,0);}
             if((state->mode!=POSSESSED||state->stop||state->release||!focus)&&interface_active)restore_interface_on_window();
             InterlockedExchange(&charge_physical_input148,focus&&!dead_view()?LONG(input):0);
@@ -1206,7 +1210,7 @@ static DWORD WINAPI worker(void*) {
         log<<"{\"event\":\"disabled\",\"reason\":\"explicit_stop\",\"tick_ms\":"<<GetTickCount64()<<",\"bytes_restored\":"<<(restored?"true":"false")<<",\"camera_bytes_restored\":"<<(camera_restored?"true":"false")<<",\"hook_status\":"<<int(result)<<"}\n";log.flush();
         charge_reset139();charge146::publish(charge_shared146,{});
         // Keep DLL, mapping, and trampoline resident until process exit: no unload race.
-    }catch(const std::exception& ex){nativeoverlay106::stop();if(state){state->error=1;state->ready=0;}if(log){log<<"{\"event\":\"initialization_failed\",\"reason\":\""<<ex.what()<<"\"}\n";log.flush();}}
+    }catch(const std::exception& ex){startup167::remember(ex.what());nativeoverlay106::stop();if(state){state->error=1;state->ready=0;}if(log){log<<"{\"event\":\"initialization_failed\",\"reason\":\""<<ex.what()<<"\"}\n";log.flush();}}
     return 0;
 }
 BOOL WINAPI DllMain(HINSTANCE instance,DWORD reason,LPVOID) {

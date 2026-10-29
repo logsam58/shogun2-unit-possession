@@ -1,0 +1,175 @@
+{
+  "candidate": 173,
+  "base_local_accepted_candidate": 172,
+  "built": true,
+  "installed": true,
+  "uploaded_to_Workshop": false,
+  "GitHub_updated": false,
+  "product_release_changed": false,
+  "change": "Remove F12 session-disable, QTE-stop, possession-release and camera-yield input. F10/Escape behavior retained.",
+  "pack_sha256": "5a79a2b8de38ee69e0cf104b93e7df24a55d1d71aab3f4bf79a7364ee0b0a6c0",
+  "native_sha256": "ef404f843ad18f46128dab17e19e5e6b66df49e676d5b6dd1bb28ed611d6b0a1",
+  "embedded_build": "173-c85044f55f448f36",
+  "fresh_native_suites": {
+    "adapter-tests": 100,
+    "qte-tests": 50,
+    "hud-tests": 8
+  },
+  "native_build_checks_passed": true,
+  "workshop_checks": [
+    {
+      "name": "compile",
+      "passed": true,
+      "seconds": 19.516,
+      "log": "logs\\compile.log"
+    },
+    {
+      "name": "lua-bridge",
+      "passed": true,
+      "seconds": 2.234,
+      "log": "logs\\lua-bridge.log"
+    },
+    {
+      "name": "menu-failure-recovery",
+      "passed": true,
+      "seconds": 2.078,
+      "log": "logs\\menu-failure-recovery.log"
+    },
+    {
+      "name": "enabled-ui-mod",
+      "passed": true,
+      "seconds": 1.875,
+      "log": "logs\\enabled-ui-mod.log"
+    },
+    {
+      "name": "renamed-duplicate-bootstrap",
+      "passed": true,
+      "seconds": 1.781,
+      "log": "logs\\renamed-duplicate-bootstrap.log"
+    },
+    {
+      "name": "repeat-startup",
+      "passed": true,
+      "seconds": 3.969,
+      "log": "logs\\repeat-startup.log"
+    },
+    {
+      "name": "runtime-resources",
+      "passed": true,
+      "seconds": 5.578,
+      "log": "logs\\runtime-resources.log"
+    },
+    {
+      "name": "storage-lifetime",
+      "passed": true,
+      "seconds": 2.282,
+      "log": "logs\\storage-lifetime.log"
+    },
+    {
+      "name": "mod-coexistence",
+      "passed": true,
+      "seconds": 2.609,
+      "log": "logs\\mod-coexistence.log"
+    },
+    {
+      "name": "actual-qte-stock-startup",
+      "passed": true,
+      "seconds": 1.797,
+      "log": "logs\\actual-qte-stock-startup.log"
+    },
+    {
+      "name": "actual-qte-occupied-live-hook",
+      "passed": true,
+      "seconds": 1.75,
+      "log": "logs\\actual-qte-occupied-live-hook.log"
+    },
+    {
+      "name": "actual-qte-independent-identity",
+      "passed": true,
+      "seconds": 2.766,
+      "log": "logs\\actual-qte-independent-identity.log"
+    },
+    {
+      "name": "actual-qte-critical-engine-refusal",
+      "passed": true,
+      "seconds": 2.843,
+      "log": "logs\\actual-qte-critical-engine-refusal.log"
+    },
+    {
+      "name": "actual-qte-reviewed-engine-startup",
+      "passed": true,
+      "seconds": 1.875,
+      "log": "logs\\actual-qte-reviewed-engine-startup.log"
+    },
+    {
+      "name": "engine-contract-controls",
+      "passed": true,
+      "seconds": 7.172,
+      "log": "logs\\engine-contract-controls.log"
+    },
+    {
+      "name": "actual-qte-independent-code",
+      "passed": true,
+      "seconds": 2.938,
+      "log": "logs\\actual-qte-independent-code.log"
+    }
+  ],
+  "engine_contract_controls": 48,
+  "source_review": {
+    "passed": true,
+    "changed_compiled_dependencies": [
+      "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
+      "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp"
+    ],
+    "new_engine_reference_candidates": false,
+    "removed_candidates": [
+      {
+        "source": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
+        "value": "0x8000",
+        "count": 1,
+        "meaning": "GetAsyncKeyState high-bit mask removed with F12, not a native engine address"
+      },
+      {
+        "source": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
+        "value": "0x8000",
+        "count": 1,
+        "meaning": "GetAsyncKeyState high-bit mask removed with F12, not a native engine address"
+      }
+    ],
+    "protected_region_hashes_unchanged": true,
+    "engine_contract_id": "2ab5c4c36b4ed492cf1e3c653f0841bb5ba427b8cefd337eed36f4dbfe93083c",
+    "native_ABI_roles_hooks_and_mechanics_unchanged": true,
+    "candidate_record_count": 609,
+    "F12_removed_from_adapter_and_QTE": true
+  },
+  "installer_safety_checks": {
+    "passed": true,
+    "case_count": 8,
+    "cases": [
+      "roundtrip preserves later settings",
+      "foreign_pack refused",
+      "bad_source refused",
+      "inactive_parent refused",
+      "later_foreign_pack rollback refused",
+      "corrupt_backup rollback refused",
+      "closed process guard",
+      "synchronous recovery preserves concurrent state"
+    ],
+    "real_game_files_written": false
+  },
+  "Python_unit_checks": 20,
+  "roles_tables_inventory_diff_checks_passed": true,
+  "first_party_code_only_payload": true,
+  "engine_assets_or_decompilation_shipped": false,
+  "recorder_debugger_started": false,
+  "installation_receipt": "artifacts/Test173/install-1/installation-verified.json",
+  "rollback_candidate": 172,
+  "rollback_helper": "artifacts/Test173/install-1/manage.py rollback --closed",
+  "formal_loaded_hash_hook_gate_completed": false,
+  "owner_gameplay_accepted": false,
+  "limits": [
+    "Offline checks are not a live gameplay result.",
+    "Existing Test172 engine-compatibility boundaries and charge/climb/crash limitations remain.",
+    "The subscribed Workshop download remains Test172; this task did not publish Test173."
+  ]
+}

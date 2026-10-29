@@ -1,0 +1,160 @@
+{
+  "schema": 1,
+  "candidate": 170,
+  "date": "2026-10-26",
+  "offline_checks_passed": true,
+  "gameplay_accepted": false,
+  "installed": false,
+  "uploaded": false,
+  "GitHub_changed": false,
+  "pack": {
+    "sha256": "437637d588ba0495ea5ca8ee12968bccc1b69e0013e5a17d2bb289a6672e6d2c",
+    "bytes": 2258922
+  },
+  "native_sha256": "bd5b659b885bb9335503ee57bff7f5d034b4809545182eced79fd86a6fd34c18",
+  "component_cache": "170-e181dadfda318c72",
+  "engine_profiles": {
+    "stock": "022fae2e2da92b59b8b1b8ee52887003c624e3c8eca060b209f5d792a7f874f5",
+    "moddb_bugfix": "c4d91d74ce9ff8338cf61d5b021b03a2776830177a590fcac205509a42239545"
+  },
+  "native_checks": [
+    {
+      "name": "local-assets-extractor",
+      "passed": true,
+      "seconds": 4.639,
+      "log": "logs\\local-assets-extractor.log"
+    },
+    {
+      "name": "local-assets-prepare",
+      "passed": true,
+      "seconds": 2.821,
+      "log": "logs\\local-assets-prepare.log"
+    },
+    {
+      "name": "local-assets-format-render-tests",
+      "passed": true,
+      "seconds": 11.034,
+      "log": "logs\\local-assets-format-render-tests.log"
+    },
+    {
+      "name": "minhook",
+      "passed": true,
+      "seconds": 2.956,
+      "log": "logs\\minhook.log"
+    },
+    {
+      "name": "adapter",
+      "passed": true,
+      "seconds": 7.25,
+      "log": "logs\\adapter.log"
+    },
+    {
+      "name": "adapter-tests",
+      "passed": true,
+      "seconds": 280.341,
+      "log": "logs\\adapter-tests.log",
+      "executables": 100
+    },
+    {
+      "name": "qte",
+      "passed": true,
+      "seconds": 5.597,
+      "log": "logs\\qte.log"
+    },
+    {
+      "name": "qte-tests",
+      "passed": true,
+      "seconds": 142.25,
+      "log": "logs\\qte-tests.log",
+      "executables": 50
+    },
+    {
+      "name": "hud",
+      "passed": true,
+      "seconds": 3.918,
+      "log": "logs\\hud.log"
+    },
+    {
+      "name": "hud-tests",
+      "passed": true,
+      "seconds": 11.45,
+      "log": "logs\\hud-tests.log",
+      "executables": 8
+    }
+  ],
+  "workshop_checks": [
+    {
+      "name": "compile",
+      "passed": true,
+      "seconds": 15.594,
+      "log": "logs\\compile.log"
+    },
+    {
+      "name": "lua-bridge",
+      "passed": true,
+      "seconds": 2.188,
+      "log": "logs\\lua-bridge.log"
+    },
+    {
+      "name": "menu-failure-recovery",
+      "passed": true,
+      "seconds": 1.969,
+      "log": "logs\\menu-failure-recovery.log"
+    },
+    {
+      "name": "enabled-ui-mod",
+      "passed": true,
+      "seconds": 1.735,
+      "log": "logs\\enabled-ui-mod.log"
+    },
+    {
+      "name": "renamed-duplicate-bootstrap",
+      "passed": true,
+      "seconds": 1.766,
+      "log": "logs\\renamed-duplicate-bootstrap.log"
+    },
+    {
+      "name": "repeat-startup",
+      "passed": true,
+      "seconds": 3.328,
+      "log": "logs\\repeat-startup.log"
+    },
+    {
+      "name": "runtime-resources",
+      "passed": true,
+      "seconds": 6.281,
+      "log": "logs\\runtime-resources.log"
+    },
+    {
+      "name": "storage-lifetime",
+      "passed": true,
+      "seconds": 2.313,
+      "log": "logs\\storage-lifetime.log"
+    },
+    {
+      "name": "mod-coexistence",
+      "passed": true,
+      "seconds": 2.75,
+      "log": "logs\\mod-coexistence.log"
+    }
+  ],
+  "actual_engine_fixture": "artifacts/Test170/variant-checks-1/verification.json",
+  "actual_variant_Lua_fixture": "artifacts/Test170/variant-lua-1/verification.json",
+  "installer_safety": "artifacts/Test170/install-checks-1/verification.json",
+  "rollback_manager": "artifacts/Test170/install-1/manage.py",
+  "recorder_debugger": false,
+  "limits": [
+    "Exact reviewed engine only; unknown edits still refused",
+    "Offline checks are not combined gameplay acceptance",
+    "Actual affected player PFH2 archive not supplied",
+    "Linux/Proton and arbitrary loaders not validated"
+  ],
+  "private_third_party_engine_is_not_in_pack_or_source_kit": true,
+  "installation_verification": "artifacts/Test170/install-1/installation-verified.json",
+  "local_mod_entry": "shogun2_unit_possession_test170.pack",
+  "loaded_hash_gate_pending": true,
+  "superseded_by": 171,
+  "owner_report": "F9 unavailable; screenshot Unsupported engine",
+  "actual_QTE_startup_rejected_reviewed_engine": true,
+  "failure_reproduction": "artifacts/Test171/actual-qte-baseline-1/verification.json"
+}

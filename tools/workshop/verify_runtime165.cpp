@@ -61,7 +61,7 @@ int wmain(int argc,wchar_t** argv){try{
     auto copied=out/L"fallback copied resources.s2fp";
     cache_local159(runtime_folder+L"\\qte-assets159.s2fp",copied.wstring(),2,false);
     require(hash_file(copied.wstring())==hash_file(runtime_folder+L"\\qte-assets159.s2fp"),"Copy fallback changed resources");
-    auto shared=(std::filesystem::path(runtime_folder).parent_path()/(L"resources159-"+std::wstring(assets159::recipe,assets159::recipe+64))).wstring();
+    auto shared=(std::filesystem::path(runtime_folder).parent_path()/(L"resources159-locale167-"+std::wstring(assets159::recipe,assets159::recipe+64))).wstring();
     auto foreign_lock=shared+L"\\prepare166.lock";{std::ofstream foreign(foreign_lock);foreign<<"foreign";}
     auto second_runtime=runtime_folder;runtime_folder=(out/L"blocked preparation fixture").wstring();std::filesystem::create_directory(runtime_folder);
     refused=false;try{workshop_assets165(GetModuleHandleW(nullptr),game.wstring());}catch(...){refused=true;}

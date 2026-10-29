@@ -1,6 +1,8 @@
 # Shogun 2 Unit Possession
 
-The current release is v0.32, using the accepted Test166 Workshop runtime.
+The current GitHub release is v0.33, using Test173. Test172 has owner
+gameplay acceptance; Test173 removes F12 and has offline checks only.
+Read docs/current-release.json for separate GitHub and Steam identities.
 Start with README.md, BUILD_AND_TEST.md, SOURCE_MAP.md, VALIDATION.md and
 docs/current-release.json. Older versioned documents describe historical builds.
 docs/README.md, native/README.md and tools/README.md provide the developer

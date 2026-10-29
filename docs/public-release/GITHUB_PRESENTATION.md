@@ -1,8 +1,8 @@
 # GitHub presentation
 
 The landing page is on main, the sole maintained branch. The current product
-release is v0.32 / Test166 Workshop. Repository visibility remains private;
-changing it is a separate owner action. This file documents presentation and
+release is v0.33 / Test173. The owner has made the repository public;
+this release does not change its visibility. This file documents presentation and
 navigation, not authorization to change GitHub settings.
 
 ## Repository name
@@ -21,7 +21,7 @@ total-war, shogun-2, game-mod, first-person, third-person, cpp, windows, reverse
 
 - [Landing page and controls](../../README.md)
 - [Developer reading path](../README.md)
-- [v0.32 release notes](../releases/v0.32.md)
+- [v0.33 release notes](../releases/v0.33.md)
 - [Current release procedure](RELEASING.md)
 - [Release engineering and history](README.md)
 

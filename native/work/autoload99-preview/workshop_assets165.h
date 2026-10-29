@@ -70,7 +70,7 @@ static void workshop_assets165(HMODULE module,const std::wstring& game){
         auto path=runtime_folder+L"\\"+name;
         if(GetFileAttributesW(path.c_str())!=INVALID_FILE_ATTRIBUTES){assets159::Store store;require(store.load(path,name[0]==L'h'?1:2),"Existing local cache is foreign/corrupt; preserved");}
     }
-    auto shared=(std::filesystem::path(runtime_folder).parent_path()/(L"resources159-"+std::wstring(assets159::recipe,assets159::recipe+64))).wstring();
+    auto shared=(std::filesystem::path(runtime_folder).parent_path()/(L"resources159-locale167-"+std::wstring(assets159::recipe,assets159::recipe+64))).wstring();
     workshop165::plain(shared);
     require(CreateDirectoryW(shared.c_str(),nullptr)||GetLastError()==ERROR_ALREADY_EXISTS,"Shared local resources unavailable");
     // Exclusive, crash-safe preparation lock. Its only file is removed by the OS.

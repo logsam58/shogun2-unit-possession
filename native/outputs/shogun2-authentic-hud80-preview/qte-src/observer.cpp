@@ -117,7 +117,7 @@ static DWORD WINAPI worker(void*){
         require(mapping&&GetLastError()!=ERROR_ALREADY_EXISTS,"Diagnostic already resident");
         state=static_cast<Status*>(MapViewOfFile(mapping,FILE_MAP_ALL_ACCESS,0,0,sizeof(Status)));require(state!=nullptr,"Mapping failed");
         memset(state,0,sizeof(Status));state->magic=POC_MAGIC;state->version=POC_VERSION;state->pid=GetCurrentProcessId();state->size=sizeof(Status);
-        Module engine=find_module(GetCurrentProcessId());require(engine.size==0x1d88000&&hash_file(engine.path)==EXPECTED_HASH,"Unsupported engine build");engine_base=engine.base;
+        Module engine=find_module(GetCurrentProcessId());const auto engine_sha170=hash_file(engine.path);require(engine.size==0x1d88000,"Unsupported engine address layout");(void)engine172::admit(engine.path,engine_sha170);engine_base=engine.base;
         auto& ports=qte::observation::ports;ports.engine=uint32_t(engine.base);ports.emit=emit;ports.read=read;ports.snapshot=snapshot;
 #if OBSERVER_DETAILS
         wchar_t possession_name[80];swprintf_s(possession_name,L"Local\\Shogun2PossessionPOC46-%lu",GetCurrentProcessId());
@@ -136,7 +136,7 @@ static DWORD WINAPI worker(void*){
         for(unsigned i=0;i<4;++i)require(MH_CreateHook(targets[i],hooks[i],originals[i])==MH_OK,"Hook creation failed");
         InterlockedExchange(&collecting,1);require(MH_EnableHook(MH_ALL_HOOKS)==MH_OK,"Hook enable failed");
         LARGE_INTEGER frequency;QueryPerformanceFrequency(&frequency);state->ready=1;
-        log<<"{\"event\":\"ready\",\"engine_sha256\":\""<<EXPECTED_HASH<<"\",\"qpc_frequency\":"<<frequency.QuadPart
+        log<<"{\"event\":\"ready\",\"engine_sha256\":\""<<engine_sha170<<"\",\"qpc_frequency\":"<<frequency.QuadPart
             <<",\"changes_combat_outcomes\":false,\"animation_details\":"<<(OBSERVER_DETAILS?"true":"false")<<"}\n";log.flush();
         uint64_t expires=GetTickCount64()+180000;
         while(!state->stop&&GetTickCount64()<expires){state->heartbeat=GetTickCount64();flush(log);

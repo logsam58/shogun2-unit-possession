@@ -1,39 +1,36 @@
 # Validation
 
-**v0.32 uses the accepted Test166 Workshop build without rebuilding its native
-payload.** The owner reported that it worked in game. Steam's successful update
-of item 3825625050 and the exact downloaded pack/preview were independently
-verified. The release's [validation record](docs/public-release/V0_32_VALIDATION.json)
-separates packaging checks from earlier build and gameplay evidence.
+**v0.33 packages the exact Test173 build and its matching source.** No native
+gameplay code was rebuilt for publication. Test173 removes F12's disable,
+release and camera-yield paths from the accepted Test172 implementation.
 
-The retained Test166 component suite passed 98 adapter, 50 QTE and 8 HUD
-executables plus resource format/renderer checks. Workshop fixtures passed
-actual float-Lua/loadlib and all 37 stock callbacks, nine process startups
-without cache growth, shared resources and verified copy fallback, foreign-file
-preservation, staging recovery, failed-extraction cleanup, 100 normal receipt
-lifetimes and five owned forced exits. [Exact results](docs/public-release/TEST166_VALIDATION.json)
-and the [storage design](docs/public-release/WORKSHOP166.md) describe the boundaries.
+The retained Test173 build passed 100 adapter, 50 QTE and 8 HUD executables,
+resource extraction/format/render checks, and 16 Workshop build/package checks.
+These include all 37 stock Lua callbacks, menu failure recovery, resource and
+receipt lifetimes, UI-mod coexistence, actual compiled QTE startup and 48 shared
+engine-contract controls. Eight isolated update/rollback checks passed.
 
-Test165 separately passed a fresh subscribed runtime gate: direct Steam content
-path, exact loaded components, status channels and 17 core hook destinations,
-with no old DInput mod loader or local publisher pack. Its owner playtest was
-accepted. That gate does not substitute for a Test166 gate.
+Stock, reviewed Bugfix and controlled compatible engine edits passed offline
+checks; critical engine edits and occupied hooks were refused. Test172 also
+passed fresh-resource comparisons and isolated Loader source-patch checks.
+See [engine details](docs/public-release/WORKSHOP172.md), the
+[Test173 record](docs/public-release/TEST173_VALIDATION.json) and the
+[release record](docs/public-release/V0_33_VALIDATION.json).
 
-Test166's owner gameplay report is accepted, but its formal loaded-hash/hook
-gate was not completed. The playtest timing relative to local publisher-copy
-cleanup was unspecified. Do not claim independent Subscribe-only Test166
-runtime activation, explicit full-battle completion, exhaustive feature
-coverage, second-machine validation or long-term stability from that report.
-There is no need to repeat play merely to acknowledge the owner's acceptance.
+The owner reported Test172 worked in game. Its formal loaded-hash/hook gate
+was not completed, and the report does not establish exhaustive feature or
+long-term stability coverage. **Test173 has no live acceptance yet.** Offline
+font fixtures are not real foreign-language installations; engine checks are
+not universal DLL/mod compatibility or a security assessment of another mod.
 
-The v0.32 release rechecks source correspondence, archive contents/checksums,
-Python tests and generated metadata. It does not launch a game, attach a
-debugger or enable recording. Future live investigation requires fresh
-readiness and exact loaded identity/hook checks. Recording remains optional
-and is not shipped or started by the Workshop mod.
+Steam's Test172 upload and exact subscribed download were verified separately.
+No Steam upload, game launch, game/settings change, recording or debugger start
+is part of this GitHub release. Live checks require fresh readiness and exact
+loaded identities/hooks. Old Test165/166 gates and versioned installer records
+apply only to those historical builds.
 
-Older Test159–163 installer/chooser receipts remain historical. Unavailable
-optional archives are skipped, never counted as passing checks. Synthetic
-fixtures do not establish driver/world/castle behavior, race freedom, absence
-of leaks, power-loss recovery or physical display latency. Crashes, crowd
-slowdown, intermittent charging/climbing and first-person clipping remain open.
+Release checks cover Python tests, generated metadata, the exact Git source,
+source/pack asset exclusions, archive closure and downloaded release hashes.
+They do not establish all unit/map/driver cases, race freedom, leak freedom,
+physical display latency or absence of crashes. Charging/climbing, clipping and
+Ultra multi-army slowdown remain open.

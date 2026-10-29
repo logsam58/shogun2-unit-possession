@@ -9,6 +9,8 @@ int wmain(int argc,wchar_t** argv){try{
     if(argc==3&&std::wstring(argv[1])==L"--owned-child"){
         workshop165::LiveReceipt166 receipt;
         check(receipt.write(argv[2],{'l','i','v','e'}),"Child receipt creation failed");
+        HANDLE root168=workshop165::transient_root168(std::wstring(argv[2])+L".root",{'u','i'});
+        (void)root168; // Owned child is intentionally killed below; OS closes it.
         Sleep(10000);return 0;
     }
     check(argc==2,"Use a new fixture output directory");
@@ -32,10 +34,11 @@ int wmain(int argc,wchar_t** argv){try{
         STARTUPINFOW si{};si.cb=sizeof si;PROCESS_INFORMATION pi{};
         check(CreateProcessW(exe,&command[0],nullptr,nullptr,FALSE,CREATE_NO_WINDOW,nullptr,nullptr,&si,&pi)!=0,"Owned fixture child failed");
         CloseHandle(pi.hThread);
-        for(unsigned n=0;n<100&&!std::filesystem::exists(path);++n)Sleep(20);
-        bool created=std::filesystem::exists(path);TerminateProcess(pi.hProcess,166);
+        auto root168=std::filesystem::path(path.wstring()+L".root");
+        for(unsigned n=0;n<100&&(!std::filesystem::exists(path)||!std::filesystem::exists(root168));++n)Sleep(20);
+        bool created=std::filesystem::exists(path)&&std::filesystem::exists(root168);TerminateProcess(pi.hProcess,166);
         check(WaitForSingleObject(pi.hProcess,5000)==WAIT_OBJECT_0,"Owned fixture child did not exit");CloseHandle(pi.hProcess);
-        check(created&&!std::filesystem::exists(path),"Forced-exit receipt accumulated");
+        check(created&&!std::filesystem::exists(path)&&!std::filesystem::exists(root168),"Forced-exit receipt/UI root accumulated");
     }
     std::vector<unsigned char> bytes={'c','a','c','h','e'};
     auto target=out/L"owned-cache.luac",pending=std::filesystem::path(target.wstring()+L".pending166");

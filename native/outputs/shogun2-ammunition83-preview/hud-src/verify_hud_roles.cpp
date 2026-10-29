@@ -32,5 +32,26 @@ int main(){try{
     for(unsigned t:{0u,0x15e8524u,0x15df000u,0x15ffffffu}){put_role(actor,0,base+t);require(!measured(),"unsupported class rejected");++checks;}
     put_role(actor,0,base+tables[0]);put_role(phase,0x14,4u);require(!measured(),"nonbattle phase rejected");++checks;
     put_role(phase,0x14,5u);telemetry.pid=pid+1;require(!measured(),"foreign process rejected");++checks;
+    telemetry.pid=pid;
+    // Real production measurement must retain custom units without stock art,
+    // while every role/identity/liveness/ownership guard still applies.
+    static const wchar_t custom169[]=L"Armored_Addon_Unit_169";
+    require(hud80::unit_art(custom169)==nullptr,"Fixture accidentally uses stock artwork");
+    put_role(obj,8,reinterpret_cast<uintptr_t>(custom169));
+    for(unsigned t:tables){
+        put_role(actor,0,base+t);require(measured(),"Custom unit lost its HUD");++checks;
+        require(!display.unit&&display.native_unit_key==custom169&&hud80::display_name169(display)==custom169,"Custom unit key replaced with guessed stock data");++checks;
+        put_role(actor,0x1c8,18u);require(!measured(),"Custom stale actor accepted");put_role(actor,0x1c8,19u);++checks;
+        put_role(actor,0xf0,static_cast<unsigned char>(0));require(!measured(),"Custom dead actor accepted");put_role(actor,0xf0,static_cast<unsigned char>(1));++checks;
+        put_role(unit,4,21u);require(!measured(),"Custom foreign unit accepted");put_role(unit,4,20u);++checks;
+        put_role(army,0x114,0u);require(!measured(),"Custom invalid ownership accepted");put_role(army,0x114,1u);++checks;
+        telemetry.mode=0;require(!measured(),"Custom unpossessed actor accepted");telemetry.mode=POSSESSED;++checks;
+    }
+    static const wchar_t custom_clan169[]=L"Addon_Clan_169";
+    put_role(army_obj,8,reinterpret_cast<uintptr_t>(custom_clan169));
+    require(measured()&&!display.owner,"Custom faction without stock mon hid HUD");++checks;
+    put_role(army_obj,8,reinterpret_cast<uintptr_t>(clan));
+    put_role(obj,8,reinterpret_cast<uintptr_t>(unit_name));
+    require(measured()&&display.unit&&hud80::display_name169(display)==display.unit->name,"Stock presentation changed after custom unit");++checks;
     VirtualFree(image,0,MEM_RELEASE);printf("PASS production HUD measurement: 10 roles, %u checks\n",checks);return 0;
 }catch(const std::exception& e){fprintf(stderr,"%s\n",e.what());return 1;}}

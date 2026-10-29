@@ -15,6 +15,7 @@ Tested resource-reference prerequisites:
 
 No tools/runtimes are bundled. Python requires 3.11+ for file_digest; 3.12.10 is tested. ImageMagick's exact version is checked; npm transitive versions are locked and scripts disabled. Compiler drift can change binary bytes.
 
-Supply legitimate supported Empire.Retail.dll, mss32.dll, installscript.vdf and data/data_fots/local_en packs. DLC/language differences can fail exact resource checks and need review before support. See [resources](public-release/RESOURCES.md).
+Supply legitimate supported Empire.Retail.dll, mss32.dll, installscript.vdf and data/data_fots plus compatible language packs. English voice is optional
+for Workshop; the independent resource-reference pipeline has stricter stock inputs. DLC/language differences can fail exact resource checks and need review before support. See [resources](public-release/RESOURCES.md).
 
 Recorder providers include Windows performance counters and PowerShell; NVIDIA GPU detail additionally uses nvidia-smi on PATH/System32. Missing providers are explicit, not zero usage. Optional history/decompiler research is not required for current build/tests. No private runtime, prepared resource archive or real dump is required.

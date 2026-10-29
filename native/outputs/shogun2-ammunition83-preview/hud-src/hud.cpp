@@ -75,8 +75,9 @@ static bool measure(){
     d.fatigue=read<unsigned char>(unit+0xd3c)?0:read<unsigned>(unit+0xd34);d.morale=read<unsigned>(unit+0xce8);
     unsigned routing=read<unsigned>(unit+0xcec);d.routing=read<unsigned char>(phase+0x2778)!=0&&(routing==2||routing==3);
     d.men=read<unsigned>(unit+0x2bc);d.initial=read<unsigned>(unit+0xcbc);
-    uintptr_t definition=0;std::wstring key=unit_key(unit,definition);d.unit=hud80::unit_art(key.c_str());
-    if(!d.unit)return false;
+    uintptr_t definition=0;d.native_unit_key=unit_key(unit,definition);d.unit=hud80::unit_art(d.native_unit_key.c_str());
+    // Stock presentation metadata is optional. A custom unit's live identity,
+    // ownership and stats are still validated below, independently of artwork.
     uintptr_t army=0;d.owner=faction_owner(unit,army);
     if(d.owner){d.faction=d.owner->name;d.mon=d.owner->mon;d.boshin=d.owner->boshin;}
     d.ranged=read<unsigned>(unit+0xf7c)!=0;auto mode=weaponmode133::from_native(read<unsigned char>(unit+0xead),d.ranged);
@@ -200,7 +201,7 @@ int wmain(int argc,wchar_t** argv){Gdiplus::GdiplusStartupInput input;ULONG_PTR 
         if(argc>1&&!wcscmp(argv[1],L"--render"))result=preview(argc,argv);
         else{
             require(argc==1||argc==2&&!wcscmp(argv[1],L"--probe"),"Use no arguments, --probe, or --render");
-            pid=find_process(0);Module engine=find_module(pid);base=engine.base;require(engine.size==0x1d88000&&hash_file(engine.path)==EXPECTED_HASH,"Unsupported engine");
+            pid=find_process(0);Module engine=find_module(pid);base=engine.base;require(engine.size==0x1d88000,"Unsupported engine address layout");(void)engine172::admit(engine.path,hash_file(engine.path));
             Handle handle(OpenProcess(PROCESS_VM_READ|PROCESS_QUERY_LIMITED_INFORMATION|SYNCHRONIZE,FALSE,pid));process=handle.h;require(process!=nullptr,"Cannot read game");
             wchar_t name[80];mapping_name(name,pid);Handle mapping(OpenFileMappingW(FILE_MAP_READ,FALSE,name));require(mapping.h!=nullptr,"Possession not loaded");
             shared=static_cast<Status*>(MapViewOfFile(mapping.h,FILE_MAP_READ,0,0,sizeof(Status)));require(shared!=nullptr,"HUD mapping failed");

@@ -1,6 +1,7 @@
 # Build and test
 
-v0.32 uses the accepted **Test166 Workshop runtime**. Directory suffixes such as
+v0.33 packages **Test173**, based on the owner-accepted Test172 implementation.
+Test173 has offline checks; its live acceptance remains pending. Directory suffixes such as
 45, 99, 159 and 165 are historical implementation names, not product versions.
 A build never installs, launches the game, edits Steam settings or publishes.
 Use the [developer guide](docs/README.md) for the reading path and the
@@ -15,7 +16,8 @@ The Lua chunk header must be `1b4c75615100010404040400`; the usual double-number
 compiler is incompatible. Players need none of these development tools.
 
 Use an owned original Windows Steam installation, including data.pack and the
-English local_en.pack. The supported Empire.Retail.dll SHA-256 is:
+compatible native fonts from local_en.pack or a supported local_*.pack.
+English voice is optional. The owned stock Empire.Retail.dll SHA-256 is:
 
     022fae2e2da92b59b8b1b8ee52887003c624e3c8eca060b209f5d792a7f874f5
 
@@ -26,8 +28,8 @@ In PowerShell, replace the example paths and use new output directories:
     $vc = 'C:\BuildTools\VC\Auxiliary\Build\vcvars32.bat'
     $lua = 'C:\Tools\Lua51Float\lua51.exe'
     $luac = 'C:\Tools\Lua51Float\luac51.exe'
-    py -3.12 tools/build.py workshop --tests --candidate 166 --game $game --output-dir "$work\native" --vcvars $vc
-    py -3.12 tools/workshop/build_workshop165.py --candidate 166 --game $game --components "$work\native\bin" --output "$work\workshop" --vcvars $vc --lua $lua --luac $luac
+    py -3.12 tools/build.py workshop --tests --candidate 173 --game $game --output-dir "$work\native" --vcvars $vc
+    py -3.12 tools/workshop/build_workshop165.py --candidate 173 --game $game --components "$work\native\bin" --output "$work\workshop" --vcvars $vc --lua $lua --luac $luac
 
 The distributable folder is `workshop/package`. Its filename retains
 `shogun2_unit_possession_workshop165.pack` to update the existing Workshop item.
@@ -51,18 +53,22 @@ The inventory is a source index; after relevant native source changes, regenerat
 it with `py -3.12 tools/generate_native_inventory.py` and review its diff. Do not
 regenerate factual tables merely to make a regression pass.
 
-The accepted component build passed 98 adapter, 50 QTE and 8 HUD executables,
-plus local-resource format/renderer checks. Separate pack fixtures cover actual
-float-Lua/loadlib startup and all 37 stock callbacks, native payload closure,
-resource sharing and copy fallback, conservative staging recovery, foreign-file
-preservation, repeated process startup without growth and receipt deletion on
-normal/forced exit. Only owned synthetic processes are terminated by fixtures.
+Test173 passed 100 adapter, 50 QTE and 8 HUD executables plus local-resource
+format/renderer checks. Sixteen Workshop checks cover Lua/menu recovery,
+coexistence, resource/storage lifetimes, actual QTE startup and the shared
+engine contract. These are offline fixtures, not a live gameplay result.
 
-These results are retained Test166 evidence, not a fresh gameplay rebuild for
-the v0.32 label. See [validation](VALIDATION.md). Python checks and source/pack
-integrity checks are rerun for this release. Native changes require appropriate
-new native checks and separate live acceptance; fixtures cannot establish all
-unit/map combinations, stability or real display/input latency.
+    py -3.12 tools/workshop/check_engine_contract172.py
+
+The source registry must match all compiled dependencies before a native build.
+If changing a native binding, review and regenerate the contract using separately
+obtained engine files and preserved analysis; see [engine compatibility](docs/public-release/WORKSHOP172.md).
+Do not regenerate a contract merely to hide a mismatch. Normal builds need no
+decoder database. Use `--compat-engine <reviewed-Bugfix-DLL>` on the Workshop
+builder only when that separately obtained fixture is available.
+
+See [validation](VALIDATION.md). Fixtures cannot establish every unit/map
+combination, stability or real display/input latency.
 
 ## Resources and source export
 
@@ -82,6 +88,6 @@ are not started by building or playing.
 ## Older setup builds
 
 Legacy Inno setup and DInput-loader sources remain for historical compatibility
-and transaction tests. They are not the v0.32 player route. Inno Setup is not a
+and transaction tests. They are not the current player route. Inno Setup is not a
 Workshop build dependency. Do not install the old loader alongside Workshop.
 Older versioned validation documents describe those earlier builds only.

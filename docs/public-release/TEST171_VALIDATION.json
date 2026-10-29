@@ -1,0 +1,106 @@
+{
+  "schema": 1,
+  "candidate": 171,
+  "date": "2026-10-26",
+  "cause": "Test170 missed the active playable QTE worker engine gate; observer edit did not affect that worker",
+  "pack_sha256": "1d4f5fea1ea9b15f9ae4d58b2dba2a8f008fdf505e665494c3f53553477daee0",
+  "native_sha256": "7030c810c14970b275b7f728b197374c06983d3c42c8cc3721f0fe7ee0ee1a39",
+  "component_cache": "171-e9750071167c17c3",
+  "installed": true,
+  "gameplay_accepted": true,
+  "uploaded": false,
+  "recording_debugger": false,
+  "fresh_qte_checks": 50,
+  "adapter_100_and_HUD_8_reused_from_Test170_not_rerun": true,
+  "only_changed_production_native_source": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
+  "actual_baseline_reproduction": "artifacts/Test171/actual-qte-baseline-1/verification.json",
+  "package_checks": [
+    {
+      "name": "compile",
+      "passed": true,
+      "seconds": 16.422,
+      "log": "logs\\compile.log"
+    },
+    {
+      "name": "lua-bridge",
+      "passed": true,
+      "seconds": 1.922,
+      "log": "logs\\lua-bridge.log"
+    },
+    {
+      "name": "menu-failure-recovery",
+      "passed": true,
+      "seconds": 1.984,
+      "log": "logs\\menu-failure-recovery.log"
+    },
+    {
+      "name": "enabled-ui-mod",
+      "passed": true,
+      "seconds": 1.704,
+      "log": "logs\\enabled-ui-mod.log"
+    },
+    {
+      "name": "renamed-duplicate-bootstrap",
+      "passed": true,
+      "seconds": 1.719,
+      "log": "logs\\renamed-duplicate-bootstrap.log"
+    },
+    {
+      "name": "repeat-startup",
+      "passed": true,
+      "seconds": 3.187,
+      "log": "logs\\repeat-startup.log"
+    },
+    {
+      "name": "runtime-resources",
+      "passed": true,
+      "seconds": 6.188,
+      "log": "logs\\runtime-resources.log"
+    },
+    {
+      "name": "storage-lifetime",
+      "passed": true,
+      "seconds": 2.25,
+      "log": "logs\\storage-lifetime.log"
+    },
+    {
+      "name": "mod-coexistence",
+      "passed": true,
+      "seconds": 2.469,
+      "log": "logs\\mod-coexistence.log"
+    },
+    {
+      "name": "actual-qte-stock-startup",
+      "passed": true,
+      "seconds": 1.75,
+      "log": "logs\\actual-qte-stock-startup.log"
+    },
+    {
+      "name": "actual-qte-unknown-engine-refusal",
+      "passed": true,
+      "seconds": 2.656,
+      "log": "logs\\actual-qte-unknown-engine-refusal.log"
+    },
+    {
+      "name": "actual-qte-reviewed-engine-startup",
+      "passed": true,
+      "seconds": 1.797,
+      "log": "logs\\actual-qte-reviewed-engine-startup.log"
+    }
+  ],
+  "reuse_provenance": "artifacts/Test171/components-assembled-1/reuse-verification.json",
+  "update_rollback_safety": "artifacts/Test171/install-checks-1/verification.json",
+  "limitations": [
+    "The isolated startup checks stop before hooks/rendering; separate owner gameplay acceptance is now recorded",
+    "Owner case is not every engine/mod/language/map combination or long-term stability proof",
+    "Affected player PFH2 archive was not supplied; its format has offline fixture coverage only"
+  ],
+  "same_local_launcher_entry": true,
+  "installation_verification": "artifacts/Test171/install-1/installation-verified.json",
+  "loaded_hash_gate_pending": false,
+  "owner_acceptance": "artifacts/Test171/owner-acceptance.json",
+  "live_verification": "artifacts/Test171/live-check-1/verification.json",
+  "formal_gate_after_owner_report": true,
+  "owner_reported_battle_completed": true,
+  "completed_battle_test_accepted": true
+}

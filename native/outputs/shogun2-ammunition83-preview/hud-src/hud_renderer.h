@@ -41,6 +41,7 @@ namespace hud80 {
 using namespace Gdiplus;
 struct View {
     const UnitArt* unit{};
+    std::wstring native_unit_key;
     const FactionArt* owner{};
     std::wstring faction=L"Faction unavailable",mon;
     unsigned men{},initial{},morale{},fatigue{};
@@ -194,6 +195,10 @@ inline std::wstring class_name(const UnitArt* u){
     if(!u)return L"Unknown unit type";std::wstring s=u->kind;
     std::replace(s.begin(),s.end(),L'_',L' ');if(!s.empty())s[0]=wchar_t(towupper(s[0]));return s;
 }
+inline std::wstring display_name169(const View& v){
+    if(v.unit)return v.unit->name;
+    return v.native_unit_key.empty()?L"Unit identity unavailable":v.native_unit_key;
+}
 #include "../../shogun2-possession-cleanup-v46/src/qte_meter108.h"
 
 inline const wchar_t* weapon_name89(const View& v){
@@ -241,7 +246,7 @@ inline void render(Graphics& g,const Assets& a,float width,float height,const Vi
     }
     const float bottom=height-26,x=26,y=bottom-302;
     panel(g,a,RectF(x,y,466,302));
-    text(g,v.unit?v.unit->name:L"Unit identity unavailable",x+27,y+23,344,32,21,ink(),true);
+    text(g,display_name169(v),x+27,y+23,344,32,21,ink(),true);
     text(g,v.faction,x+27,y+55,322,22,14,muted());
     if(!v.mon.empty())a.image(g,v.mon.c_str(),RectF(x+380,y+26,54,54));
     a.image(g,L"ui/panel_backgrounds/data__unit_card_background.png",RectF(x+28,y+84,146,184));

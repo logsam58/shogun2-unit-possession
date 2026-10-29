@@ -1,6 +1,6 @@
 # Release engineering references
 
-For **v0.32 / Test166**, use [release identity](../current-release.json), the
+For **v0.33 / Test173**, use [release identity](../current-release.json), the
 [build guide](../../BUILD_AND_TEST.md), and [validation summary](../../VALIDATION.md).
 This directory also retains earlier engineering notes and receipts at their
 original paths so that recorded evidence remains traceable.
@@ -23,8 +23,12 @@ original paths so that recorded evidence remains traceable.
   Its Test165 hashes, counts and live gate apply to that earlier build only.
 - [Workshop166](WORKSHOP166.md) describes the current storage changes.
 - [Test166 receipt](TEST166_VALIDATION.json) records component/pack fixtures.
-- [v0.32 receipt](V0_32_VALIDATION.json) records release packaging and separates
-  retained native evidence from the owner's gameplay acceptance.
+- [Engine compatibility](WORKSHOP172.md) describes the shared dependency and hook checks.
+- [F12 removal](WORKSHOP173.md) and [Test173 receipt](TEST173_VALIDATION.json) describe the current build.
+- [v0.33 receipt](V0_33_VALIDATION.json) separates release packaging from earlier build and gameplay evidence.
+
+Test167–172 documents retain their build-time status statements. The current
+release identity and validation summary supersede those historical statuses.
 
 ## Historical material
 
@@ -36,7 +40,7 @@ Their original bodies are retained below explicit historical notices.
 `TEST162`–`TEST165`, `V0_29`–`V0_31`, `VALIDATION_RESULTS.json`,
 `STANDARD_SETUP_VALIDATION.json`, `LOCAL_ASSETS159_VALIDATION.json`, and
 `LEGACY_DOWNLOAD_CLEANUP.json` retain evidence for their named builds or tasks.
-Do not combine their results into a claim that Test166 passed those exact
+Do not combine their results into a claim that a later build passed those exact
 checks. `native-inventory.json` is a generated source index, not an execution
 receipt or proof of native semantics.
 

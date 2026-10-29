@@ -1,5 +1,6 @@
 #include "qte_service94.h"
 #include "../../../common/runtime_storage166.h"
+#include "../../../common/component_error168.h"
 #include "../../shogun2-possession-cleanup-v46/src/identity.h"
 #include "../../shogun2-possession-cleanup-v46/src/game_window105.h"
 #include "../../shogun2-possession-cleanup-v46/src/overlay_surface106.h"
@@ -800,7 +801,8 @@ static DWORD WINAPI worker(void*){void* targets[10]{};bool hooked=false;HANDLE r
         require(channel&&GetLastError()!=ERROR_ALREADY_EXISTS,"QTE runtime already resident");
         state=static_cast<Status*>(MapViewOfFile(channel,FILE_MAP_ALL_ACCESS,0,0,sizeof(Status)));require(state!=nullptr,"QTE channel failed");
         memset(state,0,sizeof *state);state->magic=POC_MAGIC;state->version=POC_VERSION;state->pid=GetCurrentProcessId();state->size=sizeof *state;
-        auto native=find_module(GetCurrentProcessId());require(native.size==0x1d88000&&hash_file(native.path)==EXPECTED_HASH,"Unsupported engine");engine=uint32_t(native.base);
+        auto native=find_module(GetCurrentProcessId());require(native.size==0x1d88000,"Unsupported engine address layout");
+        const auto binding172=engine172::admit(native.path,hash_file(native.path));engine=uint32_t(native.base);engine172::live_hooks(engine,2,binding172);
         auto movement=GetModuleHandleW(L"possession-v46.dll");require(movement!=nullptr,"Possession module unavailable");
         submit_commitment=reinterpret_cast<melee60::Submit>(GetProcAddress(movement,"PossessionMeleeCommitment63"));
         if(!submit_commitment)submit_commitment=reinterpret_cast<melee60::Submit>(GetProcAddress(movement,"_PossessionMeleeCommitment63"));
@@ -813,7 +815,7 @@ static DWORD WINAPI worker(void*){void* targets[10]{};bool hooked=false;HANDLE r
         uint32_t rvas[10]={0x3e5d40,0x3eaac0,0x3cea10,0x433b80,0x3e1930,0x3e3de0,0xb92800,0x3e5aa0,0x3eaa10,0x3c4170};
         const BYTE signatures[10][8]={{0x55,0x8b,0xec,0x83,0xe4,0xf0,0x81,0xec},{0x83,0xec,0x08,0x53,0x55,0x56,0x8b,0xf1},
             {0x56,0x8b,0x74,0x24,0x08,0x57,0x8b,0xf9},{0x55,0x8b,0xec,0x83,0xe4,0xf0,0x81,0xec},{0x56,0x8b,0x74,0x24,0x08,0x57,0x56,0x8b},{0x8b,0x54,0x24,0x04,0x8b,0x44,0x24,0x08},{0x81,0xec,0x84,0x00,0x00,0x00,0x53,0x55},{0x83,0xec,0x24,0x56,0x8b,0xf1,0x80,0x7e},{0x53,0x8b,0xd9,0x56,0x57,0x8b,0x43,0x04},{0x83,0xec,0x4c,0x56,0x57,0x8b,0xf1,0xe8}};
-        for(unsigned i=0;i<10;++i){targets[i]=reinterpret_cast<void*>(engine+rvas[i]);require(!memcmp(targets[i],signatures[i],8),"Combat hook occupied");if(i<6)memcpy(state->original_code+i*16,targets[i],16);}
+        for(unsigned i=0;i<10;++i){targets[i]=reinterpret_cast<void*>(engine+rvas[i]);require(!memcmp(targets[i],signatures[i],8),"Combat hook occupied at engine RVA "+hex(rvas[i]));if(i<6)memcpy(state->original_code+i*16,targets[i],16);}
         const BYTE sort_signature[]={0x83,0xec,0x08,0x53,0x55,0x56,0x8b,0x74};
         const BYTE select_call[]={0xe8,0x04,0xdc,0x04,0x00};
         require(!memcmp(reinterpret_cast<void*>(engine+0x3b55a0),sort_signature,8)&&
@@ -855,7 +857,6 @@ static DWORD WINAPI worker(void*){void* targets[10]{};bool hooked=false;HANDLE r
         while(true){const double poll93=wall();LONG64 poll_us93=LONG64((poll93-previous_poll93)*1e6);previous_poll93=poll93;InterlockedExchange64(&last_input_us93,poll_us93);if(poll_us93>max_input_us93)InterlockedExchange64(&max_input_us93,poll_us93);state->heartbeat=GetTickCount64();
             ++input_polls94;
             bool focus=focused(),left=focus&&(GetAsyncKeyState(VK_LBUTTON)&0x8000),right=focus&&(GetAsyncKeyState(VK_RBUTTON)&0x8000);
-            if(focus&&(GetAsyncKeyState(VK_F12)&0x8000))state->stop=1;
             if(cadence94.due(poll93,focus!=previous_focus||state->stop||stale_press93)){
                 ++service_runs94;
             uint32_t root=0,env=0,manager=0,camera=0,actor=0;
@@ -969,7 +970,7 @@ static DWORD WINAPI worker(void*){void* targets[10]{};bool hooked=false;HANDLE r
         for(unsigned i=0;i<6;++i){memcpy(state->restored_code+i*16,targets[i],16);require(!memcmp(state->original_code+i*16,state->restored_code+i*16,16),"QTE original code differs");}
         InterlockedExchange(&render_stop,1);if(renderer){WaitForSingleObject(renderer,1500);CloseHandle(renderer);renderer=nullptr;}
         state->ready=0;state->mode=DISABLED;
-    }catch(const std::exception& error){if(!pending_address){enabled=0;if(hooked)MH_DisableHook(MH_ALL_HOOKS);}if(state){state->error=1;state->ready=0;}if(log_file)log_file<<"{\"error\":\""<<error.what()<<"\"}\n";}
+    }catch(const std::exception& error){startup167::remember(error.what());if(!pending_address){enabled=0;if(hooked)MH_DisableHook(MH_ALL_HOOKS);}if(state){state->error=1;state->ready=0;}if(log_file)log_file<<"{\"error\":\""<<error.what()<<"\"}\n";}
     InterlockedExchange(&render_stop,1);return 0;
 }
 BOOL WINAPI DllMain(HINSTANCE instance,DWORD reason,LPVOID){if(reason==DLL_PROCESS_ATTACH){module=instance;HANDLE thread=CreateThread(nullptr,0,worker,nullptr,0,nullptr);if(!thread)return FALSE;CloseHandle(thread);}return TRUE;}

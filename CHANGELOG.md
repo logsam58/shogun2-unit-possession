@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.33 - 2026-10-28
+
+- Support the reviewed Bugfix engine and compatible engine edits through shared native checks; conflicting code or hooks still refuse safely.
+- Keep the HUD visible for custom units without stock artwork.
+- Read supported older PFH2/PFH3 packs and improve enabled UI-mod handling.
+- Allow compatible localized fonts and make the English friendly-fire voice optional.
+- Restore stock menu callbacks after an early startup failure and show a bounded startup error.
+- Remove F12 as a mod-disable/possession-release key. F10 and Escape still return to RTS.
+
+Packages the exact Test173 build; no new gameplay rebuild or Steam upload.
+Test172 was accepted in game. Test173 has offline checks, with live acceptance
+still pending. No installer downloads. [Release notes](docs/releases/v0.33.md).
+
 ## v0.32 - 2026-10-24
 
 - Move the player release to Steam Workshop with automatic owned-game resource preparation.

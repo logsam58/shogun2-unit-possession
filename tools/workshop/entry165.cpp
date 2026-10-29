@@ -4,6 +4,7 @@
 #include <filesystem>
 #include "../../native/work/autoload99-preview/integrated.h"
 #include "pack165.h"
+#include "ui_compat168.h"
 #include "../../native/work/autoload99-preview/workshop_assets165.h"
 static HMODULE module165;
 static INIT_ONCE host_once165=INIT_ONCE_STATIC_INIT,start_once165=INIT_ONCE_STATIC_INIT;
@@ -17,7 +18,9 @@ static LuaGetTop165 get_top165=nullptr;
 static workshop165::LiveReceipt166 live_receipt166;
 static std::wstring own165(){wchar_t path[32768]{};DWORD n=GetModuleFileNameW(module165,path,32768);require(n&&n<32768,"Native cache path unavailable");return path;}
 static std::wstring process_stamp165(){FILETIME created{},exited{},kernel{},user{};require(GetProcessTimes(GetCurrentProcess(),&created,&exited,&kernel,&user)!=0,"Process identity unavailable");return std::to_wstring((uint64_t(created.dwHighDateTime)<<32)|created.dwLowDateTime);}
-static void failure165(const char*){DWORD error=GetLastError();InterlockedExchange(&autoload_error,error?LONG(error):ERROR_INVALID_DATA);}
+static void failure165(const char* why){DWORD error=GetLastError();startup167::remember(why);InterlockedExchange(&autoload_error,error?LONG(error):ERROR_INVALID_DATA);}
+// Zero Lua results: no engine API or Lua stack access, safe at any arity.
+extern "C" __declspec(dllexport) int __cdecl s2up_workshop_error167(void*){startup167::notify();return 0;}
 #ifdef S2UP165_LUA_FIXTURE
 static int __cdecl fixture_top165(void* value){auto state=(unsigned char*)value;uintptr_t top=0,base=0;memcpy(&top,state+8,4);memcpy(&base,state+12,4);return int((top-base)/8);}
 #endif
@@ -28,14 +31,21 @@ static BOOL CALLBACK bind165(PINIT_ONCE,void*,void**){try{
     wchar_t exe[32768]{},engine_path[32768]{};DWORD n=GetModuleFileNameW(nullptr,exe,32768);require(n&&n<32768,"Game path unavailable");
     std::filesystem::path host(exe);auto name=host.filename().wstring();require(!_wcsicmp(name.c_str(),L"shogun2.exe")||!_wcsicmp(name.c_str(),L"shogun2.retail.exe"),"Not a supported game host");
     game165=host.parent_path().wstring();HMODULE engine=GetModuleHandleW(L"Empire.Retail.dll");require(engine!=nullptr,"Engine not loaded");
-    require(GetModuleFileNameW(engine,engine_path,32768)>0&&hash_file(engine_path)==EXPECTED_HASH,"Unsupported engine");
+    require(GetModuleFileNameW(engine,engine_path,32768)>0,"Engine path unavailable");
+    const auto loaded_engine_sha170=hash_file(engine_path);
+    const auto binding172=engine172::admit(engine_path,loaded_engine_sha170);
+    engine172::live_hooks(reinterpret_cast<uintptr_t>(engine),3,binding172);
     // Pinned lua_gettop: cdecl int(lua_State*), read-only, 14 original bytes.
     const unsigned char expected[]={0x8b,0x4c,0x24,0x04,0x8b,0x41,0x08,0x2b,0x41,0x0c,0xc1,0xf8,0x03,0xc3};
     auto entry=(unsigned char*)engine+0xea2d60;unsigned char actual[sizeof expected]{};SIZE_T read=0;
     require(ReadProcessMemory(GetCurrentProcess(),entry,actual,sizeof actual,&read)&&read==sizeof actual&&!memcmp(actual,expected,sizeof actual),"Lua API bytes differ");
     get_top165=reinterpret_cast<LuaGetTop165>(entry);
 #endif
-    require(hash_file(game165+L"\\Empire.Retail.dll")==EXPECTED_HASH,"Game folder engine differs");
+    const auto folder_engine_sha170=hash_file(game165+L"\\Empire.Retail.dll");
+    (void)engine172::admit(game165+L"\\Empire.Retail.dll",folder_engine_sha170);
+#ifndef S2UP165_LUA_FIXTURE
+    require(folder_engine_sha170==loaded_engine_sha170,"Loaded engine and game-folder engine differ");
+#endif
 #ifndef S2UP165_LUA_FIXTURE
     HMODULE pinned{};require(GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS|GET_MODULE_HANDLE_EX_FLAG_PIN,reinterpret_cast<LPCWSTR>(&module165),&pinned)!=0,"Cannot retain Workshop bridge for this process");
 #endif
@@ -44,11 +54,20 @@ static bool caller165(void* state){InitOnceExecuteOnce(&host_once165,bind165,nul
 extern "C" __declspec(dllexport) int __cdecl s2up_workshop_prepare165(void* state){StateGuard165 guard;try{
     if(!caller165(state))return 0;
     prepared165=false;if(root_guard165!=INVALID_HANDLE_VALUE){CloseHandle(root_guard165);root_guard165=INVALID_HANDLE_VALUE;}
-    auto bytes=workshop165::original_root(std::filesystem::path(game165)/L"data/data.pack");
-    auto path=own165()+L".root.luac";workshop165::create_exact(path,bytes);
-    root_guard165=CreateFileW(path.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,nullptr);
+    auto selection_path168=game165+L"\\used_mods.txt";
+    std::wstring selection_text169;
+#ifdef S2UP165_LUA_FIXTURE
+    wchar_t selection_fixture168[32768]{};DWORD count168=GetEnvironmentVariableW(L"S2UP168_FIXTURE_SELECTION",selection_fixture168,32768);
+    if(count168&&count168<32768)selection_text169=read_text(selection_fixture168);
+#else
+    selection_text169=read_text(selection_path168);
+#endif
+    auto bytes=workshop168::selected_root(game165,selection_text169,hash_file(own165()));
+    auto path=own165()+L".root.luac";
+    root_guard165=workshop165::transient_root168(path,bytes);
     require(root_guard165!=INVALID_HANDLE_VALUE,"Cannot protect original root while Lua loads it");
-    std::vector<unsigned char> actual(bytes.size());DWORD read=0;LARGE_INTEGER size{};
+    std::vector<unsigned char> actual(bytes.size());DWORD read=0;LARGE_INTEGER size{},zero{};
+    require(SetFilePointerEx(root_guard165,zero,nullptr,FILE_BEGIN)!=0,"Cannot rewind UI handoff");
     require(GetFileSizeEx(root_guard165,&size)&&size.QuadPart==bytes.size()&&ReadFile(root_guard165,actual.data(),DWORD(actual.size()),&read,nullptr)&&read==actual.size()&&actual==bytes,"Protected root cache differs");
     prepared165=true;
     // Sole Lua caller supplies true. Return that existing argument as one result;

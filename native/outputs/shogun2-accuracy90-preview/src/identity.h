@@ -17,7 +17,9 @@
 #include <algorithm>
 #include <memory>
 
-static const char* EXPECTED_HASH="022fae2e2da92b59b8b1b8ee52887003c624e3c8eca060b209f5d792a7f874f5";
+#include "../../../common/engine_profiles170.h"
+#include "../../../common/engine_contract172.h"
+static const char* EXPECTED_HASH=engine170::stock_sha;
 static volatile LONG stopped=0;
 BOOL WINAPI stop_handler(DWORD code) {
     if (code==CTRL_C_EVENT || code==CTRL_BREAK_EVENT) { InterlockedExchange(&stopped,1); return TRUE; }

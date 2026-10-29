@@ -4,6 +4,8 @@
 #include "embedded_hashes.h"
 #include "../../common/startup_view160.h"
 #include "game_audio162.h"
+#include "../../common/startup_error167.h"
+#include "../../common/startup_gate168.h"
 #include <shlobj.h>
 #include <regex>
 #ifdef S2FP_LOCAL_ASSETS
@@ -13,12 +15,13 @@ static volatile LONG autoload_stage,autoload_error;
 static std::wstring runtime_folder;
 static std::wstring read_text(const std::wstring& path){
     std::ifstream in(path,std::ios::binary); if(!in)return L"";
-    std::string data((std::istreambuf_iterator<char>(in)),{});require(data.size()<1048576,"Mod selection file too large");
+    std::string data(1048577,'\0');in.read(&data[0],std::streamsize(data.size()));
+    require(!in.bad()&&in.gcount()<=1048576,"Mod selection file too large or unreadable");data.resize(size_t(in.gcount()));
     std::wstring text;size_t start=0;
     bool le=data.size()>1&&static_cast<unsigned char>(data[0])==255&&static_cast<unsigned char>(data[1])==254;
     bool be=data.size()>1&&static_cast<unsigned char>(data[0])==254&&static_cast<unsigned char>(data[1])==255;
     if(le||be||(data.size()>1&&data[1]==0)){
-        start=le||be?2:0;for(size_t i=start;i+1<data.size();i+=2){unsigned a=static_cast<unsigned char>(data[i]),b=static_cast<unsigned char>(data[i+1]);text+=wchar_t(be?(a<<8)|b:(b<<8)|a);}return text;
+        start=le||be?2:0;require((data.size()-start)%2==0,"Truncated UTF16 mod selection");for(size_t i=start;i+1<data.size();i+=2){unsigned a=static_cast<unsigned char>(data[i]),b=static_cast<unsigned char>(data[i+1]);text+=wchar_t(be?(a<<8)|b:(b<<8)|a);}return text;
     }
     if(data.size()>2&&data.substr(0,3)=="\xef\xbb\xbf")start=3;
     int n=MultiByteToWideChar(CP_UTF8,MB_ERR_INVALID_CHARS,data.data()+start,int(data.size()-start),nullptr,0);
@@ -78,10 +81,33 @@ static uint32_t local_u32(uintptr_t address){uint32_t value=0;SIZE_T read=0;requ
 static bool battle_ready(uintptr_t base){try{auto root=local_u32(base+0x1bc8180);auto env=local_u32(root+0x110);auto common=local_u32(env+8);auto phase=local_u32(common+0xb4);auto id=local_u32(phase+0x14);return id>=5&&id<=8;}catch(...){return false;}}
 static bool other_adapter(){Handle snap(CreateToolhelp32Snapshot(TH32CS_SNAPMODULE,GetCurrentProcessId()));require(snap.h!=INVALID_HANDLE_VALUE,"Module inventory failed");MODULEENTRY32W entry{};entry.dwSize=sizeof entry;
     require(Module32FirstW(snap.h,&entry)!=0,"Module inventory unavailable");do{std::wstring name=entry.szModule;std::transform(name.begin(),name.end(),name.begin(),towlower);if(name.find(L"possession-v")==0)return true;}while(Module32NextW(snap.h,&entry));return false;}
+// A failed later component must not leave an interactive partial installation.
+// Only call for a component this worker loaded, before publishing readiness.
+static void stop_component168(bool owned,bool qte){
+    if(!owned)return;
+    wchar_t name[80]{};
+    if(qte)swprintf_s(name,L"Local\\Shogun2QteObserver79-%lu",GetCurrentProcessId());
+    else mapping_name(name,GetCurrentProcessId());
+    struct Prefix {uint32_t magic,version,pid,size;LONG stop;};
+    Handle map(OpenFileMappingW(FILE_MAP_READ|FILE_MAP_WRITE,FALSE,name));
+    if(!map.h)return;
+    auto p=static_cast<Prefix*>(MapViewOfFile(map.h,FILE_MAP_READ|FILE_MAP_WRITE,0,0,sizeof(Prefix)));
+    if(!p)return;
+    if(p->magic==(qte?0x31545153u:POC_MAGIC)&&p->version==(qte?79u:46u)&&
+       p->pid==GetCurrentProcessId()&&(qte?(p->size>=32&&p->size<4096):p->size==sizeof(Status)))InterlockedExchange(&p->stop,1);
+    UnmapViewOfFile(p);
+}
+static std::string component_error168(HMODULE module,const char* fallback){
+    using Read=unsigned(__cdecl*)(char*,unsigned);
+    auto read=reinterpret_cast<Read>(GetProcAddress(module,"S2UPInitializationError168"));
+    if(!read)read=reinterpret_cast<Read>(GetProcAddress(module,"_S2UPInitializationError168"));
+    char text[1025]{};unsigned n=read?read(text,sizeof text):0;
+    return n&&n<sizeof text?std::string(text,n):std::string(fallback);
+}
 #if defined(POSSESSION_WORKSHOP_BUILD) && defined(S2FP_LOCAL_ASSETS)
 static void workshop_assets165(HMODULE module,const std::wstring& game);
 #endif
-static DWORD WINAPI integrated_worker(void* argument){try{
+static DWORD WINAPI integrated_worker(void* argument){bool owned_adapter168=false,owned_qte168=false,owned_gate168=false;try{
     wchar_t exe[MAX_PATH];require(GetModuleFileNameW(nullptr,exe,MAX_PATH)>0,"Game path unavailable");
     const wchar_t* name=wcsrchr(exe,L'\\');name=name?name+1:exe;
     if(_wcsicmp(name,L"shogun2.exe")&&_wcsicmp(name,L"shogun2.retail.exe")){InterlockedExchange(&autoload_stage,1);return 0;}
@@ -120,26 +146,45 @@ static DWORD WINAPI integrated_worker(void* argument){try{
     record(4,starting_third160?"Third-person default selected; waiting for a battle":"First-person default selected; waiting for a battle");
     uintptr_t base=0;for(;;){if(!selected()){record(3,"Mod unchecked while waiting");return 0;}
         HMODULE engine=GetModuleHandleW(L"Empire.Retail.dll");if(engine){base=reinterpret_cast<uintptr_t>(engine);if(battle_ready(base))break;}Sleep(1000);}
-    wchar_t engine_path[MAX_PATH];require(GetModuleFileNameW(reinterpret_cast<HMODULE>(base),engine_path,MAX_PATH)>0&&hash_file(engine_path)==EXPECTED_HASH,"Unsupported Shogun engine");
+    wchar_t engine_path[MAX_PATH];require(GetModuleFileNameW(reinterpret_cast<HMODULE>(base),engine_path,MAX_PATH)>0,"Engine path unavailable");
+    (void)engine172::admit(engine_path,hash_file(engine_path));
+    wchar_t coordinator_name168[80]{};swprintf_s(coordinator_name168,L"Local\\S2UP-Startup168-%lu",GetCurrentProcessId());
+    Handle coordinator168(CreateMutexW(nullptr,FALSE,coordinator_name168));
+    require(coordinator168.h&&GetLastError()!=ERROR_ALREADY_EXISTS,"Another possession startup is already in progress");
     require(!other_adapter(),"Another possession adapter is already loaded; restart to use the installed mod");
-    require(LoadLibraryW(adapter.c_str())!=nullptr,"Embedded possession engine failed to load");record(5,"Possession engine loaded; waiting for initialization");
+    require(GetModuleHandleW(L"qte-playable-v79.dll")==nullptr,"Another QTE79 is already resident; restart first");
+    // Also detect an older/renamed runtime before trusting a status channel or
+    // requesting cleanup. Loading our DLL does not confer ownership of an
+    // already existing mapping with the same protocol name.
+    wchar_t status_name168[80]{};mapping_name(status_name168,GetCurrentProcessId());
+    for(unsigned kind168=0;kind168<2;++kind168){
+        if(kind168)swprintf_s(status_name168,L"Local\\Shogun2QteObserver79-%lu",GetCurrentProcessId());
+        SetLastError(ERROR_SUCCESS);Handle previous168(OpenFileMappingW(FILE_MAP_READ,FALSE,status_name168));
+        require(!previous168.h&&GetLastError()==ERROR_FILE_NOT_FOUND,"A possession/QTE control channel already exists; restart before using this build");
+    }
+    require(startup168::pending(),"Cannot coordinate component startup");
+    owned_gate168=true;
+    auto adapter_module168=LoadLibraryW(adapter.c_str());require(adapter_module168!=nullptr,"Embedded possession engine failed to load");record(5,"Possession engine loaded; waiting for initialization");
+    owned_adapter168=true;
     wchar_t map_name[80];mapping_name(map_name,GetCurrentProcessId());bool ready=false;
-    for(int i=0;i<200;++i){Handle map(OpenFileMappingW(FILE_MAP_READ,FALSE,map_name));if(map.h){auto state=static_cast<const Status*>(MapViewOfFile(map.h,FILE_MAP_READ,0,0,sizeof(Status)));if(state){bool valid=state->magic==POC_MAGIC&&state->version==46&&state->pid==GetCurrentProcessId()&&state->size==sizeof(Status);bool error=valid&&state->error!=0;ready=valid&&state->ready&&!state->stop;UnmapViewOfFile(state);require(!error,"Possession engine rejected initialization");if(ready)break;}}Sleep(50);}
+    for(int i=0;i<200;++i){Handle map(OpenFileMappingW(FILE_MAP_READ,FALSE,map_name));if(map.h){auto state=static_cast<const Status*>(MapViewOfFile(map.h,FILE_MAP_READ,0,0,sizeof(Status)));if(state){bool valid=state->magic==POC_MAGIC&&state->version==46&&state->pid==GetCurrentProcessId()&&state->size==sizeof(Status);bool error=valid&&state->error!=0;ready=valid&&state->ready&&!state->stop;UnmapViewOfFile(state);if(error)throw std::runtime_error(component_error168(adapter_module168,"Possession engine rejected initialization"));if(ready)break;}}Sleep(50);}
     require(ready,"Possession engine did not become ready");
     require(GetModuleHandleW(L"qte-playable-v79.dll")==nullptr,"Another QTE79 is already resident; restart first");
-    require(LoadLibraryW(qte.c_str())!=nullptr,"Embedded QTE failed to load");
+    auto qte_module168=LoadLibraryW(qte.c_str());require(qte_module168!=nullptr,"Embedded QTE failed to load");
+    owned_qte168=true;
     struct QtePrefix {uint32_t magic,version,pid,size;LONG stop,ready,mode,error;};
     swprintf_s(map_name,L"Local\\Shogun2QteObserver79-%lu",GetCurrentProcessId());bool qte_ready=false;
     for(int i=0;i<200;++i){Handle map(OpenFileMappingW(FILE_MAP_READ,FALSE,map_name));if(map.h){
         auto q=static_cast<const QtePrefix*>(MapViewOfFile(map.h,FILE_MAP_READ,0,0,sizeof(QtePrefix)));
         if(q){bool valid=q->magic==0x31545153&&q->version==79&&q->pid==GetCurrentProcessId()&&q->size>=sizeof(QtePrefix)&&q->size<4096;
             bool error=valid&&q->error!=0;qte_ready=valid&&q->ready&&!q->stop;UnmapViewOfFile(q);
-            require(!error,"QTE rejected initialization");if(qte_ready)break;}}
+            if(error)throw std::runtime_error(component_error168(qte_module168,"QTE rejected initialization"));if(qte_ready)break;}}
         Sleep(50);}
     require(qte_ready,"Embedded QTE did not become ready");
     STARTUPINFOW startup{};startup.cb=sizeof startup;startup.dwFlags=STARTF_USESHOWWINDOW;startup.wShowWindow=SW_HIDE;PROCESS_INFORMATION child{};std::wstring command=L"\""+hud+L"\"";
     require(CreateProcessW(hud.c_str(),&command[0],nullptr,nullptr,FALSE,CREATE_NO_WINDOW,nullptr,runtime_folder.c_str(),&startup,&child)!=0,"Embedded HUD failed to start");
     CloseHandle(child.hThread);DWORD result=WaitForSingleObject(child.hProcess,1500);if(result==WAIT_OBJECT_0){DWORD code=0;GetExitCodeProcess(child.hProcess,&code);CloseHandle(child.hProcess);require(code==0,"Embedded HUD exited with an error");}else CloseHandle(child.hProcess);
+    require(startup168::ready(),"Cannot publish complete component startup");
     record(6,"Ready: equipment81, authentic HUD81 and restyled QTE79 started automatically");
 #ifdef S2FP_LOCAL_ASSETS
     // This existing loader worker owns the audio stream for the game process.
@@ -147,6 +192,7 @@ static DWORD WINAPI integrated_worker(void* argument){try{
     assets159::Store audio_store;
     if(!audio_store.load(runtime_folder+L"\\hud-assets159.s2fp",1)){record(6,"Friendly-fire audio unavailable: local resources rejected");return 0;}
     auto blob=audio_store.get(301);
+    if(!blob.bytes||!blob.size){record(6,"Ready without optional English advisor voice");return 0;}
     std::vector<unsigned char> voice(blob.bytes,blob.bytes+blob.size);
     audio_store.clear(); // retain only the 134 KiB voice, not artwork/fonts in a 32-bit game
     gameaudio162::Feedback feedback;
@@ -160,5 +206,12 @@ static DWORD WINAPI integrated_worker(void* argument){try{
     UnmapViewOfFile(owner);
 #endif
     return 0;
-}catch(const std::exception& error){InterlockedExchange(&autoload_error,LONG(GetLastError()));record(7,error.what());return 1;}}
+}catch(const std::exception& error){
+    if(autoload_stage<6&&owned_gate168){startup168::failed();stop_component168(owned_qte168,true);stop_component168(owned_adapter168,false);}
+    LONG stage=autoload_stage;DWORD code=GetLastError();InterlockedExchange(&autoload_error,LONG(code?code:ERROR_INVALID_DATA));
+    record(7,error.what());startup167::remember(error.what());
+#ifdef POSSESSION_WORKSHOP_BUILD
+    if(stage<6)startup167::notify();
+#endif
+    return 1;}}
 

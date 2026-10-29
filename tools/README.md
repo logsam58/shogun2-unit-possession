@@ -10,7 +10,7 @@ are separate operator actions.
 | Tool | Purpose |
 | --- | --- |
 | `build.py` → `build_frontend.py` → `native_build.py` | Snapshot explicit source inputs, build x86 components, and optionally run native fixtures in isolated output folders |
-| `workshop/build_workshop165.py` | Package the component build, compile matching float Lua, and run Workshop startup/resource/storage fixtures; pass `--candidate 166` for the current implementation |
+| `workshop/build_workshop165.py` | Package the component build, compile matching float Lua, and run Workshop startup/resource/storage fixtures; pass `--candidate 173` for the current implementation |
 | `configure.py` | Save ignored local game/tool paths in `tools/local.json`; command-line build paths remain explicit alternatives |
 | `package_source.py` | Audit and export the source ZIP, then verify archive closure, sizes, hashes and CRC |
 | `audit_repository.py` | Inspect the Git index for excluded files, binary signatures and recognized credential patterns; stage changes before running it |
@@ -24,8 +24,10 @@ does not mean the native or live-game suites ran.
 
 ## Resources and retained observations
 
-`game_packs.py` supplies bounded read-only PFH3 access and the supported engine
-fingerprint. `prepare_resources.py`, `prepare_audio109.py`, `assets`, and their
+`game_packs.py` supplies bounded read-only pack access for Python tools.
+The native Workshop reader supports the defined PFH2/PFH3 layouts and uses
+the shared engine contract; the separate resource-reference pipeline keeps
+its own stock-input checks. `prepare_resources.py`, `prepare_audio109.py`, `assets`, and their
 recipes support the independent resource-reference pipeline. Ordinary Workshop
 preparation uses the native extractor in `installer` and needs no Node,
 ImageMagick or FFmpeg installation.
@@ -44,6 +46,6 @@ See [derived data](../docs/public-release/DERIVED_DATA.md) and [resources](../do
 | Workshop `probe164`, `stage_*`, `prepare_upload165.py`, `subscription_swap165.py` and related helpers | Historical startup probes or operator staging; not required player steps and not part of the curated source kit |
 | `package_release.py`, `github_release.py` | Historical installer-oriented release helpers; their fixed asset lists do not package the current Workshop release |
 
-Use the [release procedure](../docs/public-release/RELEASING.md) for v0.32's
+Use the [release procedure](../docs/public-release/RELEASING.md) for v0.33's
 Workshop/source archive format. Builds and source exports do not authorize
 publication, game-file changes, Steam configuration edits or capture.

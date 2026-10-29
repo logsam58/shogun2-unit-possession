@@ -538,6 +538,9 @@ def local_assets():
                     'mfreadwrite.lib',
                     'mfuuid.lib',
                     'shell32.lib',
+                    'delayimp.lib',
+                    '/DELAYLOAD:mfplat.dll',
+                    '/DELAYLOAD:mfreadwrite.dll',
                 ],
                 ['/DUNICODE', '/D_UNICODE'],
             )
@@ -560,11 +563,26 @@ def local_assets():
                 'mfreadwrite.lib',
                 'mfuuid.lib',
                 'shell32.lib',
+                'delayimp.lib',
+                '/DELAYLOAD:mfplat.dll',
+                '/DELAYLOAD:mfreadwrite.dll',
             ],
             ['/DUNICODE', '/D_UNICODE'],
         ),
         [TEST / 'verify-asset-format159.exe'],
     ]
+    commands.extend([
+        compile_cpp(
+            ROOT / 'tools/installer/verify_localization167.cpp',
+            TEST / 'verify-localization167.exe',
+            (),
+            ['bcrypt.lib', 'ole32.lib', 'mfplat.lib', 'mfreadwrite.lib',
+             'mfuuid.lib', 'shell32.lib', 'delayimp.lib',
+             '/DELAYLOAD:mfplat.dll', '/DELAYLOAD:mfreadwrite.dll'],
+            ['/DUNICODE', '/D_UNICODE'],
+        ),
+        [TEST / 'verify-localization167.exe', os.environ['SHOGUN2_GAME_DIR']],
+    ])
     for label, options in [('hud', []), ('qte', ['/DHUD80_QTE_ONLY'])]:
         target = TEST / ('verify-asset-renderer159-' + label + '.exe')
         commands.extend(

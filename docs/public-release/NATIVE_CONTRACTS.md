@@ -1,6 +1,6 @@
 # Native integration contracts
 
-This is an analysis-based x86 integration, not recovered original game source. Exact engine hash is pinned in identity.h and game_packs.py. An RVA is relative to loaded Empire.Retail.dll. Never reuse layouts/signatures for another image.
+This is an analysis-based x86 integration, not recovered original game source. The current runtime uses common/engine_contract172.h and its generated region registry across startup components. Stock/reviewed identities have known paths; an unlisted engine must match one coherent protected-region basis and the loaded hook checks. The independent Python resource-reference pipeline retains its stock fingerprint checks. An RVA is relative to loaded Empire.Retail.dll. Do not bypass the shared layout and exact-hook checks for another image.
 
 “Verified” means fingerprint/byte gates and finite fixtures, not exhaustive live safety. Source typedefs/signatures/bounds remain authoritative. [Native inventory](native-inventory.json) indexes hook/ABI/offset/lock sites; it is not semantic proof of every field.
 

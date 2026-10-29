@@ -2,6 +2,54 @@
 -- File offsets and owned-pack decoding belong to the native uint64 reader.
 local args={...}
 local arg_count=select("#",...)
+local stock_invoked167=false
+local error_reporter167
+local function run_stock167(original)
+    local chunk,why=loadstring(original,"@owned-game/frontend-root");assert(chunk,why)
+    setfenv(chunk,getfenv(1))
+    -- Never run the original twice after partially registering callbacks.
+    stock_invoked167=true
+    chunk(unpack(args,1,arg_count))
+end
+local function fallback_stock167()
+    -- Emergency menu recovery only; normal startup retains native uint64 I/O.
+    -- Split offsets into base-65536 limbs so float Lua cannot round away bytes.
+    -- Restrict seeks to signed-long range for the game's Windows Lua CRT.
+    local f=assert(io.open("data/data.pack","rb"),"Cannot open owned data.pack for menu recovery")
+    local ok,result=pcall(function()
+        local header=assert(f:read(32));assert(#header==32 and header:sub(1,4)=="PFH3","Unsupported owned pack")
+        local function pair(s,p)
+            local a,b,c,d=s:byte(p,p+3);assert(d,"Truncated pack integer")
+            return a+b*256,c+d*256
+        end
+        local function small(s,p)local lo,hi=pair(s,p);return lo+hi*65536 end
+        local flags=small(header,5);local count=small(header,17);local size=small(header,21)
+        assert((flags==0 or flags==1 or flags==3) and small(header,9)==0 and small(header,13)==0,"Unsupported owned pack variant")
+        assert(count<=100000 and size<=8388608,"Owned pack index exceeds safe Lua recovery bound")
+        local index=assert(f:read(size));assert(#index==size,"Truncated owned pack index")
+        local base=32+size;local hi=math.floor(base/65536);local lo=base-hi*65536
+        local cursor=1;local root_hi,root_lo,root_size
+        for i=1,count do
+            local nlo,nhi=pair(index,cursor);cursor=cursor+4
+            local last=assert(index:find("\0",cursor,true),"Unterminated owned pack path")
+            local name=index:sub(cursor,last-1):gsub("\\","/"):lower();cursor=last+1
+            if name=="ui/frontend ui/layout_scripts/root.luac" then
+                assert(not root_size and nhi<4,"Duplicate or excessive original UI script")
+                root_hi,root_lo,root_size=hi,lo,nlo+nhi*65536
+            end
+            local sum=lo+nlo;local carry=math.floor(sum/65536);lo=sum-carry*65536;hi=hi+nhi+carry
+            assert(hi<=262144,"Owned pack offsets exceed recovery bound")
+        end
+        assert(cursor==#index+1 and root_size and root_size>0,"Original UI entry unavailable")
+        assert(root_hi<32768,"Original UI requires native 64-bit recovery")
+        assert(f:seek("set",root_hi*65536),"Cannot seek owned UI block")
+        assert(f:seek("cur",root_lo),"Cannot seek exact owned UI byte")
+        local original=assert(f:read(root_size));assert(#original==root_size,"Truncated original UI script")
+        assert(original:sub(1,12)==string.char(27,76,117,97,81,0,1,4,4,4,4,0),"Original UI bytecode differs")
+        return original
+    end)
+    f:close();assert(ok,result);run_stock167(result)
+end
 local function initialize165()
     assert(type(io)=="table" and type(io.open)=="function" and type(os)=="table" and type(os.getenv)=="function","Local cache I/O unavailable")
     assert(type(package)=="table" and type(package.loadlib)=="function","Native Lua loading unavailable")
@@ -55,16 +103,33 @@ local function initialize165()
     payload=nil
     local prepare,why=package.loadlib(path,"s2up_workshop_prepare165");assert(type(prepare)=="function",why)
     local start,reason=package.loadlib(path,"s2up_workshop_start165");assert(type(start)=="function",reason)
+    error_reporter167=package.loadlib(path,"s2up_workshop_error167")
     -- Each entry checks exactly one argument, then returns that existing value
     -- on success; no Lua stack writes or engine object calls are needed.
     assert(prepare(true),"Owned root preparation failed")
-    local f=assert(io.open(path..".root.luac","rb"),"Prepared owned root unavailable")
-    local original=f:read(13740);f:close();assert(original and #original==13739,"Prepared root size differs")
-    local chunk,error=loadstring(original,"@owned-game/frontend-root");assert(chunk,error)
-    setfenv(chunk,getfenv(1));chunk(unpack(args,1,arg_count))
+    -- Native guard owns this temporary file. D shares delete access; this mode
+    -- is verified in the supported engine CRT and the matching float Lua host.
+    local f=assert(io.open(path..".root.luac","rbD"),"Prepared UI root unavailable")
+    local original=f:read(262145);f:close();assert(original and #original>0 and #original<=262144,"Prepared UI root exceeds bound")
+    run_stock167(original)
     assert(start(true),"Native worker startup failed")
 end
 local ok,why=pcall(initialize165)
 if not ok then
+    if not stock_invoked167 then
+        local recovered,recovery=pcall(fallback_stock167)
+        if not recovered then pcall(function()print("Unit Possession menu recovery: "..string.sub(tostring(recovery),1,512))end) end
+    end
     pcall(function()print("Shogun 2 Unit Possession: "..string.sub(tostring(why),1,512))end)
+    -- A single bounded failure note also works when the DLL was blocked.
+    -- Exclusive creation preserves any existing file; no per-session history.
+    pcall(function()
+        local folder=os.getenv("LOCALAPPDATA");if not folder then return end
+        local file=io.open(folder.."/S2UP-Workshop-startup-error.txt","wbx")
+        if file then
+            local note="Shogun 2 Unit Possession bootstrap error\nNative __NATIVE_SHA165__\n"..tostring(why)
+            file:write(note:sub(1,4096));file:close()
+        end
+    end)
+    if type(error_reporter167)=="function" then pcall(error_reporter167) end
 end

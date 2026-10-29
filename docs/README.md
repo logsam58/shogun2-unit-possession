@@ -1,8 +1,8 @@
 # Developer documentation
 
 The player guide is the repository's [main README](../README.md). For code work,
-start here. The current release is **v0.32**, using the accepted **Test166
-Workshop runtime**. [Release identity](current-release.json) records its exact
+start here. The current GitHub release is **v0.33 / Test173**; Test172 has owner
+gameplay acceptance and Test173 has offline checks. [Release identity](current-release.json) records its exact
 pack and acceptance status; numbered filenames are implementation history, not
 product versions.
 
@@ -23,7 +23,7 @@ product versions.
 ## Current references and historical evidence
 
 [Status](STATUS.md), [release identity](current-release.json), and the current
-[release notes](releases/v0.32.md) describe the shipped behavior. Validation
+[release notes](releases/v0.33.md) describe the shipped behavior. Validation
 receipts record finite checks, not blanket stability claims.
 
 [Release engineering](public-release/README.md) separates maintained design

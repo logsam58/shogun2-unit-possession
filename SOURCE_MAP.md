@@ -12,7 +12,7 @@ distinguishes those uses.
 | Component | Active source | Responsibility |
 | --- | --- | --- |
 | Runtime worker / legacy loader | native/work/autoload99-preview | Shared delayed startup, payload checks, cache and game-process audio. DInput forwarding and launch161.cpp belong to older installer builds |
-| Workshop entry | tools/workshop and native/work/autoload99-preview/workshop_assets165.h | Current Test166 entry, owned-script recovery, automatic local resources and existing worker; no chooser or Steam setting edits |
+| Workshop entry | tools/workshop and native/work/autoload99-preview/workshop_assets165.h | Current Test173 entry, owned-script recovery, automatic local resources and existing worker; no chooser or Steam setting edits |
 | Adapter | native/outputs/shogun2-accuracy90-preview/src | Actor lease, native movement/weapons/orders/camera/charge/climbing |
 | Shared | native/outputs/shogun2-possession-cleanup-v46/src and native/common | Identity, protocols, visibility and final-human roles |
 | QTE | native/outputs/shogun2-authentic-hud80-preview/qte-src | Native pairs, response/input timing, animation camera |
@@ -25,11 +25,20 @@ distinguishes those uses.
 | Resources | tools/prepare_resources.py, game_packs.py, resource-recipe.json | Owned-game extraction/trim/packing/fonts/icons/voice |
 | Derived records | tools/data, generate_tables.py, generate_roles.py | Canonical observations and repeatable headers |
 
+The playable QTE DLL is compiled from `qte-src/playable_runtime.cpp`; its worker
+owns gameplay initialization. `qte-src/observer.cpp` is a separate observer,
+not that worker. Check the actual build entry point when changing startup gates.
+
+The current [engine contract introduced in Test172](docs/public-release/WORKSHOP172.md) centralizes engine
+admission in `native/common/engine_contract172.h`, with its maintained registry
+in `tools/data/engine-contract172.json`. Its generator and source audit are in
+`tools/workshop`. The resource extractor is an admission consumer as well.
+
 Build-generated hashes belong in the build snapshot. See [native contracts](docs/public-release/NATIVE_CONTRACTS.md) and [derived data](docs/public-release/DERIVED_DATA.md).
 
 The [development](docs/development/README.md) and [release](docs/releases/README.md)
 indexes explain historical evidence. Full development notebooks and older
 release notes are excluded from the curated source kit; the indexes and current
-v0.32 notes are included. Earlier machine paths, limits and session requests do
+v0.33 notes are included. Earlier machine paths, limits and session requests do
 not override current instructions. The original implementation/research remains
 in baseline commit 24d31a2f5e5c2cf84a42c459a69bdcd9bd86c600.

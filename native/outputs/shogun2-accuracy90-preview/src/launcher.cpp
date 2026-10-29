@@ -76,7 +76,7 @@ int wmain(int argc,wchar_t** argv) {
         DWORD result=0;require(GetExitCodeThread(thread.h,&result)!=0,"Mod load exit unavailable");VirtualFreeEx(process.h,remote,0,MEM_RELEASE);require(result!=0,"LoadLibraryW failed");
         for(int i=0;i<100;++i){
             Handle h(OpenFileMappingW(FILE_MAP_READ,FALSE,name));
-            if(h.h){auto* s=static_cast<Status*>(MapViewOfFile(h.h,FILE_MAP_READ,0,0,sizeof(Status)));if(s){bool ready=s->ready!=0,failed=s->error!=0;if(ready||failed)show(s);UnmapViewOfFile(s);if(failed)throw std::runtime_error("Adapter rejected initialization; see session log");if(ready){std::cout<<"Loaded. Select infantry, F9, unpause. WASD move; mouse look; Q/E also turn; Shift run. Hold RMB to raise the bow or matchlock, then click LMB to fire; releasing RMB cancels a pending shot; native reload must finish before the next shot; F5 hold; F6 advance 25m; F7 toggle follow. F10 release; F12 disable.\n";return 0;}}}
+            if(h.h){auto* s=static_cast<Status*>(MapViewOfFile(h.h,FILE_MAP_READ,0,0,sizeof(Status)));if(s){bool ready=s->ready!=0,failed=s->error!=0;if(ready||failed)show(s);UnmapViewOfFile(s);if(failed)throw std::runtime_error("Adapter rejected initialization; see session log");if(ready){std::cout<<"Loaded. Select infantry, F9, unpause. WASD move; mouse look; Q/E also turn; Shift run. Hold RMB to raise the bow or matchlock, then click LMB to fire; releasing RMB cancels a pending shot; native reload must finish before the next shot; F5 hold; F6 advance 25m; F7 toggle follow. F10 release.\n";return 0;}}}
             Sleep(50);
         }
         throw std::runtime_error("Adapter initialization pending; inspect --status and session log");

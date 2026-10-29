@@ -1,0 +1,252 @@
+{
+  "schema": 1,
+  "candidate": 169,
+  "date": "2026-10-25",
+  "product_version_unchanged": "0.32",
+  "built": true,
+  "installed": false,
+  "uploaded": false,
+  "github_changed": false,
+  "live_gameplay_accepted": false,
+  "fresh_loaded_hash_hook_gate_passed": false,
+  "recorder_debugger_enabled": false,
+  "native_engine_guards_relaxed": false,
+  "published_build_unchanged": "Test166",
+  "Test168_preserved": true,
+  "pack": {
+    "file": "artifacts/Test169/workshop-final/package/shogun2_unit_possession_workshop165.pack",
+    "sha256": "8650a69121565ba6889f447a70230100ce535d85be14e99dba8d2f5d2bcce5b6",
+    "bytes": 2258277
+  },
+  "bridge_sha256": "d4459b1fc1b4660db54929b44549c1967dc6f73707f552d4b033e755efab10fb",
+  "component_cache": "169-7dc9c513f9b56024",
+  "components": {
+    "possession-v46.dll": "6c1c0313523032e855d1d4aefae39d10696061ac18645e30499e3869538af784",
+    "possession-hud.exe": "2d0a883f5b1f341ff112f16577e6cb845689872f975899777615ebfc5f8f82dc",
+    "qte-playable-v79.dll": "804ee039b243ddf9f10e4734510481403c0aaa82f4c3baa0e4b7bbc494d89461",
+    "prepare-local-assets159.exe": "19cc63dc27fce3934ac6d1f84fc78dc1c302ef576dceed911150aabc0853603f"
+  },
+  "component_checks": [
+    {
+      "name": "local-assets-extractor",
+      "passed": true,
+      "seconds": 4.993,
+      "log": "logs\\local-assets-extractor.log"
+    },
+    {
+      "name": "local-assets-prepare",
+      "passed": true,
+      "seconds": 2.683,
+      "log": "logs\\local-assets-prepare.log"
+    },
+    {
+      "name": "local-assets-format-render-tests",
+      "passed": true,
+      "seconds": 10.976,
+      "log": "logs\\local-assets-format-render-tests.log"
+    },
+    {
+      "name": "minhook",
+      "passed": true,
+      "seconds": 3.317,
+      "log": "logs\\minhook.log"
+    },
+    {
+      "name": "adapter",
+      "passed": true,
+      "seconds": 7.657,
+      "log": "logs\\adapter.log"
+    },
+    {
+      "name": "adapter-tests",
+      "passed": true,
+      "seconds": 281.878,
+      "log": "logs\\adapter-tests.log",
+      "executables": 99
+    },
+    {
+      "name": "qte",
+      "passed": true,
+      "seconds": 5.697,
+      "log": "logs\\qte.log"
+    },
+    {
+      "name": "qte-tests",
+      "passed": true,
+      "seconds": 138.834,
+      "log": "logs\\qte-tests.log",
+      "executables": 50
+    },
+    {
+      "name": "hud",
+      "passed": true,
+      "seconds": 4.008,
+      "log": "logs\\hud.log"
+    },
+    {
+      "name": "hud-tests",
+      "passed": true,
+      "seconds": 11.497,
+      "log": "logs\\hud-tests.log",
+      "executables": 8
+    }
+  ],
+  "pack_checks": [
+    {
+      "name": "compile",
+      "passed": true,
+      "seconds": 15.562,
+      "log": "logs\\compile.log"
+    },
+    {
+      "name": "lua-bridge",
+      "passed": true,
+      "seconds": 2.484,
+      "log": "logs\\lua-bridge.log"
+    },
+    {
+      "name": "menu-failure-recovery",
+      "passed": true,
+      "seconds": 2.313,
+      "log": "logs\\menu-failure-recovery.log"
+    },
+    {
+      "name": "enabled-ui-mod",
+      "passed": true,
+      "seconds": 2.062,
+      "log": "logs\\enabled-ui-mod.log"
+    },
+    {
+      "name": "renamed-duplicate-bootstrap",
+      "passed": true,
+      "seconds": 2.016,
+      "log": "logs\\renamed-duplicate-bootstrap.log"
+    },
+    {
+      "name": "repeat-startup",
+      "passed": true,
+      "seconds": 3.609,
+      "log": "logs\\repeat-startup.log"
+    },
+    {
+      "name": "runtime-resources",
+      "passed": true,
+      "seconds": 5.844,
+      "log": "logs\\runtime-resources.log"
+    },
+    {
+      "name": "storage-lifetime",
+      "passed": true,
+      "seconds": 2.734,
+      "log": "logs\\storage-lifetime.log"
+    },
+    {
+      "name": "mod-coexistence",
+      "passed": true,
+      "seconds": 2.594,
+      "log": "logs\\mod-coexistence.log"
+    }
+  ],
+  "hud": {
+    "baseline_failure_reproduced": true,
+    "baseline": "Test168 production HUD, own synthetic process",
+    "production_measurement_checks": 138,
+    "roles": 10,
+    "custom_stock_art_optional": true,
+    "native_key_used_when_no_stock_name": true,
+    "custom_portrait_imported": false,
+    "stats_guessed": false,
+    "stale_dead_foreign_unowned_guards_retained": true,
+    "right_command_region_pixel_identical_and_nonempty_at": [
+      [
+        1280,
+        720
+      ],
+      [
+        1920,
+        1080
+      ]
+    ]
+  },
+  "startup": {
+    "current_renamed_and_duplicate_compiled_bootstrap_plus_other_UI_test_passed": true,
+    "stock_plus_addon_callbacks": 38,
+    "metadata_bridge_hash_checked_against_loaded_file": true,
+    "baseline_renamed_pack_actual_failure": "False rejection by 256 KiB root bound; no recursive execution observed",
+    "mixed_old_incomplete_self_roots_refused": true,
+    "database_only_duplicate_names_allowed": true,
+    "different_UI_sources_still_refused": true,
+    "root_input_inspection_max_bytes": 8388608,
+    "root_handoff_max_bytes": 262144,
+    "metadata_max_bytes": 16384,
+    "bootstrap_vectors_retained_across_all_directories": false
+  },
+  "locale_fixtures": {
+    "passed": true,
+    "cases": [
+      {
+        "name": "localized-without-English",
+        "passed": true,
+        "voice_absent_without_disabling_resources": true,
+        "actual_production_HUD_QTE_renderers_passed": true
+      },
+      {
+        "name": "English-fonts-missing-voice",
+        "passed": true,
+        "voice_absent_without_disabling_resources": true,
+        "actual_production_HUD_QTE_renderers_passed": true
+      },
+      {
+        "name": "missing-localization",
+        "passed": true,
+        "refused_safely_without_staging": true
+      },
+      {
+        "name": "malformed-localization",
+        "passed": true,
+        "refused_safely_without_staging": true
+      }
+    ],
+    "English_resources_exact_to_Test166": true,
+    "real_nonEnglish_game_installation_tested": false,
+    "localized_fonts_are_private_derived_fixture_inputs": true,
+    "owned_game_files_unchanged": true,
+    "game_launched": false
+  },
+  "python_tests": {
+    "passed": true,
+    "count": 17
+  },
+  "roles_six_tables_inventory_passed": true,
+  "retained_external_loader_test": {
+    "candidate": 168,
+    "source_equal_adapter_QTE_common": true,
+    "fresh_external_test_rerun": false,
+    "joint_gameplay_compatibility_proven": false
+  },
+  "loading_report": {
+    "manual_copy_workaround_cause_proven": false,
+    "new_archive_priority_tweak": false,
+    "automatic_Data_copy": false,
+    "prior_subscription_without_Data_copy_verified_in_Test165": true
+  },
+  "open_reports": [
+    "Affected player manual Data copy requirement",
+    "Officer selection difficulty",
+    "One-off square formation failure recovered after restart",
+    "Intermittent wall climbing"
+  ],
+  "notes": "docs/public-release/WORKSHOP169.md",
+  "next_gate": "Separate rollback-backed staging approval/fresh CLOSED, then fresh readiness and exact loaded hashes/hooks. No installation or publication inferred from this build task.",
+  "publisher_staging": {
+    "staged": true,
+    "journal": "artifacts/Test169/publisher-stage-1/journal.json",
+    "rollback_verified_in_isolated_checks": 8,
+    "actual_target_hashes_verified": true,
+    "activation_or_upload_performed": false,
+    "launcher_binding_pending": false,
+    "fresh_native_source_and_existing_item_route_verified": true,
+    "binding_receipt": "artifacts/Test169/publisher-stage-1/publisher-update-gate.json",
+    "saved_to_Steam": false
+  }
+}

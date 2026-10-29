@@ -1,0 +1,192 @@
+{
+  "candidate": 172,
+  "product_release_changed": false,
+  "base_local_accepted_candidate": 171,
+  "built": true,
+  "installed": true,
+  "uploaded_to_Workshop": false,
+  "GitHub_updated": false,
+  "live_validation": false,
+  "owner_gameplay_accepted": false,
+  "contract_schema": 172,
+  "contract_id": "2ab5c4c36b4ed492cf1e3c653f0841bb5ba427b8cefd337eed36f4dbfe93083c",
+  "pack_sha256": "62ec1ac51066ed76fcc8abdf83956c75260c13a16f7aa27030f7bf69eecabc6c",
+  "native_sha256": "71de64c255dd51df3ac4c8085cb59ea9471ef4a7d081c4117bad08d9a577b645",
+  "embedded_build": "172-9cd1f72a23360952",
+  "fresh_native_suites": {
+    "adapter-tests": 100,
+    "qte-tests": 50,
+    "hud-tests": 8
+  },
+  "workshop_checks": [
+    {
+      "name": "compile",
+      "passed": true,
+      "seconds": 19.781,
+      "log": "logs\\compile.log"
+    },
+    {
+      "name": "lua-bridge",
+      "passed": true,
+      "seconds": 2.203,
+      "log": "logs\\lua-bridge.log"
+    },
+    {
+      "name": "menu-failure-recovery",
+      "passed": true,
+      "seconds": 2.031,
+      "log": "logs\\menu-failure-recovery.log"
+    },
+    {
+      "name": "enabled-ui-mod",
+      "passed": true,
+      "seconds": 1.859,
+      "log": "logs\\enabled-ui-mod.log"
+    },
+    {
+      "name": "renamed-duplicate-bootstrap",
+      "passed": true,
+      "seconds": 1.781,
+      "log": "logs\\renamed-duplicate-bootstrap.log"
+    },
+    {
+      "name": "repeat-startup",
+      "passed": true,
+      "seconds": 3.953,
+      "log": "logs\\repeat-startup.log"
+    },
+    {
+      "name": "runtime-resources",
+      "passed": true,
+      "seconds": 6.109,
+      "log": "logs\\runtime-resources.log"
+    },
+    {
+      "name": "storage-lifetime",
+      "passed": true,
+      "seconds": 2.234,
+      "log": "logs\\storage-lifetime.log"
+    },
+    {
+      "name": "mod-coexistence",
+      "passed": true,
+      "seconds": 2.735,
+      "log": "logs\\mod-coexistence.log"
+    },
+    {
+      "name": "actual-qte-stock-startup",
+      "passed": true,
+      "seconds": 1.765,
+      "log": "logs\\actual-qte-stock-startup.log"
+    },
+    {
+      "name": "actual-qte-occupied-live-hook",
+      "passed": true,
+      "seconds": 1.688,
+      "log": "logs\\actual-qte-occupied-live-hook.log"
+    },
+    {
+      "name": "actual-qte-independent-identity",
+      "passed": true,
+      "seconds": 2.75,
+      "log": "logs\\actual-qte-independent-identity.log"
+    },
+    {
+      "name": "actual-qte-critical-engine-refusal",
+      "passed": true,
+      "seconds": 2.828,
+      "log": "logs\\actual-qte-critical-engine-refusal.log"
+    },
+    {
+      "name": "actual-qte-reviewed-engine-startup",
+      "passed": true,
+      "seconds": 1.765,
+      "log": "logs\\actual-qte-reviewed-engine-startup.log"
+    },
+    {
+      "name": "engine-contract-controls",
+      "passed": true,
+      "seconds": 7.438,
+      "log": "logs\\engine-contract-controls.log"
+    },
+    {
+      "name": "actual-qte-independent-code",
+      "passed": true,
+      "seconds": 3.094,
+      "log": "logs\\actual-qte-independent-code.log"
+    }
+  ],
+  "engine_contract_controls": 48,
+  "actual_QTE_worker_cases": [
+    "stock",
+    "reviewed_Bugfix",
+    "unlisted_metadata_edit",
+    "unlisted_independent_code_edit",
+    "required_code_edit_refused",
+    "occupied_in_memory_hook_refused"
+  ],
+  "forced_alternate_mapping_base_fixture": true,
+  "stock_and_Bugfix_Loader052_source_patch_checks": true,
+  "third_party_entry_or_gameplay_executed": false,
+  "recorder_debugger_started": false,
+  "source_dependency_count": 196,
+  "conservative_numeric_seed_records": 611,
+  "protected_regions": 3306,
+  "protected_bytes": 25328935,
+  "fresh_final_extractor_resources": [
+    {
+      "case": "reviewed",
+      "passed": true,
+      "fresh_empty_cache": true,
+      "byte_exact_stock": true,
+      "seconds": 0.808,
+      "files": {
+        "hud-assets159.s2fp": "b6843525f7062f3abc6c8dd1b063d26dce634ace9dd6fddc3a7d84ebcb6bec6e",
+        "qte-assets159.s2fp": "57536979649cdae7fe5bd0ad53b9146c66731f8b53f70b5d34a02d189e499ec4"
+      }
+    },
+    {
+      "case": "independent",
+      "passed": true,
+      "fresh_empty_cache": true,
+      "byte_exact_stock": true,
+      "seconds": 0.841,
+      "files": {
+        "hud-assets159.s2fp": "b6843525f7062f3abc6c8dd1b063d26dce634ace9dd6fddc3a7d84ebcb6bec6e",
+        "qte-assets159.s2fp": "57536979649cdae7fe5bd0ad53b9146c66731f8b53f70b5d34a02d189e499ec4"
+      }
+    }
+  ],
+  "first_party_code_only_payload": true,
+  "engine_assets_or_decompilation_shipped": false,
+  "private_evidence": [
+    "artifacts/Test172/components-final/build-results.json",
+    "artifacts/Test172/workshop-final/verification.json",
+    "artifacts/Test172/loader052-1/verification.json",
+    "artifacts/Test172/final-resource-controls-1/verification.json",
+    "artifacts/Test172/hook-relocation-audit.json",
+    "artifacts/Test172/protected-installation-readback.json"
+  ],
+  "limits": [
+    "Conservative original-x86-engine-family contract; a compatible change inside protected regions can still refuse.",
+    "Not arbitrary engine rewrites, moved layouts, blind foreign-hook chaining, universal mod or platform support.",
+    "Preserved analysis and finite fixtures are not a proof of every indirect gameplay interaction.",
+    "Formal loaded hashes/hooks and owner gameplay acceptance for Test172 remain pending.",
+    "Test171 installation and prior candidates remain preserved."
+  ],
+  "installation_receipt": "artifacts/Test172/install-1/installation-verified.json",
+  "installed_candidate": 172,
+  "rollback_candidate": 171,
+  "loaded_gate_pending": true,
+  "owner_reported_working": true,
+  "owner_manual_acceptance": true,
+  "owner_acceptance_receipt": "artifacts/Test172/owner-acceptance.json",
+  "formal_loaded_hash_hook_gate_completed": false,
+  "formal_loaded_gate_not_performed": true,
+  "acceptance_scope": "Owner reports the installed Test172 works. Menu/battle location, feature coverage and battle completion were not specified.",
+  "local_main_entry_promoted": true,
+  "local_launcher_entry": "shogun2_unit_possession_workshop165",
+  "temporary_test_entry_retired": true,
+  "promotion_receipt": "artifacts/Test172/main-entry-1/promotion-verified.json",
+  "latest_local_rollback": "artifacts/Test172/main-entry-1/manage.py rollback --closed"
+}

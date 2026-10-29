@@ -12,7 +12,9 @@
 #include <set>
 #include <stdexcept>
 #include "../../native/common/local_assets159.h"
+#include "../../native/common/engine_contract172.h"
 #include "asset_recipe159.generated.h"
+#include "localization167.h"
 using Microsoft::WRL::ComPtr;
 using Bytes159=std::vector<unsigned char>;
 static void need159(bool value,const char* why){if(!value)throw std::runtime_error(why);}
@@ -58,6 +60,35 @@ struct Pack159 {
     }
     Bytes159 get(const Input159& input){auto it=entries.find(input.entry);need159(it!=entries.end()&&it->second.second==input.bytes&&input.bytes<32*1024*1024,"Required game resource is missing or changed");std::ifstream f(path,std::ios::binary);f.seekg(it->second.first);Bytes159 b(input.bytes);need159(bool(f.read((char*)b.data(),b.size())),"Truncated resource");need159(assets159::sha(b.data(),b.size())==input.sha,"Original game resource hash differs; repair the supported game files");return b;}
 };
+static std::vector<Bytes159> local_fonts167(const std::filesystem::path& game){
+    auto english=game/L"data/local_en.pack";
+    if(std::filesystem::exists(english)){
+        plain159(english);Pack159 pack(english);std::vector<Bytes159> fonts;
+        for(unsigned id:fonts159){auto bytes=pack.get(inputs159[id]);need159(locale167::font(bytes),"English native font is incompatible");fonts.push_back(std::move(bytes));}
+        return fonts;
+    }
+    std::vector<std::filesystem::path> candidates;
+    for(const auto& entry:std::filesystem::directory_iterator(game/L"data")){
+        if(locale167::pack_name(entry.path().filename().wstring())){
+            need159(candidates.size()<32,"Too many installed localization packs");
+            plain159(entry.path());if(entry.is_regular_file())candidates.push_back(entry.path());
+        }
+    }
+    std::sort(candidates.begin(),candidates.end());
+    for(const auto& path:candidates){try{
+        Pack159 pack(path);std::vector<Bytes159> fonts;
+        for(unsigned id:fonts159){
+            auto found=pack.entries.find(inputs159[id].entry);
+            need159(found!=pack.entries.end()&&found->second.second<=32u*1024*1024,"Localized font is absent or too large");
+            Bytes159 bytes(found->second.second);std::ifstream file(path,std::ios::binary);
+            file.seekg(std::streamoff(found->second.first));need159(bool(file.read((char*)bytes.data(),bytes.size())),"Localized font is truncated");
+            need159(locale167::font(bytes),"Localized font format/glyphs are incompatible");fonts.push_back(std::move(bytes));
+        }
+        std::cout<<"Using compatible fonts from an installed localization pack. HUD labels remain English.\n";
+        return fonts;
+    }catch(const std::exception&){}}
+    throw std::runtime_error("No compatible installed HUD fonts were found. Install the English game language through Steam, or report your installed language. Game language support is not universal yet.");
+}
 struct Picture159 {unsigned w{},h{};Bytes159 pixels;};
 static Picture159 tga159(const Bytes159& b){
     need159(b.size()>=18,"Truncated TGA");unsigned cmap=b[1],type=b[2],start=u16_159(b.data()+3),colors=u16_159(b.data()+5),palette_bits=b[7],w=u16_159(b.data()+12),h=u16_159(b.data()+14),bits=b[16],desc=b[17];
@@ -95,7 +126,7 @@ static Bytes159 wave159(const std::filesystem::path& mp3){
 int wmain(int argc,wchar_t** argv){try{
     need159(argc==3,"Use prepare-local-assets <game-folder> <new-staging-folder>");std::filesystem::path game=argv[1],out=argv[2];
     need159(game.is_absolute()&&out.is_absolute(),"Use absolute local paths");plain159(game);plain159(out);plain159(game/L"Empire.Retail.dll");
-    auto engine=read159(game/L"Empire.Retail.dll",64*1024*1024);need159(assets159::sha(engine.data(),engine.size())=="022fae2e2da92b59b8b1b8ee52887003c624e3c8eca060b209f5d792a7f874f5","Unsupported original Shogun 2 installation");
+    (void)engine172::admit((game/L"Empire.Retail.dll").wstring());
     need159(!std::filesystem::exists(out),"Existing resource output preserved; use a new directory");auto g=std::filesystem::weakly_canonical(game).wstring(),o=std::filesystem::weakly_canonical(out.parent_path()).wstring();
     std::transform(g.begin(),g.end(),g.begin(),towlower);std::transform(o.begin(),o.end(),o.begin(),towlower);need159(o!=g&&o.rfind(g+L"\\",0)!=0,"Resource staging must be outside the game directory");
     std::filesystem::create_directories(out);OutputCleanup166 cleanup{out};std::map<std::wstring,std::unique_ptr<Pack159>> packs;std::map<unsigned,Bytes159> inputs;std::map<unsigned,Picture159> images;
@@ -106,10 +137,19 @@ int wmain(int argc,wchar_t** argv){try{
         for(size_t i=0;i<count;++i){auto& row=rows[i];if(row.atlas!=int(number))continue;auto& image=picture(row.input);need159(image.w==unsigned(row.lw)&&image.h==unsigned(row.lh),"Native image dimensions changed");for(int y=0;y<row.h;++y)for(int x=0;x<row.w;++x){int sx=row.ox+x,sy=row.oy+y;if(sx>=0&&sy>=0&&unsigned(sx)<image.w&&unsigned(sy)<image.h)memcpy(result.pixels.data()+4*(size_t(row.y+y)*w+row.x+x),image.pixels.data()+4*(size_t(sy)*image.w+sx),4);}}
         bundle.add(101+number,result.pixels,w,h);};
     for(unsigned i=0;i<3;++i)atlas(hud,hud159,std::size(hud159),i,2048);atlas(qte,qte159,std::size(qte159),0,512);
-    for(unsigned i=0;i<20;++i){auto& b=input(fonts159[i]);need159(b.size()>0x20020&&!memcmp(b.data(),"CUF0",4),"Invalid local font");hud.add(201+i,b);qte.add(201+i,b);}
+    auto local_fonts=local_fonts167(game);for(unsigned i=0;i<20;++i){hud.add(201+i,local_fonts[i]);qte.add(201+i,local_fonts[i]);}
     for(unsigned i=0;i<2;++i){auto& image=picture(abilities159[i]);hud.add(430+i,image.pixels,image.w,image.h);}
-    auto mp3=out/L"advisor-source.tmp.mp3";write159(mp3,input(voice159));auto wav=wave159(mp3);std::filesystem::remove(mp3);hud.add(301,wav);
+    // The optional English callout must never disable possession or fonts.
+    auto mp3=out/L"advisor-source.tmp.mp3";
+    if(std::filesystem::exists(game/L"data/local_en.pack")){
+        HMODULE platform=LoadLibraryExW(L"mfplat.dll",nullptr,LOAD_LIBRARY_SEARCH_SYSTEM32);
+        HMODULE reader=LoadLibraryExW(L"mfreadwrite.dll",nullptr,LOAD_LIBRARY_SEARCH_SYSTEM32);
+        if(platform&&reader){try{write159(mp3,input(voice159));auto wav=wave159(mp3);hud.add(301,wav);}
+            catch(const std::exception&){std::cerr<<"Optional English advisor voice unavailable; gameplay resources retained.\n";}}
+        if(reader)FreeLibrary(reader);if(platform)FreeLibrary(platform);
+        if(std::filesystem::exists(mp3))need159(DeleteFileW(mp3.c_str())!=0,"Cannot retire owned temporary voice");
+    }
     hud.save(out/L"hud-assets159.s2fp");qte.save(out/L"qte-assets159.s2fp");assets159::Store a,b;need159(a.load((out/L"hud-assets159.s2fp").wstring(),1)&&b.load((out/L"qte-assets159.s2fp").wstring(),2),"Generated resources failed validation");
     cleanup.committed=true;
-    std::cout<<"Prepared local Shogun 2 artwork, cards, 20 fonts and cropped advisor voice. All "<<inputs.size()<<" source entries hash-verified. Game files unchanged.\n";return 0;
+    std::cout<<"Prepared local Shogun 2 artwork, cards and 20 validated native fonts. Optional voice included when available. "<<inputs.size()<<" canonical art/audio entries hash-verified. Game files unchanged.\n";return 0;
 }catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}}

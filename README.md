@@ -19,36 +19,28 @@ Take control of a soldier in **Total War: SHOGUN 2**, fight in first or third pe
 
 ## Download
 
-**Current release: v0.32.** [Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3825625050) is the normal installation route.
+**Current release: v0.33.** [Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3825625050) is the normal installation route.
 
-The [v0.32 GitHub release](https://github.com/logsam58/shogun2-unit-possession/releases/tag/v0.32) also contains:
+The [v0.33 GitHub release](https://github.com/logsam58/shogun2-unit-possession/releases/tag/v0.33) also contains:
 
 | Download | Purpose |
 | --- | --- |
-| `Shogun2-Unit-Possession-v0.32-Workshop.zip` | Archive of the Workshop pack, player instructions and license notices |
-| `Shogun2-Unit-Possession-v0.32-Source.zip` | Source code and build instructions; not a ready-to-play installation |
+| `Shogun2-Unit-Possession-v0.33-Workshop.zip` | Archive of the Workshop pack, player instructions and license notices |
+| `Shogun2-Unit-Possession-v0.33-Source.zip` | Source code and build instructions; not a ready-to-play installation |
 | `SHA256SUMS.txt` / `release-manifest.json` | Download checksums and build identification |
 
-Workshop subscribers do not need a separate GitHub download. Access to the Workshop item and repository is controlled by the owner.
+The GitHub archive is Test173, which removes the F12 disable key. The last verified Steam upload is Test172; this GitHub release does not update Steam. Existing Workshop users can continue using their subscription.
 
 ## Requirements
 
 - An owned installation of the **original Windows Steam version of Total War: SHOGUN 2**, using the supported game build.
-- The installed game's `data.pack` and English `local_en.pack`, used to prepare artwork, fonts and the advisor voice.
-- **Windows N editions:** the Media Feature Pack.
+- The installed game's `data.pack` and compatible native fonts from `local_en.pack` or a supported `local_*.pack`. HUD text is English; not every localization has been tested.
+- English advisor audio and the Windows media components are optional. If unavailable, the mod omits the friendly-fire voice.
 
 No compiler or Python installation is needed to play. The mod prepares its resources from your installed game on first launch and caches them for reuse; those resources are not bundled in the download.
 
-<details>
-<summary>Supported game-file fingerprint</summary>
+The original engine and the reviewed Shogun 2 Bugfix DLL are supported. Neither the Bugfix mod nor Shogun2 Loader is required. Other modified engines are checked against the functions and layouts this mod needs; a conflicting change can still be refused. See [engine compatibility](docs/public-release/WORKSHOP172.md) for the technical limits.
 
-The supported `Empire.Retail.dll` SHA-256 is:
-
-```text
-022fae2e2da92b59b8b1b8ee52887003c624e3c8eca060b209f5d792a7f874f5
-```
-
-</details>
 
 ## Installation
 
@@ -66,7 +58,7 @@ Close the game, uninstall the older version, and remove its old camera-helper St
 
 ### Disabling or uninstalling
 
-**F12** disables the mod until the game restarts. To stop loading it on future launches, close the game and disable it in the launcher or unsubscribe from the Workshop item.
+To stop loading the mod, close the game and disable it in the launcher or unsubscribe from the Workshop item.
 
 Local resource caches and rollback backups may remain. Do not delete unfamiliar files blindly.
 
@@ -96,7 +88,6 @@ These controls apply during possession unless stated otherwise. **LMB** means le
 | **F** near a wall | Begin climbing |
 | **W / S** while climbing | Climb up / down; release both to hold position |
 | **K** | Hide/show the RTS and possession HUD; melee prompts remain visible |
-| **F12** | Disable the mod until the game restarts |
 
 ### Your unit
 
@@ -119,8 +110,9 @@ Unit orders are unavailable while you're locked in a melee animation, climbing o
 | Artillery | Uses the game's existing first-person mode |
 | Naval battles | Possession and ship commands are not available |
 | Multiplayer, Versus and campaign drop-in | Not implemented |
-| Overhaul mods | Compatibility unconfirmed |
-| Mods replacing the front-end root script entry | Compatibility untested; the Workshop version replaces this same entry |
+| Unit and overhaul mods | Missing stock unit artwork no longer hides the entire HUD; individual combinations still need testing |
+| Shogun 2 Bugfix engine / Shogun2 Loader | Reviewed compatibility checks and an owner-accepted Test172 combination; neither mod is required |
+| Mods replacing the front-end root script entry | Can preserve one enabled root when our bootstrap runs; different competing roots can still conflict |
 | Older DInput installation of this mod | Do not combine with Workshop |
 
 ## Known limitations
@@ -140,7 +132,7 @@ See [known issues and reporting details](docs/KNOWN_ISSUES.md) for additional co
 | Problem | What to check |
 | --- | --- |
 | **F9 does nothing** | Select a living friendly unit in a single-player land battle or siege. Check that the mod is enabled, restart after enabling/updating, and confirm you have the supported Windows Steam game build. |
-| **HUD or resources fail to load** | Check that `data.pack` and English `local_en.pack` are present. Windows N needs the Media Feature Pack. Changed or unfamiliar cache files can stop initialization and are preserved; do not delete them blindly. |
+| **HUD or resources fail to load** | Check `data.pack` and the installed language pack. Compatible native fonts are required; English audio is optional. Include the exact startup warning. Changed or unfamiliar cache files are preserved; do not delete them blindly. |
 | **Problems after upgrading** | Check that the older setup.exe version is uninstalled and its camera-helper launch option removed. Do not run both loaders. |
 | **Shots or volleys do not fire** | Note the exact unit, weapon and ammunition, and whether the problem affects your soldier, the rest of the unit, or both. Not all combinations have been tested. |
 | **Missing HUD or unusual timing** | Report resolution, fullscreen/windowed mode, Windows scaling, monitor refresh rate, battle speed and whether the whole game slowed down. |

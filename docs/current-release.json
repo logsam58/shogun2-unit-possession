@@ -1,26 +1,26 @@
 {
   "schema": 3,
   "product": "Shogun 2 Unit Possession",
-  "version": "0.32",
+  "version": "0.33",
   "branch": "main",
-  "tag": "v0.32",
-  "release_url": "https://github.com/logsam58/shogun2-unit-possession/releases/tag/v0.32",
-  "repository_visibility": "private; owner controls public launch",
+  "tag": "v0.33",
+  "release_url": "https://github.com/logsam58/shogun2-unit-possession/releases/tag/v0.33",
+  "repository_visibility": "public; owner controls visibility",
   "format": "Steam Workshop; automatic resources from each owned game",
   "workshop": {
     "item": "3825625050",
     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3825625050",
-    "candidate": 166,
+    "candidate": 172,
     "pack": "shogun2_unit_possession_workshop165.pack",
-    "pack_sha256": "1aea369421758874470aa28bbdf0cd668d2b2ebbd0082df21e59b91ea11ffe75",
-    "pack_bytes": 2166630,
-    "steam_manifest": "4652996597420225958",
+    "pack_sha256": "62ec1ac51066ed76fcc8abdf83956c75260c13a16f7aa27030f7bf69eecabc6c",
+    "pack_bytes": 3729730,
+    "steam_manifest": "3194424785911379296",
     "uploaded_and_exact_download_verified": true,
-    "visibility_owner_report": "hidden",
-    "visibility_independently_verified": false
+    "last_verified_date": "2026-10-27",
+    "updated_by_this_GitHub_release": false
   },
-  "source_kit": "Shogun2-Unit-Possession-v0.32-Source.zip",
-  "player_archive": "Shogun2-Unit-Possession-v0.32-Workshop.zip",
+  "source_kit": "Shogun2-Unit-Possession-v0.33-Source.zip",
+  "player_archive": "Shogun2-Unit-Possession-v0.33-Workshop.zip",
   "installer": null,
   "game_resources_shipped": false,
   "startup": {
@@ -35,16 +35,17 @@
     "recorder_debugger_profiler_dump_collector_shipped": false,
     "live_receipts_deleted_on_process_exit": true,
     "resources_shared_where_supported": true,
-    "required_resource_bytes": 56563626,
-    "unknown_files_and_old_caches_automatically_deleted": false
+    "unknown_files_and_old_caches_automatically_deleted": false,
+    "reference_English_resource_bytes": 56563626
   },
   "acceptance": {
-    "owner_reports_successful_ingame_test": true,
-    "formal_Test166_loaded_hash_and_hook_gate_completed": false,
-    "Subscribe_only_Test166_runtime_independently_verified": false,
+    "Test172_owner_reports_working": true,
+    "Test172_formal_loaded_hash_hook_gate_completed": false,
+    "Test173_offline_checks_passed": true,
+    "Test173_owner_gameplay_accepted": false,
     "full_feature_coverage_or_long_term_stability_proven": false
   },
-  "validation": "docs/public-release/V0_32_VALIDATION.json",
+  "validation": "docs/public-release/V0_33_VALIDATION.json",
   "owner_decisions": {
     "first_party_license": "MIT",
     "resources": "from owned game",
@@ -66,6 +67,15 @@
     "isolated enemy acquisition",
     "bow audio follows native animation"
   ],
-  "history": "Earlier installer releases remain historical. Retired game-resource-containing downloads remain absent.",
-  "legal_clearance": "Resource exclusion is not legal clearance for native hooks/reverse engineering; see PROVENANCE.md."
+  "history": "Historical tags and release notes remain. Installer downloads were removed; earlier game-resource-containing downloads remain absent.",
+  "legal_clearance": "Resource exclusion is not legal clearance for native hooks/reverse engineering; see PROVENANCE.md.",
+  "github_runtime": {
+    "candidate": 173,
+    "pack": "shogun2_unit_possession_workshop165.pack",
+    "pack_sha256": "5a79a2b8de38ee69e0cf104b93e7df24a55d1d71aab3f4bf79a7364ee0b0a6c0",
+    "pack_bytes": 3725889,
+    "native_sha256": "ef404f843ad18f46128dab17e19e5e6b66df49e676d5b6dd1bb28ed611d6b0a1",
+    "embedded_build": "173-c85044f55f448f36",
+    "live_acceptance": false
+  }
 }

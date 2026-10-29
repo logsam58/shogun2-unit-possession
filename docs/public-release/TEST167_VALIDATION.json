@@ -1,0 +1,177 @@
+{
+  "test": 167,
+  "status": "Built and offline-tested; not installed or uploaded",
+  "base_commit": "cfdbeea1359c6873296b188d09d81b7c22e446a7",
+  "pack": "shogun2_unit_possession_workshop165.pack",
+  "pack_sha256": "f698b5c8ccc89b26313fc5de6fa0c5795d70f365a723883c7bfa67c528fdb732",
+  "native_sha256": "d608a4365cd9e30b95f856314d8c4de4548d815f55c51b8fedf3ea5c7dd4fc84",
+  "embedded_build": "167-90b82d69c88523b4",
+  "components": {
+    "possession-v46.dll": "42207e993027724ad752bba68de53d12421123acc8a233b9e9b0ab9b6b8d0d15",
+    "possession-hud.exe": "32070b8cf9049051ccaccec3273efab5090f76ccbdb2140aea257b1697a0866f",
+    "qte-playable-v79.dll": "ecda104e8a833fe572c507e6599394c4cff1cbdc47c6ff7cc4b991b8caca3f89",
+    "prepare-local-assets159.exe": "3da6b8ca89dfc884aca1134728d9527e7426ed66daedd1cd6df663734d272cbe"
+  },
+  "component_checks": [
+    {
+      "name": "local-assets-extractor",
+      "passed": true,
+      "seconds": 5.011,
+      "log": "logs\\local-assets-extractor.log"
+    },
+    {
+      "name": "local-assets-prepare",
+      "passed": true,
+      "seconds": 2.967,
+      "log": "logs\\local-assets-prepare.log"
+    },
+    {
+      "name": "local-assets-format-render-tests",
+      "passed": true,
+      "seconds": 10.442,
+      "log": "logs\\local-assets-format-render-tests.log"
+    },
+    {
+      "name": "minhook",
+      "passed": true,
+      "seconds": 3.285,
+      "log": "logs\\minhook.log"
+    },
+    {
+      "name": "adapter",
+      "passed": true,
+      "seconds": 7.468,
+      "log": "logs\\adapter.log"
+    },
+    {
+      "name": "adapter-tests",
+      "passed": true,
+      "seconds": 271.847,
+      "log": "logs\\adapter-tests.log",
+      "executables": 98
+    },
+    {
+      "name": "qte",
+      "passed": true,
+      "seconds": 5.786,
+      "log": "logs\\qte.log"
+    },
+    {
+      "name": "qte-tests",
+      "passed": true,
+      "seconds": 138.106,
+      "log": "logs\\qte-tests.log",
+      "executables": 50
+    },
+    {
+      "name": "hud",
+      "passed": true,
+      "seconds": 4.31,
+      "log": "logs\\hud.log"
+    },
+    {
+      "name": "hud-tests",
+      "passed": true,
+      "seconds": 11.328,
+      "log": "logs\\hud-tests.log",
+      "executables": 8
+    }
+  ],
+  "workshop_checks": [
+    {
+      "name": "compile",
+      "passed": true,
+      "seconds": 11.281,
+      "log": "logs\\compile.log"
+    },
+    {
+      "name": "lua-bridge",
+      "passed": true,
+      "seconds": 2.157,
+      "log": "logs\\lua-bridge.log"
+    },
+    {
+      "name": "menu-failure-recovery",
+      "passed": true,
+      "seconds": 2.235,
+      "log": "logs\\menu-failure-recovery.log"
+    },
+    {
+      "name": "repeat-startup",
+      "passed": true,
+      "seconds": 3.343,
+      "log": "logs\\repeat-startup.log"
+    },
+    {
+      "name": "runtime-resources",
+      "passed": true,
+      "seconds": 5.532,
+      "log": "logs\\runtime-resources.log"
+    },
+    {
+      "name": "storage-lifetime",
+      "passed": true,
+      "seconds": 2.468,
+      "log": "logs\\storage-lifetime.log"
+    }
+  ],
+  "Python_tests": 17,
+  "role_policy_and_six_tables": "passed",
+  "native_inventory": "regenerated source index after initial stale check; passed",
+  "locale_fixture_cases": [
+    {
+      "name": "localized-without-English",
+      "passed": true,
+      "voice_absent_without_disabling_resources": true,
+      "actual_production_HUD_QTE_renderers_passed": true
+    },
+    {
+      "name": "English-fonts-missing-voice",
+      "passed": true,
+      "voice_absent_without_disabling_resources": true,
+      "actual_production_HUD_QTE_renderers_passed": true
+    },
+    {
+      "name": "missing-localization",
+      "passed": true,
+      "refused_safely_without_staging": true
+    },
+    {
+      "name": "malformed-localization",
+      "passed": true,
+      "refused_safely_without_staging": true
+    }
+  ],
+  "English_resource_files_byte_exact_to_accepted166": true,
+  "real_nonEnglish_game_or_reporting_player_tested": false,
+  "old_menu_loss_and_missing_English_reproduced_offline": true,
+  "all_37_stock_callbacks_preserved_in_failure_fixtures": true,
+  "Lua_fallback_bounds": {
+    "index_bytes": 8388608,
+    "root_seek_limit": "below signed 2GiB; normal native path retains uint64 support",
+    "owned_UI_maximum_bytes": 262143
+  },
+  "failure_note": {
+    "normal_successful_startups_create_it": false,
+    "maximum_files": 1,
+    "maximum_bytes": 4096,
+    "exclusive_create_preserves_existing": true
+  },
+  "voice_optional": true,
+  "MediaFoundation_delayed_imports_verified": true,
+  "actual_Windows_N_machine_tested": false,
+  "gameplay_hooks_movement_orders_QTE_source_changed": false,
+  "protected_game_files_unchanged": true,
+  "game_launched_or_live_memory_read": false,
+  "recorder_debugger_started": false,
+  "installed": false,
+  "uploaded": false,
+  "github_published": false,
+  "limitations": [
+    "Compatible native-font layout and Latin glyphs are required; not every real language is verified.",
+    "The reporting player has not confirmed the cause or fix.",
+    "Menu recovery cannot repair missing/corrupt vanilla game data; fallback bounds are explicit.",
+    "A blocked native DLL can prevent the mod; the fallback preserves menus and leaves a bounded error note when writable.",
+    "Known charging/climbing, crashes, clipping and Ultra crowd limits remain."
+  ]
+}

@@ -5,6 +5,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import struct
 import subprocess
@@ -22,9 +23,12 @@ from audit_local_payload159 import audit, resources
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--candidate', type=int, default=165)
+    parser.add_argument('--compat-engine', type=Path, help='Optional exact reviewed ModDB DLL for isolated actual-QTE startup verification; never installed')
     for name in ['game', 'components', 'output', 'vcvars', 'lua', 'luac']:
         parser.add_argument('--' + name, type=Path, required=True)
     args = parser.parse_args()
+    from check_engine_contract172 import check as check_engine172
+    check_engine172()
     game = args.game.resolve()
     components = args.components.resolve()
     out = args.output.resolve()
@@ -231,6 +235,15 @@ def main():
                 '/link',
                 *libs,
             ],
+            [*common, work / 'verify_compat168.cpp',
+             '/Fo' + str(out / 'compat168.obj'),
+             '/Fe' + str(bin_dir / 'verify-compat168.exe'), '/link', *libs],
+            [*common, work / 'verify_qte_startup171.cpp',
+             '/Fo' + str(out / 'qte-startup171.obj'),
+             '/Fe' + str(bin_dir / 'verify-qte-startup171.exe')],
+            [*common, work / 'verify_engine_contract172.cpp',
+             '/Fo' + str(out / 'engine-contract172.obj'),
+             '/Fe' + str(bin_dir / 'verify-engine-contract172.exe'), '/link', *libs],
         ],
     )
     leaves = resources(dll)
@@ -300,6 +313,54 @@ def main():
     )
     if pending_native.exists():
         raise ValueError('Completed interrupted native staging was not reused')
+    run(
+        'menu-failure-recovery',
+        [[args.lua.resolve(), work / 'verify_fallback167.lua', reference,
+          fixture_script, game / 'data/data.pack', fixture]],
+        lua_env,
+    )
+    ui_fixtures = out / 'ui-mod-fixtures'
+    ui_fixtures.mkdir()
+    other_root = (
+        'local c=assert(loadfile(' + json.dumps(reference.as_posix()) + '));'
+        'setfenv(c,getfenv(1));c(...);'
+        'function CompatibilityMenu168() return "other menu mod" end\n'
+    ).encode()
+    ui_name = b'ui\\frontend ui\\layout_scripts\\root.luac\0'
+    ui_index = struct.pack('<I', len(other_root)) + ui_name
+    (ui_fixtures / 'other-ui.pack').write_bytes(
+        struct.pack('<4s5IQ', b'PFH3', 3, 0, 0, 1, len(ui_index), 1)
+        + ui_index + other_root
+    )
+    selected_ui = ui_fixtures / 'used_mods.txt'
+    selected_ui.write_text(
+        'add_working_directory "' + ui_fixtures.as_posix() + '";\n'
+        'mod "other-ui.pack";\n', encoding='utf-16'
+    )
+    ui_env = dict(lua_env, S2UP168_FIXTURE_SELECTION=str(selected_ui))
+    run('enabled-ui-mod', [[args.lua.resolve(), work / 'verify_ui168.lua', fixture_script]], ui_env)
+    # Real compiled bootstrap and native bridge, with renamed duplicate copies.
+    # The self archive must not be mistaken for another menu and re-entered.
+    self_meta = json.dumps({'first_party_bootstrap': True, 'native_sha256': digest(fixture)}).encode()
+    self_root = fixture_script.read_bytes()
+    self_index = (struct.pack('<I', len(self_root)) + ui_name
+                  + struct.pack('<I', len(self_meta)) + b'possession\\workshop165.json\0')
+    self_pack = (struct.pack('<4s5IQ', b'PFH3', 3, 0, 0, 2, len(self_index), 1)
+                 + self_index + self_root + self_meta)
+    duplicate_folder = ui_fixtures / 'second copy'
+    duplicate_folder.mkdir()
+    (ui_fixtures / 'renamed-possession.pack').write_bytes(self_pack)
+    (duplicate_folder / 'renamed-possession.pack').write_bytes(self_pack)
+    renamed_selection = ui_fixtures / 'renamed_used_mods.txt'
+    renamed_selection.write_text(
+        'add_working_directory "' + ui_fixtures.as_posix() + '";\n'
+        'add_working_directory "' + duplicate_folder.as_posix() + '";\n'
+        'mod "renamed-possession.pack";\nmod "other-ui.pack";\n', encoding='utf-16'
+    )
+    renamed_env = dict(lua_env, S2UP168_FIXTURE_SELECTION=str(renamed_selection))
+    run('renamed-duplicate-bootstrap', [[args.lua.resolve(), work / 'verify_ui168.lua', fixture_script]], renamed_env)
+    if any(p.name.endswith('.root.luac') for p in lua_cache.iterdir()):
+        raise ValueError('Transient UI handoff accumulated')
 
     def cache_state():
         return {
@@ -344,12 +405,68 @@ def main():
         'storage-lifetime',
         [[bin_dir / 'verify-storage166.exe', out / 'storage-fixtures']],
     )
+    run('mod-coexistence', [[bin_dir / 'verify-compat168.exe', game, out / 'compatibility-fixtures']])
+    run('actual-qte-stock-startup', [[bin_dir / 'verify-qte-startup171.exe',
+        game / 'Empire.Retail.dll', bin_dir / 'qte-playable-v79.dll', 'Possession module unavailable']])
+    run('actual-qte-occupied-live-hook', [[bin_dir / 'verify-qte-startup171.exe',
+        game / 'Empire.Retail.dll',bin_dir / 'qte-playable-v79.dll',
+        'Engine compatibility: occupied/changed hook at RVA 0x3e5d40*','0x3e5d40']])
+    # Build identity alone no longer decides admission. The actual worker must
+    # accept an identity-only edit, but reject a changed required native region.
+    unknown_folder = out / 'unknown-engine-fixture'
+    unknown_folder.mkdir()
+    unknown_image = unknown_folder / 'Empire.Retail.dll'
+    unknown_bytes = bytearray((game / 'Empire.Retail.dll').read_bytes())
+    pe_offset = struct.unpack_from('<I', unknown_bytes, 0x3c)[0]
+    unknown_bytes[pe_offset + 8] ^= 1
+    unknown_image.write_bytes(unknown_bytes)
+    run('actual-qte-independent-identity', [[bin_dir / 'verify-qte-startup171.exe',
+        unknown_image, bin_dir / 'qte-playable-v79.dll', 'Possession module unavailable']])
+    conflict_folder=out / 'critical-engine-fixture'
+    conflict_folder.mkdir()
+    conflict_image=conflict_folder / 'Empire.Retail.dll'
+    conflict=bytearray((game / 'Empire.Retail.dll').read_bytes())
+    section_count=struct.unpack_from('<H',conflict,pe_offset+6)[0]
+    section_table=pe_offset+24+struct.unpack_from('<H',conflict,pe_offset+20)[0]
+    for i in range(section_count):
+        at=section_table+i*40
+        rva,raw_size,raw=struct.unpack_from('<III',conflict,at+12)
+        if rva<=0x3e5d40<rva+raw_size:
+            conflict[raw+0x3e5d40-rva]^=1
+            break
+    else:
+        raise ValueError('Critical fixture RVA not mapped')
+    conflict_image.write_bytes(conflict)
+    run('actual-qte-critical-engine-refusal', [[bin_dir / 'verify-qte-startup171.exe',
+        conflict_image, bin_dir / 'qte-playable-v79.dll', 'Engine compatibility: required native region differs at RVA *']])
+    if args.compat_engine:
+        reviewed = re.search(r'bugfix_sha\[\]="([a-f0-9]{64})"',
+            (snapshot / 'native/common/engine_profiles170.h').read_text()).group(1)
+        if digest(args.compat_engine) != reviewed:
+            raise ValueError('Optional compatibility image differs from the exact reviewed ModDB profile')
+        image_folder = out / 'reviewed-engine-fixture'
+        image_folder.mkdir()
+        image = image_folder / 'Empire.Retail.dll'
+        shutil.copyfile(args.compat_engine, image)
+        if digest(image) != reviewed:
+            raise ValueError('Optional compatibility image copy differs')
+        run('actual-qte-reviewed-engine-startup', [[bin_dir / 'verify-qte-startup171.exe',
+            image, bin_dir / 'qte-playable-v79.dll', 'Possession module unavailable']])
+        run('engine-contract-controls', [[bin_dir / 'verify-engine-contract172.exe',
+            game / 'Empire.Retail.dll',args.compat_engine.resolve(),out / 'engine-contract-fixtures']])
+        independent_folder=out / 'independent-code-engine-fixture'
+        independent_folder.mkdir()
+        independent_image=independent_folder / 'Empire.Retail.dll'
+        shutil.copyfile(out / 'engine-contract-fixtures/independent.dll',independent_image)
+        run('actual-qte-independent-code', [[bin_dir / 'verify-qte-startup171.exe',
+            independent_image, bin_dir / 'qte-playable-v79.dll', 'Possession module unavailable']])
     payload = delivered.read_bytes()
     if stock in payload:
         raise ValueError('Original stock script leaked into delivery')
     metadata = json.dumps(
         {
             'test': args.candidate,
+            'native_sha256': digest(dll),
             'first_party_bootstrap': True,
             'resources': 'prepared from owned game',
             'chooser': False,
@@ -372,7 +489,8 @@ def main():
         ),
     ]:
         entries['possession\\licenses\\' + name] = path.read_bytes()
-    entries['possession\\PLAYING.md'] = (work / 'PLAYING165.md').read_bytes()
+    playing = work / ('PLAYING173.md' if args.candidate >= 173 else 'PLAYING172.md' if args.candidate >= 172 else 'PLAYING171.md' if args.candidate >= 171 else 'PLAYING170.md' if args.candidate >= 170 else 'PLAYING169.md' if args.candidate >= 169 else 'PLAYING168.md' if args.candidate >= 168 else 'PLAYING167.md' if args.candidate >= 167 else 'PLAYING165.md')
+    entries['possession\\PLAYING.md'] = playing.read_bytes()
     index = b''.join(
         struct.pack('<I', len(value)) + name.encode() + b'\0'
         for name, value in entries.items()
@@ -400,7 +518,7 @@ def main():
             raise ValueError('Pack roundtrip differs')
     for name in ['LICENSE', 'THIRD_PARTY_NOTICES.md']:
         shutil.copy2(ROOT / name, package / name)
-    shutil.copy2(work / 'PLAYING165.md', package / 'PLAYING.md')
+    shutil.copy2(playing, package / 'PLAYING.md')
     shutil.copy2(
         ROOT / 'native/outputs/shogun2-possession-cleanup-v46/vendor/LICENSE.txt',
         package / 'MinHook-LICENSE.txt',
