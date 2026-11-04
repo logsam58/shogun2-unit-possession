@@ -15241,7 +15241,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 73,
+      "line": 74,
       "tags": [
         "synchronization"
       ],
@@ -15249,7 +15249,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 77,
+      "line": 78,
       "tags": [
         "abi"
       ],
@@ -15257,7 +15257,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 178,
+      "line": 179,
       "tags": [
         "native_offset"
       ],
@@ -15267,7 +15267,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 198,
+      "line": 199,
       "tags": [
         "native_offset"
       ],
@@ -15277,7 +15277,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 264,
+      "line": 285,
       "tags": [
         "synchronization"
       ],
@@ -15285,7 +15285,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 276,
+      "line": 297,
       "tags": [
         "synchronization"
       ],
@@ -15293,7 +15293,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 278,
+      "line": 299,
       "tags": [
         "synchronization"
       ],
@@ -15301,7 +15301,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 283,
+      "line": 304,
       "tags": [
         "synchronization"
       ],
@@ -15309,7 +15309,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 286,
+      "line": 307,
       "tags": [
         "synchronization"
       ],
@@ -15317,7 +15317,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 312,
+      "line": 338,
       "tags": [
         "abi"
       ],
@@ -15325,7 +15325,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 313,
+      "line": 339,
       "tags": [
         "synchronization"
       ],
@@ -15333,7 +15333,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 327,
+      "line": 353,
       "tags": [
         "synchronization"
       ],
@@ -15341,7 +15341,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 395,
+      "line": 421,
       "tags": [
         "synchronization"
       ],
@@ -15349,7 +15349,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 397,
+      "line": 423,
       "tags": [
         "synchronization"
       ],
@@ -15357,7 +15357,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 400,
+      "line": 426,
       "tags": [
         "synchronization"
       ],
@@ -15365,7 +15365,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 404,
+      "line": 430,
       "tags": [
         "synchronization"
       ],
@@ -15373,7 +15373,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 507,
+      "line": 536,
       "tags": [
         "abi"
       ],
@@ -15381,7 +15381,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 508,
+      "line": 537,
       "tags": [
         "synchronization"
       ],
@@ -15389,7 +15389,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 509,
+      "line": 538,
       "tags": [
         "synchronization"
       ],
@@ -15397,7 +15397,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 511,
+      "line": 540,
       "tags": [
         "abi"
       ],
@@ -15405,7 +15405,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 512,
+      "line": 541,
       "tags": [
         "synchronization"
       ],
@@ -15413,7 +15413,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 513,
+      "line": 542,
       "tags": [
         "synchronization"
       ],
@@ -15421,7 +15421,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 515,
+      "line": 544,
       "tags": [
         "abi"
       ],
@@ -15429,38 +15429,11 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 516,
+      "line": 545,
       "tags": [
         "synchronization"
       ],
       "rvas": []
-    },
-    {
-      "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 528,
-      "tags": [
-        "synchronization"
-      ],
-      "rvas": []
-    },
-    {
-      "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 553,
-      "tags": [
-        "abi",
-        "synchronization"
-      ],
-      "rvas": []
-    },
-    {
-      "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 555,
-      "tags": [
-        "native_offset"
-      ],
-      "rvas": [
-        "0x3e210e"
-      ]
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
@@ -15472,7 +15445,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 558,
+      "line": 583,
       "tags": [
         "abi",
         "synchronization"
@@ -15481,64 +15454,17 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 561,
+      "line": 585,
       "tags": [
-        "synchronization"
+        "native_offset"
       ],
-      "rvas": []
+      "rvas": [
+        "0x3e210e"
+      ]
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 562,
-      "tags": [
-        "abi",
-        "synchronization"
-      ],
-      "rvas": []
-    },
-    {
-      "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 571,
-      "tags": [
-        "synchronization"
-      ],
-      "rvas": []
-    },
-    {
-      "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 574,
-      "tags": [
-        "synchronization"
-      ],
-      "rvas": []
-    },
-    {
-      "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 577,
-      "tags": [
-        "synchronization"
-      ],
-      "rvas": []
-    },
-    {
-      "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 578,
-      "tags": [
-        "abi"
-      ],
-      "rvas": []
-    },
-    {
-      "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 579,
-      "tags": [
-        "synchronization"
-      ],
-      "rvas": []
-    },
-    {
-      "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 586,
+      "line": 587,
       "tags": [
         "synchronization"
       ],
@@ -15548,13 +15474,14 @@
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
       "line": 588,
       "tags": [
-        "abi"
+        "abi",
+        "synchronization"
       ],
       "rvas": []
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 589,
+      "line": 591,
       "tags": [
         "synchronization"
       ],
@@ -15562,7 +15489,16 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 600,
+      "line": 592,
+      "tags": [
+        "abi",
+        "synchronization"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
+      "line": 601,
       "tags": [
         "synchronization"
       ],
@@ -15570,15 +15506,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 626,
-      "tags": [
-        "abi"
-      ],
-      "rvas": []
-    },
-    {
-      "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 628,
+      "line": 604,
       "tags": [
         "synchronization"
       ],
@@ -15586,7 +15514,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 667,
+      "line": 607,
       "tags": [
         "synchronization"
       ],
@@ -15594,7 +15522,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 743,
+      "line": 608,
       "tags": [
         "abi"
       ],
@@ -15602,7 +15530,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 772,
+      "line": 609,
       "tags": [
         "synchronization"
       ],
@@ -15610,7 +15538,15 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 796,
+      "line": 616,
+      "tags": [
+        "synchronization"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
+      "line": 618,
       "tags": [
         "abi"
       ],
@@ -15618,7 +15554,23 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 809,
+      "line": 619,
+      "tags": [
+        "synchronization"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
+      "line": 630,
+      "tags": [
+        "synchronization"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
+      "line": 656,
       "tags": [
         "abi"
       ],
@@ -15626,7 +15578,23 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 810,
+      "line": 658,
+      "tags": [
+        "synchronization"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
+      "line": 697,
+      "tags": [
+        "synchronization"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
+      "line": 773,
       "tags": [
         "abi"
       ],
@@ -15634,7 +15602,39 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 821,
+      "line": 802,
+      "tags": [
+        "synchronization"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
+      "line": 826,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
+      "line": 839,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
+      "line": 840,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
+      "line": 851,
       "tags": [
         "native_offset"
       ],
@@ -15644,7 +15644,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 822,
+      "line": 852,
       "tags": [
         "native_offset"
       ],
@@ -15654,7 +15654,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 825,
+      "line": 855,
       "tags": [
         "hook"
       ],
@@ -15662,7 +15662,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 826,
+      "line": 856,
       "tags": [
         "native_offset"
       ],
@@ -15672,7 +15672,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 830,
+      "line": 860,
       "tags": [
         "native_offset"
       ],
@@ -15682,7 +15682,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 831,
+      "line": 861,
       "tags": [
         "native_offset"
       ],
@@ -15692,7 +15692,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 832,
+      "line": 862,
       "tags": [
         "native_offset"
       ],
@@ -15702,7 +15702,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 833,
+      "line": 863,
       "tags": [
         "native_offset"
       ],
@@ -15713,7 +15713,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 834,
+      "line": 864,
       "tags": [
         "native_offset"
       ],
@@ -15725,7 +15725,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 838,
+      "line": 868,
       "tags": [
         "native_offset"
       ],
@@ -15735,7 +15735,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 839,
+      "line": 869,
       "tags": [
         "native_offset"
       ],
@@ -15745,7 +15745,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 840,
+      "line": 870,
       "tags": [
         "native_offset"
       ],
@@ -15755,7 +15755,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 849,
+      "line": 879,
       "tags": [
         "hook"
       ],
@@ -15763,7 +15763,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 864,
+      "line": 894,
       "tags": [
         "native_offset"
       ],
@@ -15773,7 +15773,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 885,
+      "line": 915,
       "tags": [
         "synchronization"
       ],
@@ -15781,7 +15781,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 894,
+      "line": 924,
       "tags": [
         "synchronization"
       ],
@@ -15789,7 +15789,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 967,
+      "line": 997,
       "tags": [
         "hook"
       ],
@@ -15797,7 +15797,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 968,
+      "line": 998,
       "tags": [
         "synchronization"
       ],
@@ -15805,7 +15805,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 973,
+      "line": 1003,
       "tags": [
         "hook"
       ],
@@ -15813,7 +15813,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/playable_runtime.cpp",
-      "line": 976,
+      "line": 1006,
       "tags": [
         "abi"
       ],
@@ -15933,7 +15933,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_charge.cpp",
-      "line": 33,
+      "line": 36,
       "tags": [
         "native_offset"
       ],
@@ -15943,7 +15943,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_charge.cpp",
-      "line": 34,
+      "line": 37,
       "tags": [
         "native_offset"
       ],
@@ -15953,7 +15953,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_charge.cpp",
-      "line": 39,
+      "line": 42,
       "tags": [
         "native_offset"
       ],
@@ -16415,7 +16415,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_reservation.cpp",
-      "line": 18,
+      "line": 19,
       "tags": [
         "native_offset"
       ],
@@ -16425,7 +16425,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_reservation.cpp",
-      "line": 39,
+      "line": 48,
       "tags": [
         "native_offset"
       ],
@@ -16435,7 +16435,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_reservation.cpp",
-      "line": 74,
+      "line": 83,
       "tags": [
         "synchronization"
       ],
@@ -16443,7 +16443,7 @@
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_reservation.cpp",
-      "line": 109,
+      "line": 118,
       "tags": [
         "synchronization"
       ],
@@ -16530,6 +16530,102 @@
       "rvas": [
         "0x15e8524"
       ]
+    },
+    {
+      "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_rts_melee212.cpp",
+      "line": 3,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_rts_melee212.cpp",
+      "line": 4,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_rts_melee212.cpp",
+      "line": 5,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_rts_melee212.cpp",
+      "line": 6,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_rts_melee212.cpp",
+      "line": 7,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_rts_melee212.cpp",
+      "line": 8,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_rts_melee212.cpp",
+      "line": 14,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x1bc8180"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_rts_melee212.cpp",
+      "line": 16,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x15dfec8"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_rts_melee212.cpp",
+      "line": 24,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x15e1460"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_rts_melee212.cpp",
+      "line": 25,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x15e1510"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_rts_melee212.cpp",
+      "line": 62,
+      "tags": [
+        "synchronization"
+      ],
+      "rvas": []
     },
     {
       "path": "native/outputs/shogun2-authentic-hud80-preview/qte-src/verify_scope118.cpp",

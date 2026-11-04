@@ -62,9 +62,12 @@
     "revision34_enemy_acquisition_trial": "FAILED: still ignored",
     "full_feature_coverage_or_long_term_stability_proven": false,
     "Deck_campaign_Start_Game_footer_owner_accepted": true,
-    "revision36_formal_loaded_hash_gate_completed": false
+    "revision36_formal_loaded_hash_gate_completed": false,
+    "revision39_owner_reported_success": true,
+    "revision39_owner_message": "success",
+    "revision39_formal_loaded_hash_gate_completed": false
   },
-  "validation": "docs/public-release/V0_34_MENU36_VALIDATION.json",
+  "validation": "docs/public-release/V0_34_MELEE39_VALIDATION.json",
   "owner_decisions": {
     "first_party_license": "MIT",
     "resources": "from owned game",
@@ -94,16 +97,16 @@
   "history": "Historical tags and release notes remain. Installer downloads were removed; earlier game-resource-containing downloads remain absent.",
   "legal_clearance": "Resource exclusion is not legal clearance for native hooks/reverse engineering; see PROVENANCE.md.",
   "github_runtime": {
-    "revision": "menu-parent-36",
+    "revision": "melee-rts-39",
     "candidate": 181,
     "pack": "shogun2_unit_possession_workshop165.pack",
-    "pack_sha256": "79e8e7ffbad5f1474a3188d6eac91a456d6d0148bba91e453f5c862f5071e11f",
-    "pack_bytes": 4272214,
+    "pack_sha256": "a68637165024934159d5dcdf36efc1c941f50b0f10666394bfe777fc90947449",
+    "pack_bytes": 4275374,
     "pack_distributed_by_this_source_push": false,
     "live_enemy_acquisition_accepted": false,
-    "native_sha256": "3e81d86ab8be93fbe1b13ef1d2e58c9b002f097b952b5d165fa236b6fea8e778"
+    "native_sha256": "f9f127e13175771c591325510175d386131e3cc6c9b7a6b4d03f17a851a78ad7"
   },
-  "source_status": "Maintained combined PC/Steam Deck source through revision36; binary/Steam publication separate",
+  "source_status": "Maintained combined PC/Steam Deck source through revision39; binary/Steam publication separate",
   "last_tagged_release": {
     "version": "0.33",
     "url": "https://github.com/logsam58/shogun2-unit-possession/releases/tag/v0.33"

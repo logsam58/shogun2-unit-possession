@@ -1,4 +1,5 @@
 """Build an isolated native Deck menu/RTS candidate; never install, launch or publish."""
+import re
 import argparse
 import hashlib
 import importlib.util
@@ -24,6 +25,7 @@ def main():
     for name in ('game','bugfix','output','vcvars','lua','luac','abi-reference-dir'):
         p.add_argument('--'+name,type=Path,required=True)
     p.add_argument('--quick',action='store_true',help='Compile adapter and new fixtures only; not a distributable build')
+    p.add_argument('--loader-fixture',type=Path,help='Optional exact Shogun2 Loader0.5.2 for mapped-only frame compatibility checks; never shipped or executed')
     p.add_argument('--components-from',type=Path,help='Reuse all four components ONLY after complete dependency closure equality and100/50/8 passed regressions; run every current focused/bridge check fresh')
     a=p.parse_args();game=a.game.resolve();out=a.output.resolve();require_game(game)
     if out.exists() or ROOT.is_relative_to(out) or out.is_relative_to(game):p.error('Use a new isolated output outside the game')
@@ -59,6 +61,7 @@ def main():
     run('private-engine-contract',[sys.executable,'-B',ROOT/'tools/deck/extend_contract175.py',
         '--snapshot',snapshot,'--output',out/'engine-contract','--cache-fix176','--context-controls181'])
     run('private-engine-contract-check',[sys.executable,'-B',snapshot/'tools/workshop/check_engine_contract172.py'])
+    run('native-ui-contract211',[sys.executable,'-B',snapshot/'tools/deck/generate_native211.py','--stock',game/'Empire.Retail.dll','--bugfix',a.bugfix.resolve(),'--output',out/'native-ui-contract211'])
     env=dict(os.environ,SHOGUN2_BUILD_OUTPUT=str(out/'components'),SHOGUN2_GAME_DIR=str(game),SHOGUN2_VCVARS=str(a.vcvars.resolve()))
     # Compiler commands execute from the snapshot so build-time transformations
     # cannot enter the normal maintained source or installed game directory.
@@ -66,7 +69,7 @@ def main():
     if a.components_from:
         prior=a.components_from.resolve();component=prior/'components'
         results=json.loads((component/'build-results.json').read_text());assert all(row['passed']for row in results['results'])
-        for name,count in [('adapter-tests',100),('qte-tests',50),('hud-tests',8)]:
+        for name,count in [('adapter-tests',100),('qte-tests',51),('hud-tests',8)]:
             assert next(x for x in results['results']if x['name']==name)['executables']==count
         def closure(folder,tag):
             spec=importlib.util.spec_from_file_location(tag,folder/'tools/workshop/generate_engine_contract172.py');module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
@@ -84,7 +87,7 @@ def main():
         shutil.copyfile(component/'build-inputs.json',destination/'build-inputs.json')
         shutil.copytree(component/'logs',destination/'logs') # unchanged component evidence; explicitly inherited in receipt
         reuse=dict(source_build=str(prior),complete_component_dependency_files=len(before),dependencies_exact=True,resource_inputs_exact=True,
-                   inherited_checks='100 adapter/50 QTE/8 HUD plus local resource/font/render checks',fresh_component_checks=False,
+                   inherited_checks='100 adapter/51 QTE/8 HUD plus local resource/font/render checks',fresh_component_checks=False,
                    results_sha256=digest(component/'build-results.json'),binaries={q.name:digest(q)for q in(destination/'bin').iterdir()if q.suffix in('.exe','.dll')})
         (out/'component-reuse.json').write_text(json.dumps(reuse,indent=2)+'\n');inherited_hooks=component/'obj'
     elif a.quick:
@@ -107,6 +110,13 @@ def main():
             ('verify_native175.cpp',['bcrypt.lib','user32.lib'],[game/'Empire.Retail.dll',a.bugfix.resolve()])]:
         exe=bin_dir/(Path(source).stem+'.exe')
         commands.extend([[*common,snapshot/'tools/deck'/source,'/Fo'+str(bin_dir/(Path(source).stem+'.obj')),'/Fe'+str(exe),'/link',*libs,*hook_objects],[exe,*args]])
+    renderer211=bin_dir/'verify-renderer211.exe';renderer_args211=[game/'Empire.Retail.dll',a.bugfix.resolve()]
+    if a.loader_fixture:renderer_args211.append(a.loader_fixture.resolve())
+    commands.extend([[*common,snapshot/'tools/deck/verify_renderer211.cpp','/Fo'+str(bin_dir/'renderer211.obj'),'/Fe'+str(renderer211),'/link',*hook_objects,'bcrypt.lib','user32.lib'],[renderer211,*renderer_args211]])
+    native212=bin_dir/'verify-melee212.exe'
+    commands.extend([[*common,'/DS2FP_LOCAL_ASSETS','/DNOMINMAX',snapshot/'tools/deck/verify_melee212.cpp','/Fo'+str(bin_dir/'melee212.obj'),'/Fe'+str(native212),'/link',*hook_objects,'bcrypt.lib','user32.lib','gdi32.lib','gdiplus.lib','ole32.lib'],[native212,game/'Empire.Retail.dll'],[native212,a.bugfix.resolve()]])
+    native213=bin_dir/'verify-melee213.exe'
+    commands.extend([[*common,'/DS2FP_LOCAL_ASSETS','/DNOMINMAX',snapshot/'tools/deck/verify_melee213.cpp','/Fo'+str(bin_dir/'melee213.obj'),'/Fe'+str(native213),'/link',*hook_objects,'bcrypt.lib','user32.lib','gdi32.lib','gdiplus.lib','ole32.lib'],[native213,game/'Empire.Retail.dll'],[native213,a.bugfix.resolve()]])
     fake=bin_dir/'steam_api.dll';device=bin_dir/'verify_device192.exe'
     commands.extend([[*common,'/LD',snapshot/'tools/deck/fake_steam192.cpp','/Fo'+str(bin_dir/'fake-steam192.obj'),'/Fe'+str(fake)],
                      [*common,snapshot/'tools/deck/verify_device192.cpp','/Fo'+str(bin_dir/'verify-device192.obj'),'/Fe'+str(device),'/link','user32.lib'],
@@ -126,6 +136,10 @@ def main():
     text=(logs/'new-fixtures.log').read_text(errors='replace')
     for marker in ('PASS 123 lifecycle181','PASS 30 controls181 context/R3/lifecycle checks','PASS 13 handoff181','PASS 7 navigation182','PASS 7 binding_profiles182','PASS 48 Deck simulation/ABI checks','PASS 22 RTS175 policy/queue checks','PASS 12 RTS175 native Halt boundary checks','PASS RTS175 normalized native guards:'):
         if marker not in text:raise ValueError('A native fixture did not complete: '+marker)
+    renderer_match211=re.search(r'PASS renderer211: (\d+) engine images; (\d+) frame owners; (\d+) critical mutations refused; (\d+) original projection',text)
+    expected211=(2,8,880,4896)if a.loader_fixture else(2,4,440,2448)
+    if not renderer_match211 or tuple(map(int,renderer_match211.groups()))!=expected211:raise ValueError('Renderer slot isolation/coexistence checks incomplete')
+    if a.loader_fixture and 'PASS renderer211 exact loader0.5.2:'not in text:raise ValueError('Exact reviewed loader was not checked')
     if text.count('PASS device192: 19 production')!=2 or 'PASS desktop192 adapter bypass' not in text:raise ValueError('Automatic device/profile checks incomplete')
     if (logs/'new-fixtures.log').read_text().count('PASS menu210: 8 native campaign parent clipping cases')!=2:raise ValueError('Missing native campaign parent clipping checks')
     run('native-menu-Lua-policy',[a.lua.resolve(),snapshot/'tools/deck/verify_frontend181.lua',snapshot/'native/deck/frontend181.lua',snapshot/'native/deck/navigation181.lua',snapshot/'native/deck/frontend179.lua',snapshot/'native/deck/navigation179.lua'])
@@ -171,10 +185,13 @@ def main():
         if marker not in component_text:raise ValueError('Missing gameplay203 native regression: '+marker)
     if component_text.count('PASS acquisition207:')!=2:raise ValueError('Missing foot/mounted acquisition regression')
     if component_text.count('PASS acquisition208:')!=2 or component_text.count('PASS acquisition208 distance:')!=2:raise ValueError('Missing shared direct-call and cached-distance acquisition regressions')
-    result=dict(candidate=181,revision='menu-parent-36',scope='Deck campaign setup fitting keeps native Start Game footer within the shared UI viewport; accepted gameplay components unchanged',
-        native_inputs='Valve Steam Input006 through Proton; physical Deck required',abi=abi,acquisition207=True,acquisition207_live_verified=False,acquisition208=True,acquisition208_live_verified=False,
+    if 'PASS melee212:'not in(out/'components/logs/qte-tests.log').read_text(errors='replace'):raise ValueError('Missing current-lease RTS melee regression')
+    if (logs/'new-fixtures.log').read_text().count('PASS native212: 8 original-engine cases')!=2:raise ValueError('Missing original-engine melee cleanup/eligibility checks')
+    if (logs/'new-fixtures.log').read_text().count('PASS native213: 30 original-engine')!=2:raise ValueError('Missing native multi-candidate reservation cleanup checks')
+    result=dict(candidate=181,revision='melee-rts-39',scope='Release excluded native QTE candidate reservations; preserve current-lease RTS protection, renderer coexistence and accepted gameplay',
+        melee213=True,melee213_native_cases=60,melee213_live_verified=False,melee212=True,melee212_native_cases=16,melee212_live_verified=False,native_inputs='Valve Steam Input006 through Proton; physical Deck required',abi=abi,acquisition207=True,acquisition207_live_verified=False,acquisition208=True,acquisition208_live_verified=False,
         new_simulation_ABI_checks=48,new_RTS_policy_queue_checks=22,native_Halt_boundary_checks=12,native_function_guards=len(metadata['functions']),
-        native_UI_scale=1.25,native_UI_modal_policy="Uniform whole-window fit; oversized modals reduce enlargement only as needed; native contents and fonts unchanged",mod_HUD_scale=1.15,permanent_legends=False,header186="Press View: HUD; hold View: controls",controls_overlay="First-party Shogun-styled native-font and Valve-glyph guide",native_UI_projection_points=4488,native_panel_fit_cases=44,rapid_panel_burst_cases=10003,native_keyboard_hook_cases=123,native_Lua_result_cases=3000,native_string_argument_failure_cases=1,Steam_layout_revision=dict(major=3,minor=6),edge205_native_branch_cases=216,edge205_Deck_only=True,locomotion206_mounted_regression=True,locomotion206_directional_cases=36,locomotion206_idle_cases=16,locomotion206_guard_cases=37,locomotion204_idle_categories=37,locomotion204_observed_regression=True,camera_rate202_checks=4296,camera_rate202_concurrent_samples=20000,top_wall_entry_removed201=True,fractional_aim201_checks=1440,fractional_aim201_concurrent_samples=10000,shared_HUD198_checks=True,command_wheel197_checks=True,command_wheel197_deliveries=8,campaign_return196_checks=True,campaign_return196_roundtrips=30,campaign_return196_adapter_cycles=12,battle_zoom195_checks=True,battle_zoom_ramp_seconds=.45,battle_zoom_peak_factor=.8,qol193_checks=True,bindings194_checks=True,battle194_checks=True,cursor194_native_image=True,native188_checks=29,native_selection189_checks=30,usability190_checks=25,menu_RT_primary=True,button_binding_cases=28,source_adaptation=adaptation,frontend_Lua_policy_checks=93,frontend_campaign_fit209=True,frontend_fit209_original_engine_cases=8,frontend_parent_fit210=True,frontend_parent210_original_engine_cases=16,possession_context_checks=30,controls_policy_checks=18,native_camera_rate_cases=16,menu_worker_boundary_checks=33,frontend_native_lifecycle_checks=11,compiled_menu_bootstrap_checks=6,automatic_device192=True,device_fixture_cases=38,component_reuse=reuse,cache_lifetime_fix_verified=True,game_install_or_launch=False,Steam_user_config_changed=False,
+        native_UI_scale=1.25,native_UI_modal_policy="Uniform whole-window fit; oversized modals reduce enlargement only as needed; native contents and fonts unchanged",mod_HUD_scale=1.15,permanent_legends=False,header186="Press View: HUD; hold View: controls",controls_overlay="First-party Shogun-styled native-font and Valve-glyph guide",native_UI_projection_points=4488,native_panel_fit_cases=44,rapid_panel_burst_cases=10003,native_keyboard_hook_cases=123,native_Lua_result_cases=3000,native_string_argument_failure_cases=1,Steam_layout_revision=dict(major=3,minor=6),edge205_native_branch_cases=216,edge205_Deck_only=True,locomotion206_mounted_regression=True,locomotion206_directional_cases=36,locomotion206_idle_cases=16,locomotion206_guard_cases=37,locomotion204_idle_categories=37,locomotion204_observed_regression=True,camera_rate202_checks=4296,camera_rate202_concurrent_samples=20000,top_wall_entry_removed201=True,fractional_aim201_checks=1440,fractional_aim201_concurrent_samples=10000,shared_HUD198_checks=True,command_wheel197_checks=True,command_wheel197_deliveries=8,campaign_return196_checks=True,campaign_return196_roundtrips=30,campaign_return196_adapter_cycles=12,battle_zoom195_checks=True,battle_zoom_ramp_seconds=.45,battle_zoom_peak_factor=.8,qol193_checks=True,bindings194_checks=True,battle194_checks=True,cursor194_native_image=True,native188_checks=29,native_selection189_checks=30,usability190_checks=25,menu_RT_primary=True,button_binding_cases=28,source_adaptation=adaptation,frontend_Lua_policy_checks=93,frontend_campaign_fit209=True,frontend_fit209_original_engine_cases=8,frontend_parent_fit210=True,frontend_parent210_original_engine_cases=16,renderer211=True,renderer211_cases=expected211,renderer211_exact_loader_fixture=bool(a.loader_fixture),possession_context_checks=30,controls_policy_checks=18,native_camera_rate_cases=16,menu_worker_boundary_checks=33,frontend_native_lifecycle_checks=11,compiled_menu_bootstrap_checks=6,automatic_device192=True,device_fixture_cases=38,component_reuse=reuse,cache_lifetime_fix_verified=True,game_install_or_launch=False,Steam_user_config_changed=False,
         recorder_debugger_started=False,actual_Deck_RTS_gameplay_verified=False,
         supported_increment=['native shared UI sizing/input and touch cursor; directional menu navigation remains deferred','campaign native camera/panels/selection/contextual cursor orders','RTS camera/selection/orders/Halt','automatic possession movement/look/combat/commands/abilities/QTE routing','Y possess/return; R3 hold perspective only'],
         pending=['real Deck menu/campaign/RTS/possession and QTE validation','new campaign panel/save/end-turn buttons on Deck; accepted camera feel preserved','live native shortcut/group and command-wheel effect','deployment/naval controls','timing/focus/suspend-resume validation'])

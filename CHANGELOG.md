@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.34 follow-up — 2026-11-03
+
+- Fixed a QTE candidate-cleanup leak that could leave soldiers marked busy and unable to enter further melee, becoming especially visible among late-battle survivors.
+- Scoped extra QTE reservations to the current possession so returning to RTS no longer preserves that suppression.
+- Corrected Deck UI compatibility with Faster Load Times / Shogun2 Loader 0.5.2 while retaining the native UI checks; the external loader is not included or required.
+
+Revision39 passed a full build and the owner reported success after installation.
+This updates GitHub source only; no new binary release or Workshop upload.
+[Validation](docs/public-release/V0_34_MELEE39_VALIDATION.json).
+
 ## v0.34 - 2026-11-02
 
 Changes since public v0.33. Public main now contains the combined implementation;

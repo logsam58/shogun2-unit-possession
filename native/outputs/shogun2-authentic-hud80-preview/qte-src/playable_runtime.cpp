@@ -67,6 +67,7 @@ static EncounterAdmission admission;
 static ClockFrame delivery_clock;
 static BattleEpoch151 battle_epoch151;
 static volatile LONG delivery_address,suppressed_prompts;
+static __declspec(align(8)) volatile LONG64 delivery_lease212,delivery_generation212;
 static melee60::Submit submit_commitment;
 static melee60::Request commitment;
 static NativeActor committed_player,committed_enemy;
@@ -226,6 +227,26 @@ static uint32_t fps_actor(uint64_t* lease=nullptr){
     if(!camera||!combat_identity(r,camera,engine,human,false)||!physical_actor(r,engine,human,subject,false))return 0;
     if(lease)*lease=generation;return subject.address;
 }
+// A saved encounter address is a filter, never authority to suppress native AI.
+// Returning to RTS, a different possession lease or native witness reuse ends
+// reservation protection immediately, even before the old removal callback.
+// Do not clear engine backlinks or cancel other encounters from this check.
+static bool live_reservation212(uint32_t held){
+    if(!enabled||!held)return false;
+    const auto generation=uint64_t(InterlockedCompareExchange64(&delivery_generation212,0,0));
+    const auto lease=uint64_t(InterlockedCompareExchange64(&delivery_lease212,0,0));
+    observation::PossessionPrefix p{};
+    if(!generation||!lease||!possession_snapshot93(p)||p.magic!=0x31504353||p.version!=46||
+       p.pid!=GetCurrentProcessId()||!p.ready||p.stop||p.release||p.mode!=2||
+       p.lease_generation!=lease||GetTickCount64()-p.heartbeat>1000||
+       !lifetimes.matches140(held,generation))return false;
+    uint64_t current_lease{};
+    const auto physical=fps_actor(&current_lease);
+    return physical&&physical==committed_player.address&&current_lease==lease&&
+        held==uint32_t(InterlockedCompareExchange(&delivery_address,0,0))&&
+        generation==uint64_t(InterlockedCompareExchange64(&delivery_generation212,0,0))&&
+        lease==uint64_t(InterlockedCompareExchange64(&delivery_lease212,0,0));
+}
 static uint32_t owned_combat_actor(uint32_t witness,uint64_t* lease=nullptr){
     auto physical=fps_actor(lease);
     if(physical&&strictmelee::includes(reader(),physical,witness))return physical;
@@ -287,8 +308,13 @@ static bool seal_authorization(uint32_t address,uint64_t generation,const Native
 }
 static uint32_t reject_melee(){InterlockedIncrement(&melee_rejected);return 1;}
 static bool write_local(void*,uint32_t address,const void* value,size_t size){SIZE_T n{};return WriteProcessMemory(GetCurrentProcess(),reinterpret_cast<void*>(address),value,size,&n)&&n==size;}
+static void release_excluded213(void*,uint32_t witness,uint32_t actor){
+    // Original unprepared witness release clears its candidate's native busy
+    // bit. It is deliberately not routed back through reservation suppression.
+    native_release_actor(reinterpret_cast<void*>(witness),reinterpret_cast<void*>(actor));
+}
 static bool retain_selected_pair(void*,uint32_t witness,const NativeActor& player,const NativeActor& enemy){
-    return strictmelee::retain_selected(reader(),write_local,nullptr,engine,witness,player,enemy);
+    return strictmelee::retain_selected(reader(),write_local,nullptr,engine,witness,player,enemy,native_release_actor?release_excluded213:nullptr);
 }
 static void candidate_scope(uint32_t address,uint64_t generation){
     // Called under the coordinator; native worker TLS alone is not a lifetime.
@@ -493,13 +519,16 @@ static uint32_t controlled(uint32_t address,uint64_t generation,bool updating){
             else publish_commitment();
         }
         // Publish the reservation only after its immutable actor identities.
+        InterlockedExchange64(&delivery_lease212,LONG64(current.lease));
+        InterlockedExchange64(&delivery_generation212,LONG64(session->key().generation));
         InterlockedExchange(&delivery_address,LONG(admission.address()));
     }
     if(before.occupied&&!after.occupied)++resolutions;
     drain_removals();publish();return answer;
 }
 static uint32_t contact_dispatch(uint32_t address,bool updating){
-    if(enabled&&reservation::overlaps(reader(),engine,uint32_t(InterlockedCompareExchange(&delivery_address,0,0)),address,committed_player,committed_enemy)){
+    const auto held=uint32_t(InterlockedCompareExchange(&delivery_address,0,0));
+    if(enabled&&reservation::overlaps(reader(),engine,held,address,committed_player,committed_enemy)&&live_reservation212(held)){
         InterlockedIncrement(&contacts_blocked);return 1; // Native removes this foreign contact, not the owned pair.
     }
     return updating?native_contact_update(reinterpret_cast<void*>(address)):native_contact_prepare(reinterpret_cast<void*>(address));
@@ -519,7 +548,7 @@ static uint32_t __fastcall avoid_pair_hook(void* self,void*,void* other){
         uint8_t playing{};
         if(enabled&&held&&held==protected_update&&reader().get(held+0xd1,playing)&&!playing&&
            ((one==committed_player.address&&two==committed_enemy.address)||(two==committed_player.address&&one==committed_enemy.address))&&
-           reservation::owns(reader(),engine,held,committed_player)&&reservation::owns(reader(),engine,held,committed_enemy)){
+           reservation::owns(reader(),engine,held,committed_player)&&reservation::owns(reader(),engine,held,committed_enemy)&&live_reservation212(held)){
             // Native locomotion avoidance cannot cancel an already committed pair.
             // Life/identity checks still allow projectile death/dismount teardown.
             InterlockedIncrement(&preplay_avoidance_blocked);return 0;
@@ -529,7 +558,8 @@ static uint32_t __fastcall avoid_pair_hook(void* self,void*,void* other){
 }
 static uint32_t dispatch_current(uint32_t address,uint64_t generation,bool updating){
     if(!enabled)return updating?native_update(reinterpret_cast<void*>(address)):native_prepare(reinterpret_cast<void*>(address));
-    if(reservation::overlaps(reader(),engine,uint32_t(InterlockedCompareExchange(&delivery_address,0,0)),address,committed_player,committed_enemy)){
+    const auto held=uint32_t(InterlockedCompareExchange(&delivery_address,0,0));
+    if(reservation::overlaps(reader(),engine,held,address,committed_player,committed_enemy)&&live_reservation212(held)){
         InterlockedIncrement(&conflicts_blocked);return 1;
     }
     if(InterlockedCompareExchange(&coordinator,1,0)){
@@ -579,7 +609,7 @@ static void __fastcall release_actor_hook(void* witness,void*,void* actor){
     InterlockedIncrement(&active_callbacks);
     __try{
         auto held=uint32_t(InterlockedCompareExchange(&delivery_address,0,0));
-        if(enabled&&reservation::preserve_release(reader(),engine,held,uint32_t(witness),uint32_t(actor),committed_player,committed_enemy)){
+        if(enabled&&reservation::preserve_release(reader(),engine,held,uint32_t(witness),uint32_t(actor),committed_player,committed_enemy)&&live_reservation212(held)){
             InterlockedIncrement(&foreign_releases_preserved);return;
         }
         native_release_actor(witness,actor);
@@ -589,7 +619,7 @@ static uint32_t __fastcall target_hook(void* witness,void*,uint32_t actor,uint32
     InterlockedIncrement(&active_callbacks);uint32_t answer=0;
     __try{
         auto held=uint32_t(InterlockedCompareExchange(&delivery_address,0,0));
-        if(enabled&&reservation::preserve_release(reader(),engine,held,uint32_t(witness),actor,committed_player,committed_enemy)){
+        if(enabled&&reservation::preserve_release(reader(),engine,held,uint32_t(witness),actor,committed_player,committed_enemy)&&live_reservation212(held)){
             InterlockedIncrement(&conflicts_blocked);return 0;
         }
         if(enabled&&scoped(uint32_t(witness))&&!stock_charge_target_scope140(uint32_t(witness))&&!approved(uint32_t(witness),lifetimes.get(uint32_t(witness)))&&

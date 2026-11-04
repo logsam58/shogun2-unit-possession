@@ -1,6 +1,6 @@
 # Current public-main build
 
-This guide builds the combined runtime through revision36. It automatically selects
+This guide builds the combined runtime through revision39. It automatically selects
 PC or Deck behavior. The supported personal charge uses forward sprint plus primary
 attack; enemy acquisition remains unresolved. See the current release identity.
 
@@ -8,7 +8,7 @@ The build pipeline retains historical Test181/private publisher names. Do not up
 its private-name pack to a new item: public promotion retains item3825625050 and
 shogun2_unit_possession_workshop165.pack, changes only first-party PLAYING.md/JSON
 publication metadata, and preserves the native/bootstrap/campaign payload bytes.
-The current public pack identity is in docs/public-release/V0_34_MENU36_VALIDATION.json.
+The current public pack identity is in docs/public-release/V0_34_MELEE39_VALIDATION.json.
 Never distribute complete build outputs or recovered game resources.
 
 # Revision24 combined candidate
@@ -63,7 +63,7 @@ py -3.12 -B tools/generate_roles.py --check
 py -3.12 -B tools/generate_tables.py --check
 ```
 
-Offline checks do not establish native Deck rendering, display latency or full controller support. See docs/current-release.json and docs/public-release/V0_34_MENU36_VALIDATION.json before testing.
+Offline checks do not establish native Deck rendering, display latency or full controller support. See docs/current-release.json and docs/public-release/V0_34_MELEE39_VALIDATION.json before testing.
 
 ## Campaign checks and historical staging package
 
@@ -114,3 +114,21 @@ modifier cache. LB/RB zoom is continuous through the original native camera
 methods. In-game controls and Steam layout labels reflect these bindings.
 Battle cursor is owner-confirmed working and unchanged. Hardware validation of
 the new candidate remains pending; no public/Workshop update is implied.
+
+## Revision37–39 native cleanup and compatibility
+
+The build includes [renderer coexistence](docs/development/RendererCoexistence211.md),
+[possession-scoped reservations](docs/development/MeleeReservation212.md) and
+[excluded-candidate cleanup](docs/development/MeleeCandidates213.md). The full
+component checks now require 100 adapter, 51 QTE and 8 HUD executables. Native
+fixtures exercise both the owned stock and reviewed Bugfix engines without
+initializing the game. Sixty original-engine cases cover the candidate cleanup.
+
+Optionally add `--loader-fixture "D:\Owned Loader\version.dll"` to the full build
+command for the pinned Shogun2 Loader 0.5.2 mapped-image checks. It does not run or
+ship that DLL. The ordinary build still checks renderer coexistence with its own
+fixture when this optional external input is absent.
+
+The owner reported revision39 successful after installation on PC and Deck. This
+is separate from the offline tests and an uncompleted formal revision39 loaded
+hash/hook gate; it does not establish every siege or long-session stability.
