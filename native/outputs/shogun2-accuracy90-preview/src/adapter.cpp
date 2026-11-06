@@ -1,4 +1,5 @@
 #include "identity.h"
+#include "../../../deck/native214.h"
 #include "../../shogun2-possession-cleanup-v46/src/actor_types152.h"
 #include "steering.h"
 #include "personal_input199.h"
@@ -24,6 +25,9 @@
 static_assert(sizeof(void*)==4,"Build this adapter for x86");
 static HMODULE self_module;
 static uintptr_t base;
+static bool native_modal214(){return native214::modal(base);}
+static native214::BattleSpeed personal_speed214;
+static bool alt_held214{},alt_chord214{};
 static Status* state;
 static HANDLE mapping;
 static volatile LONG enabled;
@@ -43,6 +47,7 @@ static void create_native_charge147();
 static void charge_boundary146(uintptr_t native_unit,bool after);
 
 static bool overlay_key106(const overlay106::Frame& frame,unsigned layer){
+    if(native_modal214())return false;
     auto key=frame.key;
     // Retained cancellation/result feedback is immutable numeric UI, never an
     // ownership permission. It may survive the matching possession's release.
@@ -119,7 +124,23 @@ static void request_possession(){
     InterlockedExchange(&entry_attempted,0);
     InterlockedExchange(&state->acquire,1);InterlockedExchange(&state->mode,ARMED);
 }
+static bool slow_alt214(HWND window,UINT message,WPARAM key,LPARAM flags){
+ if(message==WM_KILLFOCUS||(message==WM_ACTIVATEAPP&&!key)){alt_held214=alt_chord214=false;return false;}
+ bool down=message==WM_KEYDOWN||message==WM_SYSKEYDOWN,up=message==WM_KEYUP||message==WM_SYSKEYUP;
+ if(!enabled||!state||state->mode!=POSSESSED||state->release||state->stop||native_modal214())return false;
+ if((down||up)&&key!=VK_MENU&&alt_held214)alt_chord214=true;
+ if(message==WM_SYSCOMMAND&&(key&0xfff0)==SC_KEYMENU)return true;
+ if(key!=VK_MENU||(!down&&!up))return false;
+ if(down){if(!(flags&(1L<<30))){alt_held214=true;alt_chord214=false;}return true;}
+ bool toggle=alt_held214&&!alt_chord214;alt_held214=alt_chord214=false;
+ if(toggle&&window==input_window&&GetForegroundWindow()==window&&GetCurrentThreadId()==GetWindowThreadProcessId(window,nullptr)){
+  uintptr_t root{},table{},env{};
+  if(native214::value(base+0x1bc8180,root)&&root&&native214::value(root,table)&&table==base+0x170d284&&native214::value(root+0x110,env)&&env==environment)personal_speed214.apply(base,root,environment,false);
+ }return true;
+}
 static LRESULT CALLBACK weapon_window_proc(HWND window,UINT message,WPARAM w,LPARAM l){
+    if(slow_alt214(window,message,w,l))return 0;
+    if(native_modal214()&&(message>=WM_KEYFIRST&&message<=WM_KEYLAST||message>=WM_MOUSEFIRST&&message<=WM_MOUSELAST||message==WM_SETCURSOR||message==WM_INPUT))return CallWindowProcW(native_window_proc,window,message,w,l);
     if(charge_input_locked146()){
         // Drain command key releases without dispatching an order. Keys held
         // before native commitment must not remain latched after it ends.
@@ -1116,11 +1137,12 @@ static DWORD WINAPI worker(void*) {
         while(!state->stop) {
             DWORD foreground_pid=0;DWORD foreground_thread=GetWindowThreadProcessId(GetForegroundWindow(),&foreground_pid);bool focus=foreground_pid==GetCurrentProcessId();
             state->heartbeat=GetTickCount64();unsigned input=0;
+            const bool gameplay214=focus&&!native_modal214();
             bool charge_locked146=charge_input_locked146();
             if(!focus||!down(VK_MBUTTON)||!third_person152)orbit_button154(false);
-            equipment_sample_input81(focus&&!charge_locked146);ability_sample141(focus&&!charge_locked146);
-            if(!focus)bow_sample142(down(VK_LBUTTON),false);
-            if(focus){
+            equipment_sample_input81(gameplay214&&!charge_locked146);ability_sample141(gameplay214&&!charge_locked146);
+            if(!gameplay214)bow_sample142(down(VK_LBUTTON),false);
+            if(gameplay214){
                 capture_weapon_mouse(GetForegroundWindow());
                 bool click=down(VK_LBUTTON);
                 melee60::Request active_melee;bool melee_locked=melee_request(active_melee);
@@ -1143,16 +1165,16 @@ static DWORD WINAPI worker(void*) {
                     if(PostMessageW(input_window,ENTER_SOLDIER_MESSAGE,0,0))++state->acquisition_posts;
                     else {InterlockedExchange(&entry_pending,0);entry_failed(14);}
                 }
-            }else {if(was_focus)InterlockedExchange(&state->release,1);f9=f10=false;}
-            if(!focus){left_mouse=false;InterlockedExchange(&state->aiming,0);}
+            }else {if(!focus&&was_focus)InterlockedExchange(&state->release,1);f9=f10=false;}
+            if(!gameplay214){left_mouse=false;InterlockedExchange(&state->aiming,0);}
             if((state->mode!=POSSESSED||state->stop||state->release||!focus)&&interface_active)restore_interface_on_window();
-            InterlockedExchange(&charge_physical_input148,LONG(charge_intent199(input,down(VK_LBUTTON),down(VK_RBUTTON),focus&&state->mode==POSSESSED&&!state->release&&!dead_view())));
-            was_focus=focus;input=entry_input125(input,focus&&!dead_view()&&!charge_locked146);if(charge_locked146)input=0;
+            InterlockedExchange(&charge_physical_input148,LONG(charge_intent199(input,down(VK_LBUTTON),down(VK_RBUTTON),gameplay214&&state->mode==POSSESSED&&!state->release&&!dead_view())));
+            was_focus=focus;input=entry_input125(input,gameplay214&&!dead_view()&&!charge_locked146);if(charge_locked146)input=0;
             InterlockedExchange(&state->input,dead_view()?0:LONG(input));
             uint64_t now=GetTickCount64();float elapsed=std::min(float(now-last_mouse)*0.001f,0.05f);last_mouse=now;
             bool command_resume100=InterlockedExchange(&command_recenter100,0)!=0;
             if(command_resume100){mouse_captured=false;InterlockedExchange(&raw_mouse_x,0);InterlockedExchange(&raw_mouse_y,0);}
-            if(focus&&state->mode==POSSESSED&&!state->release&&!state->stop){
+            if(gameplay214&&state->mode==POSSESSED&&!state->release&&!state->stop){
                 HWND window=GetForegroundWindow();RECT client{};POINT center{},cursor{};
                 if(GetClientRect(window,&client)&&client.right>200&&client.bottom>200){
                     center={client.right/2,client.bottom/2};

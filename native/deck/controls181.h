@@ -2,6 +2,7 @@
 #include "input174.h"
 #include "bindings183.h"
 #include "qol193.h"
+#include "fine216.h"
 #include <array>
 #include "view_help186.h"
 #include "help_input188.h"
@@ -22,7 +23,7 @@ struct R3Gesture {
 
 enum Key:unsigned {Primary=1,Aim=2,Cancel=3,Middle=4,Shift=16,Control=17,Escape=27,Space=32,One=49,A=65,C=67,D=68,E=69,F=70,G=71,K=75,M=77,P=80,Q=81,R=82,S=83,T=84,W=87,Z=90,F9=120,F10=121};
 struct Output {
- Context context{Context::Inactive};std::array<uint32_t,8> keys{};Vec2 look{},stick_rate{},stick_delta{};float zoom{};bool accepted{},show_controls{},help_open{},help_blocked{};unsigned help_page{};unsigned shortcuts{};bool fire_at_will{};
+ Context context{Context::Inactive};std::array<uint32_t,8> keys{};Vec2 look{},stick_rate{},stick_delta{};float zoom{};bool accepted{},show_controls{},help_open{},help_blocked{};unsigned help_page{};unsigned shortcuts{};bool fire_at_will{},toggle_slow214{},toggle_pause214{};deck216::FineIntent fine216;
  bool held(unsigned key)const{return key<256&&(keys[key/32]&(uint32_t(1)<<(key%32)))!=0;}
  void set(unsigned key){if(key<256)keys[key/32]|=uint32_t(1)<<(key%32);}
 };
@@ -31,9 +32,9 @@ struct Output {
 class Controls {
  deck174::Config config_;deck174::Normalizer normalizer_;Context context_{Context::Inactive};
  deck188::HelpInput help188_;R3Gesture r3_;uint64_t epoch_{},last_us_{},sequence_{};bool sprint_{},left_trigger_{},right_trigger_{},pad_seed_{},zoom_seed_{};Vec2 pad_{},zoom_{};
- deck193::Movement movement193_;deck193::GroupGesture groups193_;
+ deck216::FinePad fine216_;deck193::Movement movement193_;deck193::GroupGesture groups193_;
  deck174::MotionFilter motion_;bool command_wheel_{},wheel_cancelled_{};int wheel_sector_{-1};uint64_t wheel_directions_{};bool wheel_look_latched_{};
- void clear(){movement193_.reset();groups193_.reset();command_wheel_=wheel_cancelled_=wheel_look_latched_=false;wheel_sector_=-1;wheel_directions_=0;normalizer_.reset();r3_.reset();help188_.reset();sprint_=left_trigger_=right_trigger_=pad_seed_=zoom_seed_=false;last_us_=sequence_=0;motion_.recenter();}
+ void clear(){fine216_.reset();movement193_.reset();groups193_.reset();command_wheel_=wheel_cancelled_=wheel_look_latched_=false;wheel_sector_=-1;wheel_directions_=0;normalizer_.reset();r3_.reset();help188_.reset();sprint_=left_trigger_=right_trigger_=pad_seed_=zoom_seed_=false;last_us_=sequence_=0;motion_.recenter();}
 public:
  explicit Controls(deck174::Config c={}):config_(c){}
  void reset(){clear();context_=Context::Inactive;epoch_=0;}
@@ -49,7 +50,7 @@ public:
   auto help_event188=help188_.sample(frame,edges,now,context==Context::RTS||context==Context::Possession);
   out.help_open=help188_.open;out.help_page=help188_.page;
   out.help_blocked=help_event188.blocked;
-  if(help_event188.blocked){command_wheel_=false;wheel_sector_=-1;wheel_cancelled_=true;movement193_.reset();groups193_.reset();if(!help188_.open)normalizer_.reset();return out;}
+  if(help_event188.blocked){fine216_.reset();command_wheel_=false;wheel_sector_=-1;wheel_cancelled_=true;movement193_.reset();groups193_.reset();if(!help188_.open)normalizer_.reset();return out;}
   if(help_event188.toggle_hud)out.set(K);
   if(context!=Context::RTS&&context!=Context::Possession)return out;
   switch(r3_.sample(held(Button::R3),now,context,config_)){
@@ -57,8 +58,9 @@ public:
   }
   if(held(Button::Menu))out.set(Escape);
   if(context==Context::RTS){
+   out.fine216=fine216_.sample(frame,now);
    auto request=[&](deck183::Shortcut action){out.shortcuts|=1u<<unsigned(action);};
-   if(down(Button::Y))out.set(F9);if(held(Button::A))out.set(Space);if(down(Button::B))request(deck183::Deselect);
+   if(down(Button::Y))out.set(F9);if(held(Button::RightPadClick))out.set(Space);if(down(Button::B))request(deck183::Deselect);
    if(down(Button::X))request(deck183::ToggleRun);
    if(down(Button::R4))request(held(Button::L4)?deck183::SelectAll:deck183::ToggleMelee); // L4 + R4 selects all; shoulders own zoom.
    if(held(Button::L4))out.set(Shift);if(held(Button::L5)||held(Button::L3))out.set(Control);
@@ -73,7 +75,7 @@ public:
   auto move=deck174::deadzone(frame.left_stick,config_.left_deadzone);
   const auto direction193=movement193_.sample(move);
   if(direction193.y>0)out.set(W);if(direction193.y<0)out.set(S);if(direction193.x<0)out.set(A);if(direction193.x>0)out.set(D);
-  if(held(Button::L3))out.set(Shift);if(held(Button::L5))out.set(Control);
+  if(held(Button::L3))out.set(Shift); // B owns crouch; no duplicate rear-grip action.
   left_trigger_=left_trigger_?frame.left_trigger>config_.trigger_release:frame.left_trigger>=config_.trigger_press;
   right_trigger_=right_trigger_?frame.right_trigger>config_.trigger_release:frame.right_trigger>=config_.trigger_press;
   if(left_trigger_)out.set(Aim);if(right_trigger_)out.set(Primary);
@@ -90,8 +92,9 @@ public:
    if(!wheel_cancelled_)out.set(deck183::WheelHeld);const unsigned preview[]={deck183::WheelUp,deck183::WheelDown,deck183::WheelLeft,deck183::WheelRight};if(wheel_sector_>=0)out.set(preview[wheel_sector_]);
   }else if(command_wheel_){const unsigned commands[]={C,E,Z,R};if(!wheel_cancelled_&&wheel_sector_>=0&&!held(Button::Menu)&&!held(Button::Y))out.set(commands[wheel_sector_]);command_wheel_=false;wheel_sector_=-1;}
   if(!wheel)wheel_cancelled_=false;
-  const std::pair<Button,unsigned> bindings[]={{Button::A,F},{Button::B,M},{Button::X,One},{Button::Y,F10},{Button::L1,Q},{Button::R4,E},{Button::R5,C},{Button::Menu,Escape}};
+  const std::pair<Button,unsigned> bindings[]={{Button::A,F},{Button::B,Control},{Button::X,One},{Button::Y,F10},{Button::L1,Q},{Button::Menu,Escape}};
   for(auto binding:bindings)if(held(binding.first)&&!(binding.first==Button::B&&(wheel||(wheel_directions_&deck174::bit(Button::B)))))out.set(binding.second);
+  out.toggle_slow214=down(Button::R4)&&!wheel;out.toggle_pause214=down(Button::R5)&&!wheel;
   if(!wheel){if(held(Button::Up)&&!(wheel_directions_&deck174::bit(Button::Up)))out.set(T);if(held(Button::Down)&&!(wheel_directions_&deck174::bit(Button::Down)))out.set(G);}
   auto look=deck174::deadzone(frame.right_stick,config_.right_deadzone);
   // Existing mouse-look sensitivity is .0025 radians/count. Keep a continuous

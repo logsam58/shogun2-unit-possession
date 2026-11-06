@@ -1,6 +1,6 @@
 # Current public-main build
 
-This guide builds the combined runtime through revision39. It automatically selects
+This guide builds the v0.35 combined runtime through Revision51. It automatically selects
 PC or Deck behavior. The supported personal charge uses forward sprint plus primary
 attack; enemy acquisition remains unresolved. See the current release identity.
 
@@ -8,7 +8,8 @@ The build pipeline retains historical Test181/private publisher names. Do not up
 its private-name pack to a new item: public promotion retains item3825625050 and
 shogun2_unit_possession_workshop165.pack, changes only first-party PLAYING.md/JSON
 publication metadata, and preserves the native/bootstrap/campaign payload bytes.
-The current public pack identity is in docs/public-release/V0_34_MELEE39_VALIDATION.json.
+The tested Revision51 pack and current Workshop baseline are recorded in
+docs/public-release/V0_35_VALIDATION.json.
 Never distribute complete build outputs or recovered game resources.
 
 # Revision24 combined candidate

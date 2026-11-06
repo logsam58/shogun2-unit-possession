@@ -37,22 +37,22 @@ inline bool controller_present(){Sample s;return read_sample(presentation_pid()?
 inline int key_glyph(const wchar_t* text){
  using deck174::Button;if(!text)return -1;
  struct Pair{const wchar_t* key;int glyph;};
- const Pair map[]={{L"Q",int(Button::L1)},{L"E",int(Button::R4)},{L"Z",int(Button::R1)},{L"C",int(Button::R5)},
+ const Pair map[]={{L"Q",int(Button::L1)},{L"E",int(Button::R1)},{L"Z",int(Button::R1)},{L"C",int(Button::R1)},
   {L"R",int(Button::R1)},{L"F10",int(Button::Y)},{L"P",int(Button::R3)},{L"1",int(Button::X)},
-  {L"F",int(Button::A)},{L"T",int(Button::Up)},{L"G",int(Button::Down)},{L"M",int(Button::B)},
-  {L"SHIFT",int(Button::L3)},{L"ORBIT",int(Button::L4)},{L"W",26},{L"S",26},{L"RT",25},{L"LT",24}};
+  {L"F",int(Button::A)},{L"T",int(Button::Up)},{L"G",int(Button::Down)},{L"ALT",int(Button::R4)},{L"CTRL",int(Button::B)},
+  {L"SHIFT",int(Button::L3)},{L"ORBIT",int(Button::L4)},{L"W",26},{L"S",26},{L"RT",25},{L"LT",24},{L"LMB",25},{L"RMB",24}};
  for(auto p:map)if(wcscmp(text,p.key)==0)return p.glyph;return -1;
 }
 inline const wchar_t* key_label(const wchar_t* label){
  if(!controller_present())return label;
  const wchar_t* names[]={L"A",L"B",L"X",L"Y",L"LB",L"RB",L"L3",L"R3",L"DP-U",L"DP-D",L"DP-L",L"DP-R",L"View",L"Menu",L"L4",L"L5",L"R4",L"R5",L"LP",L"RP",L"LP",L"RP",L"LS",L"RS",L"LT",L"RT",L"LS",L"RS",L"LP",L"RP"};
- if(wcscmp(label,L"Z")==0)return L"RB + DP-L";if(wcscmp(label,L"R")==0)return L"RB + DP-R";
+ if(wcscmp(label,L"C")==0||wcscmp(label,L"E")==0||wcscmp(label,L"Z")==0||wcscmp(label,L"R")==0)return L"RB + RS";
  int i=key_glyph(label);return i>=0&&i<int(glyph_count)?names[i]:label;
 }
 inline bool draw_key(Gdiplus::Graphics& paint,const wchar_t* label,Gdiplus::RectF bounds){
  if(!controller_present())return false;int index=key_glyph(label);if(index<0)return false;
- if(wcscmp(label,L"Z")==0||wcscmp(label,L"R")==0){
-  const unsigned second=unsigned(wcscmp(label,L"Z")==0?deck174::Button::Left:deck174::Button::Right);Glyph a,b;
+ if(wcscmp(label,L"Z")==0||wcscmp(label,L"R")==0||wcscmp(label,L"C")==0||wcscmp(label,L"E")==0){
+  const unsigned second=27;Glyph a,b;
   if(!reader().glyph(unsigned(deck174::Button::R1),a)||!reader().glyph(second,b))return false;
   Gdiplus::Bitmap ia(glyph_side,glyph_side,glyph_side*4,PixelFormat32bppPARGB,a.bgra),ib(glyph_side,glyph_side,glyph_side*4,PixelFormat32bppPARGB,b.bgra);
   float side=std::min(bounds.Width*.5f,bounds.Height);return paint.DrawImage(&ia,Gdiplus::RectF(bounds.X,bounds.Y,side,side))==Gdiplus::Ok&&paint.DrawImage(&ib,Gdiplus::RectF(bounds.X+side,bounds.Y,side,side))==Gdiplus::Ok;
@@ -69,7 +69,7 @@ template<class Assets,class Text>inline void draw_command_wheel183(Gdiplus::Grap
  const unsigned choices[]={deck183::WheelUp,deck183::WheelDown,deck183::WheelLeft,deck183::WheelRight};int selected=-1;
  for(unsigned i=0;i<4;++i)if(held(choices[i]))selected=int(i);
  deck197::draw(g,assets,width,height,mon,selected,fire_mode,following,[&](unsigned i,Gdiplus::RectF box){
-  Glyph value;if(!reader().glyph(unsigned(deck174::Button::Up)+i,value))return false;
+  Glyph value;if(i!=4||!reader().glyph(27,value))return false;
   Gdiplus::Bitmap image(glyph_side,glyph_side,glyph_side*4,PixelFormat32bppPARGB,value.bgra);return g.DrawImage(&image,box)==Gdiplus::Ok;
  },text);
 #else

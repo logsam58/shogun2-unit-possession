@@ -11,11 +11,11 @@ inline float scale(float width,float height){
 inline float qte_anchor_y(float height){return height*.25f;}
 struct Layout {
     float zoom,width,height,bottom;
-    Rect soldier,commands,context;
+    Rect soldier,commands,context,ability;
     Layout(float w,float h):zoom(scale(w,h)),width(w/zoom),height(h/zoom),bottom(height-26.f),
-        soldier{26.f,bottom-302.f,466.f,302.f},
-        commands{width-250.f,bottom-272.f,224.f,272.f},
-        context{std::clamp(width*.5f-195.f,soldier.x+soldier.w+12.f,commands.x-402.f),bottom-80.f,390.f,80.f}{}
+        soldier{26.f,bottom-216.f,484.f,216.f},
+        commands{width-296.f,height*.5f-122.f,270.f,244.f},
+        context{width*.5f-167.f,52.f,334.f,82.f},ability{width-386.f,52.f,360.f,120.f}{}
 };
 struct Context {
     bool equipment,ranged,aiming,pending,crouched;

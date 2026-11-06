@@ -15,13 +15,17 @@
 #include "campaign_keys185.h"
 #include "cursor_idle185.h"
 #include "native_input185.h"
+#include "escape218.h"
+#include "startup_handoff222.h"
 #include "native_ui185.h"
+#include "ui214.h"
 #include "view_help186.h"
 #include "shortcut_click184.h"
 #include "help_input188.h"
 #include "help_renderer188.h"
 #include "cursor194.h"
 #include "camera_edges205.h"
+#include "qol193.h"
 
 namespace menu181 {
 static SRWLOCK lock=SRWLOCK_INIT;
@@ -38,16 +42,18 @@ static volatile LONG campaign_mode{},pause_pending{},next_pending{},previous_pen
 static std::string root_token;static volatile LONG campaign_actions183{},button_epoch183{};
 static volatile LONG pointer_mode181{};
 // Unknown campaign state is modal until the original PanelManager getter reports.
-static volatile LONG campaign_panel188{1};
+static volatile LONG campaign_panel188{1},city_details214{};
 static float camera_x{},camera_y{},camera_turn{},camera_zoom{};
 static uint64_t camera_tick{};
 static uintptr_t campaign_identity{};static DWORD ui_owner181{};static volatile LONG ui_tick181{};
 static deck185::NativeInput native_input185;
+static deck218::Escape native_escape218;
 static uintptr_t keyboard_image185{};static volatile LONG keyboard_allowed185{};
 static bool __cdecl campaign_poll185(){
  bool valid=native_input185.original();const auto now=GetTickCount64();
  bool allowed=keyboard_allowed185&&campaign_mode&&GetForegroundWindow()==game_window&&DWORD(GetTickCount()-DWORD(ui_tick181))<250;
  unsigned native_action{};campaign_keys185.apply(reinterpret_cast<unsigned char*>(keyboard_image185+0x1b30f58),valid,allowed,now,button_epoch183,&native_action);
+ native_escape218.apply(reinterpret_cast<unsigned char*>(keyboard_image185+0x1b30f58),valid,GetForegroundWindow(),now);
  // Selection reads the original UI modifier cache as well as DirectInput.
  // Refresh that cache on this native input thread after our held-bit merge;
  // worker mouse messages alone do not populate it. Exact body/RET8 guarded.
@@ -65,7 +71,7 @@ static bool keyboard_start185(uintptr_t engine){
  return native_input185.enable();
 #endif
 }
-static bool keyboard_stop185(){InterlockedExchange(&keyboard_allowed185,0);campaign_keys185.clear();return native_input185.disable();}
+static bool keyboard_stop185(){native_escape218.clear();InterlockedExchange(&keyboard_allowed185,0);campaign_keys185.clear();return native_input185.disable();}
 static deck181::Channel controller_channel;
 static deck182::Presentation controller_glyphs;
 static bool attach(const std::string& token){
@@ -106,7 +112,7 @@ static BOOL CALLBACK find_window(HWND window,LPARAM value){
     }return TRUE;
 }
 struct Host {
-    HWND window{};WPARAM buttons{},modifiers183{};deck178::Cursor cursor;float wheel{};deck185::CursorIdle cursor_idle;
+    HWND window{};WPARAM buttons{},modifiers183{};deck178::Cursor cursor;float wheel{};deck185::CursorIdle cursor_idle;deck193::DoubleClick click214;
     void navigate(int direction){InterlockedExchange(&nav_waiting,1);InterlockedCompareExchange(&nav_pending,direction,0);}
     bool navigation_pending()const{return nav_waiting!=0;}
     void clear_navigation(){InterlockedExchange(&nav_pending,0);InterlockedExchange(&nav_waiting,0);InterlockedExchange(&target_pending,0);}
@@ -138,8 +144,10 @@ struct Host {
     }
     bool escape(){
         RECT rect{};POINT point{};if(!position(rect,point))return false;
-        // Native focused-window Escape: the game decides skip/back. Never
-        // change global key state or send input to another application.
+        // Restore the existing menu/movie window-key route. Only the active
+        // campaign input owner queues into DirectInput; never install/assume
+        // that keyboard owner merely because an intro window is focused.
+        if(campaign_mode&&native_input185.enabled)return native_escape218.request(window,GetTickCount64());
         if(!PostMessageW(window,WM_KEYDOWN,VK_ESCAPE,LPARAM(0x00010001)))return false;
         return PostMessageW(window,WM_KEYUP,VK_ESCAPE,LPARAM(0xc0010001))!=FALSE;
     }
@@ -147,8 +155,12 @@ struct Host {
         RECT rect{};POINT point{};if(!position(rect,point))return false;
         cursor_idle.activity(GetTickCount64());
         WPARAM flag=left?MK_LBUTTON:MK_RBUTTON;if(down)buttons|=flag;else buttons&=~flag;
-        UINT message=left?(down?WM_LBUTTONDOWN:WM_LBUTTONUP):(down?WM_RBUTTONDOWN:WM_RBUTTONUP);
-        return PostMessageW(window,message,buttons|modifiers183,MAKELPARAM(point.x,point.y))!=FALSE;
+        const bool twice=left&&click214.button(down,(modifiers183&(MK_CONTROL|MK_SHIFT))!=0,point.x,point.y,GetTickCount64(),GetDoubleClickTime(),std::max(1,GetSystemMetrics(SM_CXDOUBLECLK)/2),std::max(1,GetSystemMetrics(SM_CYDOUBLECLK)/2));
+        if(!left)click214.reset();
+        UINT message=left?(down?(twice?WM_LBUTTONDBLCLK:WM_LBUTTONDOWN):WM_LBUTTONUP):(down?WM_RBUTTONDOWN:WM_RBUTTONUP);
+        if(!PostMessageW(window,message,buttons|modifiers183,MAKELPARAM(point.x,point.y)))return false;
+        if(left&&down&&twice){buttons&=~WPARAM(MK_LBUTTON);return PostMessageW(window,WM_LBUTTONUP,buttons|modifiers183,MAKELPARAM(point.x,point.y))!=FALSE;}
+        return true;
     }
     bool scroll(float delta){
         if(!std::isfinite(delta)||std::fabs(delta)>2)return false;RECT rect{};POINT point{};if(!position(rect,point))return false;
@@ -162,6 +174,7 @@ struct Host {
     }
     void reset_cursor(){cursor.reset();}
     void release_owned(bool left,bool right){
+        click214.reset();
         if(IsWindow(window)&&(buttons||left||right)){
             PostMessageW(window,WM_CANCELMODE,0,0);
             // Release outside the client so focus loss cannot click a menu.
@@ -228,7 +241,7 @@ static DWORD WINAPI worker(void*){
         auto engine=reinterpret_cast<uintptr_t>(GetModuleHandleW(L"Empire.Retail.dll"));
         HWND present188=GetForegroundWindow();DWORD present_pid188{};GetWindowThreadProcessId(present188,&present_pid188);
         guide188.tick(present_pid188==GetCurrentProcessId()?present188:nullptr,[&](unsigned slot,deck181::Glyph& glyph){return controller_channel.glyph(slot,glyph);});
-        if(deck177::battle_request().active()||deck177::busy(deck177::Owner::Battle)){
+        if(deck222::startup().active()||deck177::battle_request().active()||deck177::busy(deck177::Owner::Battle)){
             cursor194.reset();
             if(!keyboard_stop185()){remember("Campaign input handoff could not restore its native poll",sizeof("Campaign input handoff could not restore its native poll")-1);continue;}
             if(frontend177::lease.handle){AcquireSRWLockExclusive(&lock);shortcut_click184.cancel(host);ReleaseSRWLockExclusive(&lock);policy.release(host);pointer_policy.release(host);frontend177::backend.close();deck181::Sample blank;controller_channel.publish(blank);frontend177::lease.release();}
@@ -236,7 +249,7 @@ static DWORD WINAPI worker(void*){
             deck181::trace_input(0,unsigned(frontend177::backend.state()),0,host.window,0,0,0);previous_sample=0;campaign_edges.reset();campaign_buttons183.reset();help188.reset();InterlockedExchange(&campaign_actions183,0);continue;
         }
         if(!deck177::claim_frontend(frontend177::lease)){cursor194.reset();continue;}
-        if(deck177::battle_request().active()){cursor194.reset();if(keyboard_stop185())frontend177::lease.release();continue;}
+        if(deck222::startup().active()||deck177::battle_request().active()){cursor194.reset();if(keyboard_stop185())frontend177::lease.release();continue;}
         // Intro/menu transitions may replace the native window. Never keep
         // sending input to a destroyed trailer window.
         if(host.window&&!IsWindow(host.window)){policy.release(host);pointer_policy.release(host);host.window=nullptr;game_window=nullptr;}
@@ -249,8 +262,12 @@ static DWORD WINAPI worker(void*){
 
         auto now=GetTickCount64();auto& backend=frontend177::backend;
         const bool campaign=campaign_mode!=0;const bool panel=campaign&&campaign_panel188!=0;
+        // Match the accepted campaign-only owner lifetime. A focused menu or
+        // movie is not evidence that its keyboard poll belongs to this worker.
+        // Startup barrier above also drains a live campaign owner BEFORE the
+        // adapter validates/creates its own hook.
         if(campaign&&host.focused()&&DWORD(GetTickCount()-DWORD(ui_tick181))<250){
-            if(!keyboard_start185(engine)){InterlockedExchange(&keyboard_allowed185,0);campaign_keys185.clear();}
+            if(!keyboard_start185(engine)){native_escape218.clear();InterlockedExchange(&keyboard_allowed185,0);campaign_keys185.clear();}
         }else if(!keyboard_stop185())continue;
         InterlockedExchange(&keyboard_allowed185,campaign&&host.focused()&&native_input185.enabled?1:0);
         if(campaign!=prior_campaign){AcquireSRWLockExclusive(&lock);shortcut_click184.cancel(host);ReleaseSRWLockExclusive(&lock);policy.release(host);pointer_policy.release(host);campaign_edges.reset();campaign_buttons183.reset();help188.reset();InterlockedExchange(&campaign_actions183,0);previous_sample=0;prior_campaign=campaign;}
@@ -291,7 +308,7 @@ static DWORD WINAPI worker(void*){
                 if(DWORD(GetTickCount()-DWORD(ui_tick181))<250)menu_press181(campaign,edges,host);else menu_press181(false,edges,host);
                 if(campaign){
                     unsigned actions=campaign_buttons183.sample(frame,edges,now*1000,!panel);
-                    if(panel)actions&=(deck183::Arts|deck183::Finance|deck183::Diplomacy|deck183::Clan);
+                    if(panel)actions&=(deck183::Arts|deck183::Finance|deck183::Diplomacy|deck183::Clan|(city_details214?(deck183::Next|deck183::Previous):0));
                     if(actions&&!shortcut_owns184)pointer_policy.release(host); // panel/selection commands cancel an owned drag safely
                     if(actions&deck183::Next)InterlockedExchange(&next_pending,1);if(actions&deck183::Previous)InterlockedExchange(&previous_pending,1);
                     campaign_keys185.put(actions&~deck183::Clan,now,button_epoch183);
@@ -405,7 +422,8 @@ static HANDLE campaign_guard181=INVALID_HANDLE_VALUE;
 #include "context181.h"
 static bool panel_state188(const std::string& value){
  if(!campaign_mode||GetCurrentThreadId()!=ui_owner181)return false;
- if(value!="open"&&value!="map"&&value!="unknown")return false;
+ if(value!="open"&&value!="city"&&value!="map"&&value!="unknown")return false;
+ InterlockedExchange(&city_details214,value=="city");
  LONG modal=value=="map"?0:1;
  if(value!="unknown")deck185::sync_panels191(modal!=0);
  if(InterlockedExchange(&campaign_panel188,modal)!=modal){
@@ -424,6 +442,19 @@ static bool menu_fit209(const std::string& text){
   required={values[0],values[1]};
  }
  return deck185::fit_frontend209(required);
+}
+static bool decorate214(const std::string& text){
+ if(!campaign_mode||GetCurrentThreadId()!=ui_owner181||text.size()>28)return false;
+ bool corner=text.compare(0,7,"corner:")==0;size_t begin=corner?7:8;
+ if(!corner&&text.compare(0,8,"tooltip:")!=0)return false;
+ // Lua in this game uses32-bit float numbers. Preserve full pointer bits
+ // through its lightuserdata string, never numeric conversion/rounding.
+ if(text.compare(begin,10,"userdata: ")!=0)return false;begin+=10;
+ if(text.compare(begin,2,"0x")==0)begin+=2;
+ if(text.size()<=begin||text.size()>begin+8)return false;
+ uintptr_t address=0;for(size_t i=begin;i<text.size();++i){char c=text[i];unsigned digit=c>='0'&&c<='9'?c-'0':c>='a'&&c<='f'?c-'a'+10:c>='A'&&c<='F'?c-'A'+10:16;if(digit>15)return false;address=(address<<4)|digit;}
+ uintptr_t root{};if(address<65536||!native214::value(deck185::native_ui185.base+0x1bbe364,root))return false;
+ return deck214::decorate(root,address,corner);
 }
 static bool back188(){return campaign_mode&&GetCurrentThreadId()==ui_owner181&&campaign_keys185.put(deck183::Back,GetTickCount64(),button_epoch183);}
 static bool context_state(void* lua){
@@ -451,6 +482,7 @@ MENU181(prepare,menu181::prepare())
 MENU181(supported,device192::enabled())
 MENU181(context,menu181::context_state(lua))
 MENU181(camera,!menu181::campaign_panel188&&menu181::camera_apply181())
+MENU181(decorate214,menu181::decorate214(menu181::argument(lua)))
 MENU181(panel188,menu181::panel_state188(menu181::argument(lua)))
 MENU181(menu_fit209,menu181::menu_fit209(menu181::argument(lua)))
 MENU181(back188,menu181::back188())

@@ -198,6 +198,44 @@ local function campaign_buttons183()
     -- stock button's current geometry; no panel creation or script call here.
 
 end
+-- Original region_details arrows call their region_info ancestor's native
+-- PreviousRegion/NextRegion callbacks. General map selection cannot refresh an
+-- already-open region-details panel. Resolve the current owner, never cache it.
+local function city_owner214()
+    for _,id in ipairs({"region_info","region_details"})do
+        local ptr=ui(root,"Find",id)
+        if ptr then
+            local details=native("UIComponent",function()return UIComponent(ptr)end)
+            if ui(details,"Visible")==true then
+                for _,arrow_id in ipairs({"arrow R","arrow L"})do
+                    local arrow=ui(details,"Find",arrow_id)
+                    if arrow then
+                        local button=native("UIComponent",function()return UIComponent(arrow)end)
+                        local parent=ui(button,"Parent","region_info")
+                        if parent then
+                            local owner=native("UIComponent",function()return UIComponent(parent)end)
+                            if ui(owner,"Id")=="region_info"and ui(owner,"Visible")==true then return owner end
+                        end
+                    end
+                end
+            end
+        end
+    end
+end
+local function campaign_cycle214(forward)
+    local open=native("PanelManager.OpenPanels",function()return PanelManager.OpenPanels()end)
+    if type(open)~="boolean"then return end
+    if open then
+        local owner=city_owner214()
+        if owner then
+            local callback=forward and"NextRegion"or"PreviousRegion"
+            native("region_info."..callback,function()return owner:LuaCall(callback)end)
+        end
+        return -- No map selection can leak into another native modal.
+    end
+    if forward then native("NextAutoEntitySelection",function()return CampaignUI.NextAutoEntitySelection()end)
+    else native("PreviousAutoEntitySelection",function()return CampaignUI.PreviousAutoEntitySelection()end)end
+end
 local menu_extent209
 local function campaign_setup_fit209()
     if campaign or not quiet_menu or type(api.menu_fit209)~="function"then return end
@@ -257,7 +295,16 @@ local function tick()
             -- Original native OpenPanels returns the manager's modal-open bool.
             -- Observe only: the stock input phase owns all panel opens/closes.
             local ok,open=pcall(function()return native("PanelManager.OpenPanels",function()return PanelManager.OpenPanels()end)end)
-            api.panel188(ok and type(open)=="boolean"and(open and"open"or"map")or"unknown")
+            if type(api.decorate214)=="function"then
+                local corner=ui(root,"Find","hud_right")
+                if corner then api.decorate214("corner:"..tostring(corner))end
+                for _,id in ipairs({"Tooltip","STW_tech_tooltip","TechTreeItem_Tooltip"})do
+                    local tip=ui(root,"Find",id)
+                    if tip and ui(UIComponent(tip),"Visible")then api.decorate214("tooltip:"..tostring(tip))end
+                end
+            end
+            local city=ok and open and city_owner214()
+            api.panel188(ok and type(open)=="boolean"and(open and(city and"city"or"open")or"map")or"unknown")
         end
         refresh_frames=refresh_frames+1;if refresh_frames>=60 then refresh_frames=0;if navigation.refresh then navigation.refresh()end end
         if api.cancel(true)then
@@ -269,8 +316,8 @@ local function tick()
         if campaign then
             campaign_buttons183()
             if api.pause(true)then if type(api.back188)=="function"then api.back188(true)end;return end
-            if api.next(true)then native("NextAutoEntitySelection",function()return CampaignUI.NextAutoEntitySelection()end)end
-            if api.previous(true)then native("PreviousAutoEntitySelection",function()return CampaignUI.PreviousAutoEntitySelection()end)end
+            if api.next(true)then campaign_cycle214(true)end
+            if api.previous(true)then campaign_cycle214(false)end
             if api.camera then api.camera(true)else
             local dx,dy,turn=0,0,0
             for i=1,32 do

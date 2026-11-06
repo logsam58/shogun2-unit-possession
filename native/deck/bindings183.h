@@ -33,7 +33,6 @@ inline constexpr Chord chords[]={{0x1e,1},{0x1c,0},{0x13,0},{0x21,0},{0x22,0},{0
  {2,0},{3,0},{4,0},{5,0},{2,1},{3,1},{4,1},{5,1}};
 inline constexpr unsigned WheelHeld=254,WheelUp=250,WheelDown=251,WheelLeft=252,WheelRight=253;
 inline int wheel_sector(const Frame& f,float threshold){
- if(f.buttons&bit(Button::Up))return 0;if(f.buttons&bit(Button::Down))return 1;if(f.buttons&bit(Button::Left))return 2;if(f.buttons&bit(Button::Right))return 3;
  auto v=f.right_stick;if(!deck174::unit(v)||std::max(std::fabs(v.x),std::fabs(v.y))<threshold)return -1;
  return std::fabs(v.y)>=std::fabs(v.x)?(v.y>0?0:1):(v.x<0?2:3);
 }

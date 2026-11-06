@@ -134,6 +134,7 @@ def selected(root=ROOT):
                     'docs/development/MeleeCandidates213.md',
                     'docs/development/AutomaticDevice192.md',
                     'docs/development/QoL193.md',
+                    'docs/development/QoL214.md',
                     'docs/development/CursorAndBindings194.md',
                     'docs/releases/README.md',
                     'docs/releases/v' + version + '.md',

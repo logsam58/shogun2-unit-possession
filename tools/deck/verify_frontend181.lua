@@ -40,6 +40,10 @@ local function fixture(opt)
  function methods:SetImageMetrics()self.metrics=true end
  function methods:ChildCount()return #self.children end
  function methods:Find(i)if type(i)=="string"then for a,v in pairs(nodes)do if v.id==i then return a end end;return nil end;return self.children[i+1]end
+ function methods:Parent(id)
+  local p=self.parent
+  while p do local owner=nodes[p];if not id or owner.id==id then return p end;p=owner.parent end
+ end
  function methods:LuaCall(name)flags.stock_callback={id=self.id,name=name};return true end
  function methods:GlobalExists(name)return self.globals[name]~=nil end
  function methods:SetGlobal(name,fn)assert(type(fn)=='function');self.globals[name]=fn end
@@ -96,7 +100,7 @@ local function fixture(opt)
  if opt.native_camera then api.camera=function(v)assert(v==true);if not flags.panel_state or flags.panel_state=='map'then flags.native_camera_calls=(flags.native_camera_calls or 0)+1 end;return true end end
  api.back188=function(v)assert(v==true);flags.native_back=(flags.native_back or 0)+1;return true end
  if opt.native_camera then
-  api.panel188=function(value)assert(value=='map'or value=='open'or value=='unknown');flags.panel_state=value;return true end
+  api.panel188=function(value)assert(value=='map'or value=='open'or value=='city'or value=='unknown');flags.panel_state=value;return true end
  end
  local target;api.focus=function(value)target=value;return true end
  api.poll=function(v)assert(v);return flags.fresh end
@@ -105,6 +109,7 @@ local function fixture(opt)
  api.heartbeat=function()heartbeats=heartbeats+1 end
  local game_math={};for k,v in pairs(math)do if type(v)=="function"then game_math[k]=v end end
  if opt.no_math_functions then game_math={}end
+ if opt.decorate214 then api.decorate214=function(kind)flags.decoration214=kind;return true end end
  local env={math=game_math,UIComponent=function(a)return assert(nodes[a])end,
   Component={MouseOver=function()return nil end,CreateFromLayout=function(layout,id,parent,x,y)assert(layout=='data/ui/common ui/general_purpose_pixel');if opt.fail_create then error('fixture native layout error')end;return node(id,parent).address end,
    Adopt=function(address)static_adoptions=static_adoptions+1;adopt(current_owner,address)end},
@@ -393,10 +398,25 @@ test('campaign never hides its native advert-like or web objects',function()
  assert(news.visible and news.interactive and not f.flags.last_error)
 end)
 test('original modal getter gates native camera without panel geometry',function()
- local f=fixture({campaign=true,native_camera=true});f.root.Find=function()error('no geometry scan')end
+ local f=fixture({campaign=true,native_camera=true});f.root.Width=function()error('no modal geometry read')end;f.root.Height=f.root.Width
  f.flags.panel_open=true;f.pulse();assert(f.flags.panel_state=='open'and not f.flags.native_camera_calls and not f.flags.last_error)
  f.flags.panel_open=false;f.pulse();assert(f.flags.panel_state=='map'and f.flags.native_camera_calls==1)
 end)
+test('native city details uses original owner callbacks and refuses modal map selection',function()
+ local f=fixture({campaign=true,native_camera=true,decorate214=true})
+ local owner=f.node('region_info',f.root.address);owner.visible=true
+ local details=f.node('region_details',owner.address);details.visible=true
+ f.node('arrow R',details.address);f.node('arrow L',details.address)
+ f.flags.panel_open=true;f.flags.next=true;f.pulse()
+ assert(f.flags.panel_state=='city'and f.flags.stock_callback.id=='region_info'and f.flags.stock_callback.name=='NextRegion')
+ assert(not f.flags.next_called and not f.flags.native_camera_calls and not f.flags.last_error)
+ f.flags.previous=true;f.pulse();assert(f.flags.stock_callback.name=='PreviousRegion'and not f.flags.previous_called)
+ owner.visible=false;details.visible=false;f.flags.stock_callback=nil;f.flags.next=true;f.pulse()
+ assert(f.flags.panel_state=='open'and not f.flags.stock_callback and not f.flags.next_called)
+ f.flags.panel_open=false;f.flags.next=true;f.pulse();assert(f.flags.next_called)
+ f.flags.previous=true;f.pulse();assert(f.flags.previous_called and not f.flags.last_error)
+end)
+
 test('invalid modal getter result refuses map control',function()
  local f=fixture({campaign=true,native_camera=true});f.env.PanelManager.OpenPanels=function()return function()error('not a callback')end end
  f.pulse();assert(f.flags.panel_state=='unknown'and not f.flags.native_camera_calls)

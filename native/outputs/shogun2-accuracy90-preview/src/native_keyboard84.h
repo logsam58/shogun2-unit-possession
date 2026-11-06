@@ -1,4 +1,5 @@
 #pragma once
+#include "../../../deck/native214.h"
 #include "keyboard_policy84.h"
 #include "view152.h"
 #include "command_policy100.h"
@@ -8,10 +9,11 @@ static KeyboardPoll84 original_keyboard_poll84;
 static void* keyboard_poll_target84;
 static keyboard84::Filter keyboard_filter84;
 static command100::KeyFilter command_keyboard_filter100;
+static bool alt_poll_held214;
 static bool climb_key_held97,mount_key_held154;static volatile LONG mount_request154;
 static volatile LONG keyboard_wall98;static unsigned keyboard_wall_held98;
 static volatile LONG keyboard_held84,keyboard_polls84,keyboard_blocked84,keyboard_last_mask84,keyboard_failures84;
-static bool keyboard_fps84(){return enabled&&state&&state->mode==POSSESSED&&!state->stop&&!state->release;}
+static bool keyboard_fps84(){return enabled&&state&&state->mode==POSSESSED&&!state->stop&&!state->release&&!native214::modal(base);}
 static bool __cdecl keyboard_poll84(){
     bool valid=original_keyboard_poll84();
     auto current=reinterpret_cast<std::uint8_t*>(base+0x1b30f58);
@@ -20,6 +22,10 @@ static bool __cdecl keyboard_poll84(){
     // This reads its result on the next input poll, including RTS/entry/exit.
     // The independent QTE and button prompt do not use this preference.
     hud_visibility_sync151(valid,enabled&&state&&!state->stop);
+    if(valid){bool physical=(current[0x38]&0x80)||(current[0xb8]&0x80),owned=keyboard_fps84();
+        if(owned||alt_poll_held214)current[0x38]=previous[0x38]=current[0xb8]=previous[0xb8]=0;
+        alt_poll_held214=owned?physical:alt_poll_held214&&physical;
+    }
     unsigned blocked=keyboard_filter84.apply(current,previous,keyboard_fps84(),valid);
     if(valid){bool physical=(current[0x21]&0x80)!=0,owned=keyboard_fps84();
         if(owned||climb_key_held97)current[0x21]=previous[0x21]=0;

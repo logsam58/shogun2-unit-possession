@@ -79,6 +79,16 @@ int main(){SetUnhandledExceptionFilter(&fault100);try{
  field<unsigned>(a,0x1f0)=8;clips[109]=0;change(reinterpret_cast<void*>(a),8,1,0);require(field<unsigned>(a,0x1f0)==8,"Missing native melee animation forced");clips[109]=P::ptr(clip);
  field<unsigned>(a,0x1f0)=8;auto serial=field<unsigned>(a,0x1c8);++field<unsigned>(a,0x1c8);require(melee_presentation_mode137(a,8,0)==8,"Reused actor identity accepted");field<unsigned>(a,0x1c8)=serial;
  require(melee_presentation_mode137(P::ptr(f.peer),8,0)==8,"AI peer presentation altered");
+ // Personal ranged readiness must not change the formation's melee order.
+ for(const auto& row:PERSONAL_WEAPONS){
+  field<unsigned>(projectile137,4)=unsigned(std::wcslen(row.key));field<uintptr_t>(projectile137,0xc)=reinterpret_cast<uintptr_t>(row.key);
+  equipment_personal152=1;equipment_slot81=equipment81::Melee;equipment_personal_override214=1;
+  field<unsigned char>(unit,0xead)=1;field<unsigned>(a,0x1f0)=8;
+  require(equipment_ranged_selected81()&&!melee_presentation_owned137(a),"Personal ranged override blocked by unit melee");
+  change(reinterpret_cast<void*>(a),8,1,0);require(field<unsigned>(a,0x1f0)==8&&field<unsigned char>(unit,0xead)==1,"Personal shot pose changed formation mode");
+  equipment_personal_override214=0;field<unsigned>(a,0x1f0)=8;
+  change(reinterpret_cast<void*>(a),8,1,0);require(field<unsigned>(a,0x1f0)==10&&!equipment_ranged_selected81(),"Releasing personal ranged override lost native melee pose");++cases;
+ }
  // Native mounted principal proof, no infantry-only projectile allowlist.
  std::vector<unsigned char> horse(0x700),horse_holder(0x210),mount_config(0x100),record(0x100);
  auto h=P::ptr(horse);uintptr_t passenger=a;uintptr_t holders[]={P::ptr(f.holder),P::ptr(f.peer_holder),P::ptr(horse_holder)};

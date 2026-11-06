@@ -6,8 +6,8 @@ namespace deck182 {
 inline uint64_t buttons(deck174::Context context){switch(context){
  case deck174::Context::Menu:return 798723ull;
  case deck174::Context::Campaign:return 1048447ull;
- case deck174::Context::RTS:return 1048447ull;
- case deck174::Context::Possession:return 1048575ull;
+ case deck174::Context::RTS:return 4194174ull; // Pad clicks: native fine orders / Space; A unused.
+ case deck174::Context::Possession:return 1048575ull&~deck174::bit(deck174::Button::L5);
  default:return deck174::all_buttons;}}
 inline unsigned analogs(deck174::Context context){switch(context){
  case deck174::Context::Menu:return 60u;

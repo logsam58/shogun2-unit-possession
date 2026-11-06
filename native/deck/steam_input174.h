@@ -133,7 +133,7 @@ class SteamBackend {
     steam006::Api api_{};DWORD owner_{};bool initialized_{};
     uint64_t handle_{},action_set_{},sequence_{},epoch_{1};
     std::array<uint64_t,button_count> digital_{};std::array<uint64_t,6> analog_{};
-    uint64_t last_sample_{};
+    uint64_t last_sample_{},reassert_after214_{};bool focused214_{};
     std::string pending_manifest_;
     std::string context_set_,context_prefix_;
     Context selected_context_{Context::Inactive};
@@ -226,6 +226,12 @@ public:
         if(!initialized_)return false;
         if(GetCurrentThreadId()!=owner_){state_=BackendState::WrongThread;return false;}
         info_.bad_origin_expected=info_.bad_origin_observed=0;
+        const bool regained214=focused&&!focused214_;focused214_=focused;
+        // Steam screensaver/overlay focus can leave an unchanged controller
+        // handle and current-set value with an inactive binding data stream.
+        // Re-resolve handles and reassert our existing action set on return;
+        // never replace the user's layout, restart Steam or reinitialize input.
+        if(regained214){action_set_=0;digital_={};analog_={};last_sample_=0;reassert_after214_=0;++epoch_;}
         api_.run();uint64_t handles[16]{};int count=api_.connected(handles);
         info_.connected_count=count;
         if(count<0||count>16){state_=BackendState::Failed;return false;}
@@ -240,11 +246,12 @@ public:
             pending_manifest_.clear();info_.manifest_accepted=true;api_.run();
         }
         gamepad_index_=api_.gamepad_index(selected);
-        if(handle_!=selected||last_sample_&&now-last_sample_>250000){handle_=selected;++epoch_;}
+        const bool changed214=handle_!=selected;
+        if(changed214||last_sample_&&now-last_sample_>250000){handle_=selected;action_set_=0;digital_={};analog_={};++epoch_;}
         last_sample_=now;
         info_.handles_present=fetch_handles();
         if(!info_.handles_present){state_=BackendState::WaitingBindings;return false;}
-        if(api_.current(handle_)!=action_set_)api_.activate(handle_,action_set_);
+        if(regained214||changed214||api_.current(handle_)!=action_set_){api_.activate(handle_,action_set_);api_.run();}
         f.epoch=epoch_;f.sequence=++sequence_;f.connected=true;
         f.capabilities=Sticks|Triggers|Pads|Grips|Motion|StickTouch;
         bool bound=true;
@@ -279,8 +286,14 @@ public:
         f.gyro={m.vx*radians_per_unit,m.vy*radians_per_unit,m.vz*radians_per_unit};
         f.accelerometer={m.ax*acceleration_per_unit,m.ay*acceleration_per_unit,m.az*acceleration_per_unit};
         f.native_bindings=bound;
-        if(!bound||!valid(f,now)){state_=BackendState::WaitingBindings;return false;}
-        state_=BackendState::Ready;return true;
+        if(!bound||!valid(f,now)){
+            state_=BackendState::WaitingBindings;
+            // A bounded retry repairs an inactive stream after client focus
+            // handoff without continually modifying a valid live action set.
+            if(focused&&now>=reassert_after214_){api_.activate(handle_,action_set_);api_.run();action_set_=0;digital_={};analog_={};reassert_after214_=now+500000;}
+            return false;
+        }
+        reassert_after214_=now+500000;state_=BackendState::Ready;return true;
     }
     bool show_bindings(){
         if(!initialized_||GetCurrentThreadId()!=owner_||state_!=BackendState::Ready||!handle_||!info_.manifest_accepted)return false;
@@ -292,7 +305,7 @@ public:
         if(!initialized_)return true;
         if(GetCurrentThreadId()!=owner_){state_=BackendState::WrongThread;return false;}
         bool ok=api_.shutdown();initialized_=false;handle_=action_set_=sequence_=last_sample_=0;
-        digital_={};analog_={};pending_manifest_.clear();++epoch_;return ok;
+        digital_={};analog_={};pending_manifest_.clear();focused214_=false;reassert_after214_=0;++epoch_;return ok;
     }
 };
 } // namespace deck174

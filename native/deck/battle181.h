@@ -2,11 +2,13 @@
 // Included in the existing private adapter namespace, after the native host.
 #include "presentation182.h"
 #include "presentation188.h"
+#include "formation218.h"
 namespace controller181 {
 static deck181::Controls controls;
 static deck181::Channel channel;
 static deck182::Presentation glyphs;
 static deck181::Output previous;
+static formation218::FormationPad fine218;
 static deck202::LookRate look202;
 static deck201::LookQueue look201;static volatile LONG& hide_key=deck181::native_key_pending;
 static float wheel{};
@@ -39,6 +41,7 @@ static void present(){
  });
 }
 static void cancel_window(){
+ fine218.cancel();
  if(previous.held(deck181::Q))command_native_cancel100();
  if(state&&previous.context==deck174::Context::Possession){InterlockedExchange(&state->aiming,0);}
  deck181::native_shortcuts183.clear();previous={};wheel=0;orbit_button154(false);look201.clear();look202.clear();
@@ -54,6 +57,7 @@ struct MenuHost {
  void reset_cursor(){cursor.reset();}
  void release_owned(bool left,bool right){ContextProof p;if(native_context(p,true)&&p.identity==identity&&native_window_proc&&input_window&&(buttons||left||right)){CallWindowProcW(native_window_proc,input_window,WM_CANCELMODE,0,0);if(left||(buttons&MK_LBUTTON))CallWindowProcW(native_window_proc,input_window,WM_LBUTTONUP,0,MAKELPARAM(-1,-1));if(right||(buttons&MK_RBUTTON))CallWindowProcW(native_window_proc,input_window,WM_RBUTTONUP,0,MAKELPARAM(-1,-1));}buttons=0;wheel=0;cursor.reset();}
 };
+static bool pause214(const ContextProof& proof);
 static deck178::Menu178 menu_policy;static uint64_t menu_buttons{};static bool in_menu{};
 static void menu_dispatch(const deck181::Queued& queued,const ContextProof& proof){
  MenuHost host{proof.identity};bool back=false;
@@ -61,7 +65,7 @@ static void menu_dispatch(const deck181::Queued& queued,const ContextProof& proo
  cancel_window();in_menu=true;
  auto menu_frame=deck188::menu_frame188(queued.frame);
  bool good=menu_policy.sample(menu_frame,queued.frame.sample_us,config,host,back);
- if(good){bool pause=(queued.frame.buttons&deck174::bit(deck174::Button::Menu))&&!(menu_buttons&deck174::bit(deck174::Button::Menu));if(back||pause)InterlockedOr(&hide_key,2);menu_buttons=queued.frame.buttons;}else menu_buttons=0;
+ if(good){bool pause=(queued.frame.buttons&deck174::bit(deck174::Button::Menu))&&!(menu_buttons&deck174::bit(deck174::Button::Menu));if(back||pause)pause214(proof);menu_buttons=queued.frame.buttons;}else menu_buttons=0;
 }
 
 static bool hud_toggle188(const ContextProof& proof,bool possessed_mode){
@@ -92,6 +96,14 @@ static bool keyboard_hud198(UINT message,WPARAM key,LPARAM flags,const ContextPr
  if(message==WM_KEYDOWN&&!(flags&(1L<<30))&&keyboard_fps84())hud_toggle188(proof,true);
  return true;
 }
+static native214::BattleSpeed speed214;
+static bool pause214(const ContextProof& proof){
+ if(!proof.owner_thread||!proof.focused||!input_window||!native_window_proc)return false;
+ // Original native Escape dispatch also reaches a script's Esc_Key_Pressed.
+ // Queue into the original DI poll, after possession's keyboard filter, so
+ // START opens/skips native UI without becoming an F10/depossession action.
+ return deck181::native_escape218.request(input_window,GetTickCount64());
+}
 static void dispatch(const deck181::Queued& queued,const ContextProof& proof){
  const auto& output=queued.output;
  if(!deck174::valid(queued.frame,clock_us())||clock_us()-queued.frame.sample_us>uint64_t(config.stale_ms)*1000){cancel_window();clear_input();return;}
@@ -102,8 +114,10 @@ static void dispatch(const deck181::Queued& queued,const ContextProof& proof){
  if(output.help_blocked){cancel_window();return;}
  if(output.context==deck174::Context::RTS){
   bool hide=output.held(deck181::K)&&!previous.held(deck181::K),pause=output.held(deck181::Escape)&&!previous.held(deck181::Escape);
-  if(previous.context!=deck174::Context::RTS)cancel_window();if(hide)hud_toggle188(proof,false);if(pause)InterlockedOr(&hide_key,2);previous=output;
+  if(previous.context!=deck174::Context::RTS)cancel_window();if(hide)hud_toggle188(proof,false);if(pause)pause214(proof);previous=output;
   if(proof.permits_rts()){
+   if(output.fine216.active||output.fine216.released||output.fine216.cancel)
+    fine218.sample(base,proof.identity.root,proof.identity.environment,output.fine216,[&](){ContextProof current;return native_context(current)&&current.permits_rts()&&current.identity==proof.identity;});
    for(unsigned i=0;i<deck183::ShortcutCount;++i)if(output.shortcuts&(1u<<i))deck181::native_shortcuts183.put(i,GetTickCount64());
    if(output.fire_at_will){
     // Same native action1 used by10ce0e0 for battle_both_fire_at_will_toggle.
@@ -133,7 +147,8 @@ static void dispatch(const deck181::Queued& queued,const ContextProof& proof){
  if(output.held(deck181::P)){AcquireSRWLockExclusive(&view_lock152);++view_input152.toggles;ReleaseSRWLockExclusive(&view_lock152);}
  if(output.held(deck181::M)&&!previous.held(deck181::M)&&!charge_input_locked146())InterlockedExchange(&mount_request154,LONG(state->lease_generation));
  if(output.held(deck181::K)&&!previous.held(deck181::K))hud_toggle188(proof,true);
- if(output.held(deck181::Escape)&&!previous.held(deck181::Escape))InterlockedOr(&hide_key,2);
+ if(output.held(deck181::Escape)&&!previous.held(deck181::Escape))pause214(proof);
+ if(output.toggle_slow214||output.toggle_pause214)speed214.apply(base,proof.identity.root,proof.identity.environment,output.toggle_pause214);
  if(output.held(deck181::Cancel)&&!previous.held(deck181::Cancel)&&command_placing100)command_native_cancel100();
  const unsigned commands[]={'Q','E','Z','C','R','F',VK_LBUTTON,VK_RBUTTON};
  for(unsigned key:commands)if(output.held(key)!=previous.held(key)){

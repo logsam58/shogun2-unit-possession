@@ -29,7 +29,7 @@ public:
         auto down=[&](Button b){return (edge.down&bit(b))!=0;};
         const bool left=left_?f.left_trigger>config_.trigger_release:f.left_trigger>=config_.trigger_press;
         const bool right=right_?f.right_trigger>config_.trigger_release:f.right_trigger>=config_.trigger_press;
-        const bool select=right; // Right pad click is intentionally unassigned.
+        const bool select=right; // Right-pad click holds native Space via controls181.
         const bool additive=held(Button::L5)||held(Button::L3);
         if(down(Button::B)){
             if(selecting_||ordering_)emit(Action::OrderCancel);
@@ -57,10 +57,9 @@ public:
         if(camera.pitch)emit(Action::CameraPitch,{0,camera.pitch});
         const float shoulder_zoom=float(held(Button::L1))-float(held(Button::R1));
         if(shoulder_zoom)emit(Action::CameraZoom,{0,shoulder_zoom});
-        if(held(Button::LeftPadTouch)){
-            if(zoom_seed_){float delta=f.left_pad.y-zoom_.y;if(delta)emit(Action::ScrollZoom,{0,delta});}
-            zoom_=f.left_pad;zoom_seed_=true;
-        }else zoom_seed_=false;
+        // Left-pad swiping is intentionally inert; clicked direction/turn
+        // gestures are owned by fine216 and native selection orders.
+        zoom_seed_=false;
         left_=left;right_=right;buttons_=f.buttons;return batch;
     }
 };

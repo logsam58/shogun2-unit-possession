@@ -293,7 +293,7 @@ static void __fastcall weapon_play_hook(void* actor,void*,unsigned clip,unsigned
         original_play(actor,clip,force,attached,speed);return;
     }
     if(!own_weapon_call&&(state->weapon_phase||state->aim_pose)&&weapon_owned(reinterpret_cast<uintptr_t>(actor)))return;
-    if(!own_weapon_call&&weapon_owned(reinterpret_cast<uintptr_t>(actor))&&equipment_slot81==equipment81::Melee&&
+    if(!own_weapon_call&&weapon_owned(reinterpret_cast<uintptr_t>(actor))&&equipment_slot81==equipment81::Melee&&!equipment_personal_override214&&
        ((clip>=124&&clip<=140)||clip==750||clip==751||(clip>=753&&clip<=786)))return;
     original_play(actor,clip,force,attached,speed);
 }
@@ -304,7 +304,7 @@ static void __fastcall weapon_change_hook(void* actor,void*,unsigned mode,unsign
         else return;
     }
     if(!own_weapon_call&&weapon_owned(reinterpret_cast<uintptr_t>(actor))){
-        if(equipment_slot81==equipment81::Melee){
+        if(equipment_slot81==equipment81::Melee&&!equipment_personal_override214){
             if(mode==14||mode==15||mode==16||mode==17||mode==32||mode==33)return;
 
         }else if(!weapon_mounted()){

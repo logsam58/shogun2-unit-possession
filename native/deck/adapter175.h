@@ -8,6 +8,7 @@
 #include "rts175.h"
 #include "config174.h"
 #include "steam_input174.h"
+#include "recovery218.h"
 #include "proton_paths174.h"
 #include "native_guard175.h"
 #include "orders175.h"
@@ -19,6 +20,7 @@
 #include "selection189.h"
 #include "qol193.h"
 #include "battle_ready181.h"
+#include "battle_panels223.h"
 #include <fstream>
 
 #include "look201.h"
@@ -30,6 +32,7 @@ static Mailbox rts_mailbox;
 static deck174::SteamBackend backend;
 static Rts rts;
 static deck174::Config config;
+static volatile LONG posted_tick214{};
 static volatile LONG running{},posted{},stopping{},cleanup_done{},errors{},notified{};
 static UINT message_id;
 static uint64_t next_attempt{},last_callback{};
@@ -60,9 +63,9 @@ static bool native_context(ContextProof& proof,bool cleanup=false){
         proof.identity={root,env,common,phase,manager,camera};
         proof.possessed=state->mode==POSSESSED||dead_view();
         proof.rts=deck181::battle_ready(base,[](uintptr_t at){return field<uintptr_t>(at,0);})&&camera==field<uintptr_t>(manager,0x8cc)&&field<uintptr_t>(camera,0)==base+0x15d1a74;
-        // These are the same native menu/movie blockers used by10fb980.
+        // Movie/replay blockers plus the actual PanelManager modal predicate.
         using Blocked=bool(__thiscall*)(void*);
-        proof.blocked=field<unsigned char>(env,0x281e8)!=0||reinterpret_cast<Blocked>(base+0x2e5810)(reinterpret_cast<void*>(root+0x10c));
+        proof.blocked=deck223::battle_modal(base,proof.rts&&field<unsigned>(phase,0x14)==3)||field<unsigned char>(env,0x281e8)!=0||reinterpret_cast<Blocked>(base+0x2e5810)(reinterpret_cast<void*>(root+0x10c));
         return true;
     }__except(EXCEPTION_EXECUTE_HANDLER){return false;}
 }
@@ -127,7 +130,13 @@ struct NativeHost:Host {
         RECT rect{};POINT pixel{};if(!point(rect,pixel)){selection193.reset();return false;}
         const bool twice=selection193.button(down,(flags&(MK_CONTROL|MK_SHIFT))!=0,pixel.x,pixel.y,GetTickCount64(),GetDoubleClickTime(),std::max(1,GetSystemMetrics(SM_CXDOUBLECLK)/2),std::max(1,GetSystemMetrics(SM_CYDOUBLECLK)/2));
         if(!event(down?(twice?WM_LBUTTONDBLCLK:WM_LBUTTONDOWN):WM_LBUTTONUP,flags)){selection193.reset();return false;}
-        owned_mouse_flags=down?flags:0;return true;
+        // A native double click is a completed focus action. Release it now so
+        // continued right-pad touch cannot turn the camera focus into box select.
+        if(down&&twice){
+            owned_mouse_flags=0;
+            if(!event(WM_LBUTTONUP,flags&~WPARAM(MK_LBUTTON))){selection193.reset();return false;}
+        }else owned_mouse_flags=down?flags:0;
+        return true;
     }
     bool order(unsigned phase,bool modifier)override{
         if(phase>3||!current(identity))return false;
@@ -216,7 +225,7 @@ static void yield181(){
  // If the site changed unexpectedly, retain ownership and never overwrite it.
  if(!keyboard_owner196.release())return;
  modifiers188.clear();
- if(running){if(!backend.close())return;InterlockedExchange(&running,0);controller181::clear_input();}
+ if(running){if(!deck218::close_reader(backend,running))return;InterlockedExchange(&running,0);controller181::clear_input();}
  AcquireSRWLockExclusive(&queue_lock);mailbox.invalidate();rts_mailbox.invalidate();ReleaseSRWLockExclusive(&queue_lock);
  InterlockedExchange(&posted,0);InterlockedExchange(&controller181::menu_open,0);input_lease177.release();
 }
@@ -238,7 +247,7 @@ static void poll(HMODULE module){
     // leaves. Do not initialize/shutdown a second reader during that handoff.
     if(deck177::busy(deck177::Owner::Frontend)){
         if(running){
-            if(!backend.close())return;
+            if(!deck218::close_reader(backend,running))return;
             InterlockedExchange(&running,0);
             AcquireSRWLockExclusive(&queue_lock);mailbox.invalidate();rts_mailbox.invalidate();ReleaseSRWLockExclusive(&queue_lock);
         }
@@ -289,7 +298,14 @@ static void poll(HMODULE module){
     }else{mailbox.invalidate();rts_mailbox.invalidate();}
     ReleaseSRWLockExclusive(&queue_lock);if(!queued)controller181::clear_input();
     owned_window=input_window;
-    if(!InterlockedCompareExchange(&posted,1,0))if(!PostMessageW(owned_window,message_id,175,0))InterlockedExchange(&posted,0);
+    // A focus/screensaver transition can leave an old posted callback pending.
+    // Repost at a bounded cadence; the mailbox takes each sequence only once.
+    DWORD tick214=GetTickCount();
+    if(posted&&DWORD(tick214-DWORD(posted_tick214))>250)InterlockedExchange(&posted,0);
+    if(!InterlockedCompareExchange(&posted,1,0)){
+        InterlockedExchange(&posted_tick214,LONG(tick214));
+        if(!PostMessageW(owned_window,message_id,175,0))InterlockedExchange(&posted,0);
+    }
     // Deliver timestamped camera input before any optional image IO/decoding.
     controller181::present();
 }
@@ -340,7 +356,8 @@ static void stop(){
             auto deadline=GetTickCount64()+250;while(!cleanup_done&&GetTickCount64()<deadline)Sleep(1);
         }
     }
-    if(running){if(!backend.close())return;InterlockedExchange(&running,0);}
+    if(running){if(!deck218::close_reader(backend,running))return;InterlockedExchange(&running,0);}
+    formation218::FormationPad::disable_preview_hook();
     modifiers188.remove(&native_async188);input_lease177.release();
 }
 struct Lifetime {~Lifetime(){stop();}};

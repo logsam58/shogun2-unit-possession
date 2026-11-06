@@ -53,5 +53,35 @@ int main(){try{
     put_role(army_obj,8,reinterpret_cast<uintptr_t>(clan));
     put_role(obj,8,reinterpret_cast<uintptr_t>(unit_name));
     require(measured()&&display.unit&&hud80::display_name169(display)==display.unit->name,"Stock presentation changed after custom unit");++checks;
+    // Exercise the production preloader, then measure the same card after
+    // removing its input. It must already be cached before possession.
+    wchar_t temp[MAX_PATH]{}, scratch[MAX_PATH]{};
+    require(GetTempPathW(MAX_PATH,temp)>0&&GetTempFileNameW(temp,L"s2c",0,scratch)!=0&&DeleteFileW(scratch),"Card fixture scratch");
+    auto folder=std::filesystem::path(scratch);
+    auto art=folder/L"data/ui/units/info/roster_card.tga";
+    std::filesystem::create_directories(art.parent_path());
+    {
+        unsigned char picture[]={0,0,2,0,0,0,0,0,0,0,0,0,1,0,1,0,32,32,0,0,73,255};
+        std::ofstream f(art,std::ios::binary);
+        require(bool(f.write(reinterpret_cast<const char*>(picture),sizeof picture)),"Card fixture write");
+    }
+    cards217.configure(folder);
+    auto alliance=base+0xf000,alliance_list=base+0xf100,armies=base+0xf200,alias=base+0xf300;
+    static const wchar_t portrait[]=L"roster_card";
+    put_role(phase,0x88,1u);put_role(phase,0x8c,alliance_list);put_role(alliance_list,0,alliance);
+    put_role(alliance,0x20,1u);put_role(alliance,0x24,armies);put_role(armies,0,army);
+    put_role(army,0x270,static_cast<unsigned char>(1));
+    put_role(def,0x54,alias);put_role(alias,8,reinterpret_cast<uintptr_t>(portrait));
+    put_role(obj,8,reinterpret_cast<uintptr_t>(custom169));
+    telemetry.mode=0;
+    put_role(phase,0x14,3u);preload_cards();
+    require(card_preload.next==1&&card_preload.units.size()==1&&!measured(),"Deployment did not warm cards before possession");++checks;
+    require(std::filesystem::remove(art),"Card fixture cleanup");
+    for(auto dir=art.parent_path();dir!=folder;dir=dir.parent_path())require(std::filesystem::remove(dir),"Card fixture directory cleanup");
+    require(std::filesystem::remove(folder),"Card fixture root cleanup");
+    put_role(phase,0x14,5u);telemetry.mode=POSSESSED;
+    require(measured()&&display.native_card217&&display.native_card217->pixels[2]==73,"Possession did not display preloaded custom card");++checks;
+    put_role(phase,0x14,4u);preload_cards();
+    require(card_preload.units.empty(),"Previous roster persisted outside battle");++checks;
     VirtualFree(image,0,MEM_RELEASE);printf("PASS production HUD measurement: 10 roles, %u checks\n",checks);return 0;
 }catch(const std::exception& e){fprintf(stderr,"%s\n",e.what());return 1;}}

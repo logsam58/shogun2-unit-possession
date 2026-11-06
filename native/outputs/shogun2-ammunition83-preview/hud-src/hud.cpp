@@ -5,12 +5,15 @@
 #include "../../shogun2-possession-cleanup-v46/src/game_window105.h"
 #include "../../shogun2-possession-cleanup-v46/src/overlay_surface106.h"
 #include "hud_renderer.h"
+#include "../../../common/card_pack217.h"
+#include "../../../common/unit_activity215.h"
 #include "hud_surface100.h"
 #include "accuracy_protocol90.h"
 #include "../../shogun2-accuracy90-preview/src/climb_protocol97.h"
 #include "../src/equipment_protocol81.h"
 #include "../../shogun2-possession-cleanup-v46/src/hud_visibility148.h"
 static_assert(sizeof(void*)==4,"Build x86 for the game's telemetry");
+static card217::Catalog cards217;
 static DWORD pid;static uintptr_t base;static HANDLE process;static Status* shared;
 static EquipmentStatus81* equipment_shared;
 static ability141::Status* abilities_shared141;
@@ -33,10 +36,18 @@ static std::wstring unit_key(uintptr_t unit,uintptr_t& definition){
     require(chars>0x10000,"Missing unit key");std::wstring out;
     for(unsigned i=0;i<160;++i){wchar_t c=read<wchar_t>(chars+i*2);if(!c){require(!out.empty(),"Empty unit key");
         require(read<uintptr_t>(unit+0x1c)==definition&&read<uintptr_t>(definition)==object&&read<uintptr_t>(object+8)==chars,"Unit key changed");return out;}
-        require((c>=L'a'&&c<=L'z')||(c>=L'A'&&c<=L'Z')||(c>=L'0'&&c<=L'9')||c==L'_',"Unexpected unit key character");out+=c;}
+        require(c>=32,"Unit key control character");out+=c;}
     throw std::runtime_error("Unterminated unit key");
 }
-static const hud80::FactionArt* faction_owner(uintptr_t unit,uintptr_t& army){
+// UniString fields are inline shared-data pointers, not C-string pointers.
+// Only the two documented native artwork fields are optional; live identity
+// and ownership checks remain mandatory and independent of card availability.
+static std::wstring card_alias217(uintptr_t definition,unsigned offset){
+    try{auto object=read<uintptr_t>(definition+offset),chars=read<uintptr_t>(object+8);if(chars<0x10000)return {};std::wstring value;
+        for(unsigned i=0;i<512;++i){auto c=read<wchar_t>(chars+i*2);if(!c){if(read<uintptr_t>(definition+offset)!=object||read<uintptr_t>(object+8)!=chars)return {};return value;}if(c<32)return {};value+=c;}
+    }catch(...){}return {};
+}
+static const hud80::FactionArt* faction_owner(uintptr_t unit,uintptr_t& army,std::wstring& native_key){
     army=read<uintptr_t>(unit+0x2a4);
     require(read<uintptr_t>(army)==base+0x15bc860,"Unexpected battle army");
     unsigned count=read<unsigned>(army+0x114);uintptr_t members=read<uintptr_t>(army+0x118);
@@ -46,10 +57,74 @@ static const hud80::FactionArt* faction_owner(uintptr_t unit,uintptr_t& army){
     uintptr_t object=read<uintptr_t>(army+0xf4),chars=read<uintptr_t>(object+8);
     std::wstring key;bool terminated=false;
     for(unsigned i=0;i<160;++i){wchar_t c=read<wchar_t>(chars+i*2);if(!c){terminated=true;break;}
-        require((c>=L'a'&&c<=L'z')||(c>=L'A'&&c<=L'Z')||(c>=L'0'&&c<=L'9')||c==L'_',"Invalid clan key");key+=c;}
+        require(c>=32,"Clan key control character");key+=c;}
     require(terminated&&!key.empty(),"Missing clan key");
     require(read<uintptr_t>(unit+0x2a4)==army&&read<uintptr_t>(army+0xf4)==object&&read<uintptr_t>(object+8)==chars,"Clan identity changed");
-    return hud80::faction_art(key.c_str());
+    native_key=key;return hud80::faction_art(key.c_str());
+}
+static std::shared_ptr<card217::Picture> unit_card(uintptr_t definition,const std::wstring& key,const std::wstring& clan){
+    return cards217.card(key,clan,card_alias217(definition,0x54),card_alias217(definition,0x48));
+}
+static void configure_cards(){
+    wchar_t executable[32768];DWORD length=32768;
+    if(QueryFullProcessImageNameW(process,0,executable,&length))
+        cards217.configure(std::filesystem::path(std::wstring(executable,length)).parent_path());
+}
+// Same phase/alliance/army traversal as qte::battle_clock (native 321880 ->
+// 17a420). Warm only human armies, a few portraits per HUD tick, in the HUD
+// process. Leave the lazy lookup available for reinforcements and late joins.
+struct CardPreload {
+    uintptr_t phase{};
+    std::vector<std::pair<uintptr_t,uintptr_t>> units;
+    size_t next{};
+};
+static CardPreload card_preload;
+static void preload_cards(){
+    try{
+        auto env=read<uintptr_t>(read<uintptr_t>(base+0x1bc8180)+0x110);
+        auto common=read<uintptr_t>(env+8),phase=read<uintptr_t>(common+0xb4);
+        unsigned id=read<unsigned>(phase+0x14);
+        if(id!=3&&(id<5||id>8)){card_preload={};return;}
+        if(card_preload.phase!=phase||card_preload.units.empty()){
+            CardPreload next;
+            next.phase=phase;
+            unsigned count=read<unsigned>(phase+0x88);
+            auto alliances=read<uintptr_t>(phase+0x8c);
+            if(count>32)return;
+            for(unsigned i=0;i<count&&next.units.size()<128;++i){
+                auto alliance=read<uintptr_t>(alliances+i*4);
+                unsigned n=read<unsigned>(alliance+0x20);
+                auto armies=read<uintptr_t>(alliance+0x24);
+                if(n>32)return;
+                for(unsigned j=0;j<n&&next.units.size()<128;++j){
+                    auto army=read<uintptr_t>(armies+j*4);
+                    if(read<uintptr_t>(army)!=base+0x15bc860||read<unsigned char>(army+0x270)!=1)continue;
+                    unsigned units=read<unsigned>(army+0x114);
+                    auto members=read<uintptr_t>(army+0x118);
+                    if(units>256)return;
+                    for(unsigned k=0;k<units&&next.units.size()<128;++k){
+                        auto unit=read<uintptr_t>(members+k*4);
+                        if(unit)next.units.emplace_back(unit,army);
+                    }
+                    if(read<unsigned>(army+0x114)!=units||read<uintptr_t>(army+0x118)!=members)return;
+                }
+            }
+            if(read<uintptr_t>(common+0xb4)!=phase||read<unsigned>(phase+0x14)!=id)return;
+            card_preload=std::move(next);
+        }
+        for(unsigned i=0;i<2&&card_preload.next<card_preload.units.size();++i){
+            auto [unit,expected_army]=card_preload.units[card_preload.next++];
+            try{
+                if(read<uintptr_t>(unit+0x2a4)!=expected_army)continue;
+                uintptr_t definition=0,army=0;
+                auto key=unit_key(unit,definition);
+                std::wstring clan;
+                faction_owner(unit,army,clan);
+                if(army==expected_army&&read<uintptr_t>(common+0xb4)==phase)
+                    unit_card(definition,key,clan);
+            }catch(...){} // Artwork can never affect possession or the RTS roster.
+        }
+    }catch(...){card_preload={};}
 }
 static bool measure(){
     Status s{};if(!snapshot(s)||s.magic!=POC_MAGIC||s.version!=46||s.size!=sizeof s||s.pid!=pid)return false;
@@ -64,6 +139,8 @@ static bool measure(){
     if(!actor152::human(base,actor_table)||read<unsigned>(actor+0x1c8)!=s.actor_id)return false;
     uintptr_t unit=read<uintptr_t>(actor+0x214);
     if(read<unsigned>(unit+4)!=s.unit_id||read<unsigned char>(actor+0xf0)!=1)return false;
+    uintptr_t modal215=read<uintptr_t>(base+0x1bc73e4);
+    if(modal215){unsigned first=read<unsigned>(modal215+0x30),second=read<unsigned>(modal215+0x3c);if(first<=32&&second<=32&&(first||second))return false;}
     hud80::View d{};
     if(!visibility_shared148&&now>=visibility_retry148){
         visibility_retry148=now+1000;wchar_t name[96];hudvisibility148::name(name,pid);
@@ -78,7 +155,8 @@ static bool measure(){
     uintptr_t definition=0;d.native_unit_key=unit_key(unit,definition);d.unit=hud80::unit_art(d.native_unit_key.c_str());
     // Stock presentation metadata is optional. A custom unit's live identity,
     // ownership and stats are still validated below, independently of artwork.
-    uintptr_t army=0;d.owner=faction_owner(unit,army);
+    uintptr_t army=0;std::wstring clan217;d.owner=faction_owner(unit,army,clan217);
+    try{d.native_card217=unit_card(definition,d.native_unit_key,clan217);}catch(...){}
     if(d.owner){d.faction=d.owner->name;d.mon=d.owner->mon;d.boshin=d.owner->boshin;}
     d.ranged=read<unsigned>(unit+0xf7c)!=0;auto mode=weaponmode133::from_native(read<unsigned char>(unit+0xead),d.ranged);
     d.unit_mode_known=mode.known;d.unit_melee=mode.melee;d.bow=s.pose_weapon_record==3;
@@ -119,6 +197,15 @@ static bool measure(){
         climb97::Status c{};MemoryBarrier();memcpy(&c,climb_shared97,sizeof c);MemoryBarrier();if(seq!=climb_shared97->sequence)continue;
         if(climb97::valid(c,pid,s.lease_generation,s.actor_id,s.unit_id,now))d.climb_mode=c.mode;break;
     }}
+    // Native Unit.ammo_left/starting_ammo(1c1ca0/1c1d10) use these fields.
+    d.ammo_capacity=read<unsigned>(unit+0xf7c);
+    struct ActivityCache215{unsigned lease{},actor{},unit{};uintptr_t address{};uint64_t next{};bool known{};unitactivity215::Snapshot value{};};
+    static ActivityCache215 activity215;
+    if(activity215.lease!=s.lease_generation||activity215.actor!=s.actor_id||activity215.unit!=s.unit_id||activity215.address!=unit||now>=activity215.next){
+        activity215={s.lease_generation,s.actor_id,s.unit_id,unit,now+300};
+        activity215.known=unitactivity215::sample([&](uintptr_t at,void* out,size_t bytes){SIZE_T got{};return ReadProcessMemory(process,reinterpret_cast<void*>(at),out,bytes,&got)&&got==bytes;},base,env,unit,s.unit_id,actor,activity215.value);
+    }
+    d.unit_activity_known=activity215.known;if(d.unit_activity_known)d.unit_activity=activity215.value.activity;
     d.ammo=read<float>(unit+0xf78);d.reload=read<float>(actor+0x390);
     d.speed=std::hypot(read<float>(actor+0x8c),read<float>(actor+0x94));
     if(d.fatigue>5||d.morale>7||!d.initial||d.initial>100000||d.men>d.initial||
@@ -142,9 +229,10 @@ static bool paint(){
     bool ok=UpdateLayeredWindow(overlay,screen,&pos,&size,dc,&origin,0,&alpha,ULW_ALPHA)!=0;
     if(ok)SetWindowPos(overlay,HWND_TOPMOST,0,0,0,0,SWP_NOMOVE|SWP_NOSIZE|SWP_NOACTIVATE|SWP_SHOWWINDOW);return ok;
 }
-static void update(){game=gamewindow105::refresh(game,pid);bool ok=false;try{ok=measure();}catch(...){ok=false;}DWORD fg=0;GetWindowThreadProcessId(GetForegroundWindow(),&fg);
+static void update(){
+    game=gamewindow105::refresh(game,pid);bool ok=false;try{ok=measure();}catch(...){ok=false;}DWORD fg=0;GetWindowThreadProcessId(GetForegroundWindow(),&fg);
     bool active=ok&&IsWindow(game)&&!IsIconic(game)&&IsWindowVisible(game)&&fg==pid;
-    if(!active){pixels106.hide();if(visible)ShowWindow(overlay,SW_HIDE);visible=false;return;}
+    if(!active){pixels106.hide();if(visible)ShowWindow(overlay,SW_HIDE);visible=false;preload_cards();return;}
     visible=paint();if(!visible)ShowWindow(overlay,SW_HIDE);}
 static LRESULT CALLBACK proc(HWND w,UINT msg,WPARAM wp,LPARAM lp){
     if(msg==WM_NCHITTEST)return HTTRANSPARENT;if(msg==WM_MOUSEACTIVATE)return MA_NOACTIVATE;if(msg==WM_ERASEBKGND)return 1;
@@ -174,6 +262,7 @@ static int preview(int argc,wchar_t** argv){
     v.climb_mode=wcscmp(argv[3],L"climb-near")==0?1:wcscmp(argv[3],L"climb-top")==0?2:wcscmp(argv[3],L"climb-active")==0?3:wcscmp(argv[3],L"climb-crest")==0?4:0;
     if(wcscmp(argv[3],L"melee")==0){v.unit=hud80::unit_art(L"Inf_Missile_Bow_Ashigaru");v.unit_mode_known=true;v.unit_melee=true;v.has_ranged=true;v.slot=1;}
     v.ranged=ranged;v.bow=ranged&&!gun&&!bomb&&!mortar&&!rocket&&!fots;v.kind=v.bow?1:gun||fots?2:3;
+    v.ammo_capacity=20;v.unit_activity_known=true;v.unit_activity=combat?unitactivity215::Activity::Melee:ranged?unitactivity215::Activity::Firing:unitactivity215::Activity::Holding;
     v.aiming=ranged&&!lowered;v.aim_pose=drawing?2:lowered?0:1;v.ammo=empty?0:19;v.pending=pending;
     v.accuracy_known=gun||fots;v.cone_half_angle=wcscmp(argv[3],L"gun-accurate")==0?.0025f:wcscmp(argv[3],L"gun-inaccurate")==0?.025f:.009f;v.projection_y=1/std::tan(1.309f*.5f);
     v.reload=reload?2.4f:0;v.weapon_phase=reload?4:0;
@@ -202,7 +291,9 @@ int wmain(int argc,wchar_t** argv){Gdiplus::GdiplusStartupInput input;ULONG_PTR 
         else{
             require(argc==1||argc==2&&!wcscmp(argv[1],L"--probe"),"Use no arguments, --probe, or --render");
             pid=find_process(0);Module engine=find_module(pid);base=engine.base;require(engine.size==0x1d88000,"Unsupported engine address layout");(void)engine172::admit(engine.path,hash_file(engine.path));
+            cards217=card217::Catalog{};
             Handle handle(OpenProcess(PROCESS_VM_READ|PROCESS_QUERY_LIMITED_INFORMATION|SYNCHRONIZE,FALSE,pid));process=handle.h;require(process!=nullptr,"Cannot read game");
+            try{configure_cards();}catch(...){}
             wchar_t name[80];mapping_name(name,pid);Handle mapping(OpenFileMappingW(FILE_MAP_READ,FALSE,name));require(mapping.h!=nullptr,"Possession not loaded");
             shared=static_cast<Status*>(MapViewOfFile(mapping.h,FILE_MAP_READ,0,0,sizeof(Status)));require(shared!=nullptr,"HUD mapping failed");
             wchar_t equipment_name[96];equipment_mapping_name81(equipment_name,pid);Handle equipment_map(OpenFileMappingW(FILE_MAP_READ,FALSE,equipment_name));

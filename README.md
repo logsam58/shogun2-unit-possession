@@ -25,7 +25,7 @@ Take control of a soldier in **Total War: SHOGUN 2**, fight in first or third pe
 
 Use the existing [Steam Workshop item](https://steamcommunity.com/sharedfiles/filedetails/?id=3825625050). The combined build uses that same item; a separate Deck subscription is unnecessary.
 
-**Maintained source: v0.34, PC and Steam Deck.** Public `main` contains the combined implementation through revision39, including the late-battle melee cleanup fix and Steam Deck compatibility with Faster Load Times. The latest tagged GitHub download remains [v0.33](https://github.com/logsam58/shogun2-unit-possession/releases/tag/v0.33), which predates Deck integration. No new binary release or Steam upload is performed by this source update. [Current source/build identity](docs/current-release.json) records the distinction.
+**Maintained source: v0.35, PC and Steam Deck.** The [v0.35 source tag](https://github.com/logsam58/shogun2-unit-possession/tree/v0.35) contains Revision51. It adds modded unit portraits, a slimmer possession HUD and eight-direction Deck formation controls. Steam currently serves Revision39. [Current source and Workshop versions](docs/current-release.json).
 
 No installer is provided. Fonts, artwork and audio are prepared from your own installed game.
 
@@ -79,9 +79,10 @@ These controls apply during possession unless stated otherwise. **LMB** means le
 | **Mouse wheel** in third person | Move the camera closer or further away |
 | **Hold middle mouse** in third person | Orbit your soldier while keeping your movement direction |
 | **M** | Order the unit to mount/dismount, where supported |
-| **Hold RMB** | Ready your ranged weapon |
+| **Hold RMB** | Ready your personal ranged weapon, including while the formation is in melee mode |
 | **LMB** | Fire guns or thrown weapons; hold and release for bow draw strength |
 | **1** | Toggle the whole unit's native melee/ranged mode, where supported |
+| **Alt** | Toggle slow motion / normal battle speed |
 | **T / G** | Select an ability or special ammunition / use or end it; aim at friendlies for targeted abilities |
 | **Hold Ctrl** | Crouch to fire, where supported |
 | **Shown LMB / RMB prompt** | Click the indicated button as the marker reaches the highlighted zone |
@@ -107,16 +108,16 @@ Use the **Windows** Steam game through Proton; **Proton 9.0-4** is the tested ve
 
 Steam controller settings label the action sets as **Unit Possession Layout**. Hold **View** for the in-game guide; L1/R1 change pages and B closes it. Tap View in battle RTS to toggle the HUD; in possession it shares K’s three-step cycle.
 
-Left stick pans the map or moves your soldier. Right stick turns/zooms in campaign, turns/tilts in battle and looks around during possession. Hold R3 while possessed to switch first/third person. Cursor position does not drive map movement on Deck. Right-trackpad click is unassigned.
+Left stick pans the map or moves your soldier. Right stick turns/zooms in campaign, turns/tilts in battle and looks around during possession. Hold R3 while possessed to switch first/third person. Cursor position does not drive map movement on Deck.
 
-To charge, hold **forward + L3 + RT**, with your unit in melee mode and LT released. Sprinting alone does not request a charge. Hold R1 for the four-section command wheel and release to issue the selected order.
+To charge, hold **forward + L3 + RT**, with your unit in melee mode and LT released. Sprinting alone does not request a charge. Hold R1 for the four-section command wheel, choose with the right stick and release R1 to issue the selected order.
 
 ### Campaign
 
 | Input | Action |
 |---|---|
-| R2 / L2 | Select or interact / move or attack |
-| R1 / L1 | Next / previous selection; in a panel, hold L1 and swipe right pad to scroll |
+| R2 / L2 | Select or interact; double-tap to open native details / move or attack |
+| R1 / L1 | Next / previous selection or city details; hold L1 and swipe the right pad to scroll a panel |
 | A / B | Toggle movement speed (Space) / cancel or back |
 | X | Zoom home |
 | Y held | End turn, once after600ms |
@@ -134,7 +135,9 @@ To charge, hold **forward + L3 + RT**, with your unit in melee mode and LT relea
 | R2 | Select; hold and drag for box selection; double-tap a unit to focus it |
 | L2 | Move or attack; hold and drag formation; double-tap for run or charge |
 | R1 / L1 | Zoom out / zoom in |
-| A / B / X / Y | Hold: formations and range / cancel or deselect / toggle run-walk / possess |
+| B / X / Y | Cancel or deselect / toggle run-walk / possess |
+| Right trackpad click held | Show formations and ranges |
+| Left trackpad click | Edge: move in one of eight directions. Center and drag: turn around the selection's shared center. Release to issue the previewed order. |
 | D-pad up / down / left / right | Tap: select group1 /2 /3 /4; hold: assign current selection |
 | L4 held | Select card range or queue orders |
 | L3 or L5 held + R2 | Add/remove one unit at the cursor; the point is held still until R2 releases |
@@ -142,7 +145,7 @@ To charge, hold **forward + L3 + RT**, with your unit in melee mode and LT relea
 | R4 / R5 | Toggle melee mode / group or ungroup |
 | L4 + R4 | Select all units |
 | L5 + R5 | Lock or unlock group formation |
-| View / Menu | Tap: hide/show HUD; hold: controls / game menu |
+| View / Menu | Tap: hide/show HUD; hold: controls / game menu or skip a supported intro |
 
 ### Possession
 
@@ -150,16 +153,16 @@ To charge, hold **forward + L3 + RT**, with your unit in melee mode and LT relea
 |---|---|
 | R2 | Fire; hold/release bow; primary melee or QTE response |
 | L2 | Ready ranged weapon; secondary melee or QTE response |
-| R1 held | Command wheel: right stick or D-pad chooses; release commits |
+| R1 held | Command wheel: choose with the right stick; release to commit, or press B to cancel |
 | Wheel up / down / left / right | Follow Me / Stop / Hold Here / Cycle Fire Orders |
 | L1 | Unit move/attack; hold for formation; double-tap for run/charge |
-| A / B | Climb/interact / mount or dismount unit |
+| A / B held | Climb or interact / crouch where supported |
 | X / Y | Native unit melee/ranged toggle / return to RTS |
 | D-pad up / down | Cycle available ability/ammunition / use or end selected ability |
 | D-pad left / right | Third-person distance closer / farther |
-| L3 held / L5 held | Run / crouch |
+| L3 held | Run |
 | L4 held | Orbit the third-person camera |
-| R4 / R5 | Stop unit / Follow Me |
+| R4 / R5 | Toggle slow motion / normal speed, or pause / resume, respectively |
 | View / Menu | Tap: cycle HUD; hold: controls / game menu while remaining possessed |
 
 
@@ -174,7 +177,7 @@ Large campaign panels currently reduce their scale to fit. Fully enlarged, reflo
 | Artillery | Uses the game's existing first-person mode |
 | Naval battles | Possession and ship commands are not available |
 | Multiplayer, Versus and campaign drop-in | Not implemented |
-| Unit and overhaul mods | Missing stock unit artwork no longer hides the entire HUD; individual combinations still need testing |
+| Unit and overhaul mods | Uses available custom and replacement portraits from enabled packs. Missing artwork leaves the rest of the HUD visible. Individual pack combinations still need testing. |
 | Shogun 2 Bugfix engine / Shogun2 Loader | Reviewed compatibility checks and an owner-accepted Test172 combination; neither mod is required |
 | Mods replacing the front-end root script entry | Can preserve one enabled root when our bootstrap runs; different competing roots can still conflict |
 | Older DInput installation of this mod | Do not combine with Workshop |

@@ -24,6 +24,7 @@
 #endif
 #include "unit_art.generated.h"
 #include "../../../common/image_fit184.h"
+#include "../../../common/card_image217.h"
 #ifdef HUD80_QTE_ONLY
 #include "../qte-src/qte_core.h"
 #else
@@ -32,6 +33,7 @@
 #include "native_font.h"
 #include "../../shogun2-possession-cleanup-v46/src/hud_layout108.h"
 #include "hud_state89.h"
+#include "../../../common/unit_activity215.h"
 #include "weapon_mode133.h"
 #include "../../shogun2-accuracy90-preview/src/ability_protocol141.h"
 #include "../../shogun2-accuracy90-preview/src/ability_catalog141.h"
@@ -43,6 +45,7 @@ using namespace Gdiplus;
 struct View {
     const UnitArt* unit{};
     std::wstring native_unit_key;
+    std::shared_ptr<card217::Picture> native_card217;
     const FactionArt* owner{};
     std::wstring faction=L"Faction unavailable",mon;
     unsigned men{},initial{},morale{},fatigue{};
@@ -54,7 +57,8 @@ struct View {
     bool hidden{};
     unsigned slot{},styles{};std::wstring ammunition;
     bool ammunition_known{};ammo83::Status ammunition_state{};
-    float ammo{},reload{},speed{};
+    float ammo{},reload{},speed{};unsigned ammo_capacity{};
+    bool unit_activity_known{};unitactivity215::Activity unit_activity{};
     bool accuracy_known{};float cone_half_angle{},projection_y{};
     unsigned climb_mode{};
     bool commands_known{};command100::Status commands{};
@@ -252,97 +256,95 @@ inline void render(Graphics& g,const Assets& a,float width,float height,const Vi
         if(qte&&qte->active)qte_meter(g,a,width*.5f,hudlayout108::qte_anchor_y(height),*qte);
         g.Restore(all);return;
     }
-    const float bottom=height-26,x=26,y=bottom-302;
-    panel(g,a,RectF(x,y,466,302));
-    text(g,display_name169(v),x+27,y+23,344,32,21,ink(),true);
-    text(g,v.faction,x+27,y+55,322,22,14,muted());
-    if(!v.mon.empty())a.image(g,v.mon.c_str(),RectF(x+380,y+26,54,54));
+    // Compact bottom-left identity card, with ability and orders spaced down
+    // the right. The redundant raised/fire instruction panel is omitted.
+    const auto& identity=layout.soldier;const float x=identity.x,y=identity.y;
+    panel(g,a,RectF(x,y,identity.w,identity.h));
+    text(g,display_name169(v),x+22,y+16,390,29,22,ink(),true);
+    text(g,v.faction,x+22,y+46,94,21,14,muted());
+    if(!v.mon.empty())a.image(g,v.mon.c_str(),RectF(x+422,y+19,40,40));
     const wchar_t* portrait=portrait_for(v.unit,v.owner);
     const wchar_t* backing=L"ui/panel_backgrounds/data__unit_card_background.png";
-    const RectF card=a.fitted(*portrait?portrait:backing,RectF(x+27,y+81,148,190));
+    const RectF slot(x+22,y+67,92,136);
+    auto fitted217=v.native_card217?imagefit184::within({slot.X,slot.Y,slot.Width,slot.Height},float(v.native_card217->w),float(v.native_card217->h)):imagefit184::Rect{};
+    const RectF card=v.native_card217?RectF(fitted217.x,fitted217.y,fitted217.w,fitted217.h):a.fitted(*portrait?portrait:backing,slot);
     if(card.Width>0&&card.Height>0){
         a.image(g,backing,card);
-        if(*portrait)a.image(g,portrait,card);
-        else text(g,L"No portrait",card.X+4,card.Y+73,card.Width-8,24,15,muted());
+        if(v.native_card217){Bitmap actual(v.native_card217->w,v.native_card217->h,v.native_card217->w*4,PixelFormat32bppARGB,v.native_card217->pixels.data());g.DrawImage(&actual,card);}
+        else if(*portrait)a.image(g,portrait,card);
+        else text(g,L"No portrait",card.X+3,card.Y+45,card.Width-6,22,12,muted());
         Pen portrait_rim(Color(255,108,96,72),1.f);g.DrawRectangle(&portrait_rim,card);
     }
-    text(g,class_name(v.unit),x+192,y+86,245,24,16,ink(),true);
+    text(g,class_name(v.unit),x+126,y+51,336,24,16,ink(),true);
     std::wstring strength=std::to_wstring(v.men)+L" / "+std::to_wstring(v.initial)+L" men";
-    text(g,strength,x+192,y+116,244,28,21,ink(),true);
-    RectF bar(x+191,y+148,238,13);a.image(g,L"ui/bars/data__unit_strength_bar_red.png",bar);
+    text(g,strength,x+126,y+79,176,26,20,ink(),true);
+    if(v.has_ranged){
+        text(g,L"Ammo",x+327,y+73,134,20,13,muted());
+        RectF meter(x+327,y+96,135,10);a.image(g,L"ui/bars/data__unit_strength_bar_red.png",meter);
+        const float fraction=unitactivity215::ammunition(v.ammo,v.ammo_capacity);
+        if(fraction>0){auto clipped=g.Save();g.SetClip(RectF(meter.X,meter.Y,meter.Width*fraction,meter.Height),CombineModeIntersect);a.image(g,L"ui/bars/data__unit_strength_bar_yellow.png",meter);g.Restore(clipped);}
+    }
+    RectF bar(x+126,y+115,336,11);a.image(g,L"ui/bars/data__unit_strength_bar_red.png",bar);
     if(v.initial){GraphicsState clip=g.Save();g.SetClip(RectF(bar.X,bar.Y,bar.Width*std::min(1.f,float(v.men)/v.initial),bar.Height),CombineModeIntersect);a.image(g,L"ui/bars/data__unit_strength_bar_green.png",bar);g.Restore(clip);}
-    Pen condition_rule(Color(110,108,96,72),1.f);g.DrawLine(&condition_rule,x+192,y+166,x+430,y+166);
-    text(g,L"Unit morale",x+192,y+171,102,23,14,muted());text(g,morale_name(v.morale),x+300,y+171,134,23,16,v.morale>=5?red():ink(),true);
-    text(g,L"Unit fatigue",x+192,y+199,102,23,14,muted());text(g,fatigue_name(v.fatigue),x+300,y+199,134,23,16,v.fatigue>=4?red():ink(),true);
-    if(v.veterancy>0&&v.veterancy<=9){wchar_t key[96];swprintf_s(key,L"ui/experience/data__experience_%d.png",v.veterancy);a.image(g,key,RectF(x+176,y+239,12,34));}
-    const wchar_t* status=v.routing?L"Routing":v.crouched?L"Kneeling":v.ranged&&v.aiming?L"Aiming":v.speed>.1f?L"Moving":L"Standing";
-    const wchar_t* icon=v.routing?L"ui/icons/data__status_routing.png":v.ranged&&v.aiming?L"ui/restored/status_firing-hd-v1.png":qte&&qte->active?L"ui/restored/status_melee-hd-v1.png":v.speed>.1f?L"ui/icons/data__status_walk.png":nullptr;
-    if(icon)a.image(g,icon,RectF(x+193,y+239,32,32));
-    text(g,qte&&qte->active?L"In melee":status,x+235,y+242,190,24,15,muted());
-    // Persistent weapon mode remains visible even when the contextual ammo
-    // panel is hidden. Native unit+ead is read after full actor/unit validation.
+    text(g,L"Unit morale",x+126,y+132,131,23,15,muted());text(g,morale_name(v.morale),x+270,y+132,192,23,16,v.morale>=5?red():ink(),true);
+    text(g,L"Unit fatigue",x+126,y+156,131,23,15,muted());text(g,fatigue_name(v.fatigue),x+270,y+156,192,23,16,v.fatigue>=4?red():ink(),true);
+    if(v.veterancy>0&&v.veterancy<=9){wchar_t key[96];swprintf_s(key,L"ui/experience/data__experience_%d.png",v.veterancy);a.image(g,key,RectF(x+110,y+181,10,25));}
+    // Activity excludes the player; the adjacent mode is the formation's order.
+    const wchar_t* status=v.routing?L"Routing":v.unit_activity_known?unitactivity215::label(v.unit_activity):L"Unit status";
+    const wchar_t* icon=v.routing?L"ui/icons/data__status_routing.png":v.unit_activity_known?unitactivity215::icon(v.unit_activity):nullptr;
+    if(icon)a.image(g,icon,RectF(x+126,y+183,24,24));
+    text(g,status,x+157,y+184,130,24,15,muted());
     const auto mode=weaponmode133::resolve(v.unit_mode_known,v.unit_melee);
-    if(mode.icon)a.image(g,mode.icon,RectF(x+193,y+270,22,22));
-    text(g,mode.label,x+225,y+270,181,22,14,v.unit_mode_known?ink():muted());
-    if(mode.key&&v.has_ranged)key_image(g,mode.key,RectF(x+410,y+269,24,22));
+    if(mode.icon)a.image(g,mode.icon,RectF(x+294,y+183,24,24));
+    text(g,mode.label,x+328,y+184,134,24,14,v.unit_mode_known?ink():muted());
     const float middle=width*.5f;
     const auto& context=layout.context;
-    const bool contextual=hudlayout108::context_visible({v.equipment_known,v.ranged,v.aiming,v.pending||v.ammunition_state.pending!=0,
-        v.crouched,v.weapon_phase,v.climb_mode,v.equipment_error|v.ammunition_state.error,v.ammo,v.reload});
-    if(contextual&&!(qte&&qte->active)){
+    if(v.climb_mode&&!(qte&&qte->active)){
         const float cx=context.x,cy=context.y;
         panel(g,a,RectF(cx,cy,context.w,context.h));
-        if(v.climb_mode){
-            if(v.climb_mode<=2){key_image(g,L"F",RectF(cx+27,cy+24,32,30));text(g,L"Climb wall",cx+73,cy+26,286,28,19,ink(),true);}
-            else if(v.climb_mode==5)text(g,L"Cannot climb here",cx+30,cy+27,330,28,19,ink(),true);
-            else if(v.climb_mode==6)text(g,L"Approaching wall",cx+30,cy+27,330,28,19,ink(),true);
-            else if(v.climb_mode==4)text(g,L"Climbing over",cx+30,cy+27,330,28,19,ink(),true);
+        {
+            if(v.climb_mode<=2){key_image(g,L"F",RectF(cx+22,cy+20,30,26));text(g,L"Climb wall",cx+65,cy+21,242,26,17,ink(),true);}
+            else if(v.climb_mode==5)text(g,L"Cannot climb here",cx+22,cy+23,290,26,17,ink(),true);
+            else if(v.climb_mode==6)text(g,L"Approaching wall",cx+22,cy+23,290,26,17,ink(),true);
+            else if(v.climb_mode==4)text(g,L"Climbing over",cx+22,cy+23,290,26,17,ink(),true);
             else {key_image(g,L"W",RectF(cx+27,cy+17,28,25));text(g,L"Ascend",cx+65,cy+18,107,25,16);
-                key_image(g,L"S",RectF(cx+197,cy+17,28,25));text(g,L"Descend",cx+235,cy+18,126,25,16);
-                text(g,L"Release to hold",cx+30,cy+48,330,23,14,muted());}
-        }else if(v.ranged){
-            bool known=v.ammunition_known&&v.ammunition_state.count&&v.ammunition_state.current<v.ammunition_state.count;
-            if(known){const auto& current=v.ammunition_state.items[v.ammunition_state.current];
-                a.image(g,ammo83::image(ammo83::Icon(current.icon)),RectF(cx+27,cy+18,22,22));
-                text(g,current.label,cx+58,cy+17,190,25,16,ink(),true);
-            }else text(g,L"Ammo unavailable",cx+29,cy+17,217,25,16,muted());
-            wchar_t amount[64];swprintf_s(amount,L"Unit ammo: %.0f",v.ammo);text(g,amount,cx+251,cy+18,114,24,14,muted());
-            auto personal=weapon_state89(v);std::wstring state=personal.label;
-            if(v.reload>.05f){wchar_t reload[64];swprintf_s(reload,L"Reloading %.1fs",v.reload);state=reload;}
-            text(g,v.bow&&personal.fire_prompt?L"LMB: hold / release":state.c_str(),cx+29,cy+46,190,23,14,personal.fire_prompt?ink():muted());
-
-        }else text(g,v.pending?L"Switching weapon...":v.crouched?L"Kneeling":L"Melee",cx+29,cy+26,332,28,18,muted());
+                key_image(g,L"S",RectF(cx+174,cy+17,28,25));text(g,L"Descend",cx+211,cy+18,100,25,16);
+                text(g,L"Release to hold",cx+22,cy+48,290,23,14,muted());}
+        }
     }
     const auto& command=layout.commands;const float right=command.x,top=command.y;
     panel(g,a,RectF(right,top,command.w,command.h));
-    const wchar_t* command_title=L"COMMANDS";
+    const wchar_t* command_title=L"Unit orders";
     if(v.commands_known&&v.commands.placing)command_title=L"UNIT PLACEMENT";
     else if(v.commands_known&&GetTickCount64()<v.commands.feedback_until){
         const wchar_t* titles[]={L"COMMANDS",L"ADVANCE ORDERED",L"FORMATION ORDERED",L"UNIT STOPPED",L"HOLDING HERE",L"FOLLOWING YOU",L"FOLLOW ENDED",L"HOLD FIRE",L"FIRE AT WILL",L"FIRE ON COMMAND",L"NO GROUND TARGET",L"COMMAND UNAVAILABLE",L"COMMAND UNAVAILABLE"};
         if(v.commands.feedback<sizeof titles/sizeof *titles)command_title=titles[v.commands.feedback];
     }
-    text(g,command_title,right+23,top+20,178,26,13,ink(),true);
+    text(g,command_title,right+23,top+17,224,27,wcscmp(command_title,L"Unit orders")==0?16.f:13.f,ink(),true);
     const bool placing=v.commands_known&&v.commands.placing;
     const wchar_t* fire_mode=!v.commands_known?L"Fire mode unknown":v.commands.fire_mode==0?L"Hold fire":v.commands.fire_mode==1?L"Fire at will":L"Fire on command";
-    const wchar_t* keys[]={L"Q",L"E",L"Z",L"C",L"R"};
-    const wchar_t* labels[]={L"Move / attack",L"Stop",L"Hold here",L"Follow me",fire_mode};
-    for(unsigned i=0;i<5;++i){float row=top+49+i*36.f;
-        key_image(g,keys[i],RectF(right+24,row,28,26));
-        bool active=i==2?v.commands_known&&v.commands.move_mode==3:i==3?v.following:i==4&&v.commands_known;
-        text(g,labels[i],right+65,row+2,137,25,14,active?red():ink());
+    const wchar_t* keys[]={L"Q",L"Z",L"C",L"R"};
+    const wchar_t* labels[]={L"Move / attack",L"Hold here",L"Follow me",fire_mode};
+    for(unsigned i=0;i<4;++i){float row=top+50+i*28.f;
+        key_image(g,keys[i],RectF(right+24,row,34,25));
+        bool active=i==1?v.commands_known&&v.commands.move_mode==3:i==2?v.following:i==3&&v.commands_known;
+        text(g,labels[i],right+76,row+1,170,26,16,active?red():ink());
     }
-    key_image(g,L"F10",RectF(right+24,top+235,42,23));text(g,L"RTS view",right+78,top+237,124,23,13,muted());
+    Pen command_rule(Color(150,108,96,72),1.f);g.DrawLine(&command_rule,right+24,top+167,right+246,top+167);
+    key_image(g,L"ALT",RectF(right+24,top+178,44,23));text(g,L"Slow motion",right+84,top+178,162,24,15,ink());
+    key_image(g,L"F10",RectF(right+24,top+207,44,22));text(g,L"RTS view",right+84,top+207,162,24,15,muted());
     if(v.abilities_known&&v.abilities.count&&v.abilities.selected<v.abilities.count){
         const auto& item=v.abilities.items[v.abilities.selected];auto art=ability141::art(item.id);
-        if(art){float ax=right,ay=top-110;panel(g,a,RectF(ax,ay,command.w,100));
-            a.image(g,art->icon,RectF(ax+20,ay+17,36,36),(item.flags&ability141::Available)?1.f:.45f);
-            native_fonts.paint(g,art->label,RectF(ax+68,ay+14,command.w-88,26),14,ink(),true);
+        if(art){float ax=layout.ability.x,ay=layout.ability.y;panel(g,a,RectF(ax,ay,layout.ability.w,layout.ability.h));
+            a.image(g,art->icon,RectF(ax+24,ay+22,40,40),(item.flags&ability141::Available)?1.f:.45f);
+            native_fonts.paint(g,art->label,RectF(ax+81,ay+18,layout.ability.w-105,27),18,ink(),true);
             wchar_t status[64];if(v.abilities.error)wcscpy_s(status,item.flags&ability141::Targeted?L"Aim at an ally":L"Unavailable");else if(v.abilities.pending)wcscpy_s(status,L"Ordered");
             else if(item.cooldown>.05f)swprintf_s(status,L"Ready in %.0fs",std::ceil(item.cooldown));
             else wcscpy_s(status,item.flags&ability141::Active?L"Active":item.flags&ability141::Available?(item.flags&ability141::Targeted?L"Aim at an ally":L"Ready"):L"Unavailable");
-            native_fonts.paint(g,status,RectF(ax+68,ay+39,command.w-88,21),12,v.abilities.error?red():muted(),true);
-            key_image(g,L"T",RectF(ax+24,ay+66,28,24));text(g,L"Next",ax+60,ay+66,48,24,12,muted());
-            key_image(g,L"G",RectF(ax+124,ay+66,28,24));text(g,item.flags&ability141::Active?L"End":L"Use",ax+160,ay+66,40,24,12,muted());
+            const bool ready=!v.abilities.error&&!v.abilities.pending&&item.cooldown<=.05f&&(item.flags&ability141::Available);
+            native_fonts.paint(g,status,RectF(ax+81,ay+48,layout.ability.w-105,25),17,v.abilities.error?red():ready?Color(255,85,105,25):muted(),true);
+            key_image(g,L"T",RectF(ax+24,ay+84,29,25));text(g,L"Next",ax+67,ay+85,87,25,15,ink());
+            key_image(g,L"G",RectF(ax+203,ay+84,29,25));text(g,item.flags&ability141::Active?L"End":L"Use",ax+245,ay+85,91,25,15,ink());
         }
     }
     auto reticle=weapon_state89(v);

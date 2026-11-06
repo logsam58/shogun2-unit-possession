@@ -40,7 +40,10 @@ class ContextBindingsTests(unittest.TestCase):
  def test_context_specific_labels_do_not_promise_unused_commands(self):
   labels={c:native.labels(c)for c in native.SETS}
   self.assertNotIn('Y',labels['Menu'])
-  self.assertEqual(labels['Possession']['B'],'Mount / dismount unit')
+  self.assertEqual(labels['Possession']['B'],'Crouch (hold)')
+  self.assertEqual(labels['Possession']['R4'],'Toggle slow motion / normal speed')
+  self.assertEqual(labels['Possession']['R5'],'Pause / resume battle')
+  self.assertNotIn('L5',labels['Possession'])
   self.assertEqual(labels['Campaign']['X'],'Zoom home')
   self.assertEqual(labels['RTS']['X'],'Toggle run / walk')
   self.assertNotIn('R3',labels['RTS']);self.assertEqual(labels['RTS']['Y'],'Possess soldier')
@@ -59,7 +62,7 @@ class ContextBindingsTests(unittest.TestCase):
  def test_updated_layout_revisions_match_and_do_not_force_legacy_layouts(self):
   manifest=dict(native.parse(self.manifest)[0][1]);config=dict(self.mapping)
   self.assertEqual(config['title'],'Unit Possession Layout')
-  for key,wanted in [('major_revision','3'),('minor_revision','6')]:
+  for key,wanted in [('major_revision','3'),('minor_revision','7')]:
    self.assertEqual(manifest[key],wanted);self.assertEqual(config[key],wanted)
   self.assertEqual(manifest['major_revision_affects_xinput'],'0');self.assertEqual(manifest['major_revision_affects_mousekb'],'0')
  def test_y_is_sole_possession_entry_and_r3_label_only_changes_view(self):
@@ -67,15 +70,21 @@ class ContextBindingsTests(unittest.TestCase):
   self.assertEqual(native.labels('RTS')['Y'],'Possess soldier')
   self.assertEqual(native.labels('Possession')['Y'],'Return to RTS')
   self.assertEqual(native.labels('Possession')['R3'],'Change first / third person (hold)')
- def test_right_pad_click_is_unbound_in_every_context(self):
-  for context in native.SETS:
+ def test_right_pad_click_is_formations_only_in_battle(self):
+  for context in ('Menu','Campaign','Possession'):
    self.assertNotIn('RightPadClick',native.labels(context))
    self.assertNotIn('game_action '+context+'181 '+context+'_RightPadClick',self.bindings)
-  self.assertNotIn('RightPadClick',self.manifest)
+  self.assertEqual(native.labels('RTS')['RightPadClick'],'Show formations / range (hold)')
+  self.assertNotIn('A',native.labels('RTS'))
+  self.assertIn('game_action RTS181 RTS_RightPadClick',self.bindings)
  def test_cpp_required_channels_match_real_action_declarations(self):
   import re
   text=(ROOT/'native/deck/binding_profiles182.h').read_text()
-  buttons={c:int(v)for c,v in re.findall(r'case deck174::Context::(\w+):return (\d+)ull;',text)}
+  buttons={}
+  for c,v,excluded in re.findall(r'case deck174::Context::(\w+):return (\d+)ull(?:&~deck174::bit\(deck174::Button::(\w+)\))?;',text):
+   mask=int(v)
+   if excluded:mask&=~(1<<native.old.BUTTONS.index(excluded))
+   buttons[c]=mask
   analogs={c:int(v)for c,v in re.findall(r'case deck174::Context::(\w+):return (\d+)u;',text)}
   for c in native.SETS:
    self.assertEqual(buttons[c],sum(1<<i for i,k in enumerate(native.old.BUTTONS)if k in native.labels(c)))

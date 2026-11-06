@@ -31,6 +31,8 @@ static LRESULT CALLBACK stock_window100(HWND window,UINT message,WPARAM flags,LP
     return 0;
 }
 
+static LRESULT CALLBACK modal_window214(HWND,UINT message,WPARAM,LPARAM){native_messages100.push_back(message);return 0;}
+static void __fastcall modal_visible214(void* widget,void*,unsigned visible){field<unsigned char>(reinterpret_cast<uintptr_t>(widget),0xf5)=static_cast<unsigned char>(visible);}
 static float scene_origin102[3]{};
 static uintptr_t fixture_group100,fixture_world_one100,fixture_world_two100;
 static unsigned scene_object100[4]{};static unsigned char scene_hits100[28]{};
@@ -98,6 +100,9 @@ struct NativeFixture100 {
             for(unsigned i=0;i<count;++i)if((entries[i]>>12)==IMAGE_REL_BASED_HIGHLOW)field<unsigned>(base,block->VirtualAddress+(entries[i]&4095))+=unsigned(base-nt->OptionalHeader.ImageBase);
             cursor+=block->SizeOfBlock;
         }
+        // Validate pristine mapped native ranges before this fixture replaces
+        // serializer/terrain endpoints with explicit providers.
+        require(native214::admit(base),"Pristine QoL native dependencies differ in fixture");
         jump(0x15cb80,reinterpret_cast<void*>(&native_run102));
         jump(0x10f1060,reinterpret_cast<void*>(&native_ui151)); // Native UI tree is an explicit provider.
         field<float>(base,0x18d1c80+0x5c)=1;field<float>(base,0x18d1ce0+0x5c)=1;
@@ -229,6 +234,25 @@ int main(){SetUnhandledExceptionFilter(&fault100);try{
     // snapshot-copy primitives are fixture substitutions. No custom Q packet.
     HWND window=CreateWindowExW(0,L"STATIC",L"Command100 fixture",WS_POPUP,0,0,1280,720,nullptr,nullptr,GetModuleHandleW(nullptr),nullptr);require(window!=nullptr,"Hidden input fixture window");
     input_window=window;native_window_proc=&stock_window100;state->heartbeat=GetTickCount64();
+    // Reproduce blanket possession UI suppression, then native modal ownership.
+    require(native214::admit(base),"QoL native dependencies differ in fixture");
+    {unsigned char manager214[0x60]{},widget214[0x328]{};auto manager_at214=reinterpret_cast<uintptr_t>(manager214),widget_at214=reinterpret_cast<uintptr_t>(widget214);
+     auto prior_manager214=field<uintptr_t>(base,0x1bc73e4);field<uintptr_t>(base,0x1bc73e4)=manager_at214;
+     auto prior_visibility214=original_ui_visible;original_ui_visible=reinterpret_cast<UIVisible>(&modal_visible214);interface_active=1;saved_widget_count=1;saved_widgets[0]={widget_at214,1,0,true};
+     ui_visible_hook(widget214,nullptr,1);require(!widget214[0xf5],"Possession native HUD unexpectedly exposed");
+     *reinterpret_cast<unsigned*>(manager214+0x30)=1;ui_visible_hook(widget214,nullptr,1);
+     require(widget214[0xf5]&&!keyboard_fps84(),"Native pause/results still hidden or keyboard captured");
+     auto prior_window214=native_window_proc;native_window_proc=&modal_window214;auto mode214=state->mode;
+     weapon_window_proc(window,WM_LBUTTONDOWN,0,0);weapon_window_proc(window,WM_KEYDOWN,VK_ESCAPE,0);
+     require(native_messages100.size()==2&&native_messages100[0]==WM_LBUTTONDOWN&&native_messages100[1]==WM_KEYDOWN&&state->mode==mode214&&!state->release,"Native menu input did not pass through while possessed");
+     native_window_proc=prior_window214;memset(manager214,0,sizeof manager214);
+     require(slow_alt214(window,WM_SYSKEYDOWN,VK_MENU,0)&&alt_held214&&!alt_chord214,"ALT slow-motion press not owned");
+     slow_alt214(window,WM_SYSKEYDOWN,VK_TAB,0);require(alt_chord214,"Alt+Tab must not count as slow-motion tap");
+     require(slow_alt214(window,WM_SYSKEYUP,VK_MENU,0)&&!alt_held214&&!alt_chord214,"ALT chord release not drained");
+     slow_alt214(window,WM_SYSKEYDOWN,VK_MENU,0);slow_alt214(window,WM_KILLFOCUS,0,0);require(!alt_held214,"ALT held across focus loss");saved_widgets[0].suppress=false;ui_visible_hook(widget214,nullptr,1);require(widget214[0xf5],"New native results widget suppressed outside modal");
+     interface_active=0;saved_widget_count=0;original_ui_visible=prior_visibility214;field<uintptr_t>(base,0x1bc73e4)=prior_manager214;native_messages100.clear();
+     std::cout<<"PASS modal214: native pause/results visibility, mouse/keyboard passthrough and retained possession; owning-window provider only\n";
+    }
     auto cursor=P::ptr(fixture.root)+0x10c;unsigned packets_before=unsigned(packets100.size());
     require(command_window100(window,WM_KEYDOWN,'Q',0)&&command_window100(window,WM_KEYDOWN,'Q',1L<<30),"Q press/repeat capture differs");
     require(command_placing100&&native_messages100.size()==1&&native_messages100[0]==WM_RBUTTONDOWN&&native_events100[0]==5&&field<unsigned char>(cursor,0x5b)==1,"Q did not enter exact native RMB/cursor state");
