@@ -37,10 +37,11 @@ int main(){try{
     // while every role/identity/liveness/ownership guard still applies.
     static const wchar_t custom169[]=L"Armored_Addon_Unit_169";
     require(hud80::unit_art(custom169)==nullptr,"Fixture accidentally uses stock artwork");
+    require(hud80::class_name(hud80::unit_art(custom169)).empty(),"Missing custom unit type must stay blank");++checks;
     put_role(obj,8,reinterpret_cast<uintptr_t>(custom169));
     for(unsigned t:tables){
         put_role(actor,0,base+t);require(measured(),"Custom unit lost its HUD");++checks;
-        require(!display.unit&&display.native_unit_key==custom169&&hud80::display_name169(display)==custom169,"Custom unit key replaced with guessed stock data");++checks;
+        require(!display.unit&&display.native_unit_key==custom169&&hud80::display_name169(display)==L"Armored Addon Unit 169","Custom unit identity or readable label differs");++checks;
         put_role(actor,0x1c8,18u);require(!measured(),"Custom stale actor accepted");put_role(actor,0x1c8,19u);++checks;
         put_role(actor,0xf0,static_cast<unsigned char>(0));require(!measured(),"Custom dead actor accepted");put_role(actor,0xf0,static_cast<unsigned char>(1));++checks;
         put_role(unit,4,21u);require(!measured(),"Custom foreign unit accepted");put_role(unit,4,20u);++checks;

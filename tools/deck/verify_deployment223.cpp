@@ -18,7 +18,7 @@ int wmain(int argc,wchar_t** argv){assert(argc==3);unsigned cases=0;
  entries[0]=p;assert(deck223::battle_modal(b,true));++cases;entries[0]=f;
  setup(finish,f,"finish_deployment_extra");assert(deck223::battle_modal(b,true));++cases;setup(finish,f,"finish_deployment");
  put223(f+0x94,f);assert(deck223::battle_modal(b,true));++cases;put223(f+0x94,r);
- finish[0xf5]=0;assert(deck223::battle_modal(b,true));++cases;finish[0xf5]=1;
+ finish[0xf5]=0;assert(!deck223::battle_modal(b,true)&&deck223::battle_modal(b,false));++cases;finish[0xf5]=1;
  put223(f+0x18,0);assert(deck223::battle_modal(b,true));++cases;put223(f+0x18,b+0x1704d44);
  put223(f+0x88,4096);assert(deck223::battle_modal(b,true));++cases;put223(f+0x88,17);
  unsigned char changed=0x90;{Patch185 occupied(b+0xf8e840,&changed,1);assert(deck223::battle_modal(b,true));++cases;}

@@ -4,14 +4,15 @@ namespace deck223 {
 // PanelManager.OpenPanels includes the ordinary finish_deployment panel (kind2,
 // present in BOTH lists). It is not a pause menu. The live deployment graph and
 // original registration109.../1089d80 establish this one exception; all other
-// registered panels retain the normal menu block. No UI callbacks are invoked.
+// registered panels retain the normal menu block. The same registered
+// deployment control can be hidden while it is being shown or dismissed.
 inline bool finish_deployment(uintptr_t image,uintptr_t widget,uintptr_t root){
  uintptr_t primary{},secondary{},getter{},name{},parent{};unsigned length{},capacity{};unsigned char visible{};
  if(!widget||!root||widget==root||!native214::value(widget,primary)||
     (primary!=image+0x16e2aac&&primary!=image+0x1704cdc)||!native214::value(widget+0x18,secondary)||
     secondary!=image+(primary==image+0x16e2aac?0x16e2b14:0x1704d44)||
     !native214::value(secondary+4,getter)||getter!=image+0xf8e840||
-    !native214::value(widget+0xf5,visible)||visible!=1)return false;
+    !native214::value(widget+0xf5,visible)||visible>1)return false;
  // Original GetName f8e840 uses its secondary this+70 = component+88.
  // ecfa0/8c510 define the bounded length/capacity/UTF8 pointer representation.
  if(!native214::value(widget+0x88,length)||length!=17||!native214::value(widget+0x8c,capacity)||capacity<length||capacity>4096||

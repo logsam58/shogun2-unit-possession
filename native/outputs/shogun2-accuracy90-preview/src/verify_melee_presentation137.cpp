@@ -8,6 +8,7 @@ static unsigned no_transition137[2]={0x4a3,0};
 static void* __fastcall projectile_provider137(void*,void*){return reinterpret_cast<void*>(projectile137);}
 static bool __fastcall ability_provider137(void*,void*,unsigned){return false;}
 static void* __fastcall transition_provider137(void*,void*,unsigned,unsigned,void*){return no_transition137;}
+#include "../../../../tools/deck/verify_locomotion203_provider.h"
 int main(){SetUnhandledExceptionFilter(&fault100);try{
  NativeFixture100 f;using P=NativeFixture100;auto a=possessed;
  std::vector<unsigned char> projectile(0x100),db(0x20),owner(0x40),metadata(0x7000),asset(0x100),clip(0x18);
@@ -89,6 +90,7 @@ int main(){SetUnhandledExceptionFilter(&fault100);try{
   equipment_personal_override214=0;field<unsigned>(a,0x1f0)=8;
   change(reinterpret_cast<void*>(a),8,1,0);require(field<unsigned>(a,0x1f0)==10&&!equipment_ranged_selected81(),"Releasing personal ranged override lost native melee pose");++cases;
  }
+ #include "../../../../tools/deck/verify_locomotion203.h"
  // Native mounted principal proof, no infantry-only projectile allowlist.
  std::vector<unsigned char> horse(0x700),horse_holder(0x210),mount_config(0x100),record(0x100);
  auto h=P::ptr(horse);uintptr_t passenger=a;uintptr_t holders[]={P::ptr(f.holder),P::ptr(f.peer_holder),P::ptr(horse_holder)};
@@ -101,6 +103,7 @@ int main(){SetUnhandledExceptionFilter(&fault100);try{
   field<unsigned>(projectile137,4)=unsigned(std::wcslen(row.key));field<uintptr_t>(projectile137,0xc)=reinterpret_cast<uintptr_t>(row.key);
   for(unsigned ammo:{0u,10u}){field<unsigned>(unit,0xf7c)=ammo;field<unsigned>(a,0x1f0)=29;change(reinterpret_cast<void*>(a),29,1,0);require(field<unsigned>(a,0x1f0)==30,"Mounted projectile lost melee presentation");++cases;}
  }
+ #include "../../../../tools/deck/verify_locomotion206.h"
  require(MH_DisableHook(MH_ALL_HOOKS)==MH_OK,"Disable presentation hook");MH_Uninitialize();
  std::cout<<"PASS: "<<cases<<" all-catalog projectile/native state cases, ordinary native locomotion pass-through, melee-ready pose dispatch and bow-turn rejection, empty ammo, native no-op sampler/frame preservation, actual state validation/change, all-catalog mounted reciprocal proof, ranged mode, release, serial reuse, peers, own calls, native paired combat and missing-asset guards. No renderer/game/scanout execution; transition lookup and projectile getter are providers.\n";return 0;
 }catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}}

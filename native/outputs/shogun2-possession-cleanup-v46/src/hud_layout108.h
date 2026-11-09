@@ -2,18 +2,19 @@
 #include <algorithm>
 #include <cmath>
 namespace hudlayout108 {
+inline bool deck_ui192=false;
 struct Rect {float x,y,w,h;};
 inline float scale(float width,float height){
     float s=std::min(width/1920.f,height/1080.f);
     if(width>=1280&&height>=720)s=std::max(.85f,s);
-    return s*.85f*1.15f;
+    return s*.85f*(deck_ui192?1.15f:1.f);
 }
-inline float qte_anchor_y(float height){return height*.25f;}
+inline float qte_anchor_y(float height){return height*(deck_ui192?.25f:.19f);}
 struct Layout {
     float zoom,width,height,bottom;
     Rect soldier,commands,context,ability;
     Layout(float w,float h):zoom(scale(w,h)),width(w/zoom),height(h/zoom),bottom(height-26.f),
-        soldier{26.f,bottom-216.f,484.f,216.f},
+        soldier{26.f,bottom-322.f,346.f,322.f},
         commands{width-296.f,height*.5f-122.f,270.f,244.f},
         context{width*.5f-167.f,52.f,334.f,82.f},ability{width-386.f,52.f,360.f,120.f}{}
 };

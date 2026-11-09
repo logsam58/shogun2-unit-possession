@@ -41,14 +41,14 @@ int main(){void* allocation=nullptr;try{
  require(dispatch(at(f),1,true)==0xccdd0000&&updates212==1,"RTS native update not forwarded once");
  // Exercise the negative gate itself across release, stale heartbeats, lease
  // replacement and native witness address reuse; none may retain suppression.
- lease.mode=2;lease.heartbeat=GetTickCount64();require(live_reservation212(at(w)),"Fresh reservation rejected");
- lease.release=1;require(!live_reservation212(at(w)),"Released lease retains reservation");lease.release=0;
- lease.stop=1;require(!live_reservation212(at(w)),"Stopped lease retains reservation");lease.stop=0;
- lease.heartbeat=GetTickCount64()-1001;require(!live_reservation212(at(w)),"Stale heartbeat retains reservation");lease.heartbeat=GetTickCount64();
- ++lease.lease_generation;require(!live_reservation212(at(w)),"New possession inherits previous reservation");--lease.lease_generation;
- lifetimes.get(at(w),true);require(!live_reservation212(at(w)),"Reused native encounter inherits reservation");
- InterlockedExchange64(&delivery_generation212,LONG64(lifetimes.get(at(w))));require(live_reservation212(at(w)),"Current encounter generation rejected");
- lifetimes.removed(at(w),uint64_t(delivery_generation212));require(!live_reservation212(at(w)),"Removed encounter retains reservation");
+ lease.mode=2;lease.heartbeat=GetTickCount64();require(live_reservation212(pair_reservation()),"Fresh reservation rejected");
+ lease.release=1;require(!live_reservation212(pair_reservation()),"Released lease retains reservation");lease.release=0;
+ lease.stop=1;require(!live_reservation212(pair_reservation()),"Stopped lease retains reservation");lease.stop=0;
+ lease.heartbeat=GetTickCount64()-1001;require(!live_reservation212(pair_reservation()),"Stale heartbeat retains reservation");lease.heartbeat=GetTickCount64();
+ ++lease.lease_generation;require(!live_reservation212(pair_reservation()),"New possession inherits previous reservation");--lease.lease_generation;
+ lifetimes.get(at(w),true);require(!live_reservation212(pair_reservation()),"Reused native encounter inherits reservation");
+ InterlockedExchange64(&delivery_generation212,LONG64(lifetimes.get(at(w))));require(live_reservation212(pair_reservation()),"Current encounter generation rejected");
+ lifetimes.removed(at(w),uint64_t(delivery_generation212));require(!live_reservation212(pair_reservation()),"Removed encounter retains reservation");
  // Repeat RTS attack/cleanup callbacks with surviving former participants:
  // no head count or new timeout disables native combat as casualties mount.
  lease.mode=0;

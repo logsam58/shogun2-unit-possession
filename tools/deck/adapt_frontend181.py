@@ -44,7 +44,7 @@ def generate(snapshot):
       '#include "../../native/deck/frontend181.h"\nextern "C" __declspec(dllexport) int __cdecl s2up_workshop_prepare165(void* state)')])
     entry_path=snapshot/'tools/workshop/entry165.cpp'
     text=entry_path.read_text()
-    text=text.replace('    prepared165=false;if(root_guard165', '    \n#ifndef S2UP165_LUA_FIXTURE\n    require(device192::select(),"Device profile unavailable");\n    if(device192::enabled()){\n        require(deck205::edges.install(reinterpret_cast<uintptr_t>(GetModuleHandleW(L"Empire.Retail.dll")),true),"Native Deck cursor-edge camera suppression unavailable");\n        require(deck185::install_ui185(reinterpret_cast<uintptr_t>(GetModuleHandleW(L"Empire.Retail.dll"))),"Native Deck UI scaling unavailable");\n    }\n#endif\n    prepared165=false;if(root_guard165')
+    text=text.replace('    prepared165=false;if(root_guard165', '    \n#ifndef S2UP165_LUA_FIXTURE\n    require(device192::select(),"Device profile unavailable");\n    if(device192::enabled()){\n        require(deck205::edges.install(reinterpret_cast<uintptr_t>(GetModuleHandleW(L"Empire.Retail.dll")),true),"Native Deck cursor-edge camera suppression unavailable");\n        require(deck185::install_ui185(reinterpret_cast<uintptr_t>(GetModuleHandleW(L"Empire.Retail.dll"))),"Native Deck UI scaling unavailable");\n        deck85::install_tooltips(reinterpret_cast<uintptr_t>(GetModuleHandleW(L"Empire.Retail.dll")));\n    }\n#endif\n    prepared165=false;if(root_guard165')
     entry_path.write_text(text)
     bootstrap=substitute(snapshot/'tools/workshop/bootstrap165.lua',[(
       '    run_stock167(original)\n    assert(start(true)',

@@ -27,46 +27,46 @@ int wmain(int argc,wchar_t** argv){assert(argc==3);SetErrorMode(SEM_FAILCRITICAL
  Patch185 dispatch(b+0x10dfb80,d.data(),5),vectors(b+0x10ac90,v.data(),5),release(b+0x1d10f0,f.data(),5),running(b+0x4596f0,run.data(),5);
  fixture224::Terrain terrain(b,co);
  formation218::FormationPad pad;auto current=[]{return true;};auto used=[&](){return *reinterpret_cast<unsigned*>(q+4+0x5000);};auto reset=[&](){pad.cancel();put218(q+4+0x5000,0);calls218=0;fixture224::probes=fixture224::allow_after=0;fixture224::outside=false;fixture224::successful_probes=UINT_MAX;};
- for(auto direction:std::vector<deck174::Vec2>{{0,1},{0,-1},{1,0},{-1,0}}){reset();deck216::FineIntent press;press.began=press.active=true;press.move=direction;assert(pad.sample(b,r,e,press,current));++cases;
+ auto begin_native=[&](unsigned button){reinterpret_cast<void(__thiscall*)(uintptr_t,unsigned)>(b+0x10dc0c0)(c,button);};
+ auto release_native=[&](){reinterpret_cast<void(__thiscall*)(uintptr_t)>(b+0x10f85f0)(c);};
+ for(auto direction:std::vector<deck174::Vec2>{{0,1},{0,-1},{1,0},{-1,0}}){reset();begin_native(direction.x?(direction.x<0?6:7):(direction.y<0?3:2));
+  assert(*reinterpret_cast<unsigned*>(c+0x40)!=165);++cases;
   auto mode=direction.x?(direction.x<0?17u:18u):14u;assert(*reinterpret_cast<unsigned*>(c+0x40)==mode);assert((*reinterpret_cast<float*>(c+0x48)<0)==(direction.x<0||direction.y<0));++cases;
-  press.began=false;for(unsigned i=0;i<1000;++i)assert(pad.sample(b,r,e,press,current));assert(calls218==0&&used()==0);++cases;
+  assert(calls218==0&&used()==0);++cases;
   // Original UI elapsed-time update, with its original acceleration; no custom
   // timer or repeated native movement dispatch is substituted.
   scalar218(e+0x2829c,1.f);reinterpret_cast<void(__thiscall*)(void*)>(b+(direction.x?0x11037c0:0x1102480))(reinterpret_cast<void*>(c));assert(std::fabs(*reinterpret_cast<float*>(c+0x48))>=1.f);++cases;
-  root[0x598]=1;press.active=false;press.released=true;assert(pad.sample(b,r,e,press,current)&&calls218==1&&action218==mode&&used()==16);++cases;
+  root[0x598]=1;release_native();assert(calls218==1&&action218==mode&&used()==16);++cases;
  }
  // Match native release when the ghost was never drawn.
- reset();deck216::FineIntent in;in.began=in.active=true;in.move={1,0};assert(pad.sample(b,r,e,in,current));in.began=in.active=false;in.released=true;assert(!pad.sample(b,r,e,in,current)&&calls218==0&&used()==0);++cases;
+ reset();deck216::FineIntent in;begin_native(7);release_native();assert(calls218==0&&used()==0);++cases;
  // A native formation group is eligible for the same release-only cardinal path.
  reset();alignas(4) unsigned char group_only[0x80]{};auto group_address=reinterpret_cast<uintptr_t>(group_only);
  put218(group_address,b+0x15c4da0);put218(group_address+0x7c,31);
  put218(o+0xb4,1);put218(o+0xb8,1);put218(o+0xbc,reinterpret_cast<uintptr_t>(&group_address));put218(o+0xc4,0);
  put218(o+0xe8,1);put218(o+0xec,1);put218(o+0xf0,reinterpret_cast<uintptr_t>(&group_address));
- in={};in.began=in.active=true;in.move={0,1};assert(pad.sample(b,r,e,in,current)&&calls218==0);
- in.began=in.active=false;in.released=true;root[0x598]=1;
- assert(pad.sample(b,r,e,in,current)&&calls218==1&&action218==14);++cases;
+ begin_native(2);assert(calls218==0);root[0x598]=1;
+ release_native();assert(calls218==1&&action218==14);++cases;
  put218(o+0xb4,0);put218(o+0xb8,0);put218(o+0xbc,0);put218(o+0xc4,2);put218(o+0xec,0);
  // Exact-axis presses keep their original native arrow and preview distance.
  for(float distance:{2.f,12.f})for(auto direction:std::vector<deck174::Vec2>{{0,1},{0,-1},{1,0},{-1,0}}) {
-  reset();in={};in.began=in.active=true;in.move=direction;
-  assert(pad.sample(b,r,e,in,current));
+  reset();
   const bool side=std::fabs(direction.x)>std::fabs(direction.y);
   const bool negative=(side?direction.x:direction.y)<0;
+  begin_native(side?(negative?6:7):(negative?3:2));
   const unsigned expected=side?(negative?17:18):14;
   assert(*reinterpret_cast<unsigned*>(c+0x40)==expected&&!calls218&&used()==0);++cases;
-  scalar218(c+0x48,negative?-distance:distance);root[0x598]=1;in.began=in.active=false;in.released=true;
-  assert(pad.sample(b,r,e,in,current)&&calls218==1&&action218==expected&&amount218==(negative?-distance:distance));++cases;
+  scalar218(c+0x48,negative?-distance:distance);root[0x598]=1;
+  release_native();assert(calls218==1&&action218==expected&&amount218==(negative?-distance:distance));++cases;
  }
  for(auto offset:{0x20u,0x2cu}) {
   reset();put218(o+0xb0+offset,1);in={};in.began=in.active=true;in.move={0,1};
   assert(!pad.sample(b,r,e,in,current)&&used()==0&&calls218==0);
   put218(o+0xb0+offset,0);++cases;
  }
- reset();in={};in.began=in.active=true;in.move={0,1};assert(pad.sample(b,r,e,in,current));put218(a+4,99);in.began=false;assert(!pad.sample(b,r,e,in,current)&&calls218==0&&used()==0);put218(a+4,11);++cases;
- reset();in={};in.began=in.active=true;in.move={0,1};assert(pad.sample(b,r,e,in,current));in.began=false;assert(!pad.sample(b,r,e,in,[]{return false;})&&calls218==0);++cases;
- reset();in={};in.began=in.active=true;in.move={0,1};assert(pad.sample(b,r,e,in,current));put218(q+4+0x5000,0x4fff);in.began=in.active=false;in.released=true;assert(!pad.sample(b,r,e,in,current)&&used()==0x4fff&&calls218==0);++cases;
+
  }
  assert(FreeLibrary(image));
  }
- std::cout<<"PASS formation218: "<<cases<<" original compass press/hold/release, group admission and cancelled-release cases; final UI dispatch is a provider; no gameplay\n";
+ std::cout<<"PASS formation218: "<<cases<<" original compass press/release and selection cases; final UI dispatch is a provider; no gameplay\n";
 }

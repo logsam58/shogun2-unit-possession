@@ -23,29 +23,49 @@ def package(build,output,preview,luac):
     result=json.loads((build/'verification.json').read_text())
     verified=json.loads((build/'workshop/verification.json').read_text())
     revision=result.get('revision')
-    policy_revision='formation-release-45' if revision in ('formation-pivot-46','formation-compass-47','formation-perimeter-48','formation-octants-49','formation-turn-cue-50','unit-cards-51') else revision
+    idle_categories=47 if revision=='possession-controls-62' else 37
+    if revision in ('possession-controls-62','possession-hud-63','deck-skirmish-64','combat-65','combat-66','combat-67','combat-68','reform-70','ads-gait-71','charge-pace-72','combat-gait-73'):revision='deck-width-61'  # Same earlier policy gates.
+    policy_revision='formation-release-45' if revision in ('formation-pivot-46','formation-compass-47','formation-perimeter-48','formation-octants-49','formation-turn-cue-50','unit-cards-51','battle-speech-52','controls-guide-53','deck-buttons-54','formation-release-55','deck-grips-56','deck-fire-57','deck-advisor-58','deck-formation-59','deck-resize-60','deck-width-61') else revision
     native_guard_marker='PASS native214: 120 original-image' if revision=='formation-pivot-46' else 'PASS native214: 110 original-image'
-    commit_count=256 if revision in ('formation-compass-47','formation-perimeter-48','formation-octants-49','formation-turn-cue-50','unit-cards-51') else 248
-    fine_cases=77 if revision in ('formation-octants-49','formation-turn-cue-50','unit-cards-51') else 45
-    rigid_cases=34 if revision in ('formation-perimeter-48','formation-octants-49','formation-turn-cue-50','unit-cards-51') else 12
-    if revision in ('formation-perimeter-48','formation-octants-49','formation-turn-cue-50','unit-cards-51'):
+    commit_count=256 if revision in ('formation-compass-47','formation-perimeter-48','formation-octants-49','formation-turn-cue-50','unit-cards-51','battle-speech-52','controls-guide-53','deck-buttons-54','formation-release-55','deck-grips-56','deck-fire-57','deck-advisor-58','deck-formation-59','deck-resize-60','deck-width-61') else 248
+    fine_cases=103 if revision in ("deck-resize-60","deck-width-61") else 97 if revision=="deck-formation-59" else 81 if revision in ('formation-release-55','deck-grips-56','deck-fire-57','deck-advisor-58','deck-formation-59','deck-resize-60','deck-width-61') else 77 if revision in ('formation-octants-49','formation-turn-cue-50','unit-cards-51','battle-speech-52','controls-guide-53','deck-buttons-54','formation-release-55','deck-grips-56','deck-fire-57','deck-advisor-58','deck-formation-59','deck-resize-60','deck-width-61') else 45
+    rigid_cases=51 if revision=="deck-width-61" else 47 if revision in ("deck-formation-59","deck-resize-60") else 40 if revision in ('formation-release-55','deck-grips-56','deck-fire-57','deck-advisor-58','deck-formation-59','deck-resize-60','deck-width-61') else 34 if revision in ('formation-perimeter-48','formation-octants-49','formation-turn-cue-50','unit-cards-51','battle-speech-52','controls-guide-53','deck-buttons-54','formation-release-55','deck-grips-56','deck-fire-57','deck-advisor-58','deck-formation-59','deck-resize-60','deck-width-61') else 12
+    if revision in ('formation-perimeter-48','formation-octants-49','formation-turn-cue-50','unit-cards-51','battle-speech-52','controls-guide-53','deck-buttons-54','formation-release-55','deck-grips-56','deck-fire-57','deck-advisor-58','deck-formation-59','deck-resize-60','deck-width-61'):
         native_guard_marker='PASS native214: 132 original-image'
     elif revision=='formation-compass-47':
         native_guard_marker='PASS native214: 122 original-image'
-    if revision in ('formation-pivot-46','formation-compass-47','formation-perimeter-48','formation-octants-49','formation-turn-cue-50','unit-cards-51'):
+    if revision in ('formation-pivot-46','formation-compass-47','formation-perimeter-48','formation-octants-49','formation-turn-cue-50','unit-cards-51','battle-speech-52','controls-guide-53','deck-buttons-54','formation-release-55','deck-grips-56','deck-fire-57','deck-advisor-58','deck-formation-59','deck-resize-60','deck-width-61'):
         if result.get('rigid225_cases')!=2*rigid_cases or (build/'logs/new-fixtures.log').read_text().count(f'PASS rigid225: {rigid_cases} native preview/release cases for one engine image')!=2:
             raise ValueError('Missing original whole-selection formation preview and release checks')
+    if revision in ('deck-fire-57','deck-advisor-58','deck-formation-59','deck-resize-60','deck-width-61'):
+        native_guard_marker='PASS native214: 148 original-image' if revision in ('deck-formation-59','deck-resize-60','deck-width-61') else 'PASS native214: 138 original-image'
+    fixture_log = (build/'logs/new-fixtures.log').read_text()
+    if 'PASS common and battlefield hover ownership, guarded hooks and repeated size changes' in fixture_log:
+        native_guard_marker = 'PASS native214: 150 original-image'
+    if 'PASS native hover draw admission, projection, compact bounds and state preservation' in fixture_log:
+        native_guard_marker = 'PASS native214: 270 original-image'
+    if revision in ('deck-grips-56','deck-fire-57','deck-advisor-58','deck-formation-59','deck-resize-60','deck-width-61'):
+        text=(build/'logs/new-fixtures.log').read_text()
+        cases=[('rear_grips_cases',11,'rear grips56'),('skirmish_packet_cases',8,'original skirmish56')]
+        if revision in ('deck-fire-57','deck-advisor-58','deck-formation-59','deck-resize-60','deck-width-61'):
+            cases.extend([('fire_mode_cases',15,'fire mode57'),('fire_packet_cases',12,'original fire57')])
+        else:
+            cases.append(('fire_mode_cases',10,'fire mode56'))
+        for key,count,marker in cases:
+            if result.get(key)!=count or f'PASS {marker}: {count}' not in text:
+                raise ValueError('Missing Deck battle grip check: '+marker)
     if policy_revision in('startup-handoff-43','deployment-commit-44','formation-release-45') and (result.get('startup222_cases')!=42 or 'PASS startup222: 42 actual production keyboard-startup/two-DLL' not in (build/'logs/new-fixtures.log').read_text()):raise ValueError('Missing startup handoff222 evidence')
     candidate=result.get('candidate')
-    if candidate!=181 or result.get('quick_only') or result.get('possession_context_checks')!=30 or result.get('frontend_Lua_policy_checks')!=(94 if policy_revision in('deck-qol-40','deck-qol-41','startup-handoff-43','deployment-commit-44','formation-release-45')else 93 if policy_revision in('menu-parent-36','renderer-compat-37','melee-rts-38','melee-rts-39','deck-qol-40','deck-qol-41','startup-handoff-43','deployment-commit-44','formation-release-45')else 90 if policy_revision=='menu-fit-35'else 87 if policy_revision in('usability-17','usability-18','usability-19','automatic-device-20','usability-21','bindings-22','zoom-23','return-23','wheel-24','hud-25','gameplay-26','wall-27','aim-28','look-29','gameplay-30','movement-31','cavalry-32','acquisition-33','acquisition-34','menu-fit-35','menu-parent-36','renderer-compat-37','melee-rts-38','melee-rts-39','deck-qol-40','deck-qol-41','startup-handoff-43','deployment-commit-44','formation-release-45')else 85 if policy_revision=='usability-16'else 80 if policy_revision=='usability-15'else 76 if policy_revision=='usability-14'else 75 if policy_revision=='usability-13'else 73 if policy_revision=='campaign-buttons-12'else 72 if policy_revision=='button-bindings-11'else 66) or result.get('menu_worker_boundary_checks')!=33:
+    if candidate!=181 or result.get('quick_only') or result.get('possession_context_checks')!=30 or result.get('frontend_Lua_policy_checks')!=(99 if revision in ('deck-advisor-58','deck-formation-59','deck-resize-60','deck-width-61') else 94 if policy_revision in('deck-qol-40','deck-qol-41','startup-handoff-43','deployment-commit-44','formation-release-45')else 93 if policy_revision in('menu-parent-36','renderer-compat-37','melee-rts-38','melee-rts-39','deck-qol-40','deck-qol-41','startup-handoff-43','deployment-commit-44','formation-release-45')else 90 if policy_revision=='menu-fit-35'else 87 if policy_revision in('usability-17','usability-18','usability-19','automatic-device-20','usability-21','bindings-22','zoom-23','return-23','wheel-24','hud-25','gameplay-26','wall-27','aim-28','look-29','gameplay-30','movement-31','cavalry-32','acquisition-33','acquisition-34','menu-fit-35','menu-parent-36','renderer-compat-37','melee-rts-38','melee-rts-39','deck-qol-40','deck-qol-41','startup-handoff-43','deployment-commit-44','formation-release-45')else 85 if policy_revision=='usability-16'else 80 if policy_revision=='usability-15'else 76 if policy_revision=='usability-14'else 75 if policy_revision=='usability-13'else 73 if policy_revision=='campaign-buttons-12'else 72 if policy_revision=='button-bindings-11'else 66) or result.get('menu_worker_boundary_checks')!=(34 if revision in ('deck-advisor-58','deck-formation-59','deck-resize-60','deck-width-61') else 33):
         raise ValueError('Use a completed181 contextual controller build')
     if 'PASS 13 handoff181' not in (build/'logs/new-fixtures.log').read_text():
         raise ValueError('Missing owner/deployment/timeout boundary checks')
     if 'PASS 5 native context181' not in (build/'logs/native-context-lookup.log').read_text():
         raise ValueError('Missing actual native context helper checks')
+    formation_cases=80 if revision in ('formation-release-55','deck-grips-56','deck-fire-57','deck-advisor-58','deck-formation-59','deck-resize-60','deck-width-61') else 86
     if policy_revision=='formation-release-45':
-        if result.get('terrain224_cases')!=48 or not result.get('legacy_zero_stride_hang_reproduced') or result.get('formation218_cases')!=86:raise ValueError('Missing terrain request correction evidence')
-        for marker in ('PASS terrain224: 48 original constructor','PASS formation218: 86 original compass'):
+        if result.get('terrain224_cases')!=48 or not result.get('legacy_zero_stride_hang_reproduced') or result.get('formation218_cases')!=formation_cases:raise ValueError('Missing terrain request correction evidence')
+        for marker in ('PASS terrain224: 48 original constructor',f'PASS formation218: {formation_cases} original compass'):
             if marker not in(build/'logs/new-fixtures.log').read_text():raise ValueError('Missing original terrain search/formation regression: '+marker)
     if policy_revision in('deployment-commit-44','formation-release-45'):
         if result.get('deployment223_cases')!=24 or result.get('commit223_cases')!=commit_count:raise ValueError('Missing deployment/commit regressions')
@@ -53,7 +73,7 @@ def package(build,output,preview,luac):
         for marker in (f'PASS original commit223: {commit_count} complete release','PASS deployment223: 24 original ABI'):
             if marker not in text:raise ValueError('Missing native deployment/commit check: '+marker)
     if policy_revision in('deck-qol-40','deck-qol-41','startup-handoff-43','deployment-commit-44','formation-release-45'):
-        for marker,flag in [((f'PASS fine216: {fine_cases}'if policy_revision in('deck-qol-41','startup-handoff-43','deployment-commit-44','formation-release-45')else 'PASS fine216: 25'),'fine216'),(f"PASS cards217: {51 if revision=='unit-cards-51' else 36}",'cards217')]:
+        for marker,flag in [((f'PASS fine216: {fine_cases}'if policy_revision in('deck-qol-41','startup-handoff-43','deployment-commit-44','formation-release-45')else 'PASS fine216: 25'),'fine216'),(f"PASS cards217: {51 if revision in ('unit-cards-51','battle-speech-52','controls-guide-53','deck-buttons-54','formation-release-55','deck-grips-56','deck-fire-57','deck-advisor-58','deck-formation-59','deck-resize-60','deck-width-61') else 36}",'cards217')]:
             if not result.get(flag)or marker not in(build/'logs/new-fixtures.log').read_text():raise ValueError('Missing card or formation-pad checks')
         text=(build/'logs/new-fixtures.log').read_text()
         if not result.get('hud215')or 'PASS HUD215:'not in(build/'components/logs/hud-tests.log').read_text(errors='replace'):
@@ -63,7 +83,7 @@ def package(build,output,preview,luac):
         if 'PASS modal214:'not in(build/'components/logs/adapter-tests.log').read_text(errors='replace'):
             raise ValueError('Missing production native menu ownership regression')
     if policy_revision in('deck-qol-41','startup-handoff-43','deployment-commit-44','formation-release-45'):
-        for marker in (('PASS formation218: 86 original compass'if policy_revision=='formation-release-45'else 'PASS formation218: 66 original compass'),'PASS speed218: 34 original controller','PASS escape218: 24 native-key'):
+        for marker in ((f'PASS formation218: {formation_cases} original compass'if policy_revision=='formation-release-45'else 'PASS formation218: 66 original compass'),'PASS speed218: 34 original controller',f"PASS escape218: {38 if revision in ('battle-speech-52','controls-guide-53','deck-buttons-54','formation-release-55','deck-grips-56','deck-fire-57','deck-advisor-58','deck-formation-59','deck-resize-60','deck-width-61') else 24} native-key"):
             if marker not in(build/'logs/new-fixtures.log').read_text():raise ValueError('Missing original-code correction check: '+marker)
     expected_checks={'compile','lua-bridge','menu-failure-recovery','enabled-ui-mod',
         'renamed-duplicate-bootstrap','repeat-startup','runtime-resources','storage-lifetime',
@@ -91,7 +111,7 @@ def package(build,output,preview,luac):
         wall_log=(build/'components/logs/adapter-tests.log').read_text(errors='replace')
         if 'PASS wall201: 96 top-entry offers/requests refused'not in wall_log or 'PASS wall200:'not in wall_log:raise ValueError('Missing upward-wall and removed-down-entry checks')
     if policy_revision in('look-29','gameplay-30','movement-31','cavalry-32','acquisition-33','acquisition-34','menu-fit-35','menu-parent-36','renderer-compat-37','melee-rts-38','melee-rts-39','deck-qol-40','deck-qol-41','startup-handoff-43','deployment-commit-44','formation-release-45') and (result.get('camera_rate202_checks')!=4296 or 'PASS look202: 4296 actual first/third-person camera'not in(build/'logs/new-fixtures.log').read_text()):raise ValueError('Missing frame-timed analog camera checks')
-    if policy_revision in('movement-31','cavalry-32','acquisition-33','acquisition-34','menu-fit-35','menu-parent-36','renderer-compat-37','melee-rts-38','melee-rts-39','deck-qol-40','deck-qol-41','startup-handoff-43','deployment-commit-44','formation-release-45') and (result.get('locomotion204_idle_categories')!=37 or 'PASS locomotion204: 37 native idle categories'not in(build/'components/logs/adapter-tests.log').read_text(errors='replace')):raise ValueError('Missing native standing-idle regression checks')
+    if policy_revision in('movement-31','cavalry-32','acquisition-33','acquisition-34','menu-fit-35','menu-parent-36','renderer-compat-37','melee-rts-38','melee-rts-39','deck-qol-40','deck-qol-41','startup-handoff-43','deployment-commit-44','formation-release-45') and (result.get('locomotion204_idle_categories')!=idle_categories or f'PASS locomotion204: {idle_categories} native idle categories'not in(build/'components/logs/adapter-tests.log').read_text(errors='replace')):raise ValueError('Missing native standing-idle regression checks')
     if policy_revision in('movement-31','cavalry-32','acquisition-33','acquisition-34','menu-fit-35','menu-parent-36','renderer-compat-37','melee-rts-38','melee-rts-39','deck-qol-40','deck-qol-41','startup-handoff-43','deployment-commit-44','formation-release-45')and(result.get('edge205_native_branch_cases')!=216 or not result.get('edge205_Deck_only')or 'PASS edges205: 216 original native'not in(build/'logs/new-fixtures.log').read_text()):raise ValueError('Missing Deck-only native edge-camera checks')
     if policy_revision in('cavalry-32','acquisition-33','acquisition-34','menu-fit-35','menu-parent-36','renderer-compat-37','melee-rts-38','melee-rts-39','deck-qol-40','deck-qol-41','startup-handoff-43','deployment-commit-44','formation-release-45')and(not result.get('locomotion206_mounted_regression')or 'PASS locomotion206: observed horse idle reproduction; 36 mounted directional gait cases; 16 native horse idle cases; 37 special/identity guards.'not in(build/'components/logs/adapter-tests.log').read_text(errors='replace')):raise ValueError('Missing native mounted movement regression')
     if policy_revision in('acquisition-33','acquisition-34','menu-fit-35','menu-parent-36','renderer-compat-37','melee-rts-38','melee-rts-39','deck-qol-40','deck-qol-41','startup-handoff-43','deployment-commit-44','formation-release-45')and(not result.get('acquisition207')or(build/'components/logs/adapter-tests.log').read_text(errors='replace').count('PASS acquisition207:')!=2):raise ValueError('Missing foot/mounted native acquisition checks')

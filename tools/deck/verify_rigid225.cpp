@@ -20,7 +20,8 @@ struct Preview225 {
 struct List225 { unsigned capacity,count; const Preview225* entries; };
 static_assert(sizeof(Preview225)==32 && sizeof(List225)==12);
 static std::vector<Preview225> rendered_groups,rendered_units;
-static unsigned allocated{},audio_calls{},native_dispatches{};
+static unsigned allocated{},audio_calls{},native_dispatches{},native_action{};
+static float native_amount{};
 static uintptr_t cue_queue{};
 static uintptr_t expected_audio{};
 static float cue_position[3]{};
@@ -36,9 +37,8 @@ static void __fastcall sound225(uintptr_t audio,void*,void* result,unsigned even
     assert(*reinterpret_cast<const unsigned*>(args+0x28)==5&&!args[0x2c]);
     ++audio_calls;
 }
-static void __fastcall dispatch225(uintptr_t,void*,unsigned action,float distance) {
-    assert(action==18&&distance==1.f);
-    ++native_dispatches;
+static void __fastcall dispatch225(uintptr_t,void*,unsigned action,float amount) {
+    ++native_dispatches;native_action=action;native_amount=amount;
     *reinterpret_cast<unsigned*>(cue_queue+4+0x5000)=16;
 }
 static unsigned __fastcall zero225(void*,void*) { return 0; }
@@ -64,7 +64,7 @@ int wmain(int argc,wchar_t** argv) {
  auto image=LoadLibraryExW(argv[1],nullptr,DONT_RESOLVE_DLL_REFERENCES);
  assert(image&&MH_Initialize()==MH_OK);
  const auto b=reinterpret_cast<uintptr_t>(image);
- assert(native214::admit(b,127));
+ assert(native214::admit(b,383));
  unsigned char original[12]{},original_move[12]{};
  memcpy(original,reinterpret_cast<const void*>(b+0x42e540),sizeof original);
  memcpy(original_move,reinterpret_cast<const void*>(b+0x42dfd0),sizeof original_move);
@@ -104,11 +104,15 @@ int wmain(int argc,wchar_t** argv) {
  for(auto unit:units)put218(unit+0xc,reinterpret_cast<uintptr_t>(table));
  alignas(4) unsigned char first_group[0x90]{},second_group[0x90]{};
  uintptr_t groups[]{reinterpret_cast<uintptr_t>(first_group),reinterpret_cast<uintptr_t>(second_group)};
+ uintptr_t grouped_units[]{units[0],units[1]};
+ put218(units[0]+0x384,200);
+ put218(units[1]+0x384,120);
  for(unsigned i=0;i<2;++i) {
     auto group=groups[i];
     put218(group,reinterpret_cast<uintptr_t>(table));
     put218(group+0x7c,31+i);
     put218(group+0x20,1); // original 2fc880 counts the land units in this group
+    put218(group+0x24,reinterpret_cast<uintptr_t>(grouped_units+i));
     auto& point=i?origin2:origin1;
     memcpy(reinterpret_cast<void*>(group+0x2c),&point,20);
  }
@@ -140,7 +144,7 @@ int wmain(int argc,wchar_t** argv) {
     in.active=false;in.released=true;
     return pad.sample(b,r,e,in,current);
  };
- auto packet=[&](const std::vector<Preview225>& expected_groups,const std::vector<Preview225>& expected_units) {
+ auto packet=[&](const std::vector<Preview225>& expected_groups,const std::vector<Preview225>& expected_units,bool append=false) {
     unsigned char reference[0x5004]{};
     auto encode=[&](const Preview225& placement,bool is_group) {
         alignas(4) unsigned char view[0x44]{},order[0x80]{},context[16]{};
@@ -152,7 +156,7 @@ int wmain(int argc,wchar_t** argv) {
         put218(selection+offset,1);put218(selection+offset+4,1);
         put218(selection+offset+8,reinterpret_cast<uintptr_t>(&object));
         using Construct=void*(__thiscall*)(void*,const void*,const void*,unsigned,unsigned,unsigned);
-        reinterpret_cast<Construct>(b+0x255680)(order,view,&placement.point,placement.heading,0,0);
+        reinterpret_cast<Construct>(b+0x255680)(order,view,&placement.point,placement.heading,0,append);
         reinterpret_cast<void(__thiscall*)(void*,void*,unsigned,unsigned)>(b+0x1cc200)(context,reference,key,0);
         assert(reinterpret_cast<unsigned(__thiscall*)(void*,void*)>(b+0x2e6eb0)(order,context));
         reinterpret_cast<void(__thiscall*)(void*)>(b+0x1d0d40)(context);
@@ -270,8 +274,109 @@ int wmain(int argc,wchar_t** argv) {
  assert(!no_groups.count&&!no_units.count&&!used()&&!audio_calls);
  draw_move(5.f);assert(release_gesture(move)&&audio_calls==1);packet(rendered_groups,rendered_units);++cases;
 
- reset();move=start_move({1,0});root[0x598]=1;
- assert(release_gesture(move)&&used()==16&&native_dispatches==1&&audio_calls==1);++cases;
+ for(bool append:{false,true})for(float strafe:{-1.f,1.f}) {
+    reset();select(1,1,1);
+    auto forward=start_move({0,1});
+    draw_move(4.f);
+    assert(release_gesture(forward)&&audio_calls==1&&!native_dispatches);
+    packet(rendered_groups,rendered_units);
+    const auto previous_bytes=used();
+    const std::vector<unsigned char> previous(queue.data()+4,queue.data()+4+previous_bytes);
+    // A separate sideways gesture uses its own visible endpoints and release modifier.
+    put218(q+4+0x5000,0);audio_calls=0;
+    move=start_move({strafe,0});
+    draw_move(4.f);
+    assert(rendered_groups.size()==1&&rendered_units.size()==1);
+    assert(rendered_groups[0].point.x==-10.f+4.f*strafe&&rendered_groups[0].point.z==0.f);
+    assert(rendered_units[0].point.x==10.f&&rendered_units[0].point.z==-4.f*strafe);
+    memcpy(queue.data()+4,previous.data(),previous_bytes);
+    put218(q+4+0x5000,previous_bytes);
+    move.append=append;
+    assert(release_gesture(move)&&audio_calls==1&&!native_dispatches&&used()>previous_bytes);
+    assert(!memcmp(queue.data()+4,previous.data(),previous_bytes));
+    const auto length=used()-previous_bytes;
+    memmove(queue.data()+4,queue.data()+4+previous_bytes,length);
+    put218(q+4+0x5000,length);
+    packet(rendered_groups,rendered_units,append);
+    ++cases;
+ }
+ reset();select(1,1,1);in=gesture();draw();in.append=true;
+ assert(release_gesture(in)&&audio_calls==1);packet(rendered_groups,rendered_units,true);++cases;
+
+ reset();move=start_move({1,0});draw_move(4.f);put218(units[1]+4,99);
+ assert(!release_gesture(move)&&!used()&&!audio_calls);put218(units[1]+4,22);++cases;
+
+ reset();move=start_move({1,0});draw_move(4.f);move.released=true;move.active=false;
+ assert(!pad.sample(b,r,e,move,[]{return false;})&&!used()&&!audio_calls);++cases;
+
+ // Recreate LT occupying the cursor, followed by release in the same
+ // selection. The pad starts only once the original cursor is available.
+ reset();select(1,1,1);
+ deck216::FineIntent pending;pending.began=pending.active=true;pending.move={1,0};
+ assert(pad.sample(b,r,e,pending,current,true)&&*reinterpret_cast<int*>(c+0x40)==165);
+ pending.began=false;
+ assert(pad.sample(b,r,e,pending,current,false)&&*reinterpret_cast<int*>(c+0x40)==14);
+ draw_move(4.f);assert(release_gesture(pending));packet(rendered_groups,rendered_units);++cases;
+
+ // The preceding LT order clears the native ghost flag. A fresh native
+ // draw restores the flag, and the pending pad release commits once.
+ reset();move=start_move({1,0});draw_move(4.f);root[0x598]=0;
+ assert(!release_gesture(move)&&pad.pending_release()&&!used());
+ draw_move(4.f);
+ assert(pad.sample(b,r,e,{},current)&&!pad.pending_release()&&audio_calls==1);
+ packet(rendered_groups,rendered_units);++cases;
+
+ // A native selection storage replacement is safe only when every member
+ // remains identical. Its address alone does not change the selection.
+ reset();move=start_move({1,0});draw_move(4.f);
+ uintptr_t relocated_units[]{units[1]};
+ put218(o+0xc8,reinterpret_cast<uintptr_t>(relocated_units));
+ assert(release_gesture(move));packet(rendered_groups,rendered_units);++cases;
+ select(1,1,1);
+
+ for(int width:{-200,200}) {
+    reset();select(1,1,1);
+    deck216::FineIntent resize;resize.began=resize.active=resize.resizing=true;
+    assert(pad.sample(b,r,e,resize,current));
+    resize.began=false;resize.width_fraction=width<0?-1.f:1.f;root[0x598]=1;
+    assert(pad.sample(b,r,e,resize,current)&&!root[0x598]);
+    assert(*reinterpret_cast<int*>(r+0x590)==width&&!audio_calls&&!native_dispatches);
+    assert(!*reinterpret_cast<unsigned*>(r+0x594)&&!*reinterpret_cast<unsigned short*>(r+0x59a));
+    assert(!release_gesture(resize)&&pad.pending_release()&&!used());
+    root[0x598]=1;
+    assert(pad.sample(b,r,e,{},current)&&used()==16&&native_dispatches==1&&!audio_calls);
+    assert(native_action==(width>0?0xfu:0x10u)&&native_amount==200.f&&!root[0x598]);
+    assert(!*reinterpret_cast<int*>(r+0x590)&&!pad.pending_release());
+    assert(!pad.sample(b,r,e,{},current)&&native_dispatches==1);++cases;
+ }
+
+ reset();select(1,1,1);
+ deck216::FineIntent resize;resize.began=resize.active=resize.resizing=true;resize.width_fraction=.25f;
+ assert(pad.sample(b,r,e,resize,current));root[0x598]=1;put218(q+4+0x5000,0x4fff);
+ resize.began=false;
+ assert(!release_gesture(resize)&&!pad.pending_release()&&!native_dispatches&&used()==0x4fff);++cases;
+
+ reset();select(1,1,1);
+ resize.began=true;assert(pad.sample(b,r,e,resize,current));root[0x598]=1;
+ resize.began=false;resize.cancel=true;
+ assert(!pad.sample(b,r,e,resize,current)&&!native_dispatches&&!*reinterpret_cast<int*>(r+0x590));++cases;
+
+ // Exercise the original adjustable frontage policy as well as the
+ // packet dispatch provider. A roster-sized request reaches either endpoint.
+ alignas(4) unsigned char frontage[0x18]{};
+ const auto policy=reinterpret_cast<uintptr_t>(frontage);
+ put218(policy,b+0x15e05e0);
+ const float stride=1.f;
+ memcpy(frontage+8,&stride,4);
+ memcpy(frontage+0x10,&stride,4);
+ using Width= float(__thiscall*)(void*,float,unsigned,unsigned);
+ const auto widen=reinterpret_cast<Width>(b+0x3d55d0);
+ const auto narrow=reinterpret_cast<Width>(b+0x3cdd50);
+ for(unsigned count:{40u,120u,200u,320u}) {
+    assert(widen(frontage,1.f,count,count)==float(count));
+    assert(narrow(frontage,float(count),count,count)==1.f);
+    ++cases;
+ }
 
  reset();
  formation218::FormationPad::disable_preview_hook();

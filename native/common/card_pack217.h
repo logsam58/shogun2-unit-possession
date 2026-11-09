@@ -6,6 +6,7 @@
 #include "../../tools/workshop/ui_compat168.h"
 #include <unordered_map>
 #include <cwctype>
+#include <tuple>
 namespace card217 {
 namespace fs=std::filesystem;
 inline std::string narrow(const std::wstring& s){
@@ -43,7 +44,12 @@ struct Entry {fs::path pack;uint64_t offset{};unsigned size{};};
 inline Bytes payload(const Entry& e,size_t limit){
  deck174::paths::read_file(e.pack);need(e.size&&e.size<=limit,"Card payload too large");auto total=fs::file_size(e.pack);need(e.offset<=total&&e.size<=total-e.offset,"Card payload changed");std::ifstream in(e.pack,std::ios::binary);in.seekg(std::streamoff(e.offset));Bytes b(e.size);need(bool(in.read(reinterpret_cast<char*>(b.data()),b.size())),"Card payload missing");return b;
 }
-inline bool resource(const std::string& n){return n.rfind("ui/units/info/",0)==0||n.rfind("ui/units/icons/",0)==0||n.rfind("ui/units/icons_square/",0)==0;}
+inline bool resource(const std::string& n){
+ return n.rfind("ui/units/info/",0)==0||n.rfind("ui/units/icons/",0)==0||
+        n.rfind("ui/units/icons_square/",0)==0||
+        (n.rfind("ui/flags/",0)==0&&n.size()>11&&n.compare(n.size()-11,11,"/mon_64.tga")==0);
+}
+inline bool loc_file(const std::string& n){return n.rfind("text/",0)==0&&n.compare(n.size()-4,4,".loc")==0;}
 inline std::map<std::string,Entry> index(const fs::path& pack){
  deck174::paths::read_file(pack);std::ifstream in(pack,std::ios::binary);unsigned char h[32]{};need(bool(in.read(reinterpret_cast<char*>(h),32)),"Pack header truncated");
  unsigned flags=u32(h+4),deps=u32(h+8),depbytes=u32(h+12),count=u32(h+16),bytes=u32(h+20);auto total=fs::file_size(pack);
@@ -51,10 +57,15 @@ inline std::map<std::string,Entry> index(const fs::path& pack){
  Bytes dependency(depbytes);need(dependency.empty()||bool(in.read(reinterpret_cast<char*>(dependency.data()),depbytes)),"Pack dependencies truncated");need(size_t(std::count(dependency.begin(),dependency.end(),0))==deps&&(dependency.empty()||dependency.back()==0),"Pack dependencies malformed");
  Bytes data(bytes);need(data.empty()||bool(in.read(reinterpret_cast<char*>(data.data()),bytes)),"Pack index truncated");size_t p=0;uint64_t offset=32ull+depbytes+bytes;std::set<std::string> seen;std::map<std::string,Entry> found;
  for(unsigned i=0;i<count;++i){unsigned fixed=flags&0x40?12:4;need(p+fixed<=data.size(),"Pack entry truncated");unsigned size=u32(data.data()+p);p+=fixed;auto begin=p;while(p<data.size()&&data[p])++p;need(p<data.size(),"Pack name unterminated");auto n=normal(std::string(reinterpret_cast<char*>(data.data()+begin),p-begin));++p;
-  need(seen.insert(n).second&&offset<=total&&size<=total-offset,"Pack entry duplicate/outside file");if(resource(n)||n.rfind("db/uniforms_tables/",0)==0)found.emplace(n,Entry{pack,offset,size});offset+=size;
+  need(seen.insert(n).second&&offset<=total&&size<=total-offset,"Pack entry duplicate/outside file");if(resource(n)||loc_file(n)||n.rfind("db/uniforms_tables/",0)==0||n.rfind("db/factions_tables/",0)==0)found.emplace(n,Entry{pack,offset,size});offset+=size;
  }need(p==data.size(),"Pack trailing index bytes");return found;
 }
 struct Uniform {std::wstring name,faction,card,unit;};
+inline std::wstring key_case(std::wstring s){
+ for(auto& c:s)if(c>=L'A'&&c<=L'Z')c+=L'a'-L'A';
+ return s;
+}
+using UniformKey=std::tuple<std::wstring,std::wstring,std::wstring>;
 // Schema3 is the native SHOGUN2 uniforms table: four UTF16 fields and four
 // optional role/imposter strings. Read identity fields, never infer filenames.
 inline std::vector<Uniform> uniforms(const Bytes& b){
@@ -66,11 +77,84 @@ inline std::vector<Uniform> uniforms(const Bytes& b){
  for(unsigned i=0;i<count;++i){Uniform row;row.name=string();row.faction=optional();row.card=string();row.unit=string();for(unsigned j=0;j<4;++j)optional();out.push_back(std::move(row));}
  need(p==b.size(),"DB trailing data");return out;
 }
+class TextTable {
+ const Bytes& bytes_;size_t pos_{};
+public:
+ explicit TextTable(const Bytes& bytes,size_t start=0):bytes_(bytes),pos_(start){}
+ const unsigned char* take(size_t size){
+  need(pos_<=bytes_.size()&&size<=bytes_.size()-pos_,"Card table truncated");
+  const auto* result=bytes_.data()+pos_;pos_+=size;return result;
+ }
+ unsigned integer(){return u32(take(4));}
+ unsigned flag(){unsigned value=*take(1);need(value<=1,"Card table flag");return value;}
+ std::wstring string(){
+  size_t count=u16(take(2));const auto* data=take(count*2);
+  std::wstring value(count,L'\0');
+  if(count)memcpy(value.data(),data,count*2);
+  return value;
+ }
+ bool end()const{return pos_==bytes_.size();}
+};
+using TextRows=std::map<std::wstring,std::wstring>;
+inline TextRows names(const Bytes& bytes){
+ TextTable rows(bytes);need(!memcmp(rows.take(6),"\xff\xfeLOC\0",6)&&rows.integer()==1,"Unsupported card localization");
+ const unsigned count=rows.integer();need(count<=200000,"Card localization count");
+ TextRows result;
+ for(unsigned i=0;i<count;++i){
+  const auto key=rows.string();auto value=rows.string();rows.flag();
+  if(key.rfind(L"units_on_screen_name_",0)!=0&&key.rfind(L"factions_screen_name_",0)!=0)continue;
+  if(value.empty()||value.size()>180||std::any_of(value.begin(),value.end(),[](wchar_t c){return c<32;}))continue;
+  result[key]=std::move(value);
+ }
+ need(rows.end(),"Card localization trailing data");return result;
+}
+// Shogun 2 factions schema v7. Read the declared flags_path so a DB key
+// such as oda_hitachi can use a separately named icon directory.
+inline TextRows faction_flags(const Bytes& bytes){
+ TextTable rows(bytes);unsigned header=rows.integer();
+ if(header==0xfffcfefd){rows.string();header=rows.integer();}
+ need(header==0xfffefdfc&&rows.integer()==7&&rows.flag()==1,"Unsupported faction schema");
+ const unsigned count=rows.integer();need(count<=4096,"Faction row bound");
+ TextRows result;
+ for(unsigned i=0;i<count;++i){
+  auto key=rows.string();rows.take(8);
+  for(unsigned field=2;field<=7;++field)rows.string();
+  if(rows.flag())rows.string();
+  for(unsigned field=9;field<=11;++field)rows.flag();
+  rows.string();auto flag=rows.string();
+  for(unsigned field=14;field<=15;++field)if(rows.flag())rows.string();
+  rows.take(18*4);rows.string();
+  if(rows.flag())rows.string();
+  rows.take(3*4);
+  if(rows.flag())rows.string();
+  rows.string();rows.flag();rows.flag();
+  for(unsigned field=43;field<=46;++field)rows.string();
+  if(rows.flag())rows.string();
+  rows.string();
+  for(unsigned field=49;field<=50;++field)if(rows.flag())rows.string();
+  rows.string();
+  if(!key.empty()&&!flag.empty())result[std::move(key)]=std::move(flag);
+ }
+ need(rows.end(),"Faction table trailing data");return result;
+}
 class Catalog {
- fs::path game_;bool initialized_{};std::map<std::string,Entry> cards_;std::map<std::wstring,Uniform> uniforms_;
+ fs::path game_;bool initialized_{};std::map<std::string,Entry> cards_;std::map<UniformKey,Uniform> uniforms_;TextRows names_,flags_;
  struct Cached {std::wstring key;std::shared_ptr<Picture> picture;};std::vector<Cached> cache_;size_t pixel_bytes_{};
  void add(const fs::path& p){try{auto entries=index(p);if(cards_.size()+entries.size()>50000)return;for(const auto& pair:entries){if(resource(pair.first))cards_[pair.first]=pair.second;
-  else try{auto rows=uniforms(payload(pair.second,8*1024*1024));for(auto& row:rows){if(uniforms_.size()>=20000)break;uniforms_[row.name]=std::move(row);}}catch(...){} }}catch(...){} }
+  else if(loc_file(pair.first)||pair.first.rfind("db/factions_tables/",0)==0){
+  try{
+   const bool loc=loc_file(pair.first);auto bytes=payload(pair.second,16*1024*1024);
+   auto rows=loc?names(bytes):faction_flags(bytes);auto& target=loc?names_:flags_;
+   for(auto& row:rows)if(target.size()<25000||target.count(row.first))target[row.first]=std::move(row.second);
+  }catch(...){}
+ }
+ else try{auto rows=uniforms(payload(pair.second,8*1024*1024));for(auto& row:rows){
+   row.unit=key_case(std::move(row.unit));row.faction=key_case(std::move(row.faction));
+   // Several shipped overhaul tables reuse the same uniform name for
+   // separate unit records. Retain each declared unit/clan mapping.
+   UniformKey key{row.unit,row.faction,key_case(row.name)};
+   if(uniforms_.size()<20000||uniforms_.count(key))uniforms_[std::move(key)]=std::move(row);
+  }}catch(...){} }}catch(...){} }
 public:
  void configure(fs::path game){if(initialized_)return;initialized_=true;game_=std::move(game);
   try{
@@ -104,17 +188,34 @@ public:
    for(auto& p:automatic)if(p.first<4)add(p.second);for(auto& p:active)add(p);for(auto& p:automatic)if(p.first==4)add(p.second);
   }catch(...){} // Optional artwork must never stop possession or the HUD.
  }
+ std::wstring title(const wchar_t* prefix,const std::wstring& key)const{
+  auto found=names_.find(prefix+key);return found==names_.end()?std::wstring{}:found->second;
+ }
+ std::shared_ptr<Picture> crest(const std::wstring& faction){
+  try{
+   auto found=flags_.find(faction);
+   auto dir=normal(narrow(found==flags_.end()?faction:found->second));
+   if(dir.rfind("data/",0)==0)dir.erase(0,5);
+   if(dir.rfind("ui/flags/",0)!=0){
+    if(dir.find('/')!=dir.npos)return {};
+    dir="ui/flags/"+dir;
+   }
+   return card(L"",faction,wide(dir+"/mon_64.tga"),L"");
+  }catch(...){return {};}
+ }
  std::shared_ptr<Picture> card(const std::wstring& unit,const std::wstring& faction,const std::wstring& info,const std::wstring& icon){
   if(!initialized_||game_.empty())return {};
   auto key=unit+L"\n"+faction+L"\n"+info+L"\n"+icon;for(auto i=cache_.begin();i!=cache_.end();++i)if(i->key==key){auto hit=*i;cache_.erase(i);cache_.push_back(hit);return hit.picture;}
   std::shared_ptr<Picture> result;
   try{std::vector<std::wstring> aliases;
    std::set<std::wstring> faction_cards,default_cards;
-   for(const auto& entry:uniforms_){
-    const auto& row=entry.second;
-    if(row.unit!=unit||row.card.empty())continue;
-    if(!faction.empty()&&row.faction==faction)faction_cards.insert(row.card);
-    else if(row.faction.empty())default_cards.insert(row.card);
+   const auto unit_key=key_case(unit),faction_key=key_case(faction);
+   for(auto entry=uniforms_.lower_bound({unit_key,L"",L""});
+       entry!=uniforms_.end()&&std::get<0>(entry->first)==unit_key;++entry){
+    const auto& row=entry->second;
+    if(row.card.empty())continue;
+    if(!faction_key.empty()&&row.faction==faction_key)faction_cards.insert(key_case(row.card));
+    else if(row.faction.empty())default_cards.insert(key_case(row.card));
    }
    // Use a uniform's alias only when all matching rows agree on its artwork.
    // The live record's info and icon still provide fallbacks for ambiguous rows.
@@ -151,6 +252,9 @@ public:
    }
    load(icon,"ui/units/icons/");
    load(icon,"ui/units/icons_square/");
+   load(unit,"ui/units/info/");
+   load(unit,"ui/units/icons/");
+   load(unit,"ui/units/icons_square/");
    load(fallback,"ui/units/icons/");
    load(fallback,"ui/units/icons_square/");
   }catch(...){}

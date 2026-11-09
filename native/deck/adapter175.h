@@ -69,6 +69,13 @@ static bool native_context(ContextProof& proof,bool cleanup=false){
         return true;
     }__except(EXCEPTION_EXECUTE_HANDLER){return false;}
 }
+static bool possession_cursor181(){
+    __try{
+        return possession_lease.active&&deck181::owns_possession_cursor(base,environment,
+            possession_lease.identity.camera,[](uintptr_t at){return field<uintptr_t>(at,0);});
+    }__except(EXCEPTION_EXECUTE_HANDLER){return false;}
+}
+namespace controller181 { static void cancel_formation(); }
 struct NativeHost:Host {
     Identity identity;WPARAM modifier_flags{};
     void modifiers(bool shift,bool control)override{modifier_flags=(shift?MK_SHIFT:0)|(control?MK_CONTROL:0);}
@@ -126,6 +133,7 @@ struct NativeHost:Host {
     }
     bool select(bool down,bool modifier)override{
         if(!current(identity))return false;
+        if(down)controller181::cancel_formation();
         const WPARAM flags=(down?MK_LBUTTON:0)|(modifier?MK_CONTROL:0)|modifier_flags;
         RECT rect{};POINT pixel{};if(!point(rect,pixel)){selection193.reset();return false;}
         const bool twice=selection193.button(down,(flags&(MK_CONTROL|MK_SHIFT))!=0,pixel.x,pixel.y,GetTickCount64(),GetDoubleClickTime(),std::max(1,GetSystemMetrics(SM_CXDOUBLECLK)/2),std::max(1,GetSystemMetrics(SM_CYDOUBLECLK)/2));
@@ -140,6 +148,7 @@ struct NativeHost:Host {
     }
     bool order(unsigned phase,bool modifier)override{
         if(phase>3||!current(identity))return false;
+        if(phase==0||phase==3)controller181::cancel_formation();
         selection193.reset();
         __try{command_refresh103(identity.root);}
         __except(EXCEPTION_EXECUTE_HANDLER){return false;}
@@ -219,6 +228,12 @@ static bool eligible181(){
   return root&&field<uintptr_t>(root,0)==base+0x170d284&&manager&&field<uintptr_t>(manager,0)==base+0x15d26fc&&camera;
  }__except(EXCEPTION_EXECUTE_HANDLER){return false;}
 }
+static bool retain_deployment_reader91(){
+ if(!running||!input_lease177.handle||!state||!state->ready||state->stop||!enabled||
+    !input_window||input_window!=owned_window||!native_window_proc||!IsWindow(input_window))return false;
+ __try{return deck181::in_deployment(base,[](uintptr_t at){return field<uintptr_t>(at,0);});}
+ __except(EXCEPTION_EXECUTE_HANDLER){return false;}
+}
 static void yield181(){
  // Restore the keyboard poll before relinquishing the battle lease. The
  // campaign bridge may then reacquire its own disabled original trampoline.
@@ -237,8 +252,21 @@ static void poll(HMODULE module){
         // path posts any required camera restoration to its owning window.
         InterlockedExchange(&entry_attempted,1);InterlockedExchange(&entry_pending,0);entry_failed(181);
     }
-    const bool eligible=eligible181();deck177::battle_request().set(eligible);
-    if(!eligible){yield181();deck181::trace_input(0,unsigned(backend.state()),0,input_window,unsigned(posted),state?state->mode:0,state?unsigned(state->aiming):0);return;}
+    const bool eligible=eligible181();
+    const bool retaining=!eligible&&retain_deployment_reader91();
+    deck177::battle_request().set(eligible||retaining);
+    if(!eligible){
+        if(retaining){
+            // Keep the Steam action set across the deployment camera gap.
+            // Discard queued input until the original camera is verified again.
+            modifiers188.clear();controller181::clear_input();
+            AcquireSRWLockExclusive(&queue_lock);
+            mailbox.invalidate();rts_mailbox.invalidate();
+            ReleaseSRWLockExclusive(&queue_lock);
+        }else yield181();
+        deck181::trace_input(0,unsigned(backend.state()),0,input_window,unsigned(posted),state?state->mode:0,state?unsigned(state->aiming):0);
+        return;
+    }
     if(owned_window!=input_window){
         owned_window=input_window;InterlockedExchange(&posted,0);controller181::clear_input();
         AcquireSRWLockExclusive(&queue_lock);mailbox.invalidate();rts_mailbox.invalidate();ReleaseSRWLockExclusive(&queue_lock);
@@ -267,7 +295,8 @@ static void poll(HMODULE module){
     // The saved Deck trace proved the Async import was unused for selection.
     // Refresh the actual native UI modifier consumer at the event boundary.
     if(!message_id){std::wstring name=L"S2UP.Deck175.Frame."+std::to_wstring(GetCurrentProcessId());message_id=RegisterWindowMessageW(name.c_str());if(!message_id){InterlockedExchange(&errors,3);return;}}
-    backend.select_context(controller181::context());
+    const auto input_context=controller181::context();
+    backend.select_context(input_context);
     if(!running&&GetTickCount64()>=next_attempt){
         if(!deck177::claim_battle(input_lease177))return;
         // A frontend can start between the first check and lease creation.
@@ -283,7 +312,10 @@ static void poll(HMODULE module){
     if(!running||!input_window||!native_window_proc)return;
     DWORD pid{};GetWindowThreadProcessId(input_window,&pid);if(pid!=GetCurrentProcessId())return;
     deck174::Frame frame;bool ok=backend.sample(clock_us(),GetForegroundWindow()==input_window,frame);
-    auto output=ok?controller181::sample(frame):deck181::Output{};
+    // The window thread may change menu ownership while Steam is sampling.
+    // Never dispatch a frame under a different action set from its source.
+    ok=ok&&input_context==controller181::context();
+    auto output=ok?controller181::sample(frame,input_context):deck181::Output{};
     const bool modifier_owner188=ok&&output.accepted&&!output.help_blocked&&output.context==deck174::Context::RTS&&frame.focused&&GetForegroundWindow()==input_window;
     modifiers188.publish(modifier_owner188&&output.held(deck181::Control),modifier_owner188&&output.held(deck181::Shift),modifier_owner188?input_window:nullptr,GetTickCount64());
     // Controls help is rendered by our own bounded presentation channel.
@@ -293,7 +325,20 @@ static void poll(HMODULE module){
     if(ok){
         if(output.show_controls){mailbox.invalidate();rts_mailbox.invalidate();}
         // The former RTS delivery path remains independent of possession intent.
-        if(output.context==deck174::Context::RTS&&!output.help_blocked)rts_mailbox.put(frame);else rts_mailbox.invalidate();
+        if(output.context==deck174::Context::RTS&&!output.help_blocked){
+            auto rts_frame=frame;
+            if(output.commander_rts_generation){
+                // Commander consumes RT and the directional stick while it owns input.
+                rts_frame.buttons=0;
+                rts_frame.left_stick=rts_frame.right_stick=rts_frame.right_pad={};
+                rts_frame.left_trigger=rts_frame.right_trigger=0;
+            }
+            if(output.fine216.owns_right_pad){
+                rts_frame.right_pad={};
+                rts_frame.buttons&=~deck174::bit(deck174::Button::RightPadTouch);
+            }
+            rts_mailbox.put(rts_frame);
+        }else rts_mailbox.invalidate();
         queued=mailbox.put(frame,output,state?state->lease_generation:0,state?state->actor_id:0,state?state->unit_id:0);
     }else{mailbox.invalidate();rts_mailbox.invalidate();}
     ReleaseSRWLockExclusive(&queue_lock);if(!queued)controller181::clear_input();
@@ -336,13 +381,22 @@ static bool window(HWND window,UINT message,WPARAM w,LPARAM l){
     ContextProof proof;bool context=native_context(proof);NativeHost host(proof.identity);
     InterlockedExchange(&controller181::menu_open,context&&proof.blocked?1:0);
     const auto now=clock_us();if(rts_reset||stopping||!context)rts.reset(host);if(reset||stopping||!context)controller181::cancel_window();
-    if(!stopping&&context&&proof.permits_rts()){
-        rts.begin(proof,host,now);
-        for(unsigned i=0;i<rts_count;++i)rts.sample(rts_frames[i],proof,host,now);
-        rts.finish(host,now);
-    }else rts.reset(host);
+    const bool run_rts=!stopping&&context&&proof.permits_rts();
+    unsigned next_rts=0;
+    if(run_rts)rts.begin(proof,host,now);else rts.reset(host);
     if(stopping)InterlockedExchange(&cleanup_done,1);
-    if(!stopping&&context)for(unsigned i=0;i<count;++i)controller181::dispatch(frames[i],proof);
+    if(!stopping&&context)for(unsigned i=0;i<count;++i){
+        // Deliver the native LT/RT state before the pad intent from that sample.
+        // A later cursor order must never get ahead of an earlier pad release.
+        while(run_rts&&next_rts<rts_count&&rts_frames[next_rts].epoch==frames[i].frame.epoch&&
+              rts_frames[next_rts].sequence<=frames[i].frame.sequence)
+            rts.sample(rts_frames[next_rts++],proof,host,now);
+        controller181::dispatch(frames[i],proof);
+    }
+    if(run_rts){
+        while(next_rts<rts_count)rts.sample(rts_frames[next_rts++],proof,host,now);
+        rts.finish(host,now);
+    }
     last_callback=now;return true;
 }
 static void stop(){

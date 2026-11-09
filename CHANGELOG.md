@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.36 — 2026-11-09
+
+- Added the experimental AI Commander wheel for the army, assigned groups and the possessed unit. The wheel hands orders to Shogun 2's battlefield AI.
+- Revised the possession HUD, command wheel and unit portraits. The wheel redraws more smoothly, and its arrowhead follows the selected direction.
+- Added an arrow-follow camera and a bow draw meter. Bows, firearms, rockets and hand mortars have distinct sights. Revision 125 tightens ranged spread at the low-accuracy end.
+- Improved aiming and firing with modded units by reading their loaded weapon data. The owner confirmed aiming and firing with Bo-Hiya launchers and Korean Pirates in Revision 124.
+- Improved melee timing, charging, mounted movement and returning a released soldier to formation. Updated the Steam Deck controls guide, campaign cursor, tooltips and formation controls.
+
+[Release notes and validation](docs/releases/v0.36.md).
+
 ## v0.34 follow-up — 2026-11-03
 
 - Fixed a QTE candidate-cleanup leak that could leave soldiers marked busy and unable to enter further melee, becoming especially visible among late-battle survivors.

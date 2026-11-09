@@ -1,9 +1,9 @@
 {
   "schema": 3,
   "product": "Shogun 2 Unit Possession",
-  "version": "0.35",
+  "version": "0.36",
   "branch": "main",
-  "tag": "v0.35",
+  "tag": "v0.36",
   "release_url": null,
   "repository_visibility": "public; owner controls visibility",
   "format": "Steam Workshop; automatic resources from each owned game",
@@ -44,7 +44,7 @@
     "steam_launch_option_required": false,
     "camera_chooser": false,
     "starting_view": "third-person",
-    "perspective_key": "P",
+    "perspective_key": "Tab or P",
     "resources": "automatically prepared from owned game and cached"
   },
   "storage": {
@@ -71,9 +71,21 @@
     "revision39_formal_loaded_hash_gate_completed": false,
     "revision50_owner_accepted_formation_controls": true,
     "revision51_owner_reported_custom_portrait_visible_on_Deck": true,
-    "revision51_formal_loaded_hash_gate_completed": false
+    "revision51_formal_loaded_hash_gate_completed": false,
+    "revision124_custom_weapon_live_test": {
+      "Bo-Hiya": [
+        "aim",
+        "fire"
+      ],
+      "Korean Pirates": [
+        "aim",
+        "fire"
+      ]
+    },
+    "revision125_offline_checks_passed": true,
+    "revision125_live_gameplay_verified": false
   },
-  "validation": "docs/public-release/V0_35_VALIDATION.json",
+  "validation": "docs/public-release/V0_36_VALIDATION.json",
   "owner_decisions": {
     "first_party_license": "MIT",
     "resources": "from owned game",
@@ -97,25 +109,23 @@
     "bow audio follows native animation",
     "small text in fitted Deck campaign panels",
     "unfinished directional menu highlighting",
-    "campaign-to-battle controller transitions",
-    "enemy acquisition failed revision34 owner test"
+    "campaign-to-battle controller transitions"
   ],
   "history": "Historical tags and release notes remain. Installer downloads were removed; earlier game-resource-containing downloads remain absent.",
   "legal_clearance": "Resource exclusion is not legal clearance for native hooks/reverse engineering; see PROVENANCE.md.",
   "github_runtime": {
-    "revision": "unit-cards-51",
+    "revision": "ranged-accuracy-floor-125",
     "candidate": 181,
     "pack": "shogun2_unit_possession_workshop165.pack",
-    "pack_sha256": "957c4990338b84b2ca1a62a8cd05a85cef49053d226e21a9bd8d687bedc031e7",
-    "pack_bytes": 4433168,
-    "pack_distributed_by_this_source_push": false,
-    "live_enemy_acquisition_accepted": false,
-    "native_sha256": "7ce9be0c8d98d513d1540542f328d22821930d15e1c5fcd00195bebc936274a6"
+    "pack_sha256": "4447693c927d9353f8220e02458737355b44bba44f4c1f26f9306edb78b91742",
+    "pack_bytes": 4663196,
+    "native_sha256": "9bde9ca2f9cf72fac9a485d3ac352a942770033b715532835d4db9a0171e99b1",
+    "pack_distributed_by_this_source_push": false
   },
-  "source_status": "v0.35 source tag and maintained main through Revision51. Steam Workshop delivers Revision39.",
+  "source_status": "v0.36 tags the combined PC and Steam Deck source for Revision 125. Workshop delivery is tracked separately.",
   "last_tagged_release": {
     "version": "0.33",
     "url": "https://github.com/logsam58/shogun2-unit-possession/releases/tag/v0.33"
   },
-  "source_tag_url": "https://github.com/logsam58/shogun2-unit-possession/tree/v0.35"
+  "source_tag_url": "https://github.com/logsam58/shogun2-unit-possession/tree/v0.36"
 }

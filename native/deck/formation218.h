@@ -41,14 +41,16 @@ class FormationPad {
 
     uintptr_t image_{}, root_{}, env_{}, ui_{}, widget_{}, control_{}, owner_{};
     unsigned thread_{};
-    int mode_{idle};
     std::array<SelectionList,2> lists_{};
     std::vector<Member> members_;
     std::array<Destination,max_selection> destinations_{};
     float pivot_x_{}, pivot_z_{}, planned_distance_{};
     uint16_t requested_angle_{}, planned_angle_{};
-    bool rotating_{}, translating_{}, plan_valid_{}, preview_ready_{};
-    ULONGLONG gesture_tick_{};
+    int width_steps_{};
+    unsigned width_file_budget_{};
+    bool starting_{}, rotating_{}, translating_{}, resizing_{}, plan_valid_{}, preview_ready_{};
+    bool release_append_{};
+    ULONGLONG gesture_tick_{}, release_tick_{};
 
     template<class T> static bool get(uintptr_t p,T& v) { return native214::value(p,v); }
     template<class T> static bool set(uintptr_t p,const T& v) {
@@ -102,7 +104,7 @@ class FormationPad {
         unsigned next=0;
         for(unsigned category=0;category<2;++category) {
             const auto& list=current[category];
-            if(list.count!=lists_[category].count||list.entries!=lists_[category].entries)return false;
+            if(list.count!=lists_[category].count)return false;
             for(unsigned i=0;i<list.count;++i) {
                 const auto& member=members_[next++];
                 unsigned id{};
@@ -161,20 +163,15 @@ class FormationPad {
         return control_&&control_live();
     }
 
-    bool begin_move(unsigned button) {
+    bool begin_move() {
         __try {
-            reinterpret_cast<void(__thiscall*)(uintptr_t,unsigned)>(image_+0x10dc0c0)(control_,button);
+            reinterpret_cast<void(__thiscall*)(uintptr_t,unsigned)>(image_+0x10dc0c0)(control_,2);
             return true;
         } __except(EXCEPTION_EXECUTE_HANDLER) { return false; }
     }
     void cancel_move() {
         __try {
             reinterpret_cast<void(__thiscall*)(uintptr_t,unsigned)>(image_+0x10dc060)(control_,0);
-        } __except(EXCEPTION_EXECUTE_HANDLER) {}
-    }
-    void native_release() {
-        __try {
-            reinterpret_cast<void(__thiscall*)(uintptr_t)>(image_+0x10f85f0)(control_);
         } __except(EXCEPTION_EXECUTE_HANDLER) {}
     }
     bool read_pose(Member& member) const {
@@ -271,7 +268,7 @@ class FormationPad {
         preview_ready_=false;
         if(!rotating_||!angle||angle!=requested_angle_||!preview_fields_owned()||
            !preview_context(selection,common,groups,units))return;
-        if(planned_angle_!=angle) {
+        if(!plan_valid_||planned_angle_!=angle) {
             plan_valid_=rotation_plan(angle);
             planned_angle_=angle;
         }
@@ -289,7 +286,7 @@ class FormationPad {
         if(!translating_||!std::isfinite(distance)||distance<=0.f||distance>4096.f||
            !translation_owned()||!get(root_+0x594,forward)||distance!=forward||
            !preview_context(selection,common,groups,units))return;
-        if(planned_distance_!=distance) {
+        if(!plan_valid_||planned_distance_!=distance) {
             plan_valid_=translation_plan(distance);
             planned_distance_=distance;
         }
@@ -351,9 +348,8 @@ class FormationPad {
         }
         if(!install_hook(0x42dfd0,32,reinterpret_cast<void*>(&move_preview_hook),
                          reinterpret_cast<void**>(&original_move_preview_),move_preview_target_))return false;
-        mode_=14;
-        if(!begin_move(2)||word(control_+0x40)!=14)return false;
         translating_=true;
+        if(!begin_move()||word(control_+0x40)!=14)return false;
         preview_owner_=this;
         gesture_tick_=GetTickCount64();
         return true;
@@ -388,8 +384,95 @@ class FormationPad {
         return true;
     }
 
+    bool width_owned() const {
+        int width{};
+        return preview_angle_owned()&&!word(root_+0x594)&&!word(root_+0x59c)&&
+            get(root_+0x590,width)&&width==width_steps_;
+    }
+    unsigned width_file_budget() const {
+        unsigned largest{};
+        auto read_count=[&](uintptr_t unit) {
+            unsigned files{};
+            // The stock frontage policy uses the current soldier count as
+            // its upper bound. Reject implausible counts before conversion.
+            if(!unit||!get(unit+0x384,files)||files>65535)return false;
+            largest=std::max(largest,files);
+            return true;
+        };
+        for(const auto& member:members_) {
+            if(!member.group) {
+                if(!read_count(member.object))return 0;
+                continue;
+            }
+            // Native 2fc880/2feac0 enumerate these same two group vectors.
+            for(unsigned offset:{0x20u,0x60u}) {
+                unsigned count{};
+                uintptr_t entries{};
+                if(!get(member.object+offset,count)||count>max_selection||
+                   !get(member.object+offset+4,entries)||(count&&!entries))return 0;
+                for(unsigned i=0;i<count;++i)
+                    if(!read_count(word(entries+i*4)))return 0;
+            }
+        }
+        return largest;
+    }
+    bool set_width(float fraction) {
+        if(!std::isfinite(fraction)||std::fabs(fraction)>1.f||!width_owned())return false;
+        int steps=0;
+        if(fraction!=0.f) {
+            const int amount=std::max(1,int(std::lround(std::fabs(fraction)*width_file_budget_)));
+            steps=fraction>0.f?amount:-amount;
+        }
+        if(steps==width_steps_)return true;
+        // The stock width renderer sets +598 after validating the new ghost.
+        // An older cursor or width preview cannot approve a changed size.
+        if(!set(root_+0x598,static_cast<unsigned char>(0))||!set(root_+0x590,steps))return false;
+        width_steps_=steps;
+        return true;
+    }
+    bool dispatch_width(uintptr_t queue,unsigned before) const {
+        const unsigned action=width_steps_>0?0xf:0x10;
+        __try {
+            // The stock Increase Rank/File release passes this width and
+            // action to the existing battle dispatcher after its ghost gate.
+            using Dispatch=void(__thiscall*)(uintptr_t,unsigned,float);
+            reinterpret_cast<Dispatch>(image_+0x10dfb80)(root_,action,float(std::abs(width_steps_)));
+        } __except(EXCEPTION_EXECUTE_HANDLER) { return false; }
+        unsigned after{};
+        return word(env_+0x28048)==queue&&get(queue+4+queue_capacity,after)&&
+            after>before&&after<=queue_capacity;
+    }
+    template<class Current> bool commit_width(Current current) {
+        const auto queue=word(env_+0x28048);
+        unsigned before{};
+        if(!queue||!get(queue+4+queue_capacity,before))return false;
+        return deck175::native_order_ready(image_,root_,env_,word,current,true)&&
+            dispatch_width(queue,before);
+    }
+    template<class Current> bool release_gesture(Current current) {
+        const auto now=GetTickCount64();
+        if(!release_tick_||now-release_tick_>180||now-gesture_tick_>450) {
+            cancel();
+            return false;
+        }
+        unsigned char ghost{};
+        const bool valid_ghost=get(root_+0x598,ghost)&&ghost==1;
+        bool committed=false;
+        if(translating_&&translation_owned()&&
+           owns_hook(move_preview_target_,reinterpret_cast<void*>(&move_preview_hook))) {
+            if(!preview_ready_||!valid_ghost)return false;
+            committed=commit_destinations(release_append_,current);
+            if(committed)play_move_cue();
+        } else if(resizing_&&width_steps_&&width_owned()) {
+            if(!valid_ghost)return false;
+            committed=commit_width(current);
+        }
+        cancel();
+        return committed;
+    }
+
     bool serialize(const Member& member,const Destination& destination,uintptr_t group_table,uintptr_t commander,
-                   unsigned key,unsigned flags,unsigned char* output,unsigned& length) {
+                   unsigned key,unsigned flags,bool append,unsigned char* output,unsigned& length) {
         alignas(16) unsigned char selection[0x44]{},order[0x80]{},context[16]{},packet[queue_capacity+4]{};
         bool order_live=false,context_live=false,ok=false;
         length=0;
@@ -400,7 +483,8 @@ class FormationPad {
             memcpy(selection+(member.group?4:0x10),&list,sizeof list);
             auto running=reinterpret_cast<unsigned(__thiscall*)(const void*)>(image_+0x4596f0)(selection)&255u;
             using Construct=void*(__thiscall*)(void*,const void*,const terrain224::Point*,unsigned,unsigned,unsigned);
-            reinterpret_cast<Construct>(image_+0x255680)(order,selection,&destination.point,destination.facing,running,0);
+            // The oriented move stores the native queue flag after the run flag.
+            reinterpret_cast<Construct>(image_+0x255680)(order,selection,&destination.point,destination.facing,running,append);
             order_live=true;
             uintptr_t table{};
             memcpy(&table,order,4);
@@ -429,7 +513,7 @@ class FormationPad {
         }
         return ok;
     }
-    template<class Current> bool commit_destinations(Current current) {
+    template<class Current> bool commit_destinations(bool append,Current current) {
         if(!current()||!selection_live())return false;
         const auto commander=word(owner_+0xe4);
         const auto registry=word(image_+0x18d9000);
@@ -449,7 +533,7 @@ class FormationPad {
         unsigned total=0;
         for(size_t i=0;i<members_.size();++i) {
             unsigned length{};
-            if(!serialize(members_[i],destinations_[i],image_+0x15c4da0,commander,key,flags,packet.data(),length)||
+            if(!serialize(members_[i],destinations_[i],image_+0x15c4da0,commander,key,flags,append,packet.data(),length)||
                length>queue_capacity-total)return false;
             memcpy(staged.data()+total,packet.data(),length);
             total+=length;
@@ -463,20 +547,6 @@ class FormationPad {
         MemoryBarrier();
         InterlockedExchange(reinterpret_cast<volatile LONG*>(queue+4+queue_capacity),LONG(used+total));
         return true;
-    }
-    template<class Current> bool commit_move(Current current) {
-        int mode{};
-        float distance{};
-        if(!get(control_+0x40,mode)||mode!=mode_||
-           !get(control_+0x48,distance)||!std::isfinite(distance)||
-           !deck175::native_order_ready(image_,root_,env_,word,current,true))return false;
-        const auto queue=word(env_+0x28048);
-        const auto before=word(queue+4+queue_capacity);
-        // The native release consumes a valid preview, then resets its compass.
-        // An empty preview is a cancellation and must not dispatch a fallback.
-        native_release();
-        const auto after=word(queue+4+queue_capacity);
-        return after>before&&after<=queue_capacity;
     }
     bool native_audio_address(uintptr_t address,bool executable) const {
         MEMORY_BASIC_INFORMATION info{};
@@ -510,12 +580,14 @@ class FormationPad {
     void forget() {
         image_=root_=env_=ui_=widget_=control_=owner_=0;
         thread_=0;
-        mode_=idle;
         lists_={};
         members_.clear();
         requested_angle_=planned_angle_=0;
         planned_distance_=0;
-        rotating_=translating_=plan_valid_=preview_ready_=false;
+        width_steps_=0;
+        width_file_budget_=0;
+        starting_=rotating_=translating_=resizing_=plan_valid_=preview_ready_=release_append_=false;
+        gesture_tick_=release_tick_=0;
     }
 public:
     static void disable_preview_hook() {
@@ -528,62 +600,68 @@ public:
         if(preview_owner_==this)preview_owner_=nullptr;
         if(control_live()) {
             if(rotating_&&preview_angle_owned()&&requested_angle_)set(root_+0x59a,uint16_t(0));
-            else if(mode_!=idle&&word(control_+0x40)==unsigned(mode_))cancel_move();
+            else if(translating_&&word(control_+0x40)==14)cancel_move();
+            else if(resizing_&&width_steps_&&width_owned())cancel_move();
         }
         forget();
     }
+    bool pending_release() const { return release_tick_!=0; }
     template<class Current> bool sample(uintptr_t image,uintptr_t root,uintptr_t env,
-                                       const deck216::FineIntent& input,Current current) {
+                                       const deck216::FineIntent& input,Current current,bool pointer_busy=false) {
         if(input.cancel||!current()) { cancel();return false; }
         if(input.began) {
             cancel();
             image_=image;root_=root;env_=env;thread_=GetCurrentThreadId();
-            if(!native214::admit(image,9)||!find_compass()||!capture_selection()||
-               word(control_+0x40)!=idle||!selection_live()) { forget();return false; }
-            if(input.turning) {
-                if(begin_rotation())return true;
+            if(!native214::admit(image,input.resizing?265:9)||!find_compass()||!capture_selection()) {
                 forget();
                 return false;
             }
-            const float magnitude=std::hypot(input.move.x,input.move.y);
-            if(!std::isfinite(magnitude)||magnitude<.99f||magnitude>1.01f) { forget();return false; }
-            if(input.move.x!=0.f&&input.move.y!=0.f) {
-                if(begin_translation(input.move))return true;
-                cancel();
-                return false;
+            starting_=true;
+            gesture_tick_=GetTickCount64();
+        }
+        if(!control_||!selection_live()) { cancel();return false; }
+        if(starting_) {
+            if(!input.active||GetTickCount64()-gesture_tick_>450) { cancel();return false; }
+            // LT may still be releasing its cursor order on this same UI tick.
+            if(pointer_busy||!preview_fields_owned())return true;
+            starting_=false;
+            if(input.resizing) {
+                width_file_budget_=width_file_budget();
+                resizing_=width_file_budget_!=0;
+                if(resizing_&&set_width(input.width_fraction))return true;
+            } else if(input.turning) {
+                if(begin_rotation())return true;
+            } else {
+                const float magnitude=std::hypot(input.move.x,input.move.y);
+                if(std::isfinite(magnitude)&&magnitude>=.99f&&magnitude<=1.01f&&begin_translation(input.move))return true;
             }
-            const bool sideways=std::fabs(input.move.x)>std::fabs(input.move.y);
-            const bool negative=sideways?input.move.x<0:input.move.y<0;
-            const unsigned button=sideways?(negative?6:7):(negative?3:2);
-            mode_=sideways?(negative?17:18):14;
-            if(begin_move(button)&&word(control_+0x40)==unsigned(mode_))return true;
             cancel();
             return false;
         }
-
-        if(!control_||input.turning!=rotating_||!selection_live()) { cancel();return false; }
+        if(pointer_busy) { cancel();return false; }
+        if(pending_release())return release_gesture(current);
+        if(input.turning!=rotating_||input.resizing!=resizing_) { cancel();return false; }
         if(!input.released) {
             if(translating_&&translation_owned()) { gesture_tick_=GetTickCount64();return true; }
-            if(!translating_&&(!rotating_||turn_to(input.turn)))return true;
+            if(rotating_&&turn_to(input.turn))return true;
+            if(resizing_&&set_width(input.width_fraction)) { gesture_tick_=GetTickCount64();return true; }
             cancel();
             return false;
         }
-        bool result=false;
-        if(rotating_) {
-            if(preview_ready_&&requested_angle_&&planned_angle_&&
-               GetTickCount64()-gesture_tick_<=450&&preview_fields_owned()&&
-               owns_hook(preview_target_,reinterpret_cast<void*>(&preview_hook)))
-                result=commit_destinations(current);
-        } else if(translating_) {
-            unsigned char ghost{};
-            if(preview_ready_&&GetTickCount64()-gesture_tick_<=450&&translation_owned()&&
-               get(root_+0x598,ghost)&&ghost&&
-               owns_hook(move_preview_target_,reinterpret_cast<void*>(&move_preview_hook)))
-                result=commit_destinations(current);
-        } else result=commit_move(current);
-        if(result)play_move_cue();
+        if(!rotating_) {
+            // Some releases arrive between the original preview reset and
+            // the next battle draw. Keep the exact gesture through that draw.
+            release_tick_=GetTickCount64();
+            release_append_=input.append;
+            return release_gesture(current);
+        }
+        const bool committed=preview_ready_&&requested_angle_&&planned_angle_&&
+            GetTickCount64()-gesture_tick_<=450&&preview_fields_owned()&&
+            owns_hook(preview_target_,reinterpret_cast<void*>(&preview_hook))&&
+            commit_destinations(input.append,current);
+        if(committed)play_move_cue();
         cancel();
-        return result;
+        return committed;
     }
 };
 }

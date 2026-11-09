@@ -24,7 +24,11 @@ static void equipment_mode_reset131();
 // owned soldier's safe native pose can temporarily ready its ranged weapon.
 static bool equipment_ranged_selected81(){return ((equipment_slot81==equipment81::Ranged&&!equipment_unit_melee134)||equipment_personal_override214)&&!equipment_ammo_inflight81;}
 static bool equipment_crouched81(){return equipment_crouch81!=0;}
+static void equipment_arrow_camera123(bool active){
+    if(equipment_status81)InterlockedExchange(&equipment_status81->arrow_camera,active?1:0);
+}
 static void equipment_reset81(){
+    equipment_arrow_camera123(false);
     bow_reset142();ability_reset141();equipment_mode_reset131();
     AcquireSRWLockExclusive(&equipment_input_lock81);equipment_requests81={};ReleaseSRWLockExclusive(&equipment_input_lock81);
     InterlockedExchange(&equipment_personal152,0);InterlockedExchange(&equipment_personal_override214,0);InterlockedExchange(&equipment_unit_melee134,0);InterlockedExchange(&equipment_lease81,0);InterlockedExchange(&equipment_ranged81,0);
@@ -32,7 +36,7 @@ static void equipment_reset81(){
     InterlockedExchange(&equipment_crouch_supported81,0);InterlockedExchange(&equipment_ammo_inflight81,0);
 }
 static void equipment_sample_input81(bool focus){
-    unsigned held=0;if(focus){if(GetAsyncKeyState('1')&0x8000)held|=1;if(GetAsyncKeyState('2')&0x8000)held|=2;}
+    unsigned held=0;if(focus){if(deck181::key_state('1')&0x8000)held|=1;if(deck181::key_state('2')&0x8000)held|=2;}
     bool active=focus&&state&&state->mode==POSSESSED&&!state->release&&!state->stop&&!dead_view();
     unsigned edges=equipment_edges81.sample(held,active);
     AcquireSRWLockExclusive(&equipment_input_lock81);
@@ -41,7 +45,7 @@ static void equipment_sample_input81(bool focus){
         // One native melee-mode toggle.2 has no weapon-mode binding.
         // Melee-only units have no alternative weapon mode to request.
         equipment_keys134(equipment_requests81,edges,equipment_ranged81!=0);
-        equipment_requests81.ctrl=(GetAsyncKeyState(VK_CONTROL)&0x8000)!=0;
+        equipment_requests81.ctrl=(deck181::key_state(VK_CONTROL)&0x8000)!=0;
     }else equipment_requests81={};
     ReleaseSRWLockExclusive(&equipment_input_lock81);
 }
@@ -61,5 +65,5 @@ static void equipment_initialize_mapping81(){
     equipment_status81=static_cast<EquipmentStatus81*>(MapViewOfFile(equipment_mapping81,FILE_MAP_ALL_ACCESS,0,0,sizeof(EquipmentStatus81)));
     require(equipment_status81!=nullptr,"Equipment telemetry mapping failed");
     memset(equipment_status81,0,sizeof(*equipment_status81));equipment_status81->magic=EQUIPMENT_MAGIC81;
-    equipment_status81->version=81;equipment_status81->size=sizeof(*equipment_status81);equipment_status81->pid=GetCurrentProcessId();
+    equipment_status81->version=EQUIPMENT_VERSION;equipment_status81->size=sizeof(*equipment_status81);equipment_status81->pid=GetCurrentProcessId();
 }

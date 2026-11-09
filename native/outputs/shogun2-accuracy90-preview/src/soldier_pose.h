@@ -185,7 +185,7 @@ static void apply_soldier_pose(uintptr_t holder,uintptr_t result){
         }else {mounted_held_palette.reset();mounted_acquisition88.reset();}
         for(unsigned k=0;k<3;++k)pose_pivot[k]=(field<float>(array,indices[0]*48+12+k*16)+field<float>(array,indices[1]*48+12+k*16))*0.5f;
         memcpy(pose_world,reinterpret_cast<void*>(holder+0x24),48);
-        bool aiming=equipment_ranged_selected81()&&state->aiming&&(GetAsyncKeyState(VK_RBUTTON)&0x8000)&&state->weapon_phase!=WEAPON_RELOAD;
+        bool aiming=equipment_ranged_selected81()&&state->aiming&&(deck181::key_state(VK_RBUTTON)&0x8000)&&state->weapon_phase!=WEAPON_RELOAD;
         if(carbine_profile&&aiming&&!mounted_carbine_pose_aim(possessed,aiming)){
             aiming=false;InterlockedIncrement(&mounted_carbine_predraw_blocks72);
         }

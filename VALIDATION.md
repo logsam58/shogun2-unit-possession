@@ -1,5 +1,13 @@
 # Validation
 
+The maintained PC and Steam Deck source is v0.36, Revision 125.
+[Revision 125 validation](docs/public-release/V0_36_VALIDATION.json) records the
+offline build and package checks, deployment hashes, and the earlier Revision 124
+custom-weapon playtest separately. The final Revision 125 accuracy changes still
+await a gameplay test.
+
+## Historical v0.34 validation
+
 The maintained combined PC/Steam Deck source is v0.34 revision39. Its fresh
 full build passed 100 adapter, 51 QTE and 8 HUD executables, original-engine
 candidate/reservation and renderer-coexistence tests, startup, resource, Lua,

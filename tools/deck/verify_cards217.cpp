@@ -39,6 +39,7 @@ int wmain(int argc,wchar_t** argv){C(argc==3);auto dir=fs::path(argv[1]);C(!fs::
  auto workshop=dir/L"workshop/3820000000";
  pack(workshop/L"workshop_art.pack",3,{
   {"db/uniforms_tables/default",table(L"default_portrait",L"DefaultModUniform",L"",L"default_unit")},
+  {"db/uniforms_tables/default_reused",table(L"special_card",L"DefaultModUniform",L"",L"other_unit")},
   {"db/uniforms_tables/icon",table(L"uniform_icon",L"ModIcon",L"mod_clan",L"icon_unit")},
   {"db/uniforms_tables/variant_a",table(L"wrong_variant",L"VariantA",L"mod_clan",L"ambiguous_unit")},
   {"db/uniforms_tables/variant_b",table(L"special_card",L"VariantB",L"mod_clan",L"ambiguous_unit")},
@@ -62,6 +63,8 @@ int wmain(int argc,wchar_t** argv){C(argc==3);auto dir=fs::path(argv[1]);C(!fs::
  };
  C(has(L"modded",L"mod_clan",L"data\\UI\\Units\\Info\\Shared.TGA",L"",66));
  C(has(L"default_unit",L"another_clan",L"",L"",68));
+ assert(has(L"DEFAULT_UNIT",L"Another_Clan",L"",L"",68)&&has(L"OTHER_UNIT",L"Another_Clan",L"",L"",67));
+ std::cout<<"PASS reused overhaul uniform names and case-insensitive unit identity\n";
  C(has(L"default_unit",L"another_clan",L"shared",L"",66));
  C(has(L"ambiguous_unit",L"mod_clan",L"shared",L"",66));
  C(has(L"modded",L"mod_clan",L"../invalid",L"square_only",70));

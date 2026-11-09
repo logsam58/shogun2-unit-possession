@@ -16,6 +16,7 @@
 #include "cursor_idle185.h"
 #include "native_input185.h"
 #include "escape218.h"
+#include "battle_speech226.h"
 #include "startup_handoff222.h"
 #include "native_ui185.h"
 #include "ui214.h"
@@ -51,9 +52,11 @@ static deck218::Escape native_escape218;
 static uintptr_t keyboard_image185{};static volatile LONG keyboard_allowed185{};
 static bool __cdecl campaign_poll185(){
  bool valid=native_input185.original();const auto now=GetTickCount64();
- bool allowed=keyboard_allowed185&&campaign_mode&&GetForegroundWindow()==game_window&&DWORD(GetTickCount()-DWORD(ui_tick181))<250;
+ const auto speech=deck226::active_speech(keyboard_image185);
+ const auto focused=GetForegroundWindow();
+ bool allowed=!speech&&keyboard_allowed185&&campaign_mode&&focused==game_window&&DWORD(GetTickCount()-DWORD(ui_tick181))<250;
  unsigned native_action{};campaign_keys185.apply(reinterpret_cast<unsigned char*>(keyboard_image185+0x1b30f58),valid,allowed,now,button_epoch183,&native_action);
- native_escape218.apply(reinterpret_cast<unsigned char*>(keyboard_image185+0x1b30f58),valid,GetForegroundWindow(),now);
+ native_escape218.apply(reinterpret_cast<unsigned char*>(keyboard_image185+0x1b30f58),valid,focused,now,speech);
  // Selection reads the original UI modifier cache as well as DirectInput.
  // Refresh that cache on this native input thread after our held-bit merge;
  // worker mouse messages alone do not populate it. Exact body/RET8 guarded.
@@ -112,7 +115,7 @@ static BOOL CALLBACK find_window(HWND window,LPARAM value){
     }return TRUE;
 }
 struct Host {
-    HWND window{};WPARAM buttons{},modifiers183{};deck178::Cursor cursor;float wheel{};deck185::CursorIdle cursor_idle;deck193::DoubleClick click214;
+    HWND window{};uintptr_t speech{};WPARAM buttons{},modifiers183{};deck178::Cursor cursor;float wheel{};deck185::CursorIdle cursor_idle;deck193::DoubleClick click214;
     void navigate(int direction){InterlockedExchange(&nav_waiting,1);InterlockedCompareExchange(&nav_pending,direction,0);}
     bool navigation_pending()const{return nav_waiting!=0;}
     void clear_navigation(){InterlockedExchange(&nav_pending,0);InterlockedExchange(&nav_waiting,0);InterlockedExchange(&target_pending,0);}
@@ -144,9 +147,10 @@ struct Host {
     }
     bool escape(){
         RECT rect{};POINT point{};if(!position(rect,point))return false;
-        // Restore the existing menu/movie window-key route. Only the active
-        // campaign input owner queues into DirectInput; never install/assume
-        // that keyboard owner merely because an intro window is focused.
+        // The native phase-2 speech uses the game shortcut dispatcher, which
+        // resolves DirectInput scan 1 to action 0. Ordinary movies still use
+        // window input. Bind this pulse to this speech until the native poll.
+        if(speech)return native_input185.enabled&&native_escape218.request(window,GetTickCount64(),speech);
         if(campaign_mode&&native_input185.enabled)return native_escape218.request(window,GetTickCount64());
         if(!PostMessageW(window,WM_KEYDOWN,VK_ESCAPE,LPARAM(0x00010001)))return false;
         return PostMessageW(window,WM_KEYUP,VK_ESCAPE,LPARAM(0xc0010001))!=FALSE;
@@ -183,9 +187,12 @@ struct Host {
         }buttons=modifiers183=0;wheel=0;reset_cursor();
     }
 };
-template<class H>static bool menu_press181(bool campaign,const deck174::Edges& edges,H& host){
+template<class H>static bool menu_press181(bool campaign,bool fresh,const deck174::Edges& edges,H& host){
  if(!(edges.down&deck174::bit(deck174::Button::Menu)))return false;
- if(campaign){InterlockedExchange(&pause_pending,1);return true;}
+ if(campaign){
+  if(!fresh)return false; // A stale campaign UI cannot distinguish an advisor intro from the pause menu.
+  InterlockedExchange(&pause_pending,1);return true;
+ }
  return host.escape();
 }
 template<class H>static void campaign_cursor181(const deck174::Frame& frame,deck174::Vec2 pan,H& host){
@@ -261,12 +268,12 @@ static DWORD WINAPI worker(void*){
         if(!host.window){EnumWindows(find_window,reinterpret_cast<LPARAM>(&host.window));game_window=host.window;}
 
         auto now=GetTickCount64();auto& backend=frontend177::backend;
-        const bool campaign=campaign_mode!=0;const bool panel=campaign&&campaign_panel188!=0;
-        // Match the accepted campaign-only owner lifetime. A focused menu or
-        // movie is not evidence that its keyboard poll belongs to this worker.
-        // Startup barrier above also drains a live campaign owner BEFORE the
-        // adapter validates/creates its own hook.
-        if(campaign&&host.focused()&&DWORD(GetTickCount()-DWORD(ui_tick181))<250){
+        host.speech=deck226::active_speech(engine);
+        const bool campaign=campaign_mode!=0&&!host.speech;const bool panel=campaign&&campaign_panel188!=0;
+        // The existing startup barrier drains this frontend poll before the
+        // battle adapter takes ownership. A phase-2 speech is earlier than RTS.
+        const bool campaign_frame=campaign&&DWORD(GetTickCount()-DWORD(ui_tick181))<250;
+        if((campaign_frame||host.speech)&&host.focused()){
             if(!keyboard_start185(engine)){native_escape218.clear();InterlockedExchange(&keyboard_allowed185,0);campaign_keys185.clear();}
         }else if(!keyboard_stop185())continue;
         InterlockedExchange(&keyboard_allowed185,campaign&&host.focused()&&native_input185.enabled?1:0);
@@ -305,7 +312,7 @@ static DWORD WINAPI worker(void*){
             if(!shortcut_owns184)pointer_policy.sample(menu_frame,now*1000,frontend177::config,host,back);
             if(back){if(DWORD(GetTickCount()-DWORD(ui_tick181))<250)InterlockedExchange(&back_pending,1);else host.escape();}
             if(armed){
-                if(DWORD(GetTickCount()-DWORD(ui_tick181))<250)menu_press181(campaign,edges,host);else menu_press181(false,edges,host);
+                menu_press181(campaign,DWORD(GetTickCount()-DWORD(ui_tick181))<250,edges,host);
                 if(campaign){
                     unsigned actions=campaign_buttons183.sample(frame,edges,now*1000,!panel);
                     if(panel)actions&=(deck183::Arts|deck183::Finance|deck183::Diplomacy|deck183::Clan|(city_details214?(deck183::Next|deck183::Previous):0));
@@ -330,7 +337,11 @@ static DWORD WINAPI worker(void*){
                 }
             }
             } // help owns its buttons and cannot pass commands to the game
-            cursor194.tick(host.window,armed&&!help_result188.blocked, (frame.buttons&deck174::bit(deck174::Button::RightPadTouch))!=0,now);
+            const bool pointer_allowed=armed&&!help_result188.blocked;
+            const bool ui_current=DWORD(GetTickCount()-DWORD(ui_tick181))<250;
+            const bool campaign_pointer=pointer_allowed&&campaign&&ui_current&&campaign_camera181(engine)!=0;
+            cursor194.tick(host.window,pointer_allowed,
+                (frame.buttons&deck174::bit(deck174::Button::RightPadTouch))!=0,now,campaign_pointer);
             previous_sample=now;
             if(!controller_channel.shared)controller_channel.open(GetCurrentProcessId(),true);
             deck181::Sample presence;presence.tick=now;presence.focused=host.focused()&&armed;presence.context=unsigned(campaign&&!panel&&!help188.open?deck174::Context::Campaign:deck174::Context::Menu);controller_channel.publish(presence);
@@ -454,7 +465,7 @@ static bool decorate214(const std::string& text){
  if(text.size()<=begin||text.size()>begin+8)return false;
  uintptr_t address=0;for(size_t i=begin;i<text.size();++i){char c=text[i];unsigned digit=c>='0'&&c<='9'?c-'0':c>='a'&&c<='f'?c-'a'+10:c>='A'&&c<='F'?c-'A'+10:16;if(digit>15)return false;address=(address<<4)|digit;}
  uintptr_t root{};if(address<65536||!native214::value(deck185::native_ui185.base+0x1bbe364,root))return false;
- return deck214::decorate(root,address,corner);
+ return corner?deck214::decorate_corner(root,address):deck85::observe_campaign_tooltip(root,address);
 }
 static bool back188(){return campaign_mode&&GetCurrentThreadId()==ui_owner181&&campaign_keys185.put(deck183::Back,GetTickCount64(),button_epoch183);}
 static bool context_state(void* lua){

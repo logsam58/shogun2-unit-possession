@@ -2,10 +2,12 @@
 #include "native214.h"
 // Included after native_ui185.h. All edits execute on its current root UI thread.
 namespace deck214 {
-struct Geometry {uintptr_t widget{},state{};float width{},height{},scaled_width{},scaled_height{};};
+
 struct Font {uintptr_t state{};int original{},scaled{};};
-inline uintptr_t owner_root{};inline std::vector<Geometry> geometry;inline std::vector<Font> fonts;
+inline uintptr_t owner_root{};inline std::vector<Font> fonts;
 struct Node {uintptr_t widget{},state{};float x{},y{},width{},height{};unsigned depth{};};
+struct Geometry {uintptr_t widget{},state{};float width{},height{};};
+inline std::vector<Geometry> geometry;
 inline bool node(uintptr_t at,Node& n){
  uintptr_t table{};n.widget=at;
  if(!native214::value(at,table)||(table!=deck185::native_ui185.base+0x16e2aac&&table!=deck185::native_ui185.base+0x1704cdc)||!native214::value(at+0xb8,n.state)||!n.state)return false;
@@ -41,17 +43,20 @@ inline bool font(uintptr_t widget,uintptr_t state,float scale){
  if(!linked(widget)||!native214::value(state+4,owner)||owner!=widget||!native214::value(state+0xe4,normal)||!native214::value(state+0xd0,current))return false;
  // Native f82540 loads the font's point size into+e4; f9ce40 uses+d0
  // as its per-state override. No font family/resource pointer is replaced.
- if(normal<6||normal>48)return true;
  auto item=std::find_if(fonts.begin(),fonts.end(),[&](const Font& f){return f.state==state;});
+ if((normal<6||normal>48)&&(item==fonts.end()||normal!=item->scaled))return true;
  if(item==fonts.end()){if(fonts.size()>=1024)return false;fonts.push_back({state,normal,std::min(64,int(std::lround(normal*scale)))});item=fonts.end()-1;}
- else if(normal!=item->original&&normal!=item->scaled){item->original=normal;item->scaled=std::min(64,int(std::lround(normal*scale)));}
+ else{
+  if(normal>=6&&normal<=48&&normal!=item->original&&normal!=item->scaled)item->original=normal;
+  item->scaled=std::min(64,int(std::lround(item->original*scale)));
+ }
  if(normal==item->scaled&&current==item->scaled)return true;
  __try{
   *reinterpret_cast<int*>(state+0xe4)=item->scaled;*reinterpret_cast<int*>(state+0xd0)=item->scaled;
   reinterpret_cast<void(__thiscall*)(void*)>(deck185::native_ui185.base+0xf87480)(reinterpret_cast<void*>(state));return true;
  }__except(EXCEPTION_EXECUTE_HANDLER){return false;}
 }
-inline bool decorate(uintptr_t root,uintptr_t target,bool corner){
+inline bool decorate_corner(uintptr_t root,uintptr_t target){
  const auto image=deck185::native_ui185.base;
  if(!deck185::native_ui185.ready||!native214::admit(image,5)||!root||!target||target==root)return false;
  uintptr_t ancestor=target;
@@ -60,10 +65,11 @@ inline bool decorate(uintptr_t root,uintptr_t target,bool corner){
  if(owner_root!=root){owner_root=root;geometry.clear();fonts.clear();}
  Node first;if(!node(target,first)||!original_position(first)||first.width<1||first.height<1)return false;
  auto view=deck185::active_ui185();if(!deck185::ui_size_valid(view))return false;
- const float scale=corner?1.15f:1.5f;
- // Whole tooltip fits the current logical viewport. The small end-turn corner
- // keeps its bottom/right anchor and never resizes a campaign modal or map.
- const float factor=std::min({scale,(float(view.width)-16)/first.width,(float(view.height)-16)/first.height});
+ // Keep the end-turn controls anchored to the bottom-right corner.
+ auto found=std::find_if(geometry.begin(),geometry.end(),[&](const Geometry& g){return g.widget==target&&g.state==first.state;});
+ const bool fresh=found==geometry.end();
+ const float width=fresh?first.width:found->width,height=fresh?first.height:found->height;
+ const float factor=std::min({1.15f,(float(view.width)-16)/width,(float(view.height)-16)/height});
  if(factor<1.f)return false;
  std::vector<Node> nodes{first};
  for(unsigned i=0;i<nodes.size();++i){
@@ -74,14 +80,16 @@ inline bool decorate(uintptr_t root,uintptr_t target,bool corner){
    next.depth=parent.depth+1;nodes.push_back(next);
   }
  }
- auto found=std::find_if(geometry.begin(),geometry.end(),[&](const Geometry& g){return g.widget==target&&g.state==first.state;});
- bool fresh=found==geometry.end();
- float anchor_x=first.x,anchor_y=first.y;
  if(fresh){
-  if(geometry.size()>=64){geometry.clear();fonts.clear();}
-  if(corner){anchor_x=std::max(8.f,first.x+first.width-first.width*factor);anchor_y=std::max(8.f,first.y+first.height-first.height*factor);}
-  for(const auto& n:nodes)if(n.width>0&&n.height>0){if(!resize(n,n.width*factor,n.height*factor)||!move(n.widget,anchor_x+(n.x-first.x)*factor,anchor_y+(n.y-first.y)*factor))return false;}
-  geometry.push_back({target,first.state,first.width,first.height,first.width*factor,first.height*factor});
+  const float anchor_x=std::max(8.f,first.x+width-width*factor);
+  const float anchor_y=std::max(8.f,first.y+height-height*factor);
+  const auto& original=nodes;
+  for(const auto& n:original)if(n.width>0&&n.height>0){
+   if(!resize(n,n.width*factor,n.height*factor)||
+      !move(n.widget,anchor_x+(n.x-original.front().x)*factor,anchor_y+(n.y-original.front().y)*factor))return false;
+  }
+  if(geometry.size()>=64)geometry.erase(geometry.begin());
+  geometry.push_back({target,first.state,width,height});
  }
  for(const auto& n:nodes){
   unsigned count{};uintptr_t states{};
@@ -89,11 +97,12 @@ inline bool decorate(uintptr_t root,uintptr_t target,bool corner){
   for(unsigned i=0;i<count;++i){uintptr_t s{};if(!native214::value(states+i*4,s)||!s||!font(n.widget,s,factor))return false;}
  }
  Node after;if(!node(target,after)||!original_position(after))return false;
- // Native text wrapping may change a tooltip's final dimensions. Keep its
- // native close/hover geometry aligned and its whole frame on-screen.
+ // Keep the finished corner controls in the current viewport.
  float x=std::clamp(after.x,8.f,std::max(8.f,float(view.width)-after.width-8));
  float y=std::clamp(after.y,8.f,std::max(8.f,float(view.height)-after.height-8));
  if(x!=after.x||y!=after.y)return move(target,x,y);
  return true;
 }
 } // deck214
+
+#include "tooltip85.h"

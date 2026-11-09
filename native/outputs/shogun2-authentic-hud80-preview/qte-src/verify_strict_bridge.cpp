@@ -21,7 +21,14 @@ int main(){try{using namespace qte;PreparedWorld w;unsigned cases=0;
   if(mode==0){check(b.prepare(World::witness,1,own,false)==1&&w.prepares==0&&w.rolls==0,"Cooldown forwarded stock melee");continue;}
   b.prepare(World::witness,1,own);
   if(mode==1)b.release();if(mode==2){own.lease++;b.frame(own,.1,false,true,b.snapshot().serial,false,false);}
-  if(mode==3){w.put(World::unit1+0xce8,99u);b.frame(own,.1,false,true,b.snapshot().serial,false,false);}
+  if(mode==3){
+   const auto locked=b.snapshot();w.put(World::unit1+0xce8,99u);
+   b.frame(own,locked.ideal,false,true,locked.serial,true,false);
+   check(b.snapshot().result==Result::Success,"Unit facts invalidated a locked pair");
+   check(b.prepare(World::witness,1,own)==0&&w.resumes==1&&w.rolls==1&&w.committed.outcome==5,
+         "Locked pair did not commit the original answer");
+   continue;
+  }
   if(mode==4)b.teardown();
   check(b.prepare(World::witness,1,own)==1&&w.prepares==1&&w.resumes==0,"Cancellation/context loss replayed a stock animation");
  }

@@ -49,5 +49,40 @@ int main(){unsigned cases=0;auto check=[&](bool ok){assert(ok);++cases;};deck216
          released.released&&released.move.x==expected.x&&released.move.y==expected.y);
   }
  }
+ for(bool hold_on_press:{false,true})for(bool hold_on_release:{false,true}) {
+  f.left_pad={1,0};
+  const auto l4=bit(Button::L4);
+  f.buttons=bit(Button::LeftPadClick)|(hold_on_press?l4:0);
+  const auto press=pad.sample(f,2300);
+  f.buttons=hold_on_release?l4:0;
+  const auto release=pad.sample(f,2400);
+  check(press.began&&!press.append&&release.released&&release.append==hold_on_release);
+ }
+ const auto both=bit(Button::LeftPadClick)|bit(Button::RightPadClick);
+ for(float direction:{-1.f,1.f}) {
+  pad.reset();f.left_pad={.95f,0};f.right_pad={};f.buttons=bit(Button::LeftPadClick);
+  check(pad.sample(f,3000).move.x==1);
+  f.left_pad={};f.buttons=both;const auto press=pad.sample(f,3100);
+  check(press.began&&press.resizing&&press.owns_right_pad&&!press.turning&&!press.move.x&&!press.width_fraction);
+  f.right_pad={direction,0};
+  check(!pad.sample(f,3140).width_fraction);
+  f.left_pad={direction,0};
+  check(!pad.sample(f,3170).width_fraction);
+  f.left_pad={-.078f*direction,0};f.right_pad={.078f*direction,0};
+  check(!pad.sample(f,3180).width_fraction);
+  f.left_pad={-.085f*direction,0};f.right_pad={.085f*direction,0};
+  check(pad.sample(f,3185).width_fraction*direction>0.f);
+  f.left_pad={-.34f*direction,0};f.right_pad={.34f*direction,0};
+  check(std::fabs(pad.sample(f,3190).width_fraction-.25f*direction)<.0001f);
+  f.left_pad={-.60f*direction,0};f.right_pad={.60f*direction,0};
+  const auto drag=pad.sample(f,3200);
+  check(drag.active&&drag.resizing&&!drag.began&&drag.width_fraction==direction);
+  f.buttons=bit(Button::RightPadClick);const auto release=pad.sample(f,3300);
+  check(release.released&&release.resizing&&release.width_fraction==drag.width_fraction&&release.owns_right_pad);
+  const auto tail=pad.sample(f,3400);check(!tail.active&&!tail.released&&tail.owns_right_pad);
+  f.buttons=0;pad.sample(f,3500);
+  f.left_pad={.95f,0};f.buttons=bit(Button::LeftPadClick);const auto move=pad.sample(f,3600);
+  check(move.began&&!move.resizing&&move.move.x==1);
+ }
  std::cout<<"PASS fine216: "<<cases<<" eight-sector, release-only, center-boundary and drag cases; held samples never reissue an order\n";
 }

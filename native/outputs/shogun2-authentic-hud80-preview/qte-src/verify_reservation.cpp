@@ -10,6 +10,22 @@ static unsigned target_calls;
 static uint32_t __fastcall fake_target(void*,void*,uint32_t,uint32_t b,uint32_t c,uint32_t d,uint32_t e,uint32_t f,uint32_t g,uint32_t h,uint32_t i,uint32_t j,uint32_t k,uint32_t l,uint32_t m){
     require(b==2&&c==3&&d==4&&e==5&&f==6&&g==7&&h==8&&i==9&&j==10&&k==11&&l==12&&m==13,"Target raw stack arguments changed");++target_calls;return 0x12345678;
 }
+static unsigned alignment_calls,playback_updates;
+static uint32_t __fastcall align_pair(void* witness,void*){
+    auto address=uint32_t(witness);
+    require(waiting_for_alignment(address),"Continuation ran outside native alignment");
+    if(++alignment_calls==2){
+        retarget::at<uint8_t>(address,0xc)=1;
+        retarget::at<uint8_t>(address,0xd0)=0;
+        retarget::at<uint32_t>(address,0x98)=0x2000;
+        for(auto participant:{committed_player,committed_enemy})retarget::at<uint32_t>(participant.address,0x688)=address;
+    }
+    return 0;
+}
+static uint32_t __fastcall advance_pair(void* witness,void*){
+    require(!waiting_for_alignment(uint32_t(witness)),"Animation advanced before native alignment");
+    ++playback_updates;return 0;
+}
 int main(){try{
     auto mapped212=VirtualAlloc(nullptr,0x1bc9000,MEM_COMMIT|MEM_RESERVE,PAGE_READWRITE);require(mapped212,"Reservation engine fixture");
     Status status{};state=&status;engine=uint32_t(mapped212);enabled=1;coordinator=1;
@@ -116,6 +132,28 @@ int main(){try{
     retarget::at<uint32_t>(mount,0x6cc)=1;
     release_actor_hook(reinterpret_cast<void*>(w),nullptr,horse.data());
     require(native_releases==++releases&&active_callbacks==0,"Owned mounted cleanup blocked");
+    // A verdict retains the same witness, including when its native
+    // continuation chooses a different clip variant for that same verdict.
+    retarget::at<uint32_t>(ptr(p),0x210)=0;
+    retarget::at<uint32_t>(ptr(p),0x688)=0;
+    retarget::at<uint32_t>(ptr(e),0x688)=0;
+    require(combat_identity(reader(),ptr(p),engine,committed_player),"On-foot identity after dismount");
+    retarget::at<uint32_t>(w,0x30)=ptr(p);retarget::at<uint32_t>(w,0x34)=ptr(e);retarget::at<uint32_t>(w,0x38)=2;
+    retarget::at<uint8_t>(w,0xc)=0;retarget::at<uint8_t>(w,0xd0)=1;
+    retarget::at<uint32_t>(w,0x98)=0x1000;retarget::at<NativeVerdict>(w,0x80)={0,ptr(p),ptr(e)};
+    require(authorize(authorized212,2,Result::Success,committed_player,committed_enemy),"Pending verdict authorization");
+    require(seal_authorization(w,authorized212.generation,{0,ptr(p),ptr(e)}),"Pending native verdict was not sealed");
+    native_prepare=reinterpret_cast<NativeWitnessCall>(align_pair);
+    native_update=reinterpret_cast<NativeWitnessCall>(advance_pair);
+    owns_coordinator=true;
+    for(unsigned i=1;i<=2;++i){
+        lease212.heartbeat=GetTickCount64();
+        require(controlled(w,authorized212.generation,true)==0&&alignment_calls==i&&!playback_updates,
+                "A pending verdict was discarded or allowed to play early");
+        require(dispatch(f,1,false)==1,"Crowd encounter replaced an aligning verdict");
+    }
+    require(controlled(w,authorized212.generation,true)==0&&playback_updates==1,"Exact pair did not play after alignment");
+    owns_coordinator=false;
     VirtualFree(mapped212,0,MEM_RELEASE);
     std::cout<<"PASS: production conflict dispatch and release wrappers; reserved pair cannot be stolen or unregistered by foreign witness removal; unrelated, owned, replaced and ended-reservation cleanup forward exactly once. Local synthetic actors only.\n";return 0;
 }catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}}
