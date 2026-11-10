@@ -1,4 +1,5 @@
 #pragma once
+#include "campaign181.h"
 namespace deck85 {
 
 struct Point {float x{},y{};};
@@ -75,12 +76,11 @@ inline bool observe_campaign_tooltip(uintptr_t root,uintptr_t widget){
     return true;
 }
 
-inline float battle_card_strip_top(uintptr_t root,deck185::UiSize view){
-    // 10f9e640 publishes the current hit widget. 110d1230 stores
-    // GetReviewPanelComponent at manager+9c; 110f8cb0 parents land
-    // cards there. Check the same native serial-to-card registry used
-    // by the battle card manager, so adjacent button tooltips stay put.
-    uintptr_t battle{},table{},manager{},owner{},strip{},hover{};
+inline uintptr_t battle_card_strip(uintptr_t root,uintptr_t& manager){
+    // The native battle card manager owns the review panel at manager+9c.
+    // Its attachment to the current UI root distinguishes it from the
+    // front-end army setup and from stale battle state on return to menus.
+    uintptr_t battle{},table{},owner{},strip{};
     unsigned char visible{};
     if(!native214::value(image+0x1bc8180,battle)||!battle||
        !native214::value(battle,table)||table!=image+0x170d284||
@@ -88,8 +88,16 @@ inline float battle_card_strip_top(uintptr_t root,deck185::UiSize view){
        !native214::value(manager,table)||table!=image+0x170d184||
        !native214::value(manager+0x98,owner)||owner!=battle||
        !native214::value(manager+0x9c,strip)||!attached(strip,root)||
-       !native214::value(strip+0xf5,visible)||visible!=1||
-       !native214::value(image+0x1bbeac8,hover)||!attached(hover,strip))return 0.f;
+       !native214::value(strip+0xf5,visible)||visible!=1)return 0;
+    return strip;
+}
+
+inline float battle_card_strip_top(uintptr_t manager,uintptr_t strip,deck185::UiSize view){
+    // 10f9e640 publishes the hit widget. Check the native serial-to-card
+    // registry so adjacent button tooltips use their normal placement.
+    uintptr_t hover{};
+    if(!strip||!native214::value(image+0x1bbeac8,hover)||!attached(hover,strip))return 0.f;
+    unsigned char visible{};
     uintptr_t path[16]{};
     unsigned depth=0;
     for(;hover!=strip&&depth<16;++depth){
@@ -137,6 +145,16 @@ inline bool tooltip_projection(uintptr_t widget,const void* context,Projection& 
     if(!attached(widget,root)||!deck214::node(widget,node)||
        (widget!=active&&node.state!=observed->state)||
        !native214::value(widget+0xf5,visible)||visible!=1||!deck214::original_position(node))return false;
+    // The shared active-tooltip slot is also used by Custom Battle setup.
+    // Project only with a live campaign camera or a battle-owned card panel
+    // attached to this root. Otherwise let Shogun draw the popup as authored.
+    uintptr_t manager{};
+    const auto strip=battle_card_strip(root,manager);
+    if(!strip&&!deck181::campaign_camera(image,[](uintptr_t address){
+        uintptr_t value{};
+        native214::value(address,value);
+        return value;
+    }))return false;
     // Native draw context starts with sprite and font renderers. Both use
     // the same logical viewport to convert their origins and dimensions.
     uintptr_t draw_context[2]{},batch_table{},font_table{},font_batch{},renderer{},render_table{};
@@ -148,7 +166,7 @@ inline bool tooltip_projection(uintptr_t widget,const void* context,Projection& 
        !native214::value(renderer,render_table)||render_table!=image+0x1754574)return false;
     auto view=deck185::active_ui185();
     if(!deck185::ui_size_valid(view)||node.width<=0||node.height<=0)return false;
-    const float strip_top=widget==active?battle_card_strip_top(root,view):0.f;
+    const float strip_top=widget==active?battle_card_strip_top(manager,strip,view):0.f;
     const auto place=placement({node.x,node.y},node.width,node.height,view,strip_top);
     if(!strip_top&&place.scale<=1.f)return false;
     result={reinterpret_cast<void*>(renderer),place};

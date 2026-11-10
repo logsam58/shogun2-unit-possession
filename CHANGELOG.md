@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.37 — 2026-11-09
+
+- Restored the original tooltips on the Custom Battle army setup screen.
+  The owner confirmed the fix on PC.
+
+[Release notes and validation](docs/releases/v0.37.md).
+
 ## v0.36 — 2026-11-09
 
 - Added the experimental AI Commander wheel for the army, assigned groups and the possessed unit. The wheel hands orders to Shogun 2's battlefield AI.

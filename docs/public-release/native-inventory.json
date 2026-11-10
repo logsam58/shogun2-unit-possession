@@ -3484,17 +3484,9 @@
     },
     {
       "path": "native/deck/tooltip85.h",
-      "line": 29,
-      "tags": [
-        "synchronization"
-      ],
-      "rvas": []
-    },
-    {
-      "path": "native/deck/tooltip85.h",
       "line": 30,
       "tags": [
-        "abi"
+        "synchronization"
       ],
       "rvas": []
     },
@@ -3508,7 +3500,7 @@
     },
     {
       "path": "native/deck/tooltip85.h",
-      "line": 40,
+      "line": 32,
       "tags": [
         "abi"
       ],
@@ -3516,7 +3508,15 @@
     },
     {
       "path": "native/deck/tooltip85.h",
-      "line": 55,
+      "line": 41,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/deck/tooltip85.h",
+      "line": 56,
       "tags": [
         "synchronization"
       ],
@@ -3524,7 +3524,7 @@
     },
     {
       "path": "native/deck/tooltip85.h",
-      "line": 158,
+      "line": 176,
       "tags": [
         "abi"
       ],
@@ -3532,7 +3532,7 @@
     },
     {
       "path": "native/deck/tooltip85.h",
-      "line": 182,
+      "line": 200,
       "tags": [
         "hook"
       ],
@@ -3540,7 +3540,7 @@
     },
     {
       "path": "native/deck/tooltip85.h",
-      "line": 187,
+      "line": 205,
       "tags": [
         "hook"
       ],
@@ -3548,7 +3548,7 @@
     },
     {
       "path": "native/deck/tooltip85.h",
-      "line": 193,
+      "line": 211,
       "tags": [
         "hook"
       ],

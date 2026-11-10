@@ -1,5 +1,12 @@
 # Validation
 
+The maintained PC and Steam Deck source is v0.37, Revision 126. The owner
+confirmed the Custom Battle setup tooltip fix on PC after staging.
+[Revision 126 validation](docs/public-release/V0_37_VALIDATION.json) separates
+that report from the offline checks. Steam Deck hardware testing is pending.
+
+## Historical v0.36 validation
+
 The maintained PC and Steam Deck source is v0.36, Revision 125.
 [Revision 125 validation](docs/public-release/V0_36_VALIDATION.json) records the
 offline build and package checks, deployment hashes, and the earlier Revision 124

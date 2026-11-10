@@ -88,22 +88,44 @@ static void test_card_strip(uintptr_t base,uintptr_t root,uintptr_t tip,const vo
  Patch185 battle_root(base+0x1bc8180,&battle_ptr,4),hover(base+0x1bbeac8,&decorated,4);
  const auto plain=deck85::placement({float(view.width)-242,float(view.height)-114},240,112,view);
  deck85::Projection projected;
- assert(deck85::battle_card_strip_top(root,view)==top);
+ uintptr_t owner_manager{};
+ assert(deck85::battle_card_strip(root,owner_manager)==strip_ptr&&owner_manager==manager_ptr);
+ assert(deck85::battle_card_strip_top(manager_ptr,strip_ptr,view)==top);
  assert(deck85::tooltip_projection(tip,context,projected));
  assert(projected.place.scale==plain.scale&&projected.place.to.x==plain.to.x);
  assert(projected.place.to.y+112*projected.place.scale<=top-5.99f);
  assert(projected.place.to.y<plain.to.y);
  card.bytes[0xf5]=0;
- assert(deck85::battle_card_strip_top(root,view)==0);
+ assert(deck85::battle_card_strip_top(manager_ptr,strip_ptr,view)==0);
  card.bytes[0xf5]=1;
  {Patch185 noncard(base+0x1bbeac8,&unrelated,4);
-  assert(deck85::battle_card_strip_top(root,view)==0);
+  assert(deck85::battle_card_strip_top(manager_ptr,strip_ptr,view)==0);
   assert(deck85::tooltip_projection(tip,context,projected)&&projected.place.to.y==plain.to.y);}
+ // An old battle manager may survive leaving the battlefield. Its
+ // review strip must still belong to the currently drawn root.
+ set191(strip,0x94,0);
+ assert(!deck85::tooltip_projection(tip,context,projected));
  const auto large=deck85::placement({-30,top},float(view.width),float(view.height),view,top);
  assert(large.scale>0&&large.scale<1&&large.to.y>=12&&large.to.y+view.height*large.scale<=top-5.99f);
 }
 
-int wmain(int argc,wchar_t** argv){assert(argc==3);unsigned cases{},strip_cases{};
+template<class Check>
+static void with_campaign_ui(uintptr_t base,Check check){
+ std::array<uintptr_t,0xa9c/4> campaign{};
+ std::array<uintptr_t,0x13c/4> camera{};
+ uintptr_t cameras[]{reinterpret_cast<uintptr_t>(camera.data())};
+ uintptr_t node[]{0,1,reinterpret_cast<uintptr_t>(cameras)};
+ uintptr_t nodes[]{reinterpret_cast<uintptr_t>(node)};
+ uintptr_t stack[]{0,0,0,reinterpret_cast<uintptr_t>(nodes),0};
+ uintptr_t manager[]{0,0,0,0,0,reinterpret_cast<uintptr_t>(stack)};
+ campaign[0xa98/4]=reinterpret_cast<uintptr_t>(manager);
+ camera[0]=base+0x16209f8;camera[0x138/4]=1;
+ const auto current=reinterpret_cast<uintptr_t>(campaign.data());
+ Patch185 owner(base+0x1bc8fe4,&current,4);
+ check();
+}
+
+int wmain(int argc,wchar_t** argv){assert(argc==3);unsigned cases{},strip_cases{},setup_cases{};
  for(int index=1;index<argc;++index){
   auto image=LoadLibraryExW(argv[index],nullptr,DONT_RESOLVE_DLL_REFERENCES);assert(image);auto base=reinterpret_cast<uintptr_t>(image);
   native214::admitted_image=0;assert(native214::admit(base,1023));
@@ -151,16 +173,28 @@ int wmain(int argc,wchar_t** argv){assert(argc==3);unsigned cases{},strip_cases{
      deck85::campaign_tooltips={};
      assert(!deck85::tooltip_projection(cp,context,unavailable));
      set_active(cp);
-     test_popup_projection(base,renderer,context,corner,view);
-     test_card_strip(base,rp,cp,context,view);++strip_cases;
+     // Custom Battle setup uses the same native active slot and renderer,
+     // without a campaign camera or a battle card manager owning this root.
+     assert(!deck85::tooltip_projection(cp,context,unavailable));
      auto draw=reinterpret_cast<deck85::Draw>(base+deck85::draw_rva);
      assert(draw(&corner,context,0,1,1)==0&&!deck85::projection.renderer);
-     corner.bytes[0xf5]=0;assert(!deck85::tooltip_projection(cp,context,unavailable));corner.bytes[0xf5]=1;
+     ++setup_cases;
+     with_campaign_ui(base,[&]{
+      test_popup_projection(base,renderer,context,corner,view);
+      corner.bytes[0xf5]=0;
+      assert(!deck85::tooltip_projection(cp,context,unavailable));
+      corner.bytes[0xf5]=1;
+     });
+     test_card_strip(base,rp,cp,context,view);++strip_cases;
+     assert(!deck85::tooltip_projection(cp,context,unavailable));++setup_cases;
      set_active(0);
      assert(deck85::observe_campaign_tooltip(rp,cp));
-     test_popup_projection(base,renderer,context,corner,view);
-     text[2]=0;assert(!deck85::tooltip_projection(cp,context,unavailable));text[2]=context[0];
-     set191(corner,0x94,cp);assert(!deck85::tooltip_projection(cp,context,unavailable));set191(corner,0x94,rp);
+     with_campaign_ui(base,[&]{
+      test_popup_projection(base,renderer,context,corner,view);
+      text[2]=0;assert(!deck85::tooltip_projection(cp,context,unavailable));text[2]=context[0];
+      set191(corner,0x94,cp);assert(!deck85::tooltip_projection(cp,context,unavailable));set191(corner,0x94,rp);
+     });
+     assert(!deck85::tooltip_projection(cp,context,unavailable));++setup_cases;
      auto wide=deck85::placement({0,0},view.width*.6f,view.height*.5f,view);
      assert(wide.scale>1&&wide.scale<1.2f&&wide.to.x==12&&wide.to.y==12);
      assert(deck85::placement({0,0},float(view.width),float(view.height),view).scale==1);
@@ -193,6 +227,8 @@ int wmain(int argc,wchar_t** argv){assert(argc==3);unsigned cases{},strip_cases{
  }
  std::cout<<"PASS native battle card-strip placement: "<<strip_cases
           <<" native-image cases with hover ownership, hidden/unrelated widget and fit checks\n";
+ std::cout<<"PASS native Custom Battle setup tooltip bypass: "<<setup_cases
+          <<" cases, including campaign/battle exit and stale observations\n";
  std::cout<<"PASS native hover draw admission, projection, compact bounds and state preservation\n";
  std::cout<<"PASS native214: "<<cases<<" original-image modal, geometry, projection, guard and speed-route cases; renderer providers are mocked; no gameplay\n";
 }
