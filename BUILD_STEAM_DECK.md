@@ -1,5 +1,7 @@
 # Build the combined PC and Steam Deck runtime
 
+This is the **testing** branch with the Revision 129 PC naval experiment. The commands below compile its current source. The v0.37/main baseline is Revision 126. The accepted naval binary is identified in `docs/testing/naval129.json`; do not interpret the branch as tested naval support for Steam Deck.
+
 The v0.37 source tag contains Revision 126. The runtime already includes the
 PC/Deck integration. Use the original Windows Steam game files you own,
 Python 3.12+, MSVC 2022 x86 Build Tools with the Windows SDK, and the matching

@@ -1,0 +1,43 @@
+{
+  "revision": 129,
+  "kind": "owner-reported gameplay acceptance",
+  "quote": "Its better, much better. the stuttering jank is gone, he moves correctly, i moved while the ship was moving cleanly. I was able to possess and unpossess then possess again.",
+  "accepted": [
+    "movement direction",
+    "stutter removed",
+    "movement aboard moving ship",
+    "possess/release/repossess"
+  ],
+  "not_inferred": [
+    "naval combat",
+    "boarding",
+    "all ships or long-term stability",
+    "fresh loaded-hash gate for this run"
+  ],
+  "pack_sha256": "8e11c9ff1abf28ea697f1abbe5a9c04c5dd982b352910bed905651bd91d32f31",
+  "branch": "testing",
+  "stable_revision": 126,
+  "stable_commit": "897bc56411df42135c982cc4fa1cab04c3031964",
+  "testing_pack_filename": "shogun2_unit_possession_testing_branch.pack",
+  "source_only_GitHub_publication": true,
+  "workshop_uploaded": false,
+  "offline_checks": {
+    "adapter_programs": 100,
+    "qte_programs": 51,
+    "hud_programs": 8,
+    "native_control_cases_per_engine": 18,
+    "native_camera_cases_per_engine": 7,
+    "relocated_engine_contract_cases_per_engine": 69,
+    "engines": [
+      "stock",
+      "reviewed Bugfix"
+    ],
+    "exact_rollback": true
+  },
+  "limits": [
+    "PC single player only for naval",
+    "normal deck sailor movement, camera and return to retained duties",
+    "no naval personal combat, boarding, crew switching, HUD or Deck naval controls",
+    "synthetic fixtures do not prove all deck collision and pathfinding conditions"
+  ]
+}

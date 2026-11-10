@@ -1,6 +1,7 @@
 #include "../../../deck/channel181.h"
 #include "../../../deck/keyboard_handoff196.h"
 static deck196::PollOwnership keyboard_owner196;
+static bool (*naval_keyboard_owned127)()=nullptr;
 #pragma once
 #include "../../../deck/native214.h"
 #include "../../../deck/commander_display76.h"
@@ -45,6 +46,7 @@ static bool __cdecl keyboard_poll84(){
     if(valid&&commander76::pc_wheel)current[0x38]=previous[0x38]=0;
     view_key152(current,previous,keyboard_fps84(),valid);
     command_keyboard_filter100.apply(current,previous,keyboard_fps84(),valid);
+    if(valid&&naval_keyboard_owned127&&naval_keyboard_owned127())for(unsigned scan:{0x11u,0x1eu,0x1fu,0x20u,0x10u,0x12u,0x2au,0x36u,0x1du,0x38u})current[scan]=previous[scan]=0;
     deck181::native_keys(current,valid,base);
     InterlockedExchange(&keyboard_held84,LONG(keyboard_filter84.held));
     InterlockedExchange(&keyboard_last_mask84,LONG(blocked));

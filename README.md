@@ -1,4 +1,10 @@
-# Shogun 2 Unit Possession
+# Shogun 2 Unit Possession — Testing branch
+
+**Naval experiment: Revision 129.** This branch preserves the playable PC sailor-control test. The stable [main branch](https://github.com/logsam58/shogun2-unit-possession/tree/main) and existing Workshop item remain on Revision 126.
+
+In a single-player PC naval battle, start the battle, select one friendly ship, then press **F9 / Caps Lock**. Use **WASD** to move, **Shift** to run, the mouse to look, and **F10** to return to duty. The owner confirmed smooth movement, correct directions, movement aboard a moving ship, and repeated possession/return. Personal naval combat, boarding, crew switching, naval HUD and Deck naval controls are not implemented. See the [naval test record](docs/research/NAVAL129.md).
+
+Enable only one Unit Possession entry at a time. The separate **Testing branch** pack is for this experiment; it is not a new public Workshop release.
 
 **NOW WITH STEAM DECK INTEGRATION**
 
@@ -6,7 +12,7 @@ One build detects PC or Steam Deck automatically. PC keeps normal keyboard/mouse
 
 Take control of a soldier in **Total War: SHOGUN 2**, fight in first or third person, and command your unit while the battle continues around you. Select a friendly unit and press **Caps Lock** or **F9** to enter possession. Press **Caps Lock**, **F10**, or **Escape** to return to your RTS camera.
 
-**For single-player land battles and sieges.** Naval possession and multiplayer are not implemented. Visual bugs, gameplay bugs and occasional crashes remain.
+**The established features cover single-player land battles and sieges.** This testing branch adds the limited PC naval experiment described above. Multiplayer remains unimplemented. Visual bugs, gameplay bugs and occasional crashes remain.
 
 [Download](#download) · [Requirements](#requirements) · [Installation](#installation) · [Controls](#controls) · [Compatibility](#compatibility) · [Known limitations](#known-limitations) · [Troubleshooting](#troubleshooting)
 

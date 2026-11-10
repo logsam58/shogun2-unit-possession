@@ -17,7 +17,7 @@ static void refused172(Image image,const std::string& reason){
     need(refused,"negative fixture did not reject: "+reason);++checks172;
 }
 int wmain(int argc,wchar_t** argv){try{
-    need(argc==4,"Use owned stock, reviewed engine and a new fixture directory");
+    need(argc==4||(argc==5&&!wcscmp(argv[4],L"--reviewed-mapping")),"Use owned stock, reviewed engine and a new fixture directory [--reviewed-mapping]");
     auto root=std::filesystem::path(argv[3]);need(std::filesystem::create_directory(root),"fixture folder must be new");
     auto stock=read172(argv[1]),modified=read172(argv[2]);Hasher hash;
     need(inspect(stock,hash).fingerprint==engine170::stock_sha,"wrong stock fixture");++checks172;
@@ -71,12 +71,13 @@ int wmain(int argc,wchar_t** argv){try{
     if(write!=INVALID_HANDLE_VALUE)CloseHandle(write);
     need(write==INVALID_HANDLE_VALUE&&GetLastError()==ERROR_SHARING_VIOLATION,"accepted binding did not retain a stable file");++checks172;
     auto reservation=VirtualAlloc((void*)0x10000000,0x1d88000,MEM_RESERVE,PAGE_NOACCESS);
-    auto module=LoadLibraryExW(argv[1],nullptr,DONT_RESOLVE_DLL_REFERENCES);need(module!=nullptr,"cannot map owned image");
+    const auto live_path=argc==5?argv[2]:argv[1];
+    auto module=LoadLibraryExW(live_path,nullptr,DONT_RESOLVE_DLL_REFERENCES);need(module!=nullptr,"cannot map owned image");
     if(reservation)need((uintptr_t)module!=0x10000000,"owned ASLR fixture stayed at preferred base");
-    const auto binding=admit(argv[1]);
+    const auto binding=admit(live_path);
     live_hooks((uintptr_t)module,1,binding);live_hooks((uintptr_t)module,2,binding);live_hooks((uintptr_t)module,3,binding);checks172+=3;
     for(unsigned mode=0;mode<3;++mode){
-        auto foreign=binding;if(mode==0)foreign.version=0;else if(mode==1)foreign.contract="other";else foreign.fingerprint=engine170::bugfix_sha;
+        auto foreign=binding;if(mode==0)foreign.version=0;else if(mode==1)foreign.contract="other";else foreign.fingerprint=binding.fingerprint==engine170::stock_sha?engine170::bugfix_sha:engine170::stock_sha;
         bool refused=false;try{live_hooks((uintptr_t)module,1,foreign);}catch(...){refused=true;}
         need(refused,"stale/foreign binding reached hook installation");++checks172;
     }
@@ -84,6 +85,19 @@ int wmain(int argc,wchar_t** argv){try{
     need(VirtualProtect(target,1,PAGE_EXECUTE_READWRITE,&old)!=0,"cannot stage owned conflict");*target^=1;
     bool occupied=false;try{live_hooks((uintptr_t)module,1,binding);}catch(const std::exception& e){occupied=std::string(e.what()).find("occupied/changed hook")!=std::string::npos;}
     *target=saved;DWORD ignored=0;VirtualProtect(target,1,old,&ignored);need(occupied,"occupied in-memory hook admitted");++checks172;
+    // Every byte of each relocated prefix must still reject a real change,
+    // especially either half of an absolute address across the old16-byte end.
+    for(const auto& h:hooks)if(h.relocations){
+        auto bytes=(unsigned char*)module+h.rva;DWORD protection=0;
+        need(VirtualProtect(bytes,h.size,PAGE_EXECUTE_READWRITE,&protection)!=0,"fixture hook protection");
+        for(unsigned i=0;i<h.size;++i){
+            bytes[i]^=1;bool rejected=false;
+            try{live_hooks((uintptr_t)module,h.kind,binding);}catch(const std::exception& e){rejected=std::string(e.what()).find("occupied/changed hook")!=std::string::npos;}
+            bytes[i]^=1;need(rejected,"relocated prefix byte change admitted");++checks172;
+        }
+        DWORD ignored_protection=0;VirtualProtect(bytes,h.size,protection,&ignored_protection);
+        live_hooks((uintptr_t)module,h.kind,binding);++checks172;
+    }
     live_hooks((uintptr_t)module,1,binding);FreeLibrary(module);if(reservation)VirtualFree(reservation,0,MEM_RELEASE);++checks172;
     std::cout<<"PASS "<<checks172<<" contract controls; schema "<<schema<<"; "<<std::size(regions)<<" protected regions; independent raw offset "<<at(extension)<<". No engine initialization/gameplay, external processes or recording.\n";
     return 0;

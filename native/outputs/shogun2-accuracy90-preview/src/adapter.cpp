@@ -111,6 +111,9 @@ static void arrow_capture107(uintptr_t context,uintptr_t pool,unsigned id,unsign
     ReleaseSRWLockExclusive(&arrow_shot_lock107);
 }
 static bool arrow_watch_button107(UINT message);
+static bool naval_active127();
+static void naval_release127();
+static bool naval_window127(HWND,UINT,WPARAM,LPARAM);
 #include "native_keyboard84.h"
 static constexpr UINT RESTORE_INTERFACE_MESSAGE=WM_APP+0x539;
 static constexpr UINT RETURN_RTS_MESSAGE90=WM_APP+0x53b;
@@ -142,6 +145,7 @@ static void climb_observe98(uintptr_t actor);
 static bool climb_pending153(uintptr_t actor);
 static bool climb_independent200(uintptr_t actor);
 static void request_possession(){
+    if(naval_active127())return;
     if(!startup168::can_possess())return;
     if(!enabled||!state||state->stop||state->release||state->mode==POSSESSED||state->mode==ARMED)return;
     InterlockedExchange(&entry_attempted,0);
@@ -166,6 +170,7 @@ static bool deck175_window(HWND,UINT,WPARAM,LPARAM);
 static void deck175_focus_lost(HWND);
 static LRESULT CALLBACK weapon_window_proc(HWND window,UINT message,WPARAM w,LPARAM l){
     if(message==WM_NCDESTROY&&window==input_window){auto prior=native_window_proc;deck175_window(window,message,w,l);input_window=nullptr;native_window_proc=nullptr;return prior?CallWindowProcW(prior,window,message,w,l):DefWindowProcW(window,message,w,l); }
+    if(naval_window127(window,message,w,l))return 0;
     if(deck175_window(window,message,w,l))return 0;
     if(message==COMMANDER_MESSAGE76){commander_wake76(window);return 0;}
     if(commander_mouse76(window,message,w,l))return 0;
@@ -283,6 +288,7 @@ using Matrix=void(__thiscall*)(void*,const void*);
 static Matrix original_matrix;
 static const unsigned char signature[16]={0x55,0x8b,0xec,0x83,0xe4,0xf0,0x83,0xec,0x34,0x53,0x56,0x8b,0xf1,0x57,0x8b,0x06};
 template<class T>static T& field(uintptr_t p,unsigned off){return *reinterpret_cast<T*>(p+off);}
+#include "naval_control127.h"
 #include "native_wall97.h"
 #include "native_subject.h"
 #include "dismount143.h"
@@ -483,6 +489,7 @@ static uintptr_t __fastcall camera_input(void* object,void*,uintptr_t first,uint
         if(env&&field<uintptr_t>(reinterpret_cast<uintptr_t>(object),0x1c)==env)
             {state->camera_input_thread=GetCurrentThreadId();
                 auto manager=field<uintptr_t>(env,0x281fc),camera=manager?field<uintptr_t>(manager,0x8e0):0;
+                if(camera&&naval127::input_active()){return 0;}
                 if(camera&&state->mode==POSSESSED&&!dead_view()&&camera_owned(camera)){InterlockedIncrement(&camera_input_blocks103);return 0;}
             }
     }__except(EXCEPTION_EXECUTE_HANDLER){}
@@ -702,6 +709,19 @@ static void enter_selected_soldier(){
         uintptr_t selected=field<uintptr_t>(env,0x2826c);
         uintptr_t owner=selected?field<uintptr_t>(selected,0x4a8):0;
         uintptr_t group=owner?owner+0xb0:0;
+        if(group&&field<uintptr_t>(group,0)==base+0x15c4da0&&field<unsigned>(group,0x14)==0&&
+           field<unsigned>(group,0x2c)==1&&field<unsigned>(group,0x28)>=1){
+            auto ships=field<uintptr_t>(group,0x30);auto ship=ships?field<uintptr_t>(ships,0):0;
+            bool started=naval127::begin(env,common,phase,ship);
+            InterlockedExchange(&state->acquire,0);InterlockedExchange(&state->mode,IDLE);
+            state->acquisition_error=started?0:127;
+            if(!started){const wchar_t* reason=naval127::entry_failure==2?
+                L"The previous sailor view is still returning to the ship camera. Wait for that return before possessing again.":
+                naval127::entry_failure==1?L"A sailor is already controlled, or this first naval test is running outside PC keyboard/mouse mode.":
+                L"No eligible sailor is available on this ship. This first naval test supports single-player PC battles and living deck crew who have a normal work station. Start the battle, select one friendly ship, and try F9 again.";
+                MessageBoxW(input_window,reason,L"Naval possession test",MB_OK|MB_ICONINFORMATION);}
+            return;
+        }
         if(!group||field<uintptr_t>(group,0)!=base+0x15c4da0||
             field<unsigned>(group,0x14)!=1||field<unsigned>(group,0x10)<1){entry_failed(3);return;}
         uintptr_t members=field<uintptr_t>(group,0x18);
@@ -941,6 +961,7 @@ static void __fastcall camera_matrix(void* camera,void*,const void* matrix) {
             InterlockedExchange(&mounted_heading85,-1);InterlockedExchange(&entry_movement125,0);
             combat_focus125.reset();combat_pair_reset126();command_reset100();
         }
+        if(naval_active127()||InterlockedCompareExchange(&naval127::camera_pending,0,0)){original_matrix(camera,matrix);return;}
         mount_prepare154(reinterpret_cast<uintptr_t>(camera));view_prepare152();original_matrix(camera,matrix);if(possessed&&!dead_view())climb_observe98(possessed);remember_native_eye78(reinterpret_cast<uintptr_t>(camera));adjust_eye(reinterpret_cast<uintptr_t>(camera));view_camera152(reinterpret_cast<uintptr_t>(camera));interface_update(reinterpret_cast<uintptr_t>(camera));
         if(!dead_view()){
             capture_aim_frame(reinterpret_cast<uintptr_t>(camera));
@@ -1100,7 +1121,8 @@ static void __fastcall detour(void* actor,void*) {
         if(!charge_input_locked146()&&hold_melee_motion(reinterpret_cast<uintptr_t>(actor))){
             InterlockedIncrement(reinterpret_cast<volatile LONG*>(&state->other_updates));return;
         }
-        bool controlled=prepare(reinterpret_cast<uintptr_t>(actor));
+        const bool naval_controlled=naval127::prepare_motion(reinterpret_cast<uintptr_t>(actor));
+        bool controlled=!naval_controlled&&prepare(reinterpret_cast<uintptr_t>(actor));
         original(actor);
         if(controlled){locomotion_mark203(reinterpret_cast<uintptr_t>(actor));finish(reinterpret_cast<uintptr_t>(actor));if(!possession_lease.identity.mount){refresh_accuracy90(reinterpret_cast<uintptr_t>(actor));weapon_tick(reinterpret_cast<uintptr_t>(actor));}}
         else InterlockedIncrement(reinterpret_cast<volatile LONG*>(&state->other_updates));
@@ -1233,7 +1255,7 @@ static DWORD WINAPI worker(void*) {
         const unsigned char input_sig[]={0x83,0xec,0x1c,0x56,0x8b,0xf1,0x57,0x8b,0x46,0x1c};
         require(!memcmp(camera_input_target,input_sig,sizeof input_sig),"Camera input signature differs");
         require(MH_CreateHook(camera_input_target,reinterpret_cast<void*>(&camera_input),reinterpret_cast<void**>(&original_camera_input))==MH_OK,"Camera input hook failed");
-        create_keyboard_hook84();
+        create_keyboard_hook84();naval127::install();
         if(commander_display76.open())
             commander76::install(base,[](){return input_window;},COMMANDER_MESSAGE76);
         require(MH_CreateHook(reinterpret_cast<void*>(base+0x2ac0b0),reinterpret_cast<void*>(&bow_dispatch),reinterpret_cast<void**>(&original_bow_dispatch))==MH_OK,"Bow dispatch hook failed");
@@ -1310,7 +1332,7 @@ static DWORD WINAPI worker(void*) {
                 }
                 bool a=down(VK_F9),b=down(VK_F10);
                 if(a&&!f9)request_possession();
-                if(b&&!f10)InterlockedExchange(&state->release,1);
+                if(b&&!f10){naval_release127();InterlockedExchange(&state->release,1);}
                 if(down(VK_ESCAPE)&&!commander76::pc_wheel)InterlockedExchange(&state->release,1);
                 f9=a;f10=b;
                 if(state->acquire&&state->mode==ARMED&&!entry_attempted&&input_window&&
@@ -1323,12 +1345,13 @@ static DWORD WINAPI worker(void*) {
             if(!gameplay214){left_mouse=false;InterlockedExchange(&state->aiming,0);}
             if((state->mode!=POSSESSED||state->stop||state->release||!focus)&&interface_active)restore_interface_on_window();
             InterlockedExchange(&charge_physical_input148,LONG(charge_intent199(input,down(VK_LBUTTON),down(VK_RBUTTON),gameplay214&&state->mode==POSSESSED&&!state->release&&!dead_view())));
+            naval127::sample(input,gameplay214);
             was_focus=focus;input=entry_input125(input,gameplay214&&!dead_view()&&!charge_locked146);if(charge_locked146)input=0;
             InterlockedExchange(&state->input,dead_view()?0:LONG(input));
             uint64_t now=GetTickCount64();float elapsed=std::min(float(now-last_mouse)*0.001f,0.05f);last_mouse=now;
             bool command_resume100=InterlockedExchange(&command_recenter100,0)!=0;
             if(command_resume100){mouse_captured=false;InterlockedExchange(&raw_mouse_x,0);InterlockedExchange(&raw_mouse_y,0);}
-            if(gameplay214&&state->mode==POSSESSED&&!state->release&&!state->stop&&
+            if(gameplay214&&(state->mode==POSSESSED||naval127::input_active())&&!state->release&&!state->stop&&
                (!device192::enabled()||deck175::possession_cursor181())){
                 HWND window=GetForegroundWindow();RECT client{};POINT center{},cursor{};
                 if(GetClientRect(window,&client)&&client.right>200&&client.bottom>200){
@@ -1339,7 +1362,8 @@ static DWORD WINAPI worker(void*) {
                         // In-game input capture is active only for this possessed game window.
                         if(SetCursorPos(center.x,center.y))mouse_captured=true;
                         const auto deck_look201=deck175::controller181::look201.take();
-                        if(!device192::enabled()||dx||dy||deck_look201.x||deck_look201.y||(input&(TURN_LEFT|TURN_RIGHT)))mouse_look101(float(dx)+deck_look201.x,float(dy)+deck_look201.y,input,elapsed);
+                        if(naval_active127())naval127::look(float(dx),float(dy));
+                        else if(!device192::enabled()||dx||dy||deck_look201.x||deck_look201.y||(input&(TURN_LEFT|TURN_RIGHT)))mouse_look101(float(dx)+deck_look201.x,float(dy)+deck_look201.y,input,elapsed);
                     }
                 }
             }else mouse_captured=false;
@@ -1367,6 +1391,7 @@ static DWORD WINAPI worker(void*) {
             if(!wheel_open||!wheel_pulse121.h||!SetWaitableTimer(wheel_pulse121.h,&due,0,nullptr,nullptr,FALSE)||
                WaitForSingleObject(wheel_pulse121.h,16)!=WAIT_OBJECT_0)Sleep(8);
         }
+        naval_release127();
         commander76::exchange.leave();commander_cancel76();
         InterlockedExchange(&state->release,1);restore_interface_on_window();
         InterlockedExchange(&enabled,0);InterlockedExchange(&state->input,0);
@@ -1382,7 +1407,7 @@ static DWORD WINAPI worker(void*) {
         if(!commander76::disable())result=MH_UNKNOWN;
         if(!mileszero123::disable())result=MH_UNKNOWN;
         {auto keyboard_stop196=MH_DisableHook(keyboard_poll_target84);if(keyboard_stop196!=MH_OK&&keyboard_stop196!=MH_ERROR_DISABLED)result=MH_UNKNOWN;}
-        for(unsigned rva:{0x2fc450u,0x2f79a0u,0x10ee5b0u,0x325ca0u,0x321d70u,0x3e5170u,0x2b68c0u,0x1587d0u,0x459b40u,0x1b3d30u})if(MH_DisableHook(reinterpret_cast<void*>(base+rva))!=MH_OK)result=MH_UNKNOWN;
+        for(unsigned rva:{0x3290a0u,0x3efc70u,0x2fc450u,0x2f79a0u,0x10ee5b0u,0x325ca0u,0x321d70u,0x3e5170u,0x2b68c0u,0x1587d0u,0x459b40u,0x1b3d30u})if(MH_DisableHook(reinterpret_cast<void*>(base+rva))!=MH_OK)result=MH_UNKNOWN;
         for(void* p:{reinterpret_cast<void*>(base+0xf9c360),reinterpret_cast<void*>(base+0xf9bf20),reinterpret_cast<void*>(base+0x122f740),cursor_target})if(MH_DisableHook(p)!=MH_OK)result=MH_UNKNOWN;
         for(void* p:{reinterpret_cast<void*>(base+0x2fcb10),reinterpret_cast<void*>(base+0x341560),reinterpret_cast<void*>(base+0x2d6210),reinterpret_cast<void*>(base+0x340d30),reinterpret_cast<void*>(base+0x3945c0),reinterpret_cast<void*>(base+0x3cf280),reinterpret_cast<void*>(base+0x3ccd00),reinterpret_cast<void*>(base+0x473f80),reinterpret_cast<void*>(base+0x3d8b00),target,cancel_target,toggle_target,matrix_target,camera_input_target,projectile_camera_target,reinterpret_cast<void*>(base+0x3ca920),reinterpret_cast<void*>(base+0x3e8b50),reinterpret_cast<void*>(base+0x3f0370),reinterpret_cast<void*>(base+0x3f03d0),reinterpret_cast<void*>(base+0x3e3f50),reinterpret_cast<void*>(base+0x3d3630),reinterpret_cast<void*>(base+0x3d4320),reinterpret_cast<void*>(base+0x3e1a20),reinterpret_cast<void*>(base+0x4272e0),reinterpret_cast<void*>(base+0x4c56d0)})if(MH_DisableHook(p)!=MH_OK)result=MH_UNKNOWN;
         if(!guarded){if(MH_DisableHook(reinterpret_cast<void*>(base+0x2ac0b0))!=MH_OK)result=MH_UNKNOWN;}

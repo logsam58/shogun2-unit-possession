@@ -137,10 +137,17 @@ inline void live_hooks(uintptr_t base,unsigned kind,const Result& binding){
     need(resident.fingerprint==binding.fingerprint,"loaded engine differs from validated binding");
     Hasher hash;
     for(const auto& h:hooks){if(h.kind!=kind)continue;
-        std::array<unsigned char,16> code{};SIZE_T n=0;
-        need(base<=UINTPTR_MAX-h.rva&&ReadProcessMemory(GetCurrentProcess(),(const void*)(base+h.rva),code.data(),code.size(),&n)&&n==code.size(),"cannot read hook at RVA "+at(h.rva));
-        // Prefixes contain no relocatable operands in this pinned family.
-        need(hash.digest(code.data(),code.size())==h.sha,"occupied/changed hook at RVA "+at(h.rva)+" (contract "+std::string(contract_id,12)+", engine "+binding.fingerprint+")");
+        std::array<unsigned char,32> code{};SIZE_T n=0;
+        need(h.size>=16&&h.size<=code.size()&&!(h.relocations>>(h.size-3)),"invalid hook relocation metadata");
+        need(base<=UINTPTR_MAX-h.rva&&ReadProcessMemory(GetCurrentProcess(),(const void*)(base+h.rva),code.data(),h.size,&n)&&n==h.size,"cannot read hook at RVA "+at(h.rva));
+        // Undo only HIGHLOW words recorded from both pinned PE relocation
+        // tables. All operand bytes remain hashed, including their high bytes.
+        const auto delta=uint32_t(base)-uint32_t(resident.preferred_base);
+        for(unsigned offset=0;offset+4<=h.size;++offset)if(h.relocations&(1u<<offset)){
+            uint32_t value=0;memcpy(&value,code.data()+offset,4);value-=delta;
+            memcpy(code.data()+offset,&value,4);
+        }
+        need(hash.digest(code.data(),h.size)==h.sha,"occupied/changed hook at RVA "+at(h.rva)+" (contract "+std::string(contract_id,12)+", engine "+binding.fingerprint+")");
     }
 }
 }

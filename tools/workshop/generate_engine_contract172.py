@@ -65,6 +65,52 @@ def source_closure(entries=ENTRIES):
     return found
 
 
+def hook_contracts(data, definitions):
+    """Hash complete hook prefixes, with exact PE HIGHLOW relocation metadata."""
+    _, opt, sections = image(data)
+    def raw(rva):
+        for section in sections:
+            if section['rva'] <= rva < section['rva'] + section['size']:
+                return section['raw'] + rva - section['rva']
+        raise ValueError('Unmapped hook/relocation RVA')
+    reloc_rva, reloc_size = struct.unpack_from('<II', data, opt + 96 + 5 * 8)
+    cursor = raw(reloc_rva)
+    end = cursor + reloc_size
+    relocations = []
+    while cursor < end:
+        page, size = struct.unpack_from('<II', data, cursor)
+        assert size >= 8 and not size % 2 and cursor + size <= end
+        for at in range(cursor + 8, cursor + size, 2):
+            word, = struct.unpack_from('<H', data, at)
+            if word >> 12:
+                relocations.append((page + (word & 4095), word >> 12))
+        cursor += size
+    result = []
+    for kind, addresses in definitions.items():
+        for rva in addresses:
+            length, offsets = 16, set()
+            # Include a complete operand when the original 16-byte prefix
+            # intersects it. Never discard or mask out relocated code bytes.
+            changed = True
+            while changed:
+                changed = False
+                for address, type_ in relocations:
+                    if address < rva + length and address + 4 > rva:
+                        assert type_ == 3 and address >= rva
+                        offsets.add(address - rva)
+                        if address + 4 > rva + length:
+                            length = address + 4 - rva
+                            changed = True
+            assert length <= 32
+            for offset in offsets:
+                assert 0 <= offset <= length - 4
+                assert not any(offset < other < offset + 4 for other in offsets)
+            result.append(dict(kind=kind, rva=rva, size=length,
+                relocations=sum(1 << offset for offset in offsets),
+                sha256=sha(data[raw(rva):raw(rva) + length])))
+    return result
+
+
 def generate(stock, modified, export):
     a, b = stock.read_bytes(), modified.read_bytes()
     assert sha(a) == STOCK and sha(b) == BUGFIX
@@ -239,10 +285,11 @@ def generate(stock, modified, export):
     payload['header_sha256']=sha(normalized_header(a))
     payload['header_size']=struct.unpack_from('<I',a,opt+60)[0]
     payload['rdata_virtual_sizes']=[s['virtual'] for s in sections if s['name']=='.rdata']+[s['virtual'] for s in image(b)[2] if s['name']=='.rdata']
-    hooks={'adapter':[0x367600,0x321310,0x319dd0,0x134fad0,0x2fdcf0,0x2ac0b0,0x31f660],
+    hooks={'adapter':[0x3290a0,0x3efc70,0x367600,0x321310,0x319dd0,0x134fad0,0x2fdcf0,0x2ac0b0,0x31f660],
            'qte':[0x3e5d40,0x3eaac0,0x3cea10,0x433b80,0x3e1930,0x3e3de0,0xb92800,0x3e5aa0,0x3eaa10,0x3c4170],
            'lua':[0xea2d60]}
-    payload['hooks']=[dict(kind=kind,rva=rv,sha256=sha(a[raw(rv):raw(rv)+16])) for kind,values in hooks.items() for rv in values]
+    payload['hooks']=hook_contracts(a,hooks)
+    assert payload['hooks']==hook_contracts(b,hooks), 'Reviewed hook relocation contracts differ'
     payload['contract_id'] = sha(json.dumps(payload, sort_keys=True, separators=(',', ':')).encode())
     source_digest = sha(json.dumps({p.relative_to(ROOT).as_posix():sha(t.encode())
         for p,t in sorted(sources.items())}, sort_keys=True).encode())
@@ -272,9 +319,9 @@ def header(p):
               'inline constexpr Region regions[]={']
     for r in p['records']:
         lines.append('{%d,%d,%d,"%s","%s"},'%(r['rva'],r['raw'],r['size'],r['stock'],r['bugfix']))
-    lines += ['};','struct Hook {unsigned kind,rva;const char* sha;};','inline constexpr Hook hooks[]={']
+    lines += ['};','struct Hook {unsigned kind,rva,size,relocations;const char* sha;};','inline constexpr Hook hooks[]={']
     for h in p['hooks']:
-        lines.append('{%d,%d,"%s"},'%({'adapter':1,'qte':2,'lua':3}[h['kind']],h['rva'],h['sha256']))
+        lines.append('{%d,%d,%d,%d,"%s"},'%({'adapter':1,'qte':2,'lua':3}[h['kind']],h['rva'],h['size'],h['relocations'],h['sha256']))
     return '\n'.join(lines+['};','}'])+'\n'
 
 
@@ -295,7 +342,7 @@ def main():
         manifest=dict(schema=172,family=p['family'],contract_id=p['contract_id'],
             source_files={q.relative_to(ROOT).as_posix():sha(q.read_bytes()) for q in sorted(sources)},
             generated_header_sha256=sha(target.read_bytes()),sections=p['sections'],
-            regions=p['records'],bindings=e['references'],protected_functions=e['protected_functions'],
+            regions=p['records'],hooks=p['hooks'],bindings=e['references'],protected_functions=e['protected_functions'],
             extension_functions=e['extension_functions'],scope=e['boundary'],
             provenance=dict(stock_sha256=STOCK,reviewed_bugfix_sha256=BUGFIX,
                 preserved_export_recognized_functions=e['export_summary']['recognized_functions'],

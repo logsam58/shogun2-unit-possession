@@ -2,8 +2,8 @@
   "schema": 3,
   "product": "Shogun 2 Unit Possession",
   "version": "0.37",
-  "branch": "main",
-  "tag": "v0.37",
+  "branch": "testing",
+  "tag": null,
   "release_url": null,
   "repository_visibility": "public; owner controls visibility",
   "format": "Steam Workshop; automatic resources from each owned game",
@@ -11,16 +11,31 @@
     "item": "3825625050",
     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3825625050",
     "candidate": 181,
-    "revision": "melee-rts-39",
+    "revision": "custom-battle-tooltip-126",
     "pack": "shogun2_unit_possession_workshop165.pack",
-    "pack_sha256": "a68637165024934159d5dcdf36efc1c941f50b0f10666394bfe777fc90947449",
-    "pack_bytes": 4275374,
-    "steam_manifest": "2737704436340709338",
+    "pack_sha256": "64054dc25361ee7e21c70ddddcb526dd56d6f789125ea7abf5202d819f70249d",
+    "pack_bytes": 4662688,
+    "steam_manifest": "7228153338856273762",
     "uploaded_and_exact_download_verified": true,
-    "last_verified_date": "2026-11-05",
-    "steam_time_updated": 1793760330,
+    "last_verified_date": "2026-11-10",
+    "steam_time_updated": 1794270286,
     "published_change_notes": "https://steamcommunity.com/sharedfiles/filedetails/changelog/3825625050",
     "last_known_verified_delivery": {
+      "item": "3825625050",
+      "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3825625050",
+      "candidate": 181,
+      "revision": "custom-battle-tooltip-126",
+      "pack": "shogun2_unit_possession_workshop165.pack",
+      "pack_sha256": "64054dc25361ee7e21c70ddddcb526dd56d6f789125ea7abf5202d819f70249d",
+      "pack_bytes": 4662688,
+      "steam_manifest": "7228153338856273762",
+      "uploaded_and_exact_download_verified": true,
+      "last_verified_date": "2026-11-10",
+      "steam_time_updated": 1794270286,
+      "published_change_notes": "https://steamcommunity.com/sharedfiles/filedetails/changelog/3825625050"
+    },
+    "updated_by_this_GitHub_source_push": false,
+    "prior_verified_delivery": {
       "item": "3825625050",
       "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3825625050",
       "candidate": 181,
@@ -33,8 +48,7 @@
       "last_verified_date": "2026-11-05",
       "steam_time_updated": 1793760330,
       "published_change_notes": "https://steamcommunity.com/sharedfiles/filedetails/changelog/3825625050"
-    },
-    "updated_by_this_GitHub_source_push": false
+    }
   },
   "source_kit": null,
   "player_archive": null,
@@ -85,17 +99,23 @@
     "revision125_offline_checks_passed": true,
     "revision125_live_gameplay_verified": false,
     "revision126_custom_battle_tooltip_pc_owner_accepted": true,
-    "revision126_custom_battle_tooltip_deck_hardware_verified": false
+    "revision126_custom_battle_tooltip_deck_hardware_verified": false,
+    "revision129_naval_manual_acceptance": [
+      "correct directions",
+      "stutter removed",
+      "movement on moving ship",
+      "possess/release/repossess"
+    ]
   },
-  "validation": "docs/public-release/V0_37_VALIDATION.json",
+  "validation": "docs/testing/naval129.json",
   "owner_decisions": {
     "first_party_license": "MIT",
     "resources": "from owned game",
     "status_icons": "original native icons",
-    "branch_policy": "main only"
+    "branch_policy": "main stable; testing for owner-requested experiments"
   },
   "support": {
-    "naval_possession": "not supported; planned later",
+    "naval_possession": "Experimental PC single-player ordinary sailor movement/camera/return to duty; no personal naval combat or Deck naval input.",
     "multiplayer": "not implemented; Versus and campaign drop-in under consideration",
     "expected": "visual/gameplay bugs and occasional crashes",
     "Steam_Deck": "Windows game through Proton; tested Proton 9.0-4; contextual Steam Input/UI; no official Valve verification claim"
@@ -116,18 +136,18 @@
   "history": "Historical tags and release notes remain. Installer downloads were removed; earlier game-resource-containing downloads remain absent.",
   "legal_clearance": "Resource exclusion is not legal clearance for native hooks/reverse engineering; see PROVENANCE.md.",
   "github_runtime": {
-    "revision": "custom-battle-tooltip-126",
+    "revision": "naval-crew129-private-test",
     "candidate": 181,
-    "pack": "shogun2_unit_possession_workshop165.pack",
-    "pack_sha256": "64054dc25361ee7e21c70ddddcb526dd56d6f789125ea7abf5202d819f70249d",
-    "pack_bytes": 4662688,
-    "native_sha256": "34f38e848a933e93a42f774cb55b47f3327e8f0d1ba69cee2a9237c22ff884c8",
+    "pack": "shogun2_unit_possession_testing_branch.pack",
+    "pack_sha256": "8e11c9ff1abf28ea697f1abbe5a9c04c5dd982b352910bed905651bd91d32f31",
+    "pack_bytes": 4677156,
+    "native_sha256": "fff912ff4efea43d8d82fb19437526dad76143cb0f428b278a4338cb3bb1130e",
     "pack_distributed_by_this_source_push": false
   },
-  "source_status": "v0.37 tags Revision 126. The owner confirmed the Custom Battle setup tooltip fix on PC.",
+  "source_status": "Testing branch: Revision129 naval movement experiment accepted by owner; stable main/v0.37 remains Revision126.",
   "last_tagged_release": {
     "version": "0.33",
     "url": "https://github.com/logsam58/shogun2-unit-possession/releases/tag/v0.33"
   },
-  "source_tag_url": "https://github.com/logsam58/shogun2-unit-possession/tree/v0.37"
+  "source_tag_url": null
 }
