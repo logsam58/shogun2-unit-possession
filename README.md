@@ -4,7 +4,13 @@
 
 In a single-player PC naval battle, start the battle, select one friendly ship, then press **F9 / Caps Lock**. Use **WASD** to move, **Shift** to run, the mouse to look, and **F10** to return to duty. The owner confirmed smooth movement, correct directions, movement aboard a moving ship, and repeated possession/return. Personal naval combat, boarding, crew switching, naval HUD and Deck naval controls are not implemented. See the [naval test record](docs/research/NAVAL129.md).
 
-Enable only one Unit Possession entry at a time. The separate **Testing branch** pack is for this experiment; it is not a new public Workshop release.
+### Steam Deck Remote Play
+
+Enable the Testing branch pack on the Windows host, leave Shogun 2 in windowed mode, and select **Stream** from the Deck with the game closed. The host selects the same Deck UI, action sets and controller prompts when Steam forwards the built-in Deck controller. The game window requests a 1280 × 800 client area when it fits on the host display. The previous placement returns when the stream ends if the game still uses the stream window placement.
+
+The controller profile is selected at launch. A Steam session that attaches to a game already launched in desktop mode needs a restart. Exclusive fullscreen uses the host’s display settings. The Steam Input and window sizing fixtures passed. Actual capture, prompts and controls still need a test on a physical Deck.
+
+Enable only one Unit Possession entry at a time. The separate **Testing branch** pack contains these experiments; it is not a new public Workshop release.
 
 **NOW WITH STEAM DECK INTEGRATION**
 

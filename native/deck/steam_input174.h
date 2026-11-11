@@ -14,7 +14,7 @@
 
 namespace deck174 {
 namespace steam006 {
-constexpr int deck_type=14, joystick_mode=6, trigger_mode=10;
+constexpr int deck_type=remote130::deck_type, joystick_mode=6, trigger_mode=10;
 constexpr char interface_name[]="SteamInput006";
 #pragma pack(push,1)
 // These must remain trivial PODs, like Valve's declarations. Default member
@@ -135,6 +135,20 @@ class SteamBackend {
     std::array<uint64_t,button_count> digital_{};std::array<uint64_t,6> analog_{};
     uint64_t last_sample_{},reassert_after214_{};bool focused214_{};
     std::string pending_manifest_;
+    bool remote_{};
+    uint64_t next_session_check_{};
+    remote130::Sessions sessions_{};
+
+    void refresh_sessions(uint64_t now) {
+        if (!remote_ || now < next_session_check_) return;
+        sessions_ = remote130::direct_sessions(GetModuleHandleW(L"steam_api.dll"));
+        next_session_check_ = now + 250000; // input timestamps use microseconds
+    }
+    bool accepts(uint64_t handle) const {
+        if (!handle || api_.type(handle) != steam006::deck_type) return false;
+        const auto id = api_.remote_session(handle);
+        return remote_ ? sessions_.contains(id) : id == 0;
+    }
     std::string context_set_,context_prefix_;
     Context selected_context_{Context::Inactive};
     BackendState state_{BackendState::Idle};int gamepad_index_{-2};mutable BackendInfo info_{};
@@ -179,16 +193,18 @@ public:
     bool initialize(steam006::Api api,const char* absolute_manifest,bool require_deck=false) {
         if(initialized_||!api.self||!absolute_manifest||!absolute_manifest[0])return false;
         owner_=GetCurrentThreadId();api_=api;info_={};pending_manifest_.clear();
+        remote_=device192::streaming();next_session_check_=0;sessions_={};
         initialized_=api_.init();
         info_.initialized=initialized_;
         if(!initialized_){state_=BackendState::InitializationFailed;return false;}
         if(require_deck){
+            refresh_sessions(0);next_session_check_=0;
             api_.run();uint64_t controllers[16]{};int count=api_.connected(controllers);unsigned decks=0;
             if(count<0||count>16){state_=BackendState::Failed;close();return false;}
             // Discovery can complete on a later RunFrame. Keep this owned Init
             // alive instead of repeatedly shutting it down before data arrives.
             if(!count){pending_manifest_=absolute_manifest;state_=BackendState::WaitingDevice;return true;}
-            for(int i=0;i<count;++i)if(controllers[i]&&api_.type(controllers[i])==steam006::deck_type&&!api_.remote_session(controllers[i]))++decks;
+            for(int i=0;i<count;++i)if(accepts(controllers[i]))++decks;
             if(decks!=1){state_=decks?BackendState::AmbiguousDevice:BackendState::WaitingDevice;close();return false;}
         }
         if(!api_.manifest(absolute_manifest)){state_=BackendState::ManifestRejected;close();return false;}
@@ -239,15 +255,29 @@ public:
         // Re-resolve handles and reassert our existing action set on return;
         // never replace the user's layout, restart Steam or reinitialize input.
         if(regained214){action_set_=0;digital_={};analog_={};last_sample_=0;reassert_after214_=0;++epoch_;}
+        refresh_sessions(now);
         api_.run();uint64_t handles[16]{};int count=api_.connected(handles);
         info_.connected_count=count;
         if(count<0||count>16){state_=BackendState::Failed;return false;}
         uint64_t selected=0;
-        for(int i=0;i<count;++i)if(handles[i]&&api_.type(handles[i])==steam006::deck_type) {
-            if(selected){state_=BackendState::AmbiguousDevice;return false;}selected=handles[i];
+        bool remote_rejected=false;
+        for(int i=0;i<count;++i){
+            if(!accepts(handles[i])){
+                if(handles[i]&&api_.type(handles[i])==steam006::deck_type&&api_.remote_session(handles[i]))
+                    remote_rejected=true;
+                continue;
+            }
+            if(selected){
+                if(handle_){handle_=0;++epoch_;}
+                state_=BackendState::AmbiguousDevice;return false;
+            }
+            selected=handles[i];
         }
-        if(!selected){if(handle_){handle_=0;++epoch_;}state_=BackendState::WaitingDevice;return false;}
-        if(api_.remote_session(selected)){state_=BackendState::RemoteDevice;return false;}
+        if(!selected){
+            if(handle_){handle_=0;++epoch_;}
+            state_=remote_rejected?BackendState::RemoteDevice:BackendState::WaitingDevice;
+            return false;
+        }
         if(!pending_manifest_.empty()){
             if(!api_.manifest(pending_manifest_.c_str())){state_=BackendState::ManifestRejected;return false;}
             pending_manifest_.clear();info_.manifest_accepted=true;api_.run();

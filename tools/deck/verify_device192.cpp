@@ -4,8 +4,42 @@
 #include "../../native/deck/channel181.h"
 #include "../../native/outputs/shogun2-possession-cleanup-v46/src/hud_layout108.h"
 #include <cassert>
+#include "../../native/deck/steam_input174.h"
 #include <iostream>
 #include <string>
+#include "../../native/deck/remote_display130.h"
+static LRESULT CALLBACK fixture_window(HWND window,UINT msg,WPARAM wparam,LPARAM lparam){
+ return DefWindowProcW(window,msg,wparam,lparam);
+}
+static void verify_display130(){
+ HINSTANCE app=GetModuleHandleW(nullptr);
+ WNDCLASSW cls{};cls.lpfnWndProc=fixture_window;cls.hInstance=app;cls.lpszClassName=L"SHOGUN 2";
+ assert(RegisterClassW(&cls));
+ const DWORD ex=WS_EX_LAYERED|WS_EX_TOOLWINDOW|WS_EX_NOACTIVATE;
+ HWND window=CreateWindowExW(ex,cls.lpszClassName,L"Offscreen display fixture",WS_OVERLAPPEDWINDOW,
+                              30,30,960,640,nullptr,nullptr,app,nullptr);
+ assert(window&&SetLayeredWindowAttributes(window,0,0,LWA_ALPHA));
+ ShowWindow(window,SW_SHOWNOACTIVATE);
+ RECT old{},current{},client{};assert(GetWindowRect(window,&old));
+ MONITORINFO info{sizeof(MONITORINFO)};
+ assert(GetMonitorInfoW(MonitorFromWindow(window,MONITOR_DEFAULTTONEAREST),&info));
+ RECT expected{0,0,1280,800};
+ assert(AdjustWindowRectEx(&expected,WS_OVERLAPPEDWINDOW,FALSE,ex));
+ if(expected.right-expected.left<=info.rcWork.right-info.rcWork.left&&
+    expected.bottom-expected.top<=info.rcWork.bottom-info.rcWork.top){
+  remote130::Display display;
+  display.update(true,window);
+  assert(GetClientRect(window,&client)&&client.right==1280&&client.bottom==800);
+  display.update(false,nullptr);
+  assert(GetWindowRect(window,&current)&&EqualRect(&current,&old));
+  std::cout<<"PASS remote130: game window receives 1280x800 client size and exact placement restoration\n";
+ }else{
+  remote130::Display display;display.update(true,window);
+  assert(GetWindowRect(window,&current)&&EqualRect(&current,&old));
+  std::cout<<"PASS remote130: insufficient monitor work area preserves window placement\n";
+ }
+ assert(DestroyWindow(window)&&UnregisterClassW(cls.lpszClassName,app));
+}
 int wmain(int argc,wchar_t** argv){
  SetErrorMode(SEM_FAILCRITICALERRORS|SEM_NOGPFAULTERRORBOX);_set_error_mode(_OUT_TO_STDERR);
  if(argc==4&&!wcscmp(argv[1],L"--reader")){device192::Reader reader;assert(reader.deck(DWORD(wcstoul(argv[2],nullptr,10)))==(argv[3][0]==L'1'));return 0;}
@@ -14,6 +48,32 @@ int wmain(int argc,wchar_t** argv){
  auto set=reinterpret_cast<void(__cdecl*)(int)>(GetProcAddress(fake,"FixtureMode192"));
  auto calls=reinterpret_cast<unsigned(__cdecl*)()>(GetProcAddress(fake,"FixtureCalls192"));assert(set&&calls);
  using device192::Mode;using device192::Reason;
+ if(argv[2][0]==L'2'){
+  auto remote=reinterpret_cast<void(__cdecl*)(uint32_t,uint32_t,bool,int)>(GetProcAddress(fake,"FixtureRemote130"));
+  assert(remote);set(0);
+  remote(17,17,true,14);assert(device192::query(fake).mode==Mode::Desktop);
+  remote(17,17,false,3);assert(device192::query(fake).mode==Mode::Desktop);
+  remote(17,22,false,14);assert(device192::query(fake).mode==Mode::Desktop);
+  remote(17,0,false,14);assert(device192::query(fake).mode==Mode::Desktop);
+  remote(17,17,false,14);
+  assert(device192::select()&&device192::enabled()&&device192::streaming());
+  deck174::SteamBackend backend;
+  assert(backend.open_existing("fixture.vdf",true));
+  deck174::Frame frame;
+  assert(backend.sample(1000000,true,frame)&&frame.native_bindings);
+  const auto epoch=frame.epoch;
+  remote(0,17,false,14);
+  assert(!backend.sample(1250000,true,frame)&&!frame.connected);
+  remote(19,19,false,14);
+  assert(backend.sample(1500000,true,frame)&&frame.epoch>epoch);
+  remote(19,19,true,14);
+  assert(!backend.sample(1750000,true,frame)&&!frame.connected);
+  assert(backend.close());
+  verify_display130();
+  std::cout<<"PASS remote130: direct Deck discovery, wrong/local/guest/other inputs rejected, native bindings, disconnect, reconnect\n";
+  return 0;
+ }
+
  assert(device192::query(nullptr).mode==Mode::Desktop);++cases;
  assert(device192::query(GetModuleHandleW(L"kernel32.dll")).reason==Reason::NoExports);++cases;
  for(int mode=0;mode<=5;++mode){set(mode);auto decision=device192::query(fake);assert(decision.mode==(mode==1?Mode::Deck:Mode::Desktop));assert(calls()==unsigned(mode==0||mode==1||mode==5));++cases;}

@@ -9,9 +9,10 @@
 #include <windows.h>
 #include <cstdint>
 #include <cstdio>
+#include "remote_play130.h"
 namespace device192 {
 enum class Mode : unsigned {Desktop=1,Deck=2};
-enum class Reason : unsigned {NotDeck=1,VerifiedDeck,NoSteam,NoExports,NoClient,NoInterface,InvalidMethod,QueryFault};
+enum class Reason : unsigned {NotDeck=1,VerifiedDeck,NoSteam,NoExports,NoClient,NoInterface,InvalidMethod,QueryFault,VerifiedRemoteDeck};
 struct Decision {Mode mode{Mode::Desktop};Reason reason{Reason::NoSteam};};
 // Valve Proton pinned SDK162: ISteamUtils has 39 methods, including the two
 // STEAM_PRIVATE_API slots. IsSteamRunningOnSteamDeck is slot34, bool(this).
@@ -53,7 +54,7 @@ struct Utils010 {
  virtual bool IsSteamRunningOnSteamDeck()=0;
 };
 inline bool executable(const void* p){MEMORY_BASIC_INFORMATION m{};return p&&VirtualQuery(p,&m,sizeof m)&&m.State==MEM_COMMIT&&!(m.Protect&(PAGE_GUARD|PAGE_NOACCESS))&&(m.Protect&(PAGE_EXECUTE|PAGE_EXECUTE_READ|PAGE_EXECUTE_READWRITE|PAGE_EXECUTE_WRITECOPY));}
-inline Decision query(HMODULE steam){
+inline Decision query_local(HMODULE steam){
  if(!steam)return {};
  using Pipe=int(__cdecl*)();using Client=void*(__cdecl*)();using GetUtils=void*(__cdecl*)(void*,int,const char*);
  auto pipe=reinterpret_cast<Pipe>(GetProcAddress(steam,"SteamAPI_GetHSteamPipe"));
@@ -69,11 +70,18 @@ inline Decision query(HMODULE steam){
   return u->IsSteamRunningOnSteamDeck()?Decision{Mode::Deck,Reason::VerifiedDeck}:Decision{Mode::Desktop,Reason::NotDeck};
  }__except(EXCEPTION_EXECUTE_HANDLER){return {Mode::Desktop,Reason::QueryFault};}
 }
+inline Decision query(HMODULE steam) {
+    const auto local = query_local(steam);
+    if (local.mode == Mode::Deck) return local;
+    const auto sessions = remote130::direct_sessions(steam);
+    if (remote130::has_deck(steam, sessions)) return {Mode::Deck, Reason::VerifiedRemoteDeck};
+    return local;
+}
 inline uint64_t stamp(HANDLE process){FILETIME created{},exited{},kernel{},user{};if(!GetProcessTimes(process,&created,&exited,&kernel,&user))return 0;return (uint64_t(created.dwHighDateTime)<<32)|created.dwLowDateTime;}
 struct Record {unsigned magic{},version{},bytes{},pid{};uint64_t created{};unsigned mode{},reason{};};
 constexpr unsigned magic=0x32395044;
 inline void name(wchar_t(&value)[100],DWORD pid){swprintf_s(value,L"Local\\S2UP-Device192-%lu",pid);}
-inline bool valid(const Record& r,DWORD pid,uint64_t created){return r.magic==magic&&r.version==192&&r.bytes==sizeof(Record)&&r.pid==pid&&created&&r.created==created&&(r.mode==unsigned(Mode::Desktop)||r.mode==unsigned(Mode::Deck))&&r.reason>=unsigned(Reason::NotDeck)&&r.reason<=unsigned(Reason::QueryFault)&&(r.mode!=unsigned(Mode::Deck)||r.reason==unsigned(Reason::VerifiedDeck));}
+inline bool valid(const Record& r,DWORD pid,uint64_t created){return r.magic==magic&&r.version==192&&r.bytes==sizeof(Record)&&r.pid==pid&&created&&r.created==created&&(r.mode==unsigned(Mode::Desktop)||r.mode==unsigned(Mode::Deck))&&r.reason>=unsigned(Reason::NotDeck)&&r.reason<=unsigned(Reason::VerifiedRemoteDeck)&&((r.mode==unsigned(Mode::Deck))==(r.reason==unsigned(Reason::VerifiedDeck)||r.reason==unsigned(Reason::VerifiedRemoteDeck)));}
 class Publisher {
  HANDLE handle{};
 public:
@@ -95,18 +103,21 @@ class Reader {
 public:
  ~Reader(){close();}
  void close(){if(data)UnmapViewOfFile(data);if(handle)CloseHandle(handle);data=nullptr;handle=nullptr;pid=0;created=retry=0;}
- bool deck(DWORD process){
+ Decision profile(DWORD process){
   if(pid&&pid!=process)close();
-  if(!data){if(GetTickCount64()<retry)return false;retry=GetTickCount64()+1000;
-   HANDLE target=OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION,FALSE,process);if(!target)return false;auto time=stamp(target);CloseHandle(target);if(!time)return false;
-   wchar_t path[100];name(path,process);HANDLE h=OpenFileMappingW(FILE_MAP_READ,FALSE,path);if(!h)return false;
-   auto view=static_cast<const Record*>(MapViewOfFile(h,FILE_MAP_READ,0,0,sizeof(Record)));if(!view){CloseHandle(h);return false;}
-   Record copy=*view;if(!valid(copy,process,time)){UnmapViewOfFile(view);CloseHandle(h);return false;}handle=h;data=view;pid=process;created=time;
+  if(!data){if(GetTickCount64()<retry)return {};retry=GetTickCount64()+1000;
+   HANDLE target=OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION,FALSE,process);if(!target)return {};auto time=stamp(target);CloseHandle(target);if(!time)return {};
+   wchar_t path[100];name(path,process);HANDLE h=OpenFileMappingW(FILE_MAP_READ,FALSE,path);if(!h)return {};
+   auto view=static_cast<const Record*>(MapViewOfFile(h,FILE_MAP_READ,0,0,sizeof(Record)));if(!view){CloseHandle(h);return {};}
+   Record copy=*view;if(!valid(copy,process,time)){UnmapViewOfFile(view);CloseHandle(h);return {};}handle=h;data=view;pid=process;created=time;
   }
-  MemoryBarrier();Record copy=*data;return valid(copy,process,created)&&copy.mode==unsigned(Mode::Deck);
+  MemoryBarrier();Record copy=*data;return valid(copy,process,created)?Decision{Mode(copy.mode),Reason(copy.reason)}:Decision{};
  }
+ bool deck(DWORD process){return profile(process).mode==Mode::Deck;}
 };
-inline bool enabled(DWORD pid=GetCurrentProcessId()){static thread_local Reader reader;return reader.deck(pid);}
+inline Decision profile(DWORD pid=GetCurrentProcessId()){static thread_local Reader reader;return reader.profile(pid);}
+inline bool enabled(DWORD pid=GetCurrentProcessId()){return profile(pid).mode==Mode::Deck;}
+inline bool streaming(){return profile().reason==Reason::VerifiedRemoteDeck;}
 inline INIT_ONCE once=INIT_ONCE_STATIC_INIT;inline Publisher publisher;inline bool published{};
 inline BOOL CALLBACK choose(PINIT_ONCE,void*,void**){published=publisher.publish(query(GetModuleHandleW(L"steam_api.dll")));return TRUE;}
 inline bool select(){return InitOnceExecuteOnce(&once,choose,nullptr,nullptr)&&published;}

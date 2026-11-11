@@ -1,4 +1,5 @@
 #pragma once
+#include "remote_display130.h"
 #include "device192.h"
 #include "frontend177.h" // retain verified file/glyph helpers, not old UI polling
 #include "menu179.h"
@@ -241,10 +242,14 @@ static bool camera_apply181(){
 #endif
 }
 static DWORD WINAPI worker(void*){
-    frontend177::owner=GetCurrentThreadId();deck179::Menu179 policy;deck178::Menu178 pointer_policy;Host host;bool prior_pointer=false;
+    frontend177::owner=GetCurrentThreadId();
+    remote130::Display stream_display;
+    const bool streaming=device192::streaming();
+    deck179::Menu179 policy;deck178::Menu178 pointer_policy;Host host;bool prior_pointer=false;
     uint64_t next_attempt{},next_glyph{},previous_sample{};unsigned glyph_attempts{};bool prior_campaign=false;deck174::Normalizer campaign_edges;deck183::CampaignButtons campaign_buttons183;deck188::HelpInput help188;deck188::HelpRenderer guide188;deck194::CursorRenderer cursor194;LONG button_epoch_seen183=button_epoch183;
     try{for(;;){
         if(WaitForSingleObject(stop_event,8)!=WAIT_TIMEOUT)break;
+        if(streaming)stream_display.tick(GetTickCount64());
         auto engine=reinterpret_cast<uintptr_t>(GetModuleHandleW(L"Empire.Retail.dll"));
         HWND present188=GetForegroundWindow();DWORD present_pid188{};GetWindowThreadProcessId(present188,&present_pid188);
         guide188.tick(present_pid188==GetCurrentProcessId()?present188:nullptr,[&](unsigned slot,deck181::Glyph& glyph){return controller_channel.glyph(slot,glyph);});
