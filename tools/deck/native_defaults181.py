@@ -54,8 +54,8 @@ LABELS = {
         LeftStick='Pan battle camera',RightStick='Turn / tilt camera',LeftPad='Clicked direction: nudge; click + drag: turn',LeftPadClick='Fine-position selected units',RightPad='Move cursor',L2='Move / attack / formation; double: run',R2='Select / drag box; double: focus unit',
         LeftPadTouch='Fine-adjust pad (touch alone is inert)',RightPadTouch='Enable cursor (touch)'),
     'Possession': dict(A='Climb / interact / Commander (with RB)',B='Toggle crouch',X='Toggle unit melee / ranged',Y='Return to RTS',L1='Unit order / formation; double: run',R1='Orders (hold) / Commander (press A)',
-        L3='Toggle sprint',R3='Change first / third person (hold)',Menu='Game menu (remain possessed)',View='Hide / cycle HUD; hold: controls guide',Up='Cycle ability / ammunition',Down='Use / end ability',Left='Third-person camera closer',Right='Third-person camera farther',
-        L4='Orbit camera (hold)',L5='Toggle Skirmish (hold)',R4='Toggle slow motion / normal speed',R5='Pause / resume battle',
+        L3='Toggle sprint',R3='Follow arrow or change camera view (hold)',Menu='Game menu (remain possessed)',View='Hide / cycle HUD; hold: controls guide',Up='Cycle ability / ammunition',Down='Use / end ability',Left='Third-person camera closer',Right='Third-person camera farther',
+        L4='Orbit camera (hold)',L5='Toggle Skirmish (hold)',R4='Cycle slow motion / pause / play',R5='Pause / resume battle',
         LeftStick='Move soldier',RightStick='Look / command wheel choice',LeftPad='Third-person camera distance',RightPad='Look around',L2='Ready weapon / secondary melee response',R2='Fire / hold-release bow / primary melee response',
         LeftPadTouch='Enable camera zoom (touch)',RightPadTouch='Enable trackpad look (touch)'),
 }

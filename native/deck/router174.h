@@ -15,7 +15,7 @@ enum class Action : unsigned {
 };
 struct Intent {
     Action action{};Context context{};uint64_t timestamp_us{};
-    Vec2 value{};bool active{},modifier{};unsigned index{};
+    Vec2 value{};bool active{},modifier{};unsigned index{};bool keep_formation{};
 };
 struct Batch {
     std::array<Intent,32> items{};unsigned count{};bool overflow{};

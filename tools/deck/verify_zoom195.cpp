@@ -11,7 +11,7 @@ struct FakeHost:Host {
  void cancel_owned(const Identity&)override{}
  bool pointer(Vec2)override{return true;}
  bool select(bool,bool)override{return true;}
- bool order(unsigned,bool)override{return true;}
+ bool order(unsigned,bool,bool)override{return true;}
  bool halt()override{return true;}
  bool scroll(float n)override{scrolled+=n;return true;}
  bool camera(Vec2 p,float t,float z,float h,float dt)override{moves.push_back({p,t,z,h,dt});return true;}

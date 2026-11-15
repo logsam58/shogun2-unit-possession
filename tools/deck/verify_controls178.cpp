@@ -37,5 +37,20 @@ int main(){
     TEST("community settings are bounded and optional",{Config c;std::string error;assert(!c.community_rts&&parse_config("community_rts=1\ncamera_pan_sensitivity=1.0\ncamera_turn_sensitivity=1.0",c,error)&&c.community_rts);assert(!parse_config("camera_pan_sensitivity=500",c,error));});
     TEST("multi-select pins chosen point until RT release and retains Ctrl after L3 release",{RtsRouter178 r;auto f=frame();r.update(f,f.sample_us);f=frame(2);f.buttons=bit(Button::RightPadTouch)|bit(Button::L3);r.update(f,f.sample_us);f=frame(3);f.buttons=bit(Button::RightPadTouch)|bit(Button::L3);f.right_trigger=1;f.right_pad={.1f,.1f};auto b=r.update(f,f.sample_us);assert(has(b,Action::SelectBegin)&&!has(b,Action::Pointer));f=frame(4);f.buttons=bit(Button::RightPadTouch);f.right_trigger=1;f.right_pad={.8f,.8f};b=r.update(f,f.sample_us);assert(!has(b,Action::Pointer));f=frame(5);f.buttons=bit(Button::RightPadTouch);f.right_pad={.8f,.8f};b=r.update(f,f.sample_us);assert(has(b,Action::SelectEnd)&&!has(b,Action::Pointer));for(unsigned i=0;i<b.count;++i)if(b.items[i].action==Action::SelectEnd)assert(b.items[i].modifier);f=frame(6);f.buttons=bit(Button::RightPadTouch);f.right_pad={.81f,.81f};b=r.update(f,f.sample_us);assert(has(b,Action::Pointer));});
     TEST("ordinary RT box selection still permits pad movement",{RtsRouter178 r;auto f=frame();r.update(f,f.sample_us);f=frame(2);f.buttons=bit(Button::RightPadTouch);r.update(f,f.sample_us);f=frame(3);f.buttons=bit(Button::RightPadTouch);f.right_trigger=1;f.right_pad={.1f,.1f};auto b=r.update(f,f.sample_us);assert(has(b,Action::SelectBegin)&&!has(b,Action::Pointer));f=frame(4);f.buttons=bit(Button::RightPadTouch);f.right_trigger=1;f.right_pad={.2f,.2f};assert(has(r.update(f,f.sample_us),Action::Pointer));});
+    TEST("Deck L3 plus LT preserves formation through release without double-tap carryover",{
+        RtsRouter178 router;auto f=frame(1);router.update(f,f.sample_us);
+        f=frame(2);f.buttons=bit(Button::L3)|bit(Button::RightPadTouch);f.left_trigger=1;
+        auto batch=router.update(f,f.sample_us);
+        assert(has(batch,Action::OrderBegin)&&!has(batch,Action::SelectBegin));
+        assert(batch.items[0].keep_formation&&batch.items[0].index==0&&!batch.items[0].modifier);
+        f=frame(3);f.buttons=bit(Button::RightPadTouch);f.right_pad.x=.5f;f.left_trigger=1;
+        batch=router.update(f,f.sample_us);
+        assert(has(batch,Action::Pointer)&&has(batch,Action::OrderUpdate));
+        for(unsigned i=0;i<batch.count;++i)if(batch.items[i].action==Action::OrderUpdate)assert(batch.items[i].keep_formation);
+        f=frame(4);batch=router.update(f,f.sample_us);
+        assert(has(batch,Action::OrderCommit)&&batch.items[0].keep_formation);
+        f=frame(5);f.left_trigger=1;batch=router.update(f,f.sample_us);
+        assert(has(batch,Action::OrderBegin)&&!batch.items[0].keep_formation&&batch.items[0].index==0);
+    });
     std::cout<<"PASS "<<passed<<" controls178 drift/timing/menu/RTS checks; no game or Deck used\n";
 }

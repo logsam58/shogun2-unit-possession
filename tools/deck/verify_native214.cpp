@@ -215,8 +215,8 @@ int wmain(int argc,wchar_t** argv){assert(argc==3);unsigned cases{},strip_cases{
   }
   {std::vector<unsigned char> root(0xe00),env(0x28400);auto r=reinterpret_cast<uintptr_t>(root.data()),e=reinterpret_cast<uintptr_t>(env.data());memcpy(root.data()+0x110,&e,4);Patch185 global(base+0x1bc8194,&r,4);
    auto get=jump185(base+0x321880,reinterpret_cast<void*>(&get_speed214)),set=jump185(base+0x10e58a0,reinterpret_cast<void*>(&set_speed214));Patch185 getter(base+0x321880,get.data(),5),setter(base+0x10e58a0,set.data(),5);native214::BattleSpeed speed;speed214=1.f;
-   assert(speed.apply(base,r,e,false)&&std::fabs(speed214-.4f)<.001);assert(speed.apply(base,r,e,true)&&speed214==0);assert(speed.apply(base,r,e,true)&&std::fabs(speed214-.4f)<.001);assert(speed.apply(base,r,e,false)&&speed214==1);cases+=4;
-   unsigned calls=speed_calls214;root[0xd18]=1;assert(!speed.apply(base,r,e,true));root[0xd18]=0;env[0x281e8]=1;assert(!speed.apply(base,r,e,true));env[0x281e8]=0;env[0x28254]=1;assert(!speed.apply(base,r,e,true));env[0x28254]=0;assert(!speed.apply(base,r+4,e,true)&&speed_calls214==calls);cases+=4;
+   assert(speed.apply(base,r,e,native214::SpeedInput::Cycle)&&std::fabs(speed214-.4f)<.001);assert(speed.apply(base,r,e,native214::SpeedInput::Cycle)&&speed214==0);assert(speed.apply(base,r,e,native214::SpeedInput::PauseResume)&&std::fabs(speed214-.4f)<.001);assert(speed.apply(base,r,e,native214::SpeedInput::Cycle)&&speed214==0);assert(speed.apply(base,r,e,native214::SpeedInput::Cycle)&&speed214==1);cases+=5;
+   unsigned calls=speed_calls214;root[0xd18]=1;assert(!speed.apply(base,r,e,native214::SpeedInput::PauseResume));root[0xd18]=0;env[0x281e8]=1;assert(!speed.apply(base,r,e,native214::SpeedInput::PauseResume));env[0x281e8]=0;env[0x28254]=1;assert(!speed.apply(base,r,e,native214::SpeedInput::PauseResume));env[0x28254]=0;assert(!speed.apply(base,r+4,e,native214::SpeedInput::PauseResume)&&speed_calls214==calls);cases+=4;
   }
   for(auto rva:{deck85::draw_rva,deck85::origin_rvas[0],deck85::origin_rvas[1],deck85::size_rvas[0],deck85::size_rvas[1]}){
    auto target=reinterpret_cast<void*>(base+rva);

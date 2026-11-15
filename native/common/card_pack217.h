@@ -4,6 +4,7 @@
 #include "card_image217.h"
 #include "../deck/proton_paths174.h"
 #include "../../tools/workshop/ui_compat168.h"
+#include <set>
 #include <unordered_map>
 #include <cwctype>
 #include <tuple>
@@ -40,9 +41,80 @@ inline std::string normal(std::string s){
 inline Bytes file(const fs::path& p,size_t limit){
  deck174::paths::read_file(p);auto n=fs::file_size(p);need(n<=limit,"Optional card input too large");std::ifstream in(p,std::ios::binary);need(bool(in),"Card input unavailable");Bytes b(size_t(n),0);need(b.empty()||bool(in.read(reinterpret_cast<char*>(b.data()),b.size())),"Card input truncated");return b;
 }
-struct Entry {fs::path pack;uint64_t offset{};unsigned size{};};
+class PackReader {
+ std::unique_ptr<void,decltype(&CloseHandle)> file_{nullptr,CloseHandle};
+public:
+ BY_HANDLE_FILE_INFORMATION info{};
+ explicit PackReader(const fs::path& path){
+  deck174::paths::read_file(path);
+  const HANDLE opened=CreateFileW(path.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,
+                                  OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,nullptr);
+  need(opened!=INVALID_HANDLE_VALUE,"Optional card pack unavailable");
+  file_.reset(opened);
+  need(GetFileInformationByHandle(opened,&info)!=0,"Cannot identify optional card pack");
+ }
+ uint64_t size()const{return (uint64_t(info.nFileSizeHigh)<<32)|info.nFileSizeLow;}
+ void read(void* data,DWORD size,const char* message){
+  DWORD done=0;
+  need(!size||(ReadFile(file_.get(),data,size,&done,nullptr)&&done==size),message);
+ }
+ void seek(uint64_t offset){
+  LARGE_INTEGER at{};
+  at.QuadPart=offset;
+  need(SetFilePointerEx(file_.get(),at,nullptr,FILE_BEGIN)!=0,"Cannot seek to card payload");
+ }
+};
+inline bool same_pack_file(const BY_HANDLE_FILE_INFORMATION& a,const BY_HANDLE_FILE_INFORMATION& b){
+ return (a.nFileIndexHigh||a.nFileIndexLow)&&
+        a.dwVolumeSerialNumber==b.dwVolumeSerialNumber&&
+        a.nFileIndexHigh==b.nFileIndexHigh&&a.nFileIndexLow==b.nFileIndexLow;
+}
+// A selected basename can appear in multiple libraries. Use it only if
+// every existing match denotes one file, including aliases on the same volume.
+inline fs::path selected_pack(const std::vector<fs::path>& folders,const fs::path& name){
+ fs::path found;
+ BY_HANDLE_FILE_INFORMATION identity{};
+ for(const auto& folder:folders){
+  const auto path=(folder/name).lexically_normal();
+  if(path==found)continue;
+  std::error_code ec;
+  const bool regular=fs::is_regular_file(path,ec);
+  if(ec&&ec!=std::errc::no_such_file_or_directory&&ec!=std::errc::not_a_directory)return {};
+  if(!regular)continue;
+  try{
+   PackReader pack(path);
+   if(!found.empty()){
+    if(!same_pack_file(identity,pack.info))return {};
+    continue;
+   }
+   found=path;
+   identity=pack.info;
+  }catch(...){return {};}
+ }
+ return found;
+}
+struct IndexedPack {
+ fs::path path;
+ BY_HANDLE_FILE_INFORMATION info;
+ bool matches(const BY_HANDLE_FILE_INFORMATION& current)const{
+  return info.dwVolumeSerialNumber==current.dwVolumeSerialNumber&&
+         info.nFileIndexHigh==current.nFileIndexHigh&&info.nFileIndexLow==current.nFileIndexLow&&
+         info.nFileSizeHigh==current.nFileSizeHigh&&info.nFileSizeLow==current.nFileSizeLow&&
+         CompareFileTime(&info.ftCreationTime,&current.ftCreationTime)==0&&
+         CompareFileTime(&info.ftLastWriteTime,&current.ftLastWriteTime)==0;
+ }
+};
+struct Entry {std::shared_ptr<const IndexedPack> pack;uint64_t offset{};unsigned size{};};
 inline Bytes payload(const Entry& e,size_t limit){
- deck174::paths::read_file(e.pack);need(e.size&&e.size<=limit,"Card payload too large");auto total=fs::file_size(e.pack);need(e.offset<=total&&e.size<=total-e.offset,"Card payload changed");std::ifstream in(e.pack,std::ios::binary);in.seekg(std::streamoff(e.offset));Bytes b(e.size);need(bool(in.read(reinterpret_cast<char*>(b.data()),b.size())),"Card payload missing");return b;
+ need(e.size&&e.size<=limit,"Card payload too large");
+ PackReader in(e.pack->path);
+ need(e.pack->matches(in.info),"Optional card pack changed since indexing");
+ const auto total=in.size();
+ need(e.offset<=total&&e.size<=total-e.offset,"Card payload changed");
+ in.seek(e.offset);
+ Bytes bytes(e.size);
+ in.read(bytes.data(),e.size,"Card payload missing");
+ return bytes;
 }
 inline bool resource(const std::string& n){
  return n.rfind("ui/units/info/",0)==0||n.rfind("ui/units/icons/",0)==0||
@@ -51,14 +123,49 @@ inline bool resource(const std::string& n){
 }
 inline bool loc_file(const std::string& n){return n.rfind("text/",0)==0&&n.compare(n.size()-4,4,".loc")==0;}
 inline std::map<std::string,Entry> index(const fs::path& pack){
- deck174::paths::read_file(pack);std::ifstream in(pack,std::ios::binary);unsigned char h[32]{};need(bool(in.read(reinterpret_cast<char*>(h),32)),"Pack header truncated");
- unsigned flags=u32(h+4),deps=u32(h+8),depbytes=u32(h+12),count=u32(h+16),bytes=u32(h+20);auto total=fs::file_size(pack);
+ PackReader in(pack);
+ unsigned char h[32]{};
+ in.read(h,sizeof h,"Pack header truncated");
+ unsigned flags=u32(h+4),deps=u32(h+8),depbytes=u32(h+12),count=u32(h+16),bytes=u32(h+20);
+ const auto total=in.size();
  need((!memcmp(h,"PFH2",4)||!memcmp(h,"PFH3",4))&&!(flags&~0x4fu)&&(flags&15)<=4&&deps<=4096&&depbytes<=1048576&&count<=100000&&bytes<=16*1024*1024&&32ull+depbytes+bytes<=total,"Optional pack index unsupported");
- Bytes dependency(depbytes);need(dependency.empty()||bool(in.read(reinterpret_cast<char*>(dependency.data()),depbytes)),"Pack dependencies truncated");need(size_t(std::count(dependency.begin(),dependency.end(),0))==deps&&(dependency.empty()||dependency.back()==0),"Pack dependencies malformed");
- Bytes data(bytes);need(data.empty()||bool(in.read(reinterpret_cast<char*>(data.data()),bytes)),"Pack index truncated");size_t p=0;uint64_t offset=32ull+depbytes+bytes;std::set<std::string> seen;std::map<std::string,Entry> found;
- for(unsigned i=0;i<count;++i){unsigned fixed=flags&0x40?12:4;need(p+fixed<=data.size(),"Pack entry truncated");unsigned size=u32(data.data()+p);p+=fixed;auto begin=p;while(p<data.size()&&data[p])++p;need(p<data.size(),"Pack name unterminated");auto n=normal(std::string(reinterpret_cast<char*>(data.data()+begin),p-begin));++p;
-  need(seen.insert(n).second&&offset<=total&&size<=total-offset,"Pack entry duplicate/outside file");if(resource(n)||loc_file(n)||n.rfind("db/uniforms_tables/",0)==0||n.rfind("db/factions_tables/",0)==0)found.emplace(n,Entry{pack,offset,size});offset+=size;
- }need(p==data.size(),"Pack trailing index bytes");return found;
+ Bytes dependency(depbytes);
+ in.read(dependency.data(),depbytes,"Pack dependencies truncated");
+ need(size_t(std::count(dependency.begin(),dependency.end(),0))==deps&&(dependency.empty()||dependency.back()==0),"Pack dependencies malformed");
+ Bytes data(bytes);
+ in.read(data.data(),bytes,"Pack index truncated");
+ // The catalog keeps a file identity for deferred lookups without holding
+ // the Workshop pack open for the lifetime of the HUD.
+ auto indexed=std::make_shared<const IndexedPack>(IndexedPack{pack,in.info});
+ size_t p=0;
+ uint64_t offset=32ull+depbytes+bytes;
+ std::map<std::string,Entry> found;
+ std::set<std::string> ambiguous;
+ for(unsigned i=0;i<count;++i){
+  const unsigned fixed=flags&0x40?12:4;
+  need(p+fixed<=data.size(),"Pack entry truncated");
+  const unsigned size=u32(data.data()+p);
+  p+=fixed;
+  const auto begin=p;
+  while(p<data.size()&&data[p])++p;
+  need(p<data.size(),"Pack name unterminated");
+  auto name=normal(std::string(reinterpret_cast<char*>(data.data()+begin),p-begin));
+  ++p;
+  need(offset<=total&&size<=total-offset,"Pack entry outside file");
+  // A normalized collision leaves this resource to the existing fallback.
+  // Keep scanning so unrelated resources and all payload bounds are checked.
+  if((resource(name)||loc_file(name)||name.rfind("db/uniforms_tables/",0)==0||
+      name.rfind("db/factions_tables/",0)==0)&&!ambiguous.count(name)){
+   auto [entry,inserted]=found.try_emplace(std::move(name),Entry{indexed,offset,size});
+   if(!inserted){
+    auto collision=found.extract(entry);
+    ambiguous.insert(std::move(collision.key()));
+   }
+  }
+  offset+=size;
+ }
+ need(p==data.size(),"Pack trailing index bytes");
+ return found;
 }
 struct Uniform {std::wstring name,faction,card,unit;};
 inline std::wstring key_case(std::wstring s){
@@ -137,10 +244,36 @@ inline TextRows faction_flags(const Bytes& bytes){
  }
  need(rows.end(),"Faction table trailing data");return result;
 }
+struct ArtworkSources {
+ Entry preferred;
+ std::vector<Entry> older;
+ void add(const Entry& entry){
+  if(preferred.pack){
+   const auto same_source=[&](const Entry& prior){
+    const auto& a=*prior.pack;
+    const auto& b=*entry.pack;
+    return prior.offset==entry.offset&&prior.size==entry.size&&
+           (a.path==b.path||same_pack_file(a.info,b.info))&&a.matches(b.info);
+   };
+   if(same_source(preferred))return;
+   auto duplicate=std::find_if(older.begin(),older.end(),same_source);
+   if(duplicate!=older.end())older.erase(duplicate);
+   // Keep four distinct packed sources per name, including the preferred one.
+   if(older.size()==3)older.erase(older.begin());
+   older.push_back(std::move(preferred));
+  }
+  preferred=entry;
+ }
+};
 class Catalog {
- fs::path game_;bool initialized_{};std::map<std::string,Entry> cards_;std::map<UniformKey,Uniform> uniforms_;TextRows names_,flags_;
- struct Cached {std::wstring key;std::shared_ptr<Picture> picture;};std::vector<Cached> cache_;size_t pixel_bytes_{};
- void add(const fs::path& p){try{auto entries=index(p);if(cards_.size()+entries.size()>50000)return;for(const auto& pair:entries){if(resource(pair.first))cards_[pair.first]=pair.second;
+ fs::path game_;bool initialized_{};
+ std::map<std::string,ArtworkSources> cards_;
+ std::map<UniformKey,Uniform> uniforms_;TextRows names_,flags_;
+ using CardKey=std::tuple<std::wstring,std::wstring,std::wstring,std::wstring>;
+ struct Cached {CardKey key;std::shared_ptr<Picture> picture;};
+ std::vector<Cached> cache_;
+ size_t pixel_bytes_{};
+ void add(const fs::path& p){try{auto entries=index(p);if(cards_.size()+entries.size()>50000)return;for(const auto& pair:entries){if(resource(pair.first))cards_[pair.first].add(pair.second);
   else if(loc_file(pair.first)||pair.first.rfind("db/factions_tables/",0)==0){
   try{
    const bool loc=loc_file(pair.first);auto bytes=payload(pair.second,16*1024*1024);
@@ -158,7 +291,9 @@ class Catalog {
 public:
  void configure(fs::path game){if(initialized_)return;initialized_=true;game_=std::move(game);
   try{
-   std::vector<fs::path> folders{game_/L"data"},active;auto selected=game_/L"used_mods.txt";
+   std::vector<fs::path> folders{(game_/L"data").lexically_normal()},active;
+   std::set<std::wstring> folder_paths{folders.front().native()};
+   auto selected=game_/L"used_mods.txt";
    try{
     if(fs::is_regular_file(selected)){
      auto directives=workshop168::selection(selection_text(file(selected,1048576)));
@@ -166,17 +301,17 @@ public:
       fs::path folder=d.value;
       if(folder.is_absolute()&&folders.size()<128){
        deck174::paths::read_directory(folder);
-       if(fs::is_directory(folder))folders.push_back(folder.lexically_normal());
+       auto normalized=folder.lexically_normal();
+       if(normalized.has_relative_path()&&!normalized.has_filename())normalized=normalized.parent_path();
+       if(fs::is_directory(folder)&&folder_paths.insert(normalized.native()).second)
+        folders.push_back(std::move(normalized));
       }
      }catch(...){} // One missing or invalid library cannot hide other enabled packs.
      for(const auto& d:directives)if(d.key==L"mod"){
       fs::path name=d.value;
       if(name!=name.filename()||workshop168::lower(name.extension().wstring())!=L".pack")continue;
-      for(const auto& folder:folders){
-       auto p=folder/name;
-       std::error_code ec;
-       if(fs::is_regular_file(p,ec)){active.push_back(p);break;}
-      }
+      auto path=selected_pack(folders,name);
+      if(!path.empty())active.push_back(std::move(path));
      }
     }
    }catch(...){} // Keep base and automatic packs when the launcher list is unreadable.
@@ -205,7 +340,13 @@ public:
  }
  std::shared_ptr<Picture> card(const std::wstring& unit,const std::wstring& faction,const std::wstring& info,const std::wstring& icon){
   if(!initialized_||game_.empty())return {};
-  auto key=unit+L"\n"+faction+L"\n"+info+L"\n"+icon;for(auto i=cache_.begin();i!=cache_.end();++i)if(i->key==key){auto hit=*i;cache_.erase(i);cache_.push_back(hit);return hit.picture;}
+  const auto key=std::tie(unit,faction,info,icon);
+  for(auto i=cache_.begin();i!=cache_.end();++i)if(i->key==key){
+   auto hit=i->picture;
+   // Move the existing cache entry to the most recently used position.
+   std::rotate(i,i+1,cache_.end());
+   return hit;
+  }
   std::shared_ptr<Picture> result;
   try{std::vector<std::wstring> aliases;
    std::set<std::wstring> faction_cards,default_cards;
@@ -233,13 +374,24 @@ public:
      for(const char* suffix:extension?std::vector<const char*>{""}:std::vector<const char*>{".tga",".dds",".png"})try{
       auto n=path+suffix;
       auto loose=game_/L"data"/fs::u8path(n);
+      try{
+       if(fs::is_regular_file(loose)){
+        result=std::make_shared<Picture>(decode(file(loose,16*1024*1024)));
+        return;
+       }
+      }catch(...){} // A damaged loose file cannot hide usable packed artwork.
       auto item=cards_.find(n);
-      Bytes b;
-      if(fs::is_regular_file(loose))b=file(loose,16*1024*1024);
-      else if(item!=cards_.end())b=payload(item->second,16*1024*1024);
-      else continue;
-      result=std::make_shared<Picture>(decode(b));
-      return;
+      if(item==cards_.end())continue;
+      auto unpack=[&](const Entry& entry){
+       try{
+        result=std::make_shared<Picture>(decode(payload(entry,16*1024*1024)));
+        return true;
+       }catch(...){return false;}
+      };
+      const auto& sources=item->second;
+      if(unpack(sources.preferred))return;
+      for(auto alternate=sources.older.rbegin();alternate!=sources.older.rend();++alternate)
+       if(unpack(*alternate))return;
      }catch(...){}
     }catch(...){} // An invalid alias cannot mask a valid fallback.
    };
@@ -258,7 +410,7 @@ public:
    load(fallback,"ui/units/icons/");
    load(fallback,"ui/units/icons_square/");
   }catch(...){}
-  size_t incoming=result?result->pixels.size():0;while(!cache_.empty()&&(cache_.size()>=64||pixel_bytes_+incoming>32*1024*1024)){if(cache_.front().picture)pixel_bytes_-=cache_.front().picture->pixels.size();cache_.erase(cache_.begin());}pixel_bytes_+=incoming;cache_.push_back({std::move(key),result});return result;
+  size_t incoming=result?result->pixels.size():0;while(!cache_.empty()&&(cache_.size()>=64||pixel_bytes_+incoming>32*1024*1024)){if(cache_.front().picture)pixel_bytes_-=cache_.front().picture->pixels.size();cache_.erase(cache_.begin());}pixel_bytes_+=incoming;cache_.push_back({CardKey{unit,faction,info,icon},result});return result;
  }
 };
 } // card217

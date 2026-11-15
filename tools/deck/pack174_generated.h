@@ -11,12 +11,41 @@ namespace workshop165 {
 inline constexpr char root_sha[]="255b305cefb24a68cf6d2fc79d07efad7c0252acfd98ecd3ad10fa55c959cae8";
 inline void check(bool ok,const char* why){if(!ok)throw std::runtime_error(why);}
 inline void plain(const std::filesystem::path& path){deck174::paths::plain(path);}
+#define S2UP_ROOT_PACK_HANDLE
+class RootPackFile {
+    HANDLE file;
+public:
+    explicit RootPackFile(const std::filesystem::path& path)
+        :file(CreateFileW(path.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,OPEN_EXISTING,
+                           FILE_ATTRIBUTE_NORMAL,nullptr)){
+        check(file!=INVALID_HANDLE_VALUE,"Cannot open UI pack for a stable read");
+    }
+    RootPackFile(const RootPackFile&)=delete;
+    RootPackFile& operator=(const RootPackFile&)=delete;
+    ~RootPackFile(){CloseHandle(file);}
+    uint64_t size()const{
+        LARGE_INTEGER length{};
+        check(GetFileType(file)==FILE_TYPE_DISK&&GetFileSizeEx(file,&length)&&length.QuadPart>=0,
+              "Cannot measure open UI pack");
+        return uint64_t(length.QuadPart);
+    }
+    void read(void* bytes,DWORD count,const char* error)const{
+        DWORD actual{};
+        check(!count||(ReadFile(file,bytes,count,&actual,nullptr)&&actual==count),error);
+    }
+    void seek(uint64_t offset)const{
+        LARGE_INTEGER where{};where.QuadPart=LONGLONG(offset);
+        check(SetFilePointerEx(file,where,nullptr,FILE_BEGIN)!=0,"Cannot seek in open UI pack");
+    }
+};
 inline std::vector<unsigned char> ui_root168(const std::filesystem::path& pack,bool stock,std::string* metadata=nullptr,const char* target_root="ui/frontend ui/layout_scripts/root.luac",unsigned expected_size=13739,const char* expected_sha=root_sha){
     if(metadata)metadata->clear();
-    deck174::paths::read_file(pack);std::ifstream in(pack,std::ios::binary);check(bool(in),"Owned data.pack is missing");
-    unsigned char header[32]{};check(bool(in.read((char*)header,32)),"Truncated pack header");
+    deck174::paths::read_file(pack);
+    // Bind the length and all payload reads to the same read-only file handle.
+    RootPackFile in(pack);
+    const uint64_t total=in.size();
+    unsigned char header[32]{};in.read(header,sizeof header,"Truncated pack header");
     uint32_t flags=assets159::u32(header+4),count=assets159::u32(header+16),index_size=assets159::u32(header+20);
-    uint64_t total=std::filesystem::file_size(pack);
     uint32_t dependencies=assets159::u32(header+8),dependency_size=assets159::u32(header+12);
     const bool pfh3=!memcmp(header,"PFH3",4),pfh2=!memcmp(header,"PFH2",4);
     const bool timestamps=(flags&0x40)!=0;
@@ -25,11 +54,15 @@ inline std::vector<unsigned char> ui_root168(const std::filesystem::path& pack,b
           (!stock||(!dependencies&&!dependency_size))&&count<=100000&&index_size<=16*1024*1024&&
           32ull+dependency_size+index_size<=total,"Unsupported pack index");
     std::vector<unsigned char> dependency_index(dependency_size);
-    check(dependency_index.empty()||bool(in.read((char*)dependency_index.data(),dependency_index.size())),"Truncated pack dependencies");
+    in.read(dependency_index.data(),dependency_size,"Truncated pack dependencies");
     check(size_t(std::count(dependency_index.begin(),dependency_index.end(),0))==dependencies&&
           (dependency_index.empty()||dependency_index.back()==0),"Pack dependency index differs");
-    std::vector<unsigned char> index(index_size);check(bool(in.read((char*)index.data(),index.size())),"Truncated pack index");
-    size_t cursor=0;uint64_t offset=32ull+dependency_size+index_size,root_offset=0,metadata_offset=0;unsigned root_size=0,metadata_size=0;std::set<std::string> seen;
+    std::vector<unsigned char> index(index_size);in.read(index.data(),index_size,"Truncated pack index");
+    size_t cursor=0;
+    uint64_t offset=32ull+dependency_size+index_size,root_offset=0,metadata_offset=0;
+    unsigned root_size=0,metadata_size=0;
+    bool root_seen=false,metadata_seen=false;
+    std::set<std::string> stock_names;
     for(unsigned i=0;i<count;++i){
         const size_t fixed=timestamps?12:4;
         check(cursor+fixed<=index.size(),"Truncated pack entry");unsigned size=assets159::u32(index.data()+cursor);cursor+=fixed;
@@ -37,24 +70,43 @@ inline std::vector<unsigned char> ui_root168(const std::filesystem::path& pack,b
         std::string name((char*)index.data()+begin,cursor-begin);++cursor;std::replace(name.begin(),name.end(),'\\','/');
         std::transform(name.begin(),name.end(),name.begin(),[](unsigned char c){return char(tolower(c));});
         check(!name.empty()&&name.front()!='/'&&name.find(':')==name.npos&&name.find("//")==name.npos&&name.find("../")==name.npos&&
-              name.find("/..") == name.npos&&name.find("./")==name.npos&&seen.insert(name).second&&offset<=total&&size<=total-offset,"Unsafe/duplicate/out-of-range pack entry");
-        if(name==target_root){root_offset=offset;root_size=size;}
-        if(metadata&&name=="possession/workshop165.json"){metadata_offset=offset;metadata_size=size;}
+              name.find("/..") == name.npos&&name.find("./")==name.npos&&offset<=total&&size<=total-offset,"Unsafe/out-of-range pack entry");
+        // A mod's unrelated asset aliases cannot affect the two entries we read.
+        // Continue validating every entry and keep strict uniqueness for owned data.
+        if(stock)check(stock_names.insert(name).second,"Duplicate owned pack entry");
+        if(name==target_root){
+            check(!root_seen,"Duplicate UI root script");
+            root_seen=true;
+            root_offset=offset;
+            root_size=size;
+        }
+        if(name=="possession/workshop165.json"){
+            check(!metadata_seen,"Duplicate Unit Possession metadata");
+            metadata_seen=true;
+            metadata_offset=offset;
+            metadata_size=size;
+        }
         offset+=size;
     }
     check(cursor==index.size(),"Pack index has trailing bytes");
-    if(!root_size&&!stock)return {};
+    if(!root_seen&&!stock)return {};
+    // An empty override is still a selected UI root and must reach recovery.
     // The full possession bootstrap carries its own native payload and is
     // larger than a menu script. Selection discards it after self-identification;
     // only a <=256 KiB original/menu addon can enter the Lua handoff.
     check(root_size>0&&root_size<=8*1024*1024&&(!stock||root_size==expected_size),"UI root script is missing or too large");
+    in.seek(root_offset);
+    std::vector<unsigned char> bytes(root_size);
+    in.read(bytes.data(),root_size,"Truncated owned root script");
+    check(!stock||assets159::sha(bytes.data(),bytes.size())==expected_sha,"Owned root script fingerprint differs");
     if(metadata&&metadata_size){
-        check(metadata_size<=16384,"Possession metadata exceeds bound");in.seekg(std::streamoff(metadata_offset));
-        metadata->resize(metadata_size);check(bool(in.read(&(*metadata)[0],metadata_size)),"Truncated possession metadata");
+        check(metadata_size<=16384,"Possession metadata exceeds bound");
+        std::string value(metadata_size,'\0');
+        in.seek(metadata_offset);
+        in.read(value.data(),metadata_size,"Truncated possession metadata");
+        metadata->swap(value);
     }
-    in.seekg(std::streamoff(root_offset));std::vector<unsigned char> bytes(root_size);
-    check(bool(in.read((char*)bytes.data(),bytes.size())),"Truncated owned root script");
-    check(!stock||assets159::sha(bytes.data(),bytes.size())==expected_sha,"Owned root script fingerprint differs");return bytes;
+    return bytes;
 }
 inline std::vector<unsigned char> original_root(const std::filesystem::path& pack){return ui_root168(pack,true);}
 // Transient handoff to Lua. The reader uses rbD so both handles share deletion.

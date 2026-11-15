@@ -25,6 +25,7 @@
 
 #include "look201.h"
 #include "look202.h"
+#include "frontage137.h"
 namespace deck175 {
 static SRWLOCK queue_lock=SRWLOCK_INIT;
 static deck181::Mailbox mailbox;
@@ -40,6 +41,8 @@ static bool configured{},checked{};
 static HWND owned_window;
 static std::wstring manifest_path;
 static WPARAM owned_mouse_flags;
+static bool owned_formation_drag;
+static GroupFrontage frontage_drag;
 static deck177::Lease input_lease177;
 static deck178::Cursor cursor178;
 static deck193::DoubleClick selection193;
@@ -86,16 +89,18 @@ struct NativeHost:Host {
            !GetCursorPos(&pixel)||!ScreenToClient(input_window,&pixel))return false;
         pixel.x=std::clamp<LONG>(pixel.x,0,rect.right-1);pixel.y=std::clamp<LONG>(pixel.y,0,rect.bottom-1);return true;
     }
-    bool event(UINT message,WPARAM flags){
+    bool event(UINT message,WPARAM flags,bool keep_formation=false){
         RECT rect{};POINT pixel{};if(!point(rect,pixel))return false;
         if(message==WM_MOUSEWHEEL&&!ClientToScreen(input_window,&pixel))return false;
-        deck189::SelectionModifiers modifiers(base,message==WM_MOUSEWHEEL?WPARAM(LOWORD(flags)):flags);
+        deck189::SelectionModifiers modifiers(base,message==WM_MOUSEWHEEL?WPARAM(LOWORD(flags)):flags,
+            keep_formation?deck189::AltKey::Right:deck189::AltKey::None);
         CallWindowProcW(native_window_proc,input_window,message,flags,MAKELPARAM(pixel.x,pixel.y));return true;
     }
     void cancel_owned(const Identity& expected)override{
         // Permit cancellation after focus/menu changes only while this exact
         // native UI identity still exists. Never touch a new battle or camera.
-        selection193.reset();wheel=0;owned_mouse_flags=0;
+        selection193.reset();wheel=0;owned_mouse_flags=0;owned_formation_drag=false;
+        frontage_drag.clear();
         ContextProof now;if(!native_context(now,true)||!(now.identity==expected))return;
         __try{
             RECT client{};if(!GetClientRect(input_window,&client))return;
@@ -121,7 +126,7 @@ struct NativeHost:Host {
         if(!SetCursorPos(pixel.x,pixel.y))return false;
         // Direct native gestures do not alter OS button state. Supply the
         // owned drag bits on native moves; the queued OS move may have none.
-        return event(WM_MOUSEMOVE,owned_mouse_flags);
+        return event(WM_MOUSEMOVE,owned_mouse_flags,owned_formation_drag);
     }
     void reset_pointer()override{cursor178.reset();}
     void reset_clicks()override{selection193.reset();}
@@ -146,14 +151,33 @@ struct NativeHost:Host {
         }else owned_mouse_flags=down?flags:0;
         return true;
     }
-    bool order(unsigned phase,bool modifier)override{
+    bool refresh_order()const{
+        __try{command_refresh103(identity.root);return true;}
+        __except(EXCEPTION_EXECUTE_HANDLER){return false;}
+    }
+    bool order(unsigned phase,bool modifier,bool keep_formation)override{
         if(phase>3||!current(identity))return false;
         if(phase==0||phase==3)controller181::cancel_formation();
         selection193.reset();
-        __try{command_refresh103(identity.root);}
-        __except(EXCEPTION_EXECUTE_HANDLER){return false;}
-        if(!event(phase==3?WM_RBUTTONDBLCLK:phase==0?WM_RBUTTONDOWN:phase==1?WM_MOUSEMOVE:WM_RBUTTONUP,(phase==2?0:MK_RBUTTON)|modifier_flags|(modifier?MK_SHIFT:0)))return false;
-        owned_mouse_flags=phase!=2?(MK_RBUTTON|modifier_flags|(modifier?MK_SHIFT:0)):0;return true;
+        if(!refresh_order())return false;
+        const WPARAM modifiers=(keep_formation?modifier_flags&~WPARAM(MK_CONTROL):modifier_flags)|(modifier?MK_SHIFT:0);
+        const auto message=phase==3?WM_RBUTTONDBLCLK:phase==0?WM_RBUTTONDOWN:phase==1?WM_MOUSEMOVE:WM_RBUTTONUP;
+        const auto flags=(phase==2?0:MK_RBUTTON)|modifiers;
+        if(!event(message,flags,keep_formation))return false;
+        owned_mouse_flags=phase!=2?flags:0;
+        owned_formation_drag=phase!=2&&keep_formation;
+        return true;
+    }
+    bool centered_drag(unsigned phase,float spread)override{
+        auto ready=[&](){return current(identity);};
+        if(phase==0){
+            if(owned_mouse_flags||!ready())return false;
+            controller181::cancel_formation();
+            selection193.reset();
+            return frontage_drag.begin(base,identity.root,identity.environment,ready);
+        }
+        if(phase==1)return ready()&&frontage_drag.selection_live(base,identity.root);
+        return phase==2&&frontage_drag.release(base,identity.root,identity.environment,spread,ready);
     }
     bool halt()override{
         if(!current(identity))return false;
@@ -370,6 +394,12 @@ static bool window(HWND window,UINT message,WPARAM w,LPARAM l){
         ContextProof proof;
         if(native_context(proof)&&proof.permits_rts()){
             deck181::Sample modifier_sample188;WPARAM held188=0;if(deck181::read_sample(GetCurrentProcessId(),modifier_sample188)&&modifier_sample188.context==unsigned(deck174::Context::RTS)){if(modifier_sample188.keys[VK_CONTROL/32]&(1u<<(VK_CONTROL%32)))held188|=MK_CONTROL;if(modifier_sample188.keys[VK_SHIFT/32]&(1u<<(VK_SHIFT%32)))held188|=MK_SHIFT;}
+            if(owned_formation_drag){
+                const WPARAM flags=w|owned_mouse_flags|(held188&~WPARAM(MK_CONTROL));
+                deck189::SelectionModifiers modifiers(base,flags,deck189::AltKey::Right);
+                CallWindowProcW(native_window_proc,window,message,flags,l);
+                return true;
+            }
             CallWindowProcW(native_window_proc,window,message,w|owned_mouse_flags|held188,l);return true;
         }
     }
@@ -380,7 +410,7 @@ static bool window(HWND window,UINT message,WPARAM w,LPARAM l){
     AcquireSRWLockExclusive(&queue_lock);unsigned count=mailbox.take(frames,reset),rts_count=rts_mailbox.take(rts_frames,rts_reset);ReleaseSRWLockExclusive(&queue_lock);
     ContextProof proof;bool context=native_context(proof);NativeHost host(proof.identity);
     InterlockedExchange(&controller181::menu_open,context&&proof.blocked?1:0);
-    const auto now=clock_us();if(rts_reset||stopping||!context)rts.reset(host);if(reset||stopping||!context)controller181::cancel_window();
+    const auto now=clock_us();if(rts_reset||reset||stopping||!context)rts.reset(host);if(reset||stopping||!context)controller181::cancel_window();
     const bool run_rts=!stopping&&context&&proof.permits_rts();
     unsigned next_rts=0;
     if(run_rts)rts.begin(proof,host,now);else rts.reset(host);
@@ -390,7 +420,11 @@ static bool window(HWND window,UINT message,WPARAM w,LPARAM l){
         // A later cursor order must never get ahead of an earlier pad release.
         while(run_rts&&next_rts<rts_count&&rts_frames[next_rts].epoch==frames[i].frame.epoch&&
               rts_frames[next_rts].sequence<=frames[i].frame.sequence)
-            rts.sample(rts_frames[next_rts++],proof,host,now);
+        {
+            const auto& frame=rts_frames[next_rts++];
+            const auto fine=frame.sequence==frames[i].frame.sequence?frames[i].output.fine216:deck216::FineIntent{};
+            rts.sample(frame,proof,host,now,fine);
+        }
         controller181::dispatch(frames[i],proof);
     }
     if(run_rts){

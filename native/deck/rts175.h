@@ -1,6 +1,7 @@
 #pragma once
 #include "router174.h"
 #include "rts_schema178.h"
+#include "fine216.h"
 #include "shoulder_zoom195.h"
 
 namespace deck175 {
@@ -26,7 +27,8 @@ struct Host {
     virtual bool scroll(float){return false;}
     virtual void modifiers(bool,bool){}
     virtual bool select(bool,bool)=0;
-    virtual bool order(unsigned,bool)=0; // 0 begin, 1 update, 2 commit
+    virtual bool order(unsigned,bool,bool keep_formation)=0; // 0 begin, 1 update, 2 commit
+    virtual bool centered_drag(unsigned,float){return false;}
     virtual bool halt()=0;
     virtual bool camera(Vec2,float,float,float,float)=0;
     virtual ~Host()=default;
@@ -35,14 +37,14 @@ struct Host {
 // camera intent once per actual game callback, capped after a stall. Every
 // discrete game call separately validates the borrowed native identity.
 class Rts {
-    deck174::Config config_{};deck174::Router router_{};Identity identity_{};bool live_{},selecting_{},ordering_{};
+    deck174::Config config_{};deck174::Router router_{};Identity identity_{};bool live_{},selecting_{},ordering_{},centered_drag_{};
     deck174::RtsRouter178 community_{};deck195::ShoulderZoom shoulder_zoom_{};
     Vec2 pan_{};float rotate_{},zoom_{},pitch_{};bool fast_{};
     uint64_t callback_us_{};bool have_axes_{};
     void cancel(Host& host){
         host.reset_pointer();host.reset_clicks();shoulder_zoom_.reset();
-        if(live_&&(selecting_||ordering_))host.cancel_owned(identity_);
-        selecting_=ordering_=live_=have_axes_=false;pan_={};rotate_=zoom_=pitch_=0;fast_=false;
+        if(live_&&(selecting_||ordering_||centered_drag_))host.cancel_owned(identity_);
+        selecting_=ordering_=centered_drag_=live_=have_axes_=false;pan_={};rotate_=zoom_=pitch_=0;fast_=false;
     }
 public:
     unsigned rejected{},unsupported{},committed{},cancelled{};
@@ -52,15 +54,20 @@ public:
         if(!proof.permits_rts()||(live_&&!(identity_==proof.identity))){reset(host);return;}
         if(!live_){identity_=proof.identity;live_=true;callback_us_=now;}
     }
-    void sample(const deck174::Frame& f,const ContextProof& proof,Host& host,uint64_t now) {
-        if(!proof.permits_rts()||!live_||!(identity_==proof.identity)||!host.current(identity_)||
+    void sample(const deck174::Frame& f,const ContextProof& proof,Host& host,uint64_t now,const deck216::FineIntent& fine={}) {
+        if(!proof.permits_rts()||!live_||!(identity_==proof.identity)||!host.current(identity_)||!f.focused||
             !deck174::valid(f,now)||now-f.sample_us>uint64_t(config_.stale_ms)*1000){++rejected;reset(host);return;}
         if(config_.community_rts)host.modifiers((f.buttons&deck174::bit(deck174::Button::L4))!=0,(f.buttons&deck174::bit(deck174::Button::L3))!=0);
         deck174::Facts facts;facts.focused=facts.device=facts.battle=true;
         // Router timestamps use the sample's acquisition time. Checking against
         // the real callback time above prevents a queued old command from firing.
         if(!(f.buttons&deck174::bit(deck174::Button::RightPadTouch)))host.reset_pointer();
-        auto batch=config_.community_rts?community_.update(f,f.sample_us):router_.update(f,facts,f.sample_us);
+        const bool trackpads_owned=config_.community_rts&&(fine.owns_right_pad||centered_drag_);
+        if(trackpads_owned&&(selecting_||ordering_)){
+            host.cancel_owned(identity_);
+            selecting_=ordering_=false;
+        }
+        auto batch=config_.community_rts?community_.update(f,f.sample_us,trackpads_owned):router_.update(f,facts,f.sample_us);
         if(batch.overflow){++rejected;reset(host);return;}
         pan_={};rotate_=zoom_=pitch_=0;fast_=false;have_axes_=true;
         for(unsigned i=0;i<batch.count;++i){const auto& intent=batch.items[i];
@@ -68,8 +75,8 @@ public:
             switch(intent.action){
             case Action::ClearHeld:
                 shoulder_zoom_.reset();
-                if(selecting_||ordering_)host.cancel_owned(identity_);
-                selecting_=ordering_=false;break;
+                if(selecting_||ordering_||centered_drag_)host.cancel_owned(identity_);
+                selecting_=ordering_=centered_drag_=false;break;
             case Action::CameraPan:pan_=intent.value;fast_=intent.modifier;break;
             case Action::CameraRotate:rotate_=intent.value.x;break;
             case Action::CameraZoom:zoom_=intent.value.y;break;
@@ -93,23 +100,42 @@ public:
                 // path. Until then reject the chord; never silently make it a
                 // replacing order or also fire the run/walk action.
                 if(intent.modifier&&!config_.community_rts){++unsupported;break;}
-                ordering_=host.order(intent.index?3:0,intent.modifier);break;
-            case Action::OrderUpdate:if(ordering_&&!host.order(1,intent.modifier)){++rejected;reset(host);return;}break;
+                ordering_=host.order(intent.index?3:0,intent.modifier,intent.keep_formation);break;
+            case Action::OrderUpdate:if(ordering_&&!host.order(1,intent.modifier,intent.keep_formation)){++rejected;reset(host);return;}break;
             case Action::OrderCommit:
                 if(ordering_){if(intent.modifier&&!config_.community_rts){host.cancel_owned(identity_);++unsupported;}
-                    else if(host.order(2,intent.modifier))++committed;
+                    else if(host.order(2,intent.modifier,intent.keep_formation))++committed;
                     else{++rejected;reset(host);return;}ordering_=false;}break;
             case Action::Cancel:case Action::OrderCancel:
                 host.reset_clicks();
-                if(selecting_||ordering_){host.cancel_owned(identity_);++cancelled;}
-                selecting_=ordering_=false;break;
+                if(selecting_||ordering_||centered_drag_){host.cancel_owned(identity_);++cancelled;}
+                selecting_=ordering_=centered_drag_=false;break;
             case Action::Halt:
                 host.reset_clicks();
-                if(selecting_||ordering_)host.cancel_owned(identity_);
-                selecting_=ordering_=false;if(!host.halt())++rejected;break;
+                if(selecting_||ordering_||centered_drag_)host.cancel_owned(identity_);
+                selecting_=ordering_=centered_drag_=false;if(!host.halt())++rejected;break;
             case Action::ClassWheel:case Action::TacticalWheel:case Action::AbilityWheel:
                 ++unsupported;reset(host);return;
             default:++unsupported;break;
+            }
+        }
+        if(trackpads_owned){
+            if(centered_drag_&&(fine.cancel||(!fine.active&&!fine.released)||!fine.width_fraction)){
+                host.cancel_owned(identity_);
+                centered_drag_=false;
+            }
+            if(!fine.cancel&&fine.resizing&&fine.width_fraction){
+                if(fine.active&&!centered_drag_){
+                    if(!host.current(identity_)){++rejected;reset(host);return;}
+                    centered_drag_=host.centered_drag(0,fine.width_fraction);
+                }
+                else if(centered_drag_&&fine.released){
+                    if(!host.centered_drag(2,fine.width_fraction)){++rejected;reset(host);return;}
+                    ++committed;
+                    centered_drag_=false;
+                }else if(centered_drag_&&!host.centered_drag(1,fine.width_fraction)){
+                    ++rejected;reset(host);return;
+                }
             }
         }
         // A release sampled between callbacks must still restart the ramp.

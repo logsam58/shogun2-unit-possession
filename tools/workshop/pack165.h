@@ -35,7 +35,7 @@ inline std::vector<unsigned char> ui_root168(const std::filesystem::path& pack,b
     check(size_t(std::count(dependency_index.begin(),dependency_index.end(),0))==dependencies&&
           (dependency_index.empty()||dependency_index.back()==0),"Pack dependency index differs");
     std::vector<unsigned char> index(index_size);check(bool(in.read((char*)index.data(),index.size())),"Truncated pack index");
-    size_t cursor=0;uint64_t offset=32ull+dependency_size+index_size,root_offset=0,metadata_offset=0;unsigned root_size=0,metadata_size=0;std::set<std::string> seen;
+    size_t cursor=0;uint64_t offset=32ull+dependency_size+index_size,root_offset=0,metadata_offset=0;unsigned root_size=0,metadata_size=0;bool root_seen=false;std::set<std::string> seen;
     for(unsigned i=0;i<count;++i){
         const size_t fixed=timestamps?12:4;
         check(cursor+fixed<=index.size(),"Truncated pack entry");unsigned size=assets159::u32(index.data()+cursor);cursor+=fixed;
@@ -44,12 +44,13 @@ inline std::vector<unsigned char> ui_root168(const std::filesystem::path& pack,b
         std::transform(name.begin(),name.end(),name.begin(),[](unsigned char c){return char(tolower(c));});
         check(!name.empty()&&name.front()!='/'&&name.find(':')==name.npos&&name.find("//")==name.npos&&name.find("../")==name.npos&&
               name.find("/..") == name.npos&&name.find("./")==name.npos&&seen.insert(name).second&&offset<=total&&size<=total-offset,"Unsafe/duplicate/out-of-range pack entry");
-        if(name=="ui/frontend ui/layout_scripts/root.luac"){root_offset=offset;root_size=size;}
+        if(name=="ui/frontend ui/layout_scripts/root.luac"){root_seen=true;root_offset=offset;root_size=size;}
         if(metadata&&name=="possession/workshop165.json"){metadata_offset=offset;metadata_size=size;}
         offset+=size;
     }
     check(cursor==index.size(),"Pack index has trailing bytes");
-    if(!root_size&&!stock)return {};
+    if(!root_seen&&!stock)return {};
+    // An empty override is still a selected UI root and must reach recovery.
     // The full possession bootstrap carries its own native payload and is
     // larger than a menu script. Selection discards it after self-identification;
     // only a <=256 KiB original/menu addon can enter the Lua handoff.

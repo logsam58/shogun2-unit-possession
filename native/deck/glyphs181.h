@@ -40,7 +40,7 @@ inline int key_glyph(const wchar_t* text){
  using deck174::Button;if(!text)return -1;
  struct Pair{const wchar_t* key;int glyph;};
  const Pair map[]={{L"Q",int(Button::L1)},{L"E",int(Button::R1)},{L"Z",int(Button::R1)},{L"C",int(Button::R1)},
-  {L"R",int(Button::R1)},{L"F10",int(Button::Y)},{L"P",int(Button::R3)},{L"1",int(Button::X)},
+  {L"R",int(Button::R1)},{L"F10",int(Button::Y)},{L"P",int(Button::R3)},{L"R3",int(Button::R3)},{L"1",int(Button::X)},
   {L"F",int(Button::A)},{L"T",int(Button::Up)},{L"G",int(Button::Down)},{L"3",int(Button::R5)},{L"4",int(Button::R4)},{L"CTRL",int(Button::B)},
   {L"SHIFT",int(Button::L3)},{L"ORBIT",int(Button::L4)},{L"R1",int(Button::R1)},{L"L5",int(Button::L5)},{L"W",26},{L"S",26},{L"RT",25},{L"LT",24},{L"LMB",25},{L"RMB",24}};
  for(auto p:map)if(wcscmp(text,p.key)==0)return p.glyph;return -1;

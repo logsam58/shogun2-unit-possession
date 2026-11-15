@@ -21,11 +21,38 @@ int main(){
   assert(!step(6,0,Context::Possession).held(Space));
   assert(!step(7,bit(Button::R3),Context::Possession).held(Space));
  });
- TEST("R3 double tap cannot return RTS",{R3Gesture g;g.sample(true,1000000,Context::Possession,c);assert(g.sample(false,1040000,Context::Possession,c)==Gesture::None);g.sample(true,1100000,Context::Possession,c);assert(g.sample(false,1140000,Context::Possession,c)==Gesture::None);assert(g.sample(false,1500000,Context::Possession,c)==Gesture::None);});
- TEST("long R3 toggles once without tap",{R3Gesture g;g.sample(true,1000000,Context::Possession,c);assert(g.sample(true,1349999,Context::Possession,c)==Gesture::None);assert(g.sample(true,1350000,Context::Possession,c)==Gesture::Perspective);assert(g.sample(true,1800000,Context::Possession,c)==Gesture::None);assert(g.sample(false,1900000,Context::Possession,c)==Gesture::None);assert(g.sample(false,2300000,Context::Possession,c)==Gesture::None);});
- TEST("single in possession does not eject",{R3Gesture g;g.sample(true,1000000,Context::Possession,c);g.sample(false,1050000,Context::Possession,c);assert(g.sample(false,1500000,Context::Possession,c)==Gesture::None);});
+ TEST("R3 needs a fresh hold and releases without another action",{
+  R3Gesture g;
+  assert(!g.sample(true,false,1000000,c.hold_ms));
+  assert(!g.sample(true,false,1400000,c.hold_ms));
+  assert(!g.sample(false,false,1410000,c.hold_ms));
+  assert(!g.sample(true,true,1500000,c.hold_ms));
+  assert(!g.sample(true,false,1849999,c.hold_ms));
+  assert(g.sample(true,false,1850000,c.hold_ms));
+  assert(g.sample(true,false,1950000,c.hold_ms));
+  assert(!g.sample(false,false,2000000,c.hold_ms));
+  assert(!g.sample(true,true,2100000,c.hold_ms));
+  assert(!g.sample(false,false,2200000,c.hold_ms));
+ });
  TEST("Y is the only possess and return binding",{for(auto context:{Context::RTS,Context::Possession}){Controls p;auto f=frame(1,1000000);p.sample(f,context,f.sample_us);f=frame(2,1008000);f.buttons=bit(Button::Y);auto o=p.sample(f,context,f.sample_us);assert(o.held(context==Context::RTS?F9:F10)&&!o.held(context==Context::RTS?F10:F9));}});
- TEST("long RTS press does not enter or change camera",{R3Gesture g;g.sample(true,1000000,Context::RTS,c);assert(g.sample(true,1400000,Context::RTS,c)==Gesture::None);g.sample(false,1500000,Context::RTS,c);assert(g.sample(false,2000000,Context::RTS,c)==Gesture::None);});
+ TEST("R3 hold is confined to possession and drains through a wheel",{
+  Controls p;uint64_t n=0, now=1000000;
+  auto sample=[&](Context mode,uint64_t buttons){
+   now+=8000;auto f=frame(++n,now);f.buttons=buttons;return p.sample(f,mode,now);
+  };
+  const auto r3=bit(Button::R3);
+  sample(Context::RTS,0);
+  for(unsigned i=0;i<55;++i)assert(!sample(Context::RTS,r3).r3_held);
+  for(unsigned i=0;i<55;++i)assert(!sample(Context::Possession,r3).r3_held);
+  sample(Context::Possession,0);
+  for(unsigned i=0;i<44;++i)assert(!sample(Context::Possession,r3).r3_held);
+  assert(sample(Context::Possession,r3).r3_held);
+  assert(!sample(Context::Possession,r3|bit(Button::R1)).r3_held);
+  for(unsigned i=0;i<55;++i)assert(!sample(Context::Possession,r3).r3_held);
+  assert(!sample(Context::Possession,0).r3_held);
+  for(unsigned i=0;i<44;++i)assert(!sample(Context::Possession,r3).r3_held);
+  assert(sample(Context::Possession,r3).r3_held);
+ });
  TEST("possession sticks never emit RTS orders",{Controls p;auto f=frame(1,1000000);p.sample(f,Context::Possession,f.sample_us);f=frame(2,1008000);f.left_stick={.5f,1};f.right_stick={1,.5f};auto o=p.sample(f,Context::Possession,f.sample_us);assert(o.held(W)&&o.held(D)&&!o.held(Q)&&o.look.x>0&&o.look.y<0);});
  TEST("RTS sticks are not soldier input",{Controls p;auto f=frame(1,1000000);p.sample(f,Context::RTS,f.sample_us);f=frame(2,1008000);f.left_stick={1,1};f.right_trigger=1;auto o=p.sample(f,Context::RTS,f.sample_us);for(auto k:o.keys)assert(k==0);assert(o.look.x==0&&o.look.y==0);});
  TEST("campaign cannot acquire soldier",{Controls p;auto f=frame(1,1000000);p.sample(f,Context::Campaign,f.sample_us);f=frame(2,1008000);f.buttons=bit(Button::R3);p.sample(f,Context::Campaign,f.sample_us);f=frame(3,1020000);p.sample(f,Context::Campaign,f.sample_us);f=frame(4,1500000);auto o=p.sample(f,Context::Campaign,f.sample_us);assert(!o.held(F9));});

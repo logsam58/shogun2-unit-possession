@@ -1,5 +1,14 @@
 # Validation
 
+The maintained PC and Steam Deck source is v0.38, Revision 142. The Steam
+Workshop upload and downloaded pack were verified by SHA-256. The
+[Revision 142 validation record](docs/public-release/V0_38_VALIDATION.json)
+distinguishes offline package and control checks from gameplay reports on
+earlier revisions. The new Deck R3 binding and non-English gameplay still
+need live testing.
+
+## Historical v0.37 validation
+
 The maintained PC and Steam Deck source is v0.37, Revision 126. The owner
 confirmed the Custom Battle setup tooltip fix on PC after staging.
 [Revision 126 validation](docs/public-release/V0_37_VALIDATION.json) separates

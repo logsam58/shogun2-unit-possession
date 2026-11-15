@@ -4,7 +4,7 @@
   "contract_id": "2ab5c4c36b4ed492cf1e3c653f0841bb5ba427b8cefd337eed36f4dbfe93083c",
   "source_files": {
     "native/common/card_image217.h": "3988beb1ef8c17fb368ae421d5266365622a88956190aab78eec797c81fc120c",
-    "native/common/card_pack217.h": "6b3c155a07de3d8090e0b7457ef944b00129febb5b9f7f080a57be83ad5b6761",
+    "native/common/card_pack217.h": "000f2b610793e1b9deb37582ce3f9d4685893acf2ad81381ca27e0e00b00024b",
     "native/common/component_error168.h": "6955bf23ffbbdbae54f90bdb8f6a6def85917b9b2559a8bfc93e8288baf72be0",
     "native/common/engine_contract172.h": "4953611fd54df6dce6e859533e5bb286cb5b5bbf5f869e7db3ef95d265975c41",
     "native/common/engine_profiles170.h": "80561e11a652203bf6c2a2cd4b9b5f2c7eb85ff9fe5397435876da0cbe54337a",
@@ -23,8 +23,8 @@
     "native/deck/acquisition207.h": "33b9bd4664285378e2b042de7b1b823de197b557f7df7cc47fad77c19489a573",
     "native/deck/acquisition208.h": "8ee926c43bfe04600fbb97bdafc7b15b9db0866abc4f9e4bca62f6e289d9fcbe",
     "native/deck/acquisition65.h": "eb55665a9c8b29b27c53f5b142a2df9ff5ce1470f90af1fe92f3bd9d635cead0",
-    "native/deck/adapter175.h": "b80b72d29ea27a8a37486a49fa8b4f4e61179c889b63a4af0d49eed3d384f12d",
-    "native/deck/battle181.h": "514d4138eb58695d27b5dabbd2626faf66ac4172e9e7c509bf8408152e2c6653",
+    "native/deck/adapter175.h": "ad8a8b041f72c87118f95eea4b8f74164b1f4bd694d1ac71acf63c5dc2822206",
+    "native/deck/battle181.h": "b28709921d808ae31dc5d39ce1b8147e26d5179568f63ac51ef7d53be1322e9c",
     "native/deck/battle_panels223.h": "a8e1a60ee6a6be0d7b2b32f12d5ea9e5ac37d59d06ea1c14af1ebead2bb560d3",
     "native/deck/battle_ready181.h": "b402e16e99ae2a628cfbd439e7352e2eda2cd616a95de18aadd9578b6ec5763c",
     "native/deck/battle_speech226.h": "45e07e913af11095d7af67615c6e46054063f5fb5a8f04f81f928c1ec49536d1",
@@ -42,22 +42,23 @@
     "native/deck/commander_wheel84.h": "2fabb25b1d33ed261308be52010d671346e88e750ac34c3678cacae0c7b97917",
     "native/deck/config174.h": "c9565a1c5d610e9525ce4066cec6455510301c46721a45b527cbbc6f69d2d6e0",
     "native/deck/context181.h": "86fdd8a5fa798c88342872a60aba2801e24117209473c59c91780bb8235d164b",
-    "native/deck/controls181.h": "ea22e56cc2c8370c58771934780ffa2015003439aa24bef3db997d3aba6b162e",
+    "native/deck/controls181.h": "3bf507c2f54c664ac108ed551b77033d2dbcf4dc02dc5ce13e562f9f16f262f1",
     "native/deck/cursor178.h": "f2b797b3540f413c0a13f9f83ce0ad4a47eb52b14f41c1b53de6f9b95f75d80a",
     "native/deck/cursor194.h": "684a14889d46bf96b43d791aa8df5b0fb02a7ba471f88b9b1e28c2d7250f5b7c",
     "native/deck/cursor_idle185.h": "3c6128fa4343b11b03d2302957836b9cbf3ab9995bc1c360cf027f7e16e2b33f",
-    "native/deck/defaults175_generated.h": "fbed9afa5ecb05045fd7985f2438c75c9e5386792031b19b8d1bb560a2bd3fb3",
+    "native/deck/defaults175_generated.h": "cfad1b429f8fd8ff06392b4d1734b7cb162ddaa834931137c7ff7eb96a8372cc",
     "native/deck/device192.h": "b224182afdf18939620eb11c33959ea02f2984bf352f84e6b37245497e4df7ea",
     "native/deck/escape218.h": "744a85293f06e01ddeb26132224dc5b19ad6370a610132558853bb29082273b8",
     "native/deck/fine216.h": "cacb2419f35bd9b94092901c28156ee081cbc52bb8deffc23e2abfbce23eaf66",
-    "native/deck/formation218.h": "18386a909329d3bc2e2b5895e8cc27a763ff5da7dc60a4e147f972ad0f25fc25",
+    "native/deck/formation218.h": "193de6d47b5b6dc7c49e781667f0d1c005842f567112c599c6fdf480317e7b4c",
     "native/deck/framing203.h": "4b8ab284926acb93c149f23f626c709697b7e60ee0fb765d6ea34620553775ff",
+    "native/deck/frontage137.h": "596c3517f7fc050bdd7d27880e24fd15f782cdb4a0ac66131c02a0e2291e1211",
     "native/deck/frontend177.h": "63dd78cee773dcdb43b7d67a17b4f979715cf61ed8fe8bfb6fec8d1bfa71028c",
-    "native/deck/frontend181.h": "0f105632b425018bdcdec6c051839cf97348ac6245d27dcdce3cf5c457a93508",
-    "native/deck/glyphs181.h": "4cb73abd452bd963ba4b364668e63d72207b2d4a5417ac4e836608cb3878b71f",
+    "native/deck/frontend181.h": "c623a89cbe83c70ac0314c918a81bcf6eea74fd8b699992f5cd0ce3c0f7ad2e4",
+    "native/deck/glyphs181.h": "ea54c026d8da61015ee43bfcc2e73c51c4bab751f173f248adf5d959452f8e5a",
     "native/deck/handoff181.h": "c2bcffe961a75e03b9be82714e44089b643dd00bcddc3a2b3744df04765037da",
-    "native/deck/help_draw188.h": "4881db4c8ddecdfeda5fdc39099c8bbff0a9c31c3622edc49e3980c44be1a8fe",
-    "native/deck/help_header186.h": "18c2c525143d69923989d4731336c723f2c105429847fef831b272ade64d20d6",
+    "native/deck/help_draw188.h": "aeaeb9ceb44b9f198ddf552b651711de0b5addb7e76c4add70fa95d364d26526",
+    "native/deck/help_header186.h": "f24a7596658a3bab1185c78124a10affc849911e72deb834e5a583ac3f08454a",
     "native/deck/help_input188.h": "af26556ea3c7b21aff8635ce791a96eae57bdff324975c22ea3a6714ffc679c5",
     "native/deck/help_renderer188.h": "f92518a3c07becf02667af7f8887b56961ce147552f4836d21abba0539d14fb5",
     "native/deck/help_rts186.h": "43928914ffb0e0822cfa35116dc173c5ca707efbd61f2dfc4add40e6c21dbe1e",
@@ -73,7 +74,7 @@
     "native/deck/menu178.h": "f13a6d7252ea887d0a303cd9d5249a7ce358f72a420be182705fa6b74ea9a479",
     "native/deck/menu179.h": "e32c3ff6a4e3681d4b7aa177d063e94934eb205053d6c2d4d4ad3bbf890643ef",
     "native/deck/native185_generated.h": "b1321898bae5a5757db11c0ddab1742fded2b6242e4c984bacf02ce7037d5275",
-    "native/deck/native214.h": "f34bdc8086f9e58673994a84f7260299628a5149bd0a0c45c098bbe741419657",
+    "native/deck/native214.h": "e965341d10ad815b945aa8d598c6bfdb4a29f8bd214c3e1051ec5f8e577b0df9",
     "native/deck/native214_generated.h": "e45710e3088bbfaae350774a1c72ae48ad32b78720a3261f75519abea60c7bfb",
     "native/deck/native_guard175.h": "d5289f6478dcaa2f5e401e6fefbb45d4083805c1c075d93e0f3e7d62440055e2",
     "native/deck/native_input185.h": "b1cdcad76e078a829ad9ea94648d6fb119140b132a2fdcfea846753da3783618",
@@ -88,10 +89,10 @@
     "native/deck/proton_paths174.h": "4d381af9dbb4cf9f726edce150b7369bfb87ded1edd6ef92f7831a83b55185b3",
     "native/deck/qol193.h": "639aed932095cf4fb90e614e5843c74045570610555610a8abb47e7563264e2d",
     "native/deck/recovery218.h": "f395dbe6358d5c509d1aca4ab82e70a492e2d4372a4852e56f0fbc7adfb09311",
-    "native/deck/router174.h": "3f0d9f621c62e0cd4faefdf391ff5df6dc84e6859286188ff786f056d7196d67",
-    "native/deck/rts175.h": "c4c1023c66ed7e93cb7c8e8dd5713a3fa1837e73564790de5412dea651d7b2de",
-    "native/deck/rts_schema178.h": "849df5551fdab8fc461e0e8078e7090686cbeff03fc5dc7347cf419c4e363348",
-    "native/deck/selection189.h": "1c861b5d585ad01126df237bd37077bf7965667d58969877cff6d2b29dcc38a3",
+    "native/deck/router174.h": "e26c04bdd42b67f4ccc3532dd63c73dd93c16b8c46d8371da8023878b965651e",
+    "native/deck/rts175.h": "860f833a797a832a7c4e57a9ee38e0603536df72906d4b9f6db02751622afea0",
+    "native/deck/rts_schema178.h": "8a997e6d1ad5f40807649cabb8a5e3e5c8bb4d92b69b245b6f7d08be30ae586e",
+    "native/deck/selection189.h": "be01054fd2ce0172609789ef41d28bdc7d92d84da5585d9727013c5bb03b9a2e",
     "native/deck/shortcut_click184.h": "f3099007b40c86e2b12a79a7fddd02b7ba845303bae266dcafd3389b8ef64cdc",
     "native/deck/shoulder_zoom195.h": "cbbf0fc37d4b2a01f78a14475446b795beb867856c3d3058b3541cfc0d80f199",
     "native/deck/startup_handoff222.h": "6217e16055c7edb7cfaf8b88bcf9546f81c6890487190e981f7b713307b4784b",
@@ -112,7 +113,7 @@
     "native/outputs/shogun2-accuracy90-preview/src/ability_target143.h": "6d9693ccb9c299a214e141549359b11598252d4127414957ce579f806fee3543",
     "native/outputs/shogun2-accuracy90-preview/src/accuracy_geometry90.h": "21ab85a646a6ad166d39963539a875fa983f8c257accb18bb1bf876252657b82",
     "native/outputs/shogun2-accuracy90-preview/src/accuracy_protocol90.h": "3638afd2116e4f15defaac0259137873fdeee0e801cef4133d373069c2f40c01",
-    "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp": "942d5eadf232a02efc80f77379752cf2fd715329fd4327732d70568361779dbf",
+    "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp": "684a668e7a129e2121afbdf2f348fec3f96840981bbd58639639c9a7378ddb7f",
     "native/outputs/shogun2-accuracy90-preview/src/aim_geometry.h": "43db980409c92a967a376d9d0763bfa5cbdf4cc18d5b3a6c762fd3e7f14cdf33",
     "native/outputs/shogun2-accuracy90-preview/src/ammunition_mapping83.h": "665b865cc700b90ad07ab02414d4498b29655e3d5bf92c3faa28f7516f4b0be7",
     "native/outputs/shogun2-accuracy90-preview/src/ammunition_protocol83.h": "7b0962975b377a3a24fd6c27cbea55a36c1078eaf371ae48e12293654116db2b",
@@ -120,7 +121,7 @@
     "native/outputs/shogun2-accuracy90-preview/src/animation_look104.h": "a7e5dc8263316980656da4a88a9b1b474766feb03a9c0c2569d8e7cb87158521",
     "native/outputs/shogun2-accuracy90-preview/src/animation_view.h": "f4cf5ccf772baa9e38696082113020cb1587c6d26fa01c873bd8aa86f789cdd4",
     "native/outputs/shogun2-accuracy90-preview/src/arrow_camera107.h": "7baebd9f00769953c4fe65e17725f5c5ad57d48be0ef4ca1fffeafea24bd8bca",
-    "native/outputs/shogun2-accuracy90-preview/src/arrow_camera_native107.h": "1f3a3789cc1603f2bf3557e6e14129360894bbcd13010003b808029d3561ac84",
+    "native/outputs/shogun2-accuracy90-preview/src/arrow_camera_native107.h": "a58cc9a0af15b66bdb47bdc6b317769f8688660ab036f39effa456994e26c643",
     "native/outputs/shogun2-accuracy90-preview/src/arrow_render_geometry.h": "506e1940661b23226d4f78c854892142de82f7dbbfdbe686e70ffce34cb6a061",
     "native/outputs/shogun2-accuracy90-preview/src/bow_draw142.h": "61682ca2a1de351dd6c04d3d5688a9214f7706313a3680a4142c537c90d9614f",
     "native/outputs/shogun2-accuracy90-preview/src/bow_input142.h": "b802889acbec7d07f203d1164e35b615b362a811066d4d09d36aa19c73c0263c",
@@ -134,7 +135,7 @@
     "native/outputs/shogun2-accuracy90-preview/src/command_input100.h": "cb6753a6031ae046a7f4f06c7dda3d62ff22eb5c3dc889e5b27a97842e2c43e2",
     "native/outputs/shogun2-accuracy90-preview/src/command_policy100.h": "b478d642de7f5370ec851bccffa71ee8fc23ef2c7382d662009ab11220f9896e",
     "native/outputs/shogun2-accuracy90-preview/src/command_protocol100.h": "420fb8a078156b8fd25995e7a11dd6c01a3ef2abe60881decb5ec02062b37102",
-    "native/outputs/shogun2-accuracy90-preview/src/commander_input76.h": "ac5ec50450828f8a294bfce9a774a0067fee274f48e3b632f862a73e11c981bc",
+    "native/outputs/shogun2-accuracy90-preview/src/commander_input76.h": "da4104e940a4f9216ad85dfc89122f3a4e4e6374a3af50eca09064f9e8cd5531",
     "native/outputs/shogun2-accuracy90-preview/src/cone_geometry.h": "f5a1e2fff0628c851629e3980f05a5e57b2eb6d25d38fbb5695253803f2e6bb8",
     "native/outputs/shogun2-accuracy90-preview/src/control_metrics.h": "0014136b2e20cf1cfa197f0383bd0f26871c9d30ebe815416acb6753092b1892",
     "native/outputs/shogun2-accuracy90-preview/src/death_pose_geometry.h": "ce182b2ef06e870bff2d6d0e7317b2c2cbe3c1c4dd545d023f7955af63f88dcd",
@@ -229,7 +230,7 @@
     "native/outputs/shogun2-ammunition83-preview/hud-src/accuracy_geometry90.h": "8730d2506ad3c58b2f2e7c36f309b5fc9f295216a13c0ffbe487714e08151b91",
     "native/outputs/shogun2-ammunition83-preview/hud-src/accuracy_protocol90.h": "3638afd2116e4f15defaac0259137873fdeee0e801cef4133d373069c2f40c01",
     "native/outputs/shogun2-ammunition83-preview/hud-src/hud.cpp": "7ba2b7b15d029fef1430d951f88ea6dff6a2e59f5994bff8b4157a0926e04fee",
-    "native/outputs/shogun2-ammunition83-preview/hud-src/hud_renderer.h": "a0fdeab401560b21b2bb81d9875677a15d172649bbe86b39053a536391348d51",
+    "native/outputs/shogun2-ammunition83-preview/hud-src/hud_renderer.h": "a93cded58a5aecfeae34f347788d569f40efbbb58b5fbe3b367a97b053a145f5",
     "native/outputs/shogun2-ammunition83-preview/hud-src/hud_state89.h": "d34961525a9b1a753b895a383a3dbbbc4c74d0662d875c696acf1741c2004d5e",
     "native/outputs/shogun2-ammunition83-preview/hud-src/hud_surface100.h": "c269a2653ab83159db05feaf8d63c1a2963895e33796458d7bf020ee13171fce",
     "native/outputs/shogun2-ammunition83-preview/hud-src/native_font.h": "7b7a4affaeece63a151803ade708d9468e2ee70fdfc9833db8657f57488ade1f",
@@ -289,16 +290,17 @@
     "native/outputs/shogun2-possession-cleanup-v46/vendor/include/MinHook.h": "62dff05e63155c6bf8135c36a0d79dedbdcaaede9da26fe38daf0bea34323e38",
     "native/vendor/bcdec/bcdec.h": "134520764d96f70a27db814173616c89ad85db95fbd3328417c7a8c77e7ca189",
     "native/work/autoload99-preview/game_audio162.h": "2a321f2a5c03cd89ce3a144786ecfbdd4b50d75a9cf3d74bfd9e1c696d39c9a5",
-    "native/work/autoload99-preview/integrated.h": "8dd4651a2b3d1173881ce3549fac2cdfbb68de10cf7a01726fa06487f6507bae",
-    "native/work/autoload99-preview/workshop_assets165.h": "3eb2938263db9a10b744ae098b0fe2668d6990ce33c85b09578fd3d891e8f30b",
-    "tools/deck/pack174_generated.h": "adaad592f8be9fa7aab7193f6bfed3d3a7fc8f1d39c6a9f93e79769ea8bcf698",
-    "tools/deck/ui_compat174_generated.h": "2ca266220c9b8514e9bde79b2cff083ba8c3a96b68fda927c824f3c73e881b90",
+    "native/work/autoload99-preview/integrated.h": "0d1745d4041532e84867b41fb5e9ace7d692110dc3d9c9e313af2d985ffe0c3d",
+    "native/work/autoload99-preview/workshop_assets165.h": "c6ff0b2adfbd4e744a92a8bfc87b7faffeaf1df40160d2777e4bfa7d24260a53",
+    "tools/deck/pack174_generated.h": "1f2ab23130b5ec2733ee2a529af3cae9aa68e76a38a888f56e3facfd44fce53a",
+    "tools/deck/ui_compat174_generated.h": "4e15c13f74e5612af6f85ed3dda603004211aefc0eb2faac9ca205b52549cff0",
     "tools/installer/asset_recipe159.generated.h": "3d608613252f91e9db45e8fad4344374a06369914c815cfb3acea6ac14a89319",
-    "tools/installer/localization167.h": "b4a73a2654e03647b42b17230858e06992b0aaa7555c26c7d1194d927d0d5a11",
-    "tools/installer/prepare_local_assets159.cpp": "cc7e19c7e12a75491038cbd7e14fbc0ebca0ba0eda96fe2e81f094dbd4827831",
-    "tools/workshop/entry165.cpp": "63b3d528eca1dae8beda6d0f13be0c82c76a4635a4b405f50182885a407a34e9",
-    "tools/workshop/pack165.h": "c586f77379fda3336618ff7a94f66d4cd8860c3a723a96c75c4d8aec8694f79f",
-    "tools/workshop/ui_compat168.h": "7155ccb453564edd6ef0b4447a44e821af43458301759bf24db47104e5834216"
+    "tools/installer/fallback_font141.h": "1fb5a7ad3f82c7db6a9d9be321544394479ba51a56c490f2b7abc33397d81d9d",
+    "tools/installer/localization167.h": "56072c96190d88cdb072c70d6eb61d6428c1d44b38d100c0d9c4cbe70ac9a27a",
+    "tools/installer/prepare_local_assets159.cpp": "3b4f562786169c3180fd637bbe9cd255c01deb3187cf3170166fa4d17188380d",
+    "tools/workshop/entry165.cpp": "4195811d92588a0d64e891c5ba3a646f97132ae1e7418c6570a3a04c8d68cdc8",
+    "tools/workshop/pack165.h": "a9065dc466f565683bc154e75e3c942d709e5f9301a743f260c5bfebb4e75439",
+    "tools/workshop/ui_compat168.h": "ffd47b0261016870493a06b02b115062193af44707b0f5475f77c913db15f5ca"
   },
   "generated_header_sha256": "00a92290121ddcd38e58e6ce2870804404ac87b10049931b6325ea7f0bf6f2b2",
   "sections": [
@@ -26803,20 +26805,6 @@
   ],
   "bindings": [
     {
-      "source": "native/outputs/shogun2-accuracy90-preview/src/native_charge148.h",
-      "line": 126,
-      "value": "0x3d21f0",
-      "function": "0x3d21f0",
-      "classification": "Original radial perception query in an existing protected engine region"
-    },
-    {
-      "source": "native/outputs/shogun2-accuracy90-preview/src/native_movement.h",
-      "line": 43,
-      "value": "0x18b310",
-      "function": "Native main-squad gait speed",
-      "classification": "Original 18b310 gait query used by 1bc880; exact native routine in existing immutable region"
-    },
-    {
       "source": "native/common/soldier_roles.h",
       "line": 8,
       "value": "0x15dfec8",
@@ -26892,6 +26880,1581 @@
       "value": "0x15e8524",
       "function": null,
       "classification": "conservative numeric seed; not a claimed ABI proof"
+    },
+    {
+      "source": "native/deck/acquisition203.h",
+      "line": 50,
+      "value": "0x174ec0",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/acquisition203.h",
+      "line": 50,
+      "value": "0x174ec7",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/acquisition203.h",
+      "line": 50,
+      "value": "0x15c2764",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/acquisition203.h",
+      "line": 50,
+      "value": "0x174ecb",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/acquisition207.h",
+      "line": 64,
+      "value": "0x399f80",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/acquisition207.h",
+      "line": 86,
+      "value": "0x4589a0",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/acquisition207.h",
+      "line": 100,
+      "value": "0x459b40",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/acquisition207.h",
+      "line": 117,
+      "value": "0x18a590",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/acquisition207.h",
+      "line": 118,
+      "value": "0x15ae80",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/acquisition207.h",
+      "line": 119,
+      "value": "0x180cd0",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/acquisition207.h",
+      "line": 137,
+      "value": "0x15b3680",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/acquisition207.h",
+      "line": 284,
+      "value": "0x16aa00",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/acquisition207.h",
+      "line": 284,
+      "value": "0x1b8740",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/acquisition207.h",
+      "line": 288,
+      "value": "0x48d6f3",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/acquisition207.h",
+      "line": 289,
+      "value": "0x48d6f9",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/acquisition207.h",
+      "line": 292,
+      "value": "0x459b4d",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/acquisition207.h",
+      "line": 293,
+      "value": "0x459b53",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/acquisition207.h",
+      "line": 296,
+      "value": "0x175360",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/acquisition207.h",
+      "line": 297,
+      "value": "0x175366",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/acquisition207.h",
+      "line": 300,
+      "value": "0x175346",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/acquisition207.h",
+      "line": 301,
+      "value": "0x17534c",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/acquisition207.h",
+      "line": 304,
+      "value": "0x1b8830",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/acquisition207.h",
+      "line": 305,
+      "value": "0x1b8836",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/acquisition208.h",
+      "line": 51,
+      "value": "0x1aaed0",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/acquisition208.h",
+      "line": 60,
+      "value": "0x47efc0",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/acquisition208.h",
+      "line": 66,
+      "value": "0x48d6a0",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/acquisition208.h",
+      "line": 67,
+      "value": "0x48d860",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/acquisition208.h",
+      "line": 68,
+      "value": "0x1752d0",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/acquisition65.h",
+      "line": 8,
+      "value": "0x102bff",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/acquisition65.h",
+      "line": 8,
+      "value": "0x102ccf",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/acquisition65.h",
+      "line": 8,
+      "value": "0x102daf",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/acquisition65.h",
+      "line": 40,
+      "value": "0x154140",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/adapter175.h",
+      "line": 58,
+      "value": "0x170d284",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/adapter175.h",
+      "line": 58,
+      "value": "0x170d290",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/adapter175.h",
+      "line": 58,
+      "value": "0x170d304",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/adapter175.h",
+      "line": 61,
+      "value": "0x281fc",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/adapter175.h",
+      "line": 62,
+      "value": "0x15d26fc",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/adapter175.h",
+      "line": 65,
+      "value": "0x15d1a74",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/adapter175.h",
+      "line": 68,
+      "value": "0x281e8",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/adapter175.h",
+      "line": 68,
+      "value": "0x2e5810",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/adapter175.h",
+      "line": 103,
+      "value": "0xbd4a10",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/adapter175.h",
+      "line": 107,
+      "value": "0x2f7350",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/adapter175.h",
+      "line": 166,
+      "value": "0x10dfb80",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/battle181.h",
+      "line": 89,
+      "value": "0x10f1060",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/battle181.h",
+      "line": 118,
+      "value": "0x15c2e0",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/battle181.h",
+      "line": 125,
+      "value": "0x10dfb80",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/battle_panels223.h",
+      "line": 12,
+      "value": "0x16e2aac",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/battle_panels223.h",
+      "line": 12,
+      "value": "0x1704cdc",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/battle_panels223.h",
+      "line": 13,
+      "value": "0x16e2b14",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/battle_panels223.h",
+      "line": 13,
+      "value": "0x1704d44",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/battle_panels223.h",
+      "line": 14,
+      "value": "0xf8e840",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/battle_ready181.h",
+      "line": 5,
+      "value": "0x170d284",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/battle_ready181.h",
+      "line": 5,
+      "value": "0x170d290",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/battle_ready181.h",
+      "line": 5,
+      "value": "0x170d304",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/battle_ready181.h",
+      "line": 25,
+      "value": "0x281fc",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/battle_ready181.h",
+      "line": 25,
+      "value": "0x15d26fc",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/battle_ready181.h",
+      "line": 27,
+      "value": "0x15d1a74",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/battle_ready181.h",
+      "line": 40,
+      "value": "0x15d22e8",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/battle_speech226.h",
+      "line": 12,
+      "value": "0x170d284",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/battle_speech226.h",
+      "line": 19,
+      "value": "0x2827c",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/battle_speech226.h",
+      "line": 20,
+      "value": "0x15d3c38",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/camera_edges205.h",
+      "line": 40,
+      "value": "0x304800",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/camera_edges205.h",
+      "line": 40,
+      "value": "0x8fb619",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/camera_edges205.h",
+      "line": 56,
+      "value": "0x304820",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/camera_edges205.h",
+      "line": 56,
+      "value": "0x8fb62b",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/camera_edges205.h",
+      "line": 57,
+      "value": "0x30481b",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/camera_edges205.h",
+      "line": 57,
+      "value": "0x8fb626",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/campaign181.h",
+      "line": 6,
+      "value": "0x8c09e0",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/campaign181.h",
+      "line": 6,
+      "value": "0x8c08a0",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/campaign181.h",
+      "line": 6,
+      "value": "0x8c0d10",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/campaign181.h",
+      "line": 6,
+      "value": "0x8c0b20",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/campaign181.h",
+      "line": 6,
+      "value": "0x8ef030",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/campaign181.h",
+      "line": 6,
+      "value": "0x8f0490",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/campaign181.h",
+      "line": 15,
+      "value": "0x16209f8",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/channel181.h",
+      "line": 65,
+      "value": "0xf92ae0",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/channel181.h",
+      "line": 81,
+      "value": "0x8000",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 114,
+      "value": "0x506ef0",
+      "function": null,
+      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 115,
+      "value": "0x506f01",
+      "function": null,
+      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 116,
+      "value": "0x4db700",
+      "function": null,
+      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 117,
+      "value": "0x5465f0",
+      "function": null,
+      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 118,
+      "value": "0x546630",
+      "function": null,
+      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 119,
+      "value": "0x525cb0",
+      "function": null,
+      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 120,
+      "value": "0x51ffd8",
+      "function": null,
+      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 121,
+      "value": "0x514680",
+      "function": null,
+      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 122,
+      "value": "0x523cf0",
+      "function": null,
+      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 123,
+      "value": "0x51a7a0",
+      "function": null,
+      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 124,
+      "value": "0x21af60",
+      "function": null,
+      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 125,
+      "value": "0x21b040",
+      "function": null,
+      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 126,
+      "value": "0x228e00",
+      "function": null,
+      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 127,
+      "value": "0x228d50",
+      "function": null,
+      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 128,
+      "value": "0x50b1b0",
+      "function": null,
+      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 129,
+      "value": "0x1b9be0",
+      "function": null,
+      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 147,
+      "value": "0x170d284",
+      "function": null,
+      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 155,
+      "value": "0x28248",
+      "function": null,
+      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 156,
+      "value": "0x28254",
+      "function": null,
+      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 174,
+      "value": "0x506fc2",
+      "function": null,
+      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 175,
+      "value": "0x51f670",
+      "function": null,
+      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 235,
+      "value": "0x170d184",
+      "function": null,
+      "classification": "Commander groups native selection/frame or exact card/vtable dependency"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 250,
+      "value": "0x170d0e4",
+      "function": null,
+      "classification": "Land group table assigned by the native land-card manager factory and derived constructor; existing immutable engine region"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 256,
+      "value": "0x17b8954",
+      "function": null,
+      "classification": "Commander groups native selection/frame or exact card/vtable dependency"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 259,
+      "value": "0x16e320c",
+      "function": null,
+      "classification": "Commander groups native selection/frame or exact card/vtable dependency"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 311,
+      "value": "0x303430",
+      "function": null,
+      "classification": "Commander groups native selection/frame or exact card/vtable dependency"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 313,
+      "value": "0xf91810",
+      "function": null,
+      "classification": "Commander groups native selection/frame or exact card/vtable dependency"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 314,
+      "value": "0xf91500",
+      "function": null,
+      "classification": "Commander groups native selection/frame or exact card/vtable dependency"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 315,
+      "value": "0xf9a320",
+      "function": null,
+      "classification": "Commander groups native selection/frame or exact card/vtable dependency"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 316,
+      "value": "0x1b3080",
+      "function": null,
+      "classification": "Commander groups native selection/frame or exact card/vtable dependency"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 341,
+      "value": "0x10e2120",
+      "function": null,
+      "classification": "native land group card-removal override"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 346,
+      "value": "0xf97c20",
+      "function": null,
+      "classification": "native land manager removes one card from a numbered group"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 361,
+      "value": "0x506f06",
+      "function": null,
+      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 367,
+      "value": "0x51ffdd",
+      "function": null,
+      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 402,
+      "value": "0xf97840",
+      "function": null,
+      "classification": "native base group removes a member and dissolves single-member group"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 424,
+      "value": "0x509b10",
+      "function": null,
+      "classification": "Ghidra-verified native Commander resume evaluation window in unchanged immutable engine region"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 425,
+      "value": "0x520140",
+      "function": null,
+      "classification": "Ghidra-verified native Commander resume evaluation window in unchanged immutable engine region"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 426,
+      "value": "0x50700b",
+      "function": null,
+      "classification": "Ghidra-verified native Commander resume evaluation window in unchanged immutable engine region"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 753,
+      "value": "0x10ff59f",
+      "function": null,
+      "classification": "Commander groups native selection/frame or exact card/vtable dependency"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 753,
+      "value": "0x10b084f",
+      "function": null,
+      "classification": "Commander groups native selection/frame or exact card/vtable dependency"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 754,
+      "value": "0x10b09f3",
+      "function": null,
+      "classification": "Commander groups native selection/frame or exact card/vtable dependency"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 754,
+      "value": "0x11d97b8",
+      "function": null,
+      "classification": "Commander groups native selection/frame or exact card/vtable dependency"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 754,
+      "value": "0x11d9898",
+      "function": null,
+      "classification": "Commander groups native selection/frame or exact card/vtable dependency"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 755,
+      "value": "0xf9a49c",
+      "function": null,
+      "classification": "Commander groups native selection/frame or exact card/vtable dependency"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 755,
+      "value": "0xf9a4f8",
+      "function": null,
+      "classification": "Commander groups native selection/frame or exact card/vtable dependency"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 755,
+      "value": "0xf9a540",
+      "function": null,
+      "classification": "Commander groups native selection/frame or exact card/vtable dependency"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 755,
+      "value": "0xf9a5a4",
+      "function": null,
+      "classification": "Commander groups native selection/frame or exact card/vtable dependency"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 761,
+      "value": "0x50703c",
+      "function": null,
+      "classification": "Ghidra-verified native Commander resume evaluation window in unchanged immutable engine region"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 774,
+      "value": "0xf91e91",
+      "function": null,
+      "classification": "Commander groups native selection/frame or exact card/vtable dependency"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 774,
+      "value": "0xf917e8",
+      "function": null,
+      "classification": "Commander groups native selection/frame or exact card/vtable dependency"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 781,
+      "value": "0x10ff75c",
+      "function": null,
+      "classification": "Commander groups native selection/frame or exact card/vtable dependency"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 781,
+      "value": "0xf9a2f5",
+      "function": null,
+      "classification": "Commander groups native selection/frame or exact card/vtable dependency"
+    },
+    {
+      "source": "native/deck/commander76.h",
+      "line": 781,
+      "value": "0x124efe5",
+      "function": null,
+      "classification": "Commander groups native selection/frame or exact card/vtable dependency"
+    },
+    {
+      "source": "native/deck/context181.h",
+      "line": 26,
+      "value": "0x127a210",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/context181.h",
+      "line": 27,
+      "value": "0x172cb74",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/formation218.h",
+      "line": 14,
+      "value": "0x5000",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/formation218.h",
+      "line": 68,
+      "value": "0x1704cdc",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/formation218.h",
+      "line": 68,
+      "value": "0x16e2aac",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/formation218.h",
+      "line": 74,
+      "value": "0x1709cc8",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/formation218.h",
+      "line": 81,
+      "value": "0x2826c",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/formation218.h",
+      "line": 85,
+      "value": "0x15c4da0",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/formation218.h",
+      "line": 168,
+      "value": "0x10dc0c0",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/formation218.h",
+      "line": 174,
+      "value": "0x10dc060",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/formation218.h",
+      "line": 184,
+      "value": "0x399f80",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/formation218.h",
+      "line": 235,
+      "value": "0x40bd40",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/formation218.h",
+      "line": 237,
+      "value": "0x471950",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/formation218.h",
+      "line": 301,
+      "value": "0x2648c9",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/formation218.h",
+      "line": 313,
+      "value": "0x2646fc",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/formation218.h",
+      "line": 349,
+      "value": "0x42dfd0",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/formation218.h",
+      "line": 367,
+      "value": "0x42e540",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/formation218.h",
+      "line": 439,
+      "value": "0x10dfb80",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/formation218.h",
+      "line": 442,
+      "value": "0x28048",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/formation218.h",
+      "line": 484,
+      "value": "0x4596f0",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/formation218.h",
+      "line": 487,
+      "value": "0x255680",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/formation218.h",
+      "line": 491,
+      "value": "0x15cffe0",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/formation218.h",
+      "line": 492,
+      "value": "0x1cc200",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/formation218.h",
+      "line": 494,
+      "value": "0x2e6eb0",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/formation218.h",
+      "line": 495,
+      "value": "0x1d0d40",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/formation218.h",
+      "line": 511,
+      "value": "0x1d10f0",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/formation218.h",
+      "line": 560,
+      "value": "0x2804c",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/formation218.h",
+      "line": 562,
+      "value": "0x31e6d0",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/formation218.h",
+      "line": 573,
+      "value": "0x269240",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/formation218.h",
+      "line": 574,
+      "value": "0x17988d8",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/frontend181.h",
+      "line": 63,
+      "value": "0xf92ae0",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/frontend181.h",
+      "line": 155,
+      "value": "0x10001",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/frontend181.h",
+      "line": 229,
+      "value": "0x16209f8",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/frontend181.h",
+      "line": 407,
+      "value": "0xea3a90",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/frontend181.h",
+      "line": 407,
+      "value": "0xea3930",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/frontend181.h",
+      "line": 486,
+      "value": "0xea3250",
+      "function": "0xea3250",
+      "classification": "conservative numeric seed; not a claimed ABI proof"
+    },
+    {
+      "source": "native/deck/help_rts186.h",
+      "line": 9,
+      "value": "0x170d284",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/locomotion203.h",
+      "line": 73,
+      "value": "0x15cb80",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/locomotion203.h",
+      "line": 118,
+      "value": "0x3dd9b0",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/locomotion203.h",
+      "line": 142,
+      "value": "0x3e4850",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/locomotion203.h",
+      "line": 143,
+      "value": "0x3e44f0",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/locomotion203.h",
+      "line": 149,
+      "value": "0x366a10",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/native214.h",
+      "line": 41,
+      "value": "0x28254",
+      "function": null,
+      "classification": "QoL214/HUD215 dependency inside unchanged immutable guard region"
+    },
+    {
+      "source": "native/deck/native214.h",
+      "line": 41,
+      "value": "0x281e8",
+      "function": null,
+      "classification": "QoL214/HUD215 dependency inside unchanged immutable guard region"
+    },
+    {
+      "source": "native/deck/native214.h",
+      "line": 47,
+      "value": "0x321880",
+      "function": null,
+      "classification": "QoL214/HUD215 dependency inside unchanged immutable guard region"
+    },
+    {
+      "source": "native/deck/native214.h",
+      "line": 51,
+      "value": "0x170b5c0",
+      "function": null,
+      "classification": "Revision41 source dependency; covered by unchanged immutable guard; native function evidence freshly decoded with Ghidra; numeric literals also include data/false-positive candidates"
+    },
+    {
+      "source": "native/deck/native214.h",
+      "line": 53,
+      "value": "0x10e58a0",
+      "function": null,
+      "classification": "QoL214/HUD215 dependency inside unchanged immutable guard region"
+    },
+    {
+      "source": "native/deck/native214.h",
+      "line": 62,
+      "value": "0x10e0a00",
+      "function": null,
+      "classification": "Revision41 source dependency; covered by unchanged immutable guard; native function evidence freshly decoded with Ghidra; numeric literals also include data/false-positive candidates"
+    },
+    {
+      "source": "native/deck/native214.h",
+      "line": 63,
+      "value": "0x10e20c0",
+      "function": null,
+      "classification": "Revision41 source dependency; covered by unchanged immutable guard; native function evidence freshly decoded with Ghidra; numeric literals also include data/false-positive candidates"
+    },
+    {
+      "source": "native/deck/native214.h",
+      "line": 64,
+      "value": "0x10e3380",
+      "function": null,
+      "classification": "Revision41 source dependency; covered by unchanged immutable guard; native function evidence freshly decoded with Ghidra; numeric literals also include data/false-positive candidates"
+    },
+    {
+      "source": "native/deck/native_input185.h",
+      "line": 11,
+      "value": "0xbd75f0",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/native_modifiers188.h",
+      "line": 15,
+      "value": "0x100000",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/native_modifiers188.h",
+      "line": 16,
+      "value": "0x1000",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/native_modifiers188.h",
+      "line": 32,
+      "value": "0x8000",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/native_ui185.h",
+      "line": 16,
+      "value": "0xbd75f0",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/native_ui185.h",
+      "line": 85,
+      "value": "0x16e2aac",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/native_ui185.h",
+      "line": 85,
+      "value": "0x1704cdc",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/native_ui185.h",
+      "line": 117,
+      "value": "0xf98900",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/native_ui185.h",
+      "line": 146,
+      "value": "0xf955b0",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/native_ui185.h",
+      "line": 150,
+      "value": "0xf920a0",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/native_ui185.h",
+      "line": 163,
+      "value": "0xea2d60",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/native_ui185.h",
+      "line": 163,
+      "value": "0xea37c0",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/native_ui185.h",
+      "line": 163,
+      "value": "0xea32b0",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/native_ui185.h",
+      "line": 164,
+      "value": "0x13f7c00",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/native_ui185.h",
+      "line": 164,
+      "value": "0x13f7d20",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/native_ui185.h",
+      "line": 164,
+      "value": "0xf77f70",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/native_ui185.h",
+      "line": 164,
+      "value": "0x1096060",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/native_ui185.h",
+      "line": 185,
+      "value": "0x1754574",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/orders175.h",
+      "line": 13,
+      "value": "0x2826c",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/orders175.h",
+      "line": 16,
+      "value": "0x28048",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/orders175.h",
+      "line": 17,
+      "value": "0x15c4da0",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/orders175.h",
+      "line": 28,
+      "value": "0x5000",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/overlay_gate181.h",
+      "line": 10,
+      "value": "0x170d284",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/overlay_gate181.h",
+      "line": 14,
+      "value": "0x281fc",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/overlay_gate181.h",
+      "line": 15,
+      "value": "0x15d1a74",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/selection189.h",
+      "line": 15,
+      "value": "0xf92ae0",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/terrain224.h",
+      "line": 18,
+      "value": "0x125500",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/terrain224.h",
+      "line": 21,
+      "value": "0x37b480",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/tooltip85.h",
+      "line": 35,
+      "value": "0xf8a4e0",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/tooltip85.h",
+      "line": 36,
+      "value": "0x1401080",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/tooltip85.h",
+      "line": 36,
+      "value": "0x1421f70",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/tooltip85.h",
+      "line": 37,
+      "value": "0x13e35d0",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/tooltip85.h",
+      "line": 37,
+      "value": "0x1421ec0",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/tooltip85.h",
+      "line": 84,
+      "value": "0x170d284",
+      "function": null,
+      "classification": "Ghidra land battle root and review card manager table"
+    },
+    {
+      "source": "native/deck/tooltip85.h",
+      "line": 86,
+      "value": "0x170d184",
+      "function": null,
+      "classification": "Ghidra land battle root and review card manager table"
+    },
+    {
+      "source": "native/deck/tooltip85.h",
+      "line": 144,
+      "value": "0x1752370",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/tooltip85.h",
+      "line": 145,
+      "value": "0x1752488",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/tooltip85.h",
+      "line": 148,
+      "value": "0x1754574",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/ui214.h",
+      "line": 13,
+      "value": "0x16e2aac",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/ui214.h",
+      "line": 13,
+      "value": "0x1704cdc",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/ui214.h",
+      "line": 23,
+      "value": "0xf955b0",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/ui214.h",
+      "line": 31,
+      "value": "0xf98900",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/ui214.h",
+      "line": 38,
+      "value": "0xf920a0",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/ui214.h",
+      "line": 56,
+      "value": "0xf87480",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/viewport181.h",
+      "line": 18,
+      "value": "0xea32b0",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/zoom181.h",
+      "line": 11,
+      "value": "0x904c10",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
     },
     {
       "source": "native/outputs/shogun2-accuracy90-preview/src/ability_input141.h",
@@ -27004,6 +28567,20 @@
       "value": "0x1d0d40",
       "function": "0x1d0d40",
       "classification": "conservative numeric seed; not a claimed ABI proof"
+    },
+    {
+      "source": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
+      "line": 132,
+      "value": "0xfff0",
+      "function": null,
+      "classification": "QoL214/HUD215 dependency inside unchanged immutable guard region"
+    },
+    {
+      "source": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
+      "line": 137,
+      "value": "0x170d284",
+      "function": null,
+      "classification": "QoL214/HUD215 dependency inside unchanged immutable guard region"
     },
     {
       "source": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
@@ -27538,6 +29115,20 @@
       "classification": "conservative numeric seed; not a claimed ABI proof"
     },
     {
+      "source": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
+      "line": 1239,
+      "value": "0x3d8b00",
+      "function": null,
+      "classification": "Reviewed native projectile leader protection call, role query, or exact general vtable in an unchanged protected region"
+    },
+    {
+      "source": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
+      "line": 1338,
+      "value": "0x366a10",
+      "function": null,
+      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
       "source": "native/outputs/shogun2-accuracy90-preview/src/bow_input142.h",
       "line": 35,
       "value": "0x15b2448",
@@ -27951,6 +29542,55 @@
       "classification": "conservative numeric seed; not a claimed ABI proof"
     },
     {
+      "source": "native/outputs/shogun2-accuracy90-preview/src/commander_input76.h",
+      "line": 11,
+      "value": "0x170d284",
+      "function": null,
+      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
+    },
+    {
+      "source": "native/outputs/shogun2-accuracy90-preview/src/commander_input76.h",
+      "line": 15,
+      "value": "0x28248",
+      "function": null,
+      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
+    },
+    {
+      "source": "native/outputs/shogun2-accuracy90-preview/src/commander_input76.h",
+      "line": 16,
+      "value": "0x28254",
+      "function": null,
+      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
+    },
+    {
+      "source": "native/outputs/shogun2-accuracy90-preview/src/commander_input76.h",
+      "line": 17,
+      "value": "0x281e8",
+      "function": null,
+      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
+    },
+    {
+      "source": "native/outputs/shogun2-accuracy90-preview/src/commander_input76.h",
+      "line": 20,
+      "value": "0x281fc",
+      "function": null,
+      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
+    },
+    {
+      "source": "native/outputs/shogun2-accuracy90-preview/src/commander_input76.h",
+      "line": 21,
+      "value": "0x15d26fc",
+      "function": null,
+      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
+    },
+    {
+      "source": "native/outputs/shogun2-accuracy90-preview/src/commander_input76.h",
+      "line": 24,
+      "value": "0x15d1a74",
+      "function": null,
+      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
+    },
+    {
       "source": "native/outputs/shogun2-accuracy90-preview/src/dismount143.h",
       "line": 12,
       "value": "0x10000",
@@ -28344,10 +29984,87 @@
     },
     {
       "source": "native/outputs/shogun2-accuracy90-preview/src/friendly_fire109.h",
+      "line": 103,
+      "value": "0x3a61db",
+      "function": null,
+      "classification": "Reviewed native projectile leader protection call, role query, or exact general vtable in an unchanged protected region"
+    },
+    {
+      "source": "native/outputs/shogun2-accuracy90-preview/src/friendly_fire109.h",
+      "line": 107,
+      "value": "0x15dbd68",
+      "function": null,
+      "classification": "Reviewed native projectile leader protection call, role query, or exact general vtable in an unchanged protected region"
+    },
+    {
+      "source": "native/outputs/shogun2-accuracy90-preview/src/friendly_fire109.h",
       "line": 124,
       "value": "0x473f80",
       "function": "0x473f80",
       "classification": "conservative numeric seed; not a claimed ABI proof"
+    },
+    {
+      "source": "native/outputs/shogun2-accuracy90-preview/src/friendly_fire109.h",
+      "line": 154,
+      "value": "0x3d8b00",
+      "function": null,
+      "classification": "Reviewed native projectile leader protection call, role query, or exact general vtable in an unchanged protected region"
+    },
+    {
+      "source": "native/outputs/shogun2-accuracy90-preview/src/friendly_fire109.h",
+      "line": 156,
+      "value": "0x3a61d6",
+      "function": null,
+      "classification": "Reviewed native projectile leader protection call, role query, or exact general vtable in an unchanged protected region"
+    },
+    {
+      "source": "native/outputs/shogun2-accuracy90-preview/src/general_influence67.h",
+      "line": 9,
+      "value": "0x15dbd68",
+      "function": null,
+      "classification": "Combat67 Ghidra-reviewed native general influence or officer identity within existing immutable engine region"
+    },
+    {
+      "source": "native/outputs/shogun2-accuracy90-preview/src/general_influence67.h",
+      "line": 30,
+      "value": "0x15d352c",
+      "function": null,
+      "classification": "Combat67 Ghidra-reviewed native general influence or officer identity within existing immutable engine region"
+    },
+    {
+      "source": "native/outputs/shogun2-accuracy90-preview/src/general_influence67.h",
+      "line": 87,
+      "value": "0x1aaed0",
+      "function": null,
+      "classification": "Combat67 Ghidra-reviewed native general influence or officer identity within existing immutable engine region"
+    },
+    {
+      "source": "native/outputs/shogun2-accuracy90-preview/src/general_influence67.h",
+      "line": 134,
+      "value": "0x2b68c0",
+      "function": null,
+      "classification": "Combat67 Ghidra-reviewed native general influence or officer identity within existing immutable engine region"
+    },
+    {
+      "source": "native/outputs/shogun2-accuracy90-preview/src/general_influence67.h",
+      "line": 136,
+      "value": "0x1587d0",
+      "function": null,
+      "classification": "Combat67 Ghidra-reviewed native general influence or officer identity within existing immutable engine region"
+    },
+    {
+      "source": "native/outputs/shogun2-accuracy90-preview/src/general_influence67.h",
+      "line": 138,
+      "value": "0x459b40",
+      "function": null,
+      "classification": "Combat67 Ghidra-reviewed native general influence or officer identity within existing immutable engine region"
+    },
+    {
+      "source": "native/outputs/shogun2-accuracy90-preview/src/general_influence67.h",
+      "line": 140,
+      "value": "0x1b3d30",
+      "function": null,
+      "classification": "Combat67 Ghidra-reviewed native general influence or officer identity within existing immutable engine region"
     },
     {
       "source": "native/outputs/shogun2-accuracy90-preview/src/manual_dispersion.h",
@@ -29002,6 +30719,13 @@
     },
     {
       "source": "native/outputs/shogun2-accuracy90-preview/src/native_charge148.h",
+      "line": 126,
+      "value": "0x3d21f0",
+      "function": "0x3d21f0",
+      "classification": "Original radial perception query in an existing protected engine region"
+    },
+    {
+      "source": "native/outputs/shogun2-accuracy90-preview/src/native_charge148.h",
       "line": 134,
       "value": "0x3e53d0",
       "function": "0x3e53d0",
@@ -29429,6 +31153,13 @@
     },
     {
       "source": "native/outputs/shogun2-accuracy90-preview/src/native_movement.h",
+      "line": 43,
+      "value": "0x18b310",
+      "function": "Native main-squad gait speed",
+      "classification": "Original 18b310 gait query used by 1bc880; exact native routine in existing immutable region"
+    },
+    {
+      "source": "native/outputs/shogun2-accuracy90-preview/src/native_movement.h",
       "line": 67,
       "value": "0x3936f0",
       "function": "0x3936f0",
@@ -29786,6 +31517,20 @@
     },
     {
       "source": "native/outputs/shogun2-accuracy90-preview/src/proximity147.h",
+      "line": 62,
+      "value": "0x15dbfb4",
+      "function": null,
+      "classification": "Combat67 Ghidra-reviewed native general influence or officer identity within existing immutable engine region"
+    },
+    {
+      "source": "native/outputs/shogun2-accuracy90-preview/src/proximity147.h",
+      "line": 69,
+      "value": "0x15dd7ac",
+      "function": null,
+      "classification": "conservative numeric seed; not a claimed ABI proof"
+    },
+    {
+      "source": "native/outputs/shogun2-accuracy90-preview/src/proximity147.h",
       "line": 106,
       "value": "0x1672b0",
       "function": "0x1672b0",
@@ -29804,6 +31549,20 @@
       "value": "0x16b180",
       "function": "0x16b180",
       "classification": "conservative numeric seed; not a claimed ABI proof"
+    },
+    {
+      "source": "native/outputs/shogun2-accuracy90-preview/src/proximity147.h",
+      "line": 128,
+      "value": "0x4668f0",
+      "function": "0x4668f0",
+      "classification": "Ghidra-verified native in-place formation application; retained original engine contract region"
+    },
+    {
+      "source": "native/outputs/shogun2-accuracy90-preview/src/proximity147.h",
+      "line": 129,
+      "value": "0x187000",
+      "function": "0x187000",
+      "classification": "Ghidra-verified native in-place formation application; retained original engine contract region"
     },
     {
       "source": "native/outputs/shogun2-accuracy90-preview/src/proximity147.h",
@@ -29996,14 +31755,14 @@
     },
     {
       "source": "native/outputs/shogun2-accuracy90-preview/src/unit_detach130.h",
-      "line": 140,
-      "value": "0x15dd7ac",
+      "line": 108,
+      "value": "0x15dbfb4",
       "function": null,
-      "classification": "conservative numeric seed; not a claimed ABI proof"
+      "classification": "Combat68 exact officer class within unchanged immutable engine region"
     },
     {
-      "source": "native/outputs/shogun2-accuracy90-preview/src/proximity147.h",
-      "line": 69,
+      "source": "native/outputs/shogun2-accuracy90-preview/src/unit_detach130.h",
+      "line": 140,
       "value": "0x15dd7ac",
       "function": null,
       "classification": "conservative numeric seed; not a claimed ABI proof"
@@ -31122,55 +32881,6 @@
       "classification": "conservative numeric seed; not a claimed ABI proof"
     },
     {
-      "source": "tools/workshop/entry165.cpp",
-      "line": 40,
-      "value": "0xea2d60",
-      "function": "0xea2d60",
-      "classification": "conservative numeric seed; not a claimed ABI proof"
-    },
-    {
-      "source": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 132,
-      "value": "0xfff0",
-      "function": null,
-      "classification": "QoL214/HUD215 dependency inside unchanged immutable guard region"
-    },
-    {
-      "source": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 137,
-      "value": "0x170d284",
-      "function": null,
-      "classification": "QoL214/HUD215 dependency inside unchanged immutable guard region"
-    },
-    {
-      "source": "native/deck/native214.h",
-      "line": 41,
-      "value": "0x28254",
-      "function": null,
-      "classification": "QoL214/HUD215 dependency inside unchanged immutable guard region"
-    },
-    {
-      "source": "native/deck/native214.h",
-      "line": 41,
-      "value": "0x281e8",
-      "function": null,
-      "classification": "QoL214/HUD215 dependency inside unchanged immutable guard region"
-    },
-    {
-      "source": "native/deck/native214.h",
-      "line": 47,
-      "value": "0x321880",
-      "function": null,
-      "classification": "QoL214/HUD215 dependency inside unchanged immutable guard region"
-    },
-    {
-      "source": "native/deck/native214.h",
-      "line": 53,
-      "value": "0x10e58a0",
-      "function": null,
-      "classification": "QoL214/HUD215 dependency inside unchanged immutable guard region"
-    },
-    {
       "source": "native/vendor/bcdec/bcdec.h",
       "line": 492,
       "value": "0xffff",
@@ -31193,1725 +32903,178 @@
     },
     {
       "source": "native/vendor/bcdec/bcdec.h",
-      "line": 549,
-      "value": "0x7c00",
-      "function": null,
-      "classification": "Vendor image-decoder numeric constant, conservatively registered; not an engine ABI reference"
-    },
-    {
-      "source": "native/vendor/bcdec/bcdec.h",
       "line": 510,
       "value": "0x4000",
       "function": null,
       "classification": "Vendor image-decoder numeric constant, conservatively registered; not an engine ABI reference"
     },
     {
-      "source": "native/deck/native214.h",
-      "line": 51,
-      "value": "0x170b5c0",
+      "source": "native/vendor/bcdec/bcdec.h",
+      "line": 549,
+      "value": "0x7c00",
       "function": null,
-      "classification": "Revision41 source dependency; covered by unchanged immutable guard; native function evidence freshly decoded with Ghidra; numeric literals also include data/false-positive candidates"
+      "classification": "Vendor image-decoder numeric constant, conservatively registered; not an engine ABI reference"
     },
     {
-      "source": "native/deck/native214.h",
-      "line": 62,
-      "value": "0x10e0a00",
-      "function": null,
-      "classification": "Revision41 source dependency; covered by unchanged immutable guard; native function evidence freshly decoded with Ghidra; numeric literals also include data/false-positive candidates"
-    },
-    {
-      "source": "native/deck/native214.h",
-      "line": 63,
-      "value": "0x10e20c0",
-      "function": null,
-      "classification": "Revision41 source dependency; covered by unchanged immutable guard; native function evidence freshly decoded with Ghidra; numeric literals also include data/false-positive candidates"
-    },
-    {
-      "source": "native/deck/native214.h",
-      "line": 64,
-      "value": "0x10e3380",
-      "function": null,
-      "classification": "Revision41 source dependency; covered by unchanged immutable guard; native function evidence freshly decoded with Ghidra; numeric literals also include data/false-positive candidates"
-    },
-    {
-      "source": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 1239,
-      "value": "0x3d8b00",
-      "function": null,
-      "classification": "Reviewed native projectile leader protection call, role query, or exact general vtable in an unchanged protected region"
-    },
-    {
-      "source": "native/outputs/shogun2-accuracy90-preview/src/friendly_fire109.h",
-      "line": 103,
-      "value": "0x3a61db",
-      "function": null,
-      "classification": "Reviewed native projectile leader protection call, role query, or exact general vtable in an unchanged protected region"
-    },
-    {
-      "source": "native/outputs/shogun2-accuracy90-preview/src/friendly_fire109.h",
-      "line": 107,
-      "value": "0x15dbd68",
-      "function": null,
-      "classification": "Reviewed native projectile leader protection call, role query, or exact general vtable in an unchanged protected region"
-    },
-    {
-      "source": "native/outputs/shogun2-accuracy90-preview/src/friendly_fire109.h",
-      "line": 154,
-      "value": "0x3d8b00",
-      "function": null,
-      "classification": "Reviewed native projectile leader protection call, role query, or exact general vtable in an unchanged protected region"
-    },
-    {
-      "source": "native/outputs/shogun2-accuracy90-preview/src/friendly_fire109.h",
-      "line": 156,
-      "value": "0x3a61d6",
-      "function": null,
-      "classification": "Reviewed native projectile leader protection call, role query, or exact general vtable in an unchanged protected region"
-    },
-    {
-      "source": "native/outputs/shogun2-accuracy90-preview/src/proximity147.h",
-      "line": 62,
-      "value": "0x15dbfb4",
-      "function": null,
-      "classification": "Combat67 Ghidra-reviewed native general influence or officer identity within existing immutable engine region"
-    },
-    {
-      "source": "native/outputs/shogun2-accuracy90-preview/src/general_influence67.h",
-      "line": 9,
-      "value": "0x15dbd68",
-      "function": null,
-      "classification": "Combat67 Ghidra-reviewed native general influence or officer identity within existing immutable engine region"
-    },
-    {
-      "source": "native/outputs/shogun2-accuracy90-preview/src/general_influence67.h",
-      "line": 30,
-      "value": "0x15d352c",
-      "function": null,
-      "classification": "Combat67 Ghidra-reviewed native general influence or officer identity within existing immutable engine region"
-    },
-    {
-      "source": "native/outputs/shogun2-accuracy90-preview/src/general_influence67.h",
-      "line": 87,
-      "value": "0x1aaed0",
-      "function": null,
-      "classification": "Combat67 Ghidra-reviewed native general influence or officer identity within existing immutable engine region"
-    },
-    {
-      "source": "native/outputs/shogun2-accuracy90-preview/src/general_influence67.h",
-      "line": 134,
-      "value": "0x2b68c0",
-      "function": null,
-      "classification": "Combat67 Ghidra-reviewed native general influence or officer identity within existing immutable engine region"
-    },
-    {
-      "source": "native/outputs/shogun2-accuracy90-preview/src/general_influence67.h",
-      "line": 136,
-      "value": "0x1587d0",
-      "function": null,
-      "classification": "Combat67 Ghidra-reviewed native general influence or officer identity within existing immutable engine region"
-    },
-    {
-      "source": "native/outputs/shogun2-accuracy90-preview/src/general_influence67.h",
-      "line": 138,
-      "value": "0x459b40",
-      "function": null,
-      "classification": "Combat67 Ghidra-reviewed native general influence or officer identity within existing immutable engine region"
-    },
-    {
-      "source": "native/outputs/shogun2-accuracy90-preview/src/general_influence67.h",
-      "line": 140,
-      "value": "0x1b3d30",
-      "function": null,
-      "classification": "Combat67 Ghidra-reviewed native general influence or officer identity within existing immutable engine region"
-    },
-    {
-      "source": "native/outputs/shogun2-accuracy90-preview/src/unit_detach130.h",
-      "line": 108,
-      "value": "0x15dbfb4",
-      "function": null,
-      "classification": "Combat68 exact officer class within unchanged immutable engine region"
-    },
-    {
-      "source": "native/outputs/shogun2-accuracy90-preview/src/proximity147.h",
-      "line": 128,
-      "value": "0x4668f0",
-      "function": "0x4668f0",
-      "classification": "Ghidra-verified native in-place formation application; retained original engine contract region"
-    },
-    {
-      "source": "native/outputs/shogun2-accuracy90-preview/src/proximity147.h",
-      "line": 129,
-      "value": "0x187000",
-      "function": "0x187000",
-      "classification": "Ghidra-verified native in-place formation application; retained original engine contract region"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 114,
-      "value": "0x506ef0",
-      "function": null,
-      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 115,
-      "value": "0x506f01",
-      "function": null,
-      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 116,
-      "value": "0x4db700",
-      "function": null,
-      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 117,
-      "value": "0x5465f0",
-      "function": null,
-      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 118,
-      "value": "0x546630",
-      "function": null,
-      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 119,
-      "value": "0x525cb0",
-      "function": null,
-      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 120,
-      "value": "0x51ffd8",
-      "function": null,
-      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 121,
-      "value": "0x514680",
-      "function": null,
-      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 122,
-      "value": "0x523cf0",
-      "function": null,
-      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 123,
-      "value": "0x51a7a0",
-      "function": null,
-      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 124,
-      "value": "0x21af60",
-      "function": null,
-      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 125,
-      "value": "0x21b040",
-      "function": null,
-      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 126,
-      "value": "0x228e00",
-      "function": null,
-      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 127,
-      "value": "0x228d50",
-      "function": null,
-      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 128,
-      "value": "0x50b1b0",
-      "function": null,
-      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 129,
-      "value": "0x1b9be0",
-      "function": null,
-      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 147,
-      "value": "0x170d284",
-      "function": null,
-      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 155,
-      "value": "0x28248",
-      "function": null,
-      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 156,
-      "value": "0x28254",
-      "function": null,
-      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 361,
-      "value": "0x506f06",
-      "function": null,
-      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 367,
-      "value": "0x51ffdd",
-      "function": null,
-      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
-    },
-    {
-      "source": "native/outputs/shogun2-accuracy90-preview/src/commander_input76.h",
-      "line": 11,
-      "value": "0x170d284",
-      "function": null,
-      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
-    },
-    {
-      "source": "native/outputs/shogun2-accuracy90-preview/src/commander_input76.h",
-      "line": 15,
-      "value": "0x28248",
-      "function": null,
-      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
-    },
-    {
-      "source": "native/outputs/shogun2-accuracy90-preview/src/commander_input76.h",
-      "line": 16,
-      "value": "0x28254",
-      "function": null,
-      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
-    },
-    {
-      "source": "native/outputs/shogun2-accuracy90-preview/src/commander_input76.h",
-      "line": 17,
-      "value": "0x281e8",
-      "function": null,
-      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
-    },
-    {
-      "source": "native/outputs/shogun2-accuracy90-preview/src/commander_input76.h",
-      "line": 20,
-      "value": "0x281fc",
-      "function": null,
-      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
-    },
-    {
-      "source": "native/outputs/shogun2-accuracy90-preview/src/commander_input76.h",
-      "line": 21,
-      "value": "0x15d26fc",
-      "function": null,
-      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
-    },
-    {
-      "source": "native/outputs/shogun2-accuracy90-preview/src/commander_input76.h",
-      "line": 24,
-      "value": "0x15d1a74",
-      "function": null,
-      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 174,
-      "value": "0x506fc2",
-      "function": null,
-      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 175,
-      "value": "0x51f670",
-      "function": null,
-      "classification": "Commander76 Ghidra-reviewed call window or numeric seed inside existing immutable engine guards"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 235,
-      "value": "0x170d184",
-      "function": null,
-      "classification": "Commander groups native selection/frame or exact card/vtable dependency"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 256,
-      "value": "0x17b8954",
-      "function": null,
-      "classification": "Commander groups native selection/frame or exact card/vtable dependency"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 259,
-      "value": "0x16e320c",
-      "function": null,
-      "classification": "Commander groups native selection/frame or exact card/vtable dependency"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 313,
-      "value": "0xf91810",
-      "function": null,
-      "classification": "Commander groups native selection/frame or exact card/vtable dependency"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 314,
-      "value": "0xf91500",
-      "function": null,
-      "classification": "Commander groups native selection/frame or exact card/vtable dependency"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 315,
-      "value": "0xf9a320",
-      "function": null,
-      "classification": "Commander groups native selection/frame or exact card/vtable dependency"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 316,
-      "value": "0x1b3080",
-      "function": null,
-      "classification": "Commander groups native selection/frame or exact card/vtable dependency"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 753,
-      "value": "0x10ff59f",
-      "function": null,
-      "classification": "Commander groups native selection/frame or exact card/vtable dependency"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 753,
-      "value": "0x10b084f",
-      "function": null,
-      "classification": "Commander groups native selection/frame or exact card/vtable dependency"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 754,
-      "value": "0x10b09f3",
-      "function": null,
-      "classification": "Commander groups native selection/frame or exact card/vtable dependency"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 754,
-      "value": "0x11d97b8",
-      "function": null,
-      "classification": "Commander groups native selection/frame or exact card/vtable dependency"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 754,
-      "value": "0x11d9898",
-      "function": null,
-      "classification": "Commander groups native selection/frame or exact card/vtable dependency"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 755,
-      "value": "0xf9a49c",
-      "function": null,
-      "classification": "Commander groups native selection/frame or exact card/vtable dependency"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 755,
-      "value": "0xf9a4f8",
-      "function": null,
-      "classification": "Commander groups native selection/frame or exact card/vtable dependency"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 755,
-      "value": "0xf9a540",
-      "function": null,
-      "classification": "Commander groups native selection/frame or exact card/vtable dependency"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 755,
-      "value": "0xf9a5a4",
-      "function": null,
-      "classification": "Commander groups native selection/frame or exact card/vtable dependency"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 774,
-      "value": "0xf91e91",
-      "function": null,
-      "classification": "Commander groups native selection/frame or exact card/vtable dependency"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 774,
-      "value": "0xf917e8",
-      "function": null,
-      "classification": "Commander groups native selection/frame or exact card/vtable dependency"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 781,
-      "value": "0x10ff75c",
-      "function": null,
-      "classification": "Commander groups native selection/frame or exact card/vtable dependency"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 781,
-      "value": "0xf9a2f5",
-      "function": null,
-      "classification": "Commander groups native selection/frame or exact card/vtable dependency"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 781,
-      "value": "0x124efe5",
-      "function": null,
-      "classification": "Commander groups native selection/frame or exact card/vtable dependency"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 311,
-      "value": "0x303430",
-      "function": null,
-      "classification": "Commander groups native selection/frame or exact card/vtable dependency"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 250,
-      "value": "0x170d0e4",
-      "function": null,
-      "classification": "Land group table assigned by the native land-card manager factory and derived constructor; existing immutable engine region"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 346,
-      "value": "0xf97c20",
-      "function": null,
-      "classification": "native land manager removes one card from a numbered group"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 402,
-      "value": "0xf97840",
-      "function": null,
-      "classification": "native base group removes a member and dissolves single-member group"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 341,
-      "value": "0x10e2120",
-      "function": null,
-      "classification": "native land group card-removal override"
-    },
-    {
-      "source": "native/deck/tooltip85.h",
-      "line": 84,
-      "value": "0x170d284",
-      "function": null,
-      "classification": "Ghidra land battle root and review card manager table"
-    },
-    {
-      "source": "native/deck/tooltip85.h",
-      "line": 86,
-      "value": "0x170d184",
-      "function": null,
-      "classification": "Ghidra land battle root and review card manager table"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 424,
-      "value": "0x509b10",
-      "function": null,
-      "classification": "Ghidra-verified native Commander resume evaluation window in unchanged immutable engine region"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 425,
-      "value": "0x520140",
-      "function": null,
-      "classification": "Ghidra-verified native Commander resume evaluation window in unchanged immutable engine region"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 426,
-      "value": "0x50700b",
-      "function": null,
-      "classification": "Ghidra-verified native Commander resume evaluation window in unchanged immutable engine region"
-    },
-    {
-      "source": "native/deck/commander76.h",
-      "line": 761,
-      "value": "0x50703c",
-      "function": null,
-      "classification": "Ghidra-verified native Commander resume evaluation window in unchanged immutable engine region"
-    },
-    {
-      "source": "native/deck/help_rts186.h",
-      "line": 9,
-      "value": "0x170d284",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/channel181.h",
-      "line": 65,
-      "value": "0xf92ae0",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/channel181.h",
-      "line": 81,
-      "value": "0x8000",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/battle_ready181.h",
-      "line": 5,
-      "value": "0x170d284",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/battle_ready181.h",
-      "line": 5,
-      "value": "0x170d290",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/battle_ready181.h",
-      "line": 5,
-      "value": "0x170d304",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/battle_ready181.h",
-      "line": 25,
-      "value": "0x281fc",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/battle_ready181.h",
-      "line": 25,
-      "value": "0x15d26fc",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/battle_ready181.h",
-      "line": 27,
-      "value": "0x15d1a74",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/battle_ready181.h",
+      "source": "tools/workshop/entry165.cpp",
       "line": 40,
-      "value": "0x15d22e8",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+      "value": "0xea2d60",
+      "function": "0xea2d60",
+      "classification": "conservative numeric seed; not a claimed ABI proof"
     },
     {
-      "source": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 1338,
-      "value": "0x366a10",
+      "source": "native/deck/frontage137.h",
+      "line": 34,
+      "value": "0x465690",
       "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+      "classification": "conservative numeric seed in existing protected region"
     },
     {
-      "source": "native/deck/adapter175.h",
-      "line": 58,
-      "value": "0x170d284",
+      "source": "native/deck/frontage137.h",
+      "line": 35,
+      "value": "0x464ab0",
       "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+      "classification": "conservative numeric seed in existing protected region"
     },
     {
-      "source": "native/deck/adapter175.h",
-      "line": 58,
-      "value": "0x170d290",
+      "source": "native/deck/frontage137.h",
+      "line": 41,
+      "value": "0x1367d10",
       "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+      "classification": "conservative numeric seed in existing protected region"
     },
     {
-      "source": "native/deck/adapter175.h",
-      "line": 58,
-      "value": "0x170d304",
+      "source": "native/deck/frontage137.h",
+      "line": 53,
+      "value": "0x342a40",
       "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+      "classification": "conservative numeric seed in existing protected region"
     },
     {
-      "source": "native/deck/adapter175.h",
-      "line": 61,
-      "value": "0x281fc",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/adapter175.h",
-      "line": 62,
-      "value": "0x15d26fc",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/adapter175.h",
+      "source": "native/deck/frontage137.h",
       "line": 65,
-      "value": "0x15d1a74",
+      "value": "0x380fb0",
       "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+      "classification": "conservative numeric seed in existing protected region"
     },
     {
-      "source": "native/deck/adapter175.h",
-      "line": 68,
-      "value": "0x281e8",
+      "source": "native/deck/frontage137.h",
+      "line": 88,
+      "value": "0x2acd20",
       "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+      "classification": "conservative numeric seed in existing protected region"
     },
     {
-      "source": "native/deck/adapter175.h",
-      "line": 68,
-      "value": "0x2e5810",
+      "source": "native/deck/frontage137.h",
+      "line": 94,
+      "value": "0x10ef470",
       "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+      "classification": "conservative numeric seed in existing protected region"
     },
     {
-      "source": "native/deck/adapter175.h",
-      "line": 103,
-      "value": "0xbd4a10",
+      "source": "native/deck/frontage137.h",
+      "line": 95,
+      "value": "0x2acf30",
       "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+      "classification": "conservative numeric seed in existing protected region"
     },
     {
-      "source": "native/deck/adapter175.h",
-      "line": 107,
-      "value": "0x2f7350",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/adapter175.h",
-      "line": 166,
-      "value": "0x10dfb80",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/battle181.h",
-      "line": 89,
-      "value": "0x10f1060",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/battle181.h",
-      "line": 118,
-      "value": "0x15c2e0",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/battle181.h",
-      "line": 125,
-      "value": "0x10dfb80",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/formation218.h",
-      "line": 14,
-      "value": "0x5000",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/formation218.h",
-      "line": 68,
-      "value": "0x1704cdc",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/formation218.h",
-      "line": 68,
-      "value": "0x16e2aac",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/formation218.h",
-      "line": 74,
-      "value": "0x1709cc8",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/formation218.h",
-      "line": 81,
-      "value": "0x2826c",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/formation218.h",
-      "line": 85,
-      "value": "0x15c4da0",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/formation218.h",
-      "line": 168,
-      "value": "0x10dc0c0",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/formation218.h",
-      "line": 174,
-      "value": "0x10dc060",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/formation218.h",
-      "line": 184,
-      "value": "0x399f80",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/formation218.h",
-      "line": 235,
-      "value": "0x40bd40",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/formation218.h",
-      "line": 237,
-      "value": "0x471950",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/formation218.h",
-      "line": 301,
-      "value": "0x2648c9",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/formation218.h",
-      "line": 313,
-      "value": "0x2646fc",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/formation218.h",
-      "line": 349,
-      "value": "0x42dfd0",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/formation218.h",
-      "line": 367,
-      "value": "0x42e540",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/formation218.h",
-      "line": 439,
-      "value": "0x10dfb80",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/formation218.h",
-      "line": 442,
-      "value": "0x28048",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/formation218.h",
-      "line": 484,
-      "value": "0x4596f0",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/formation218.h",
-      "line": 487,
-      "value": "0x255680",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/formation218.h",
-      "line": 491,
-      "value": "0x15cffe0",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/formation218.h",
-      "line": 492,
-      "value": "0x1cc200",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/formation218.h",
-      "line": 494,
-      "value": "0x2e6eb0",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/formation218.h",
-      "line": 495,
-      "value": "0x1d0d40",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/formation218.h",
-      "line": 511,
-      "value": "0x1d10f0",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/formation218.h",
-      "line": 560,
-      "value": "0x2804c",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/formation218.h",
-      "line": 562,
-      "value": "0x31e6d0",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/formation218.h",
-      "line": 573,
-      "value": "0x269240",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/formation218.h",
-      "line": 574,
-      "value": "0x17988d8",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/terrain224.h",
-      "line": 18,
-      "value": "0x125500",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/terrain224.h",
-      "line": 21,
-      "value": "0x37b480",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/orders175.h",
-      "line": 13,
-      "value": "0x2826c",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/orders175.h",
-      "line": 16,
-      "value": "0x28048",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/orders175.h",
-      "line": 17,
-      "value": "0x15c4da0",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/orders175.h",
-      "line": 28,
-      "value": "0x5000",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/battle_panels223.h",
-      "line": 12,
-      "value": "0x16e2aac",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/battle_panels223.h",
-      "line": 12,
-      "value": "0x1704cdc",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/battle_panels223.h",
-      "line": 13,
-      "value": "0x16e2b14",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/battle_panels223.h",
-      "line": 13,
-      "value": "0x1704d44",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/battle_panels223.h",
-      "line": 14,
-      "value": "0xf8e840",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/selection189.h",
-      "line": 15,
+      "source": "native/outputs/shogun2-accuracy90-preview/src/native_keyboard84.h",
+      "line": 29,
       "value": "0xf92ae0",
       "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+      "classification": "conservative numeric seed in existing protected region"
     },
     {
-      "source": "native/deck/native_modifiers188.h",
-      "line": 15,
-      "value": "0x100000",
+      "source": "native/deck/frontage137.h",
+      "line": 8,
+      "value": "0x5000",
       "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+      "classification": "Reviewed group frontage dependency already in an immutable engine region"
     },
     {
-      "source": "native/deck/native_modifiers188.h",
-      "line": 16,
+      "source": "native/deck/frontage137.h",
+      "line": 32,
       "value": "0x1000",
       "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+      "classification": "Reviewed group frontage dependency already in an immutable engine region"
     },
     {
-      "source": "native/deck/native_modifiers188.h",
+      "source": "native/deck/frontage137.h",
       "line": 32,
-      "value": "0x8000",
+      "value": "0x1580000",
       "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+      "classification": "Reviewed group frontage dependency already in an immutable engine region"
     },
     {
-      "source": "native/deck/locomotion203.h",
-      "line": 73,
-      "value": "0x15cb80",
+      "source": "native/deck/frontage137.h",
+      "line": 36,
+      "value": "0x465620",
       "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+      "classification": "Reviewed group frontage dependency already in an immutable engine region"
     },
     {
-      "source": "native/deck/locomotion203.h",
-      "line": 118,
-      "value": "0x3dd9b0",
+      "source": "native/deck/frontage137.h",
+      "line": 37,
+      "value": "0x464a40",
       "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+      "classification": "Reviewed group frontage dependency already in an immutable engine region"
     },
     {
-      "source": "native/deck/locomotion203.h",
-      "line": 142,
-      "value": "0x3e4850",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/locomotion203.h",
-      "line": 143,
-      "value": "0x3e44f0",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/locomotion203.h",
-      "line": 149,
-      "value": "0x366a10",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/acquisition203.h",
-      "line": 50,
-      "value": "0x174ec0",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/acquisition203.h",
-      "line": 50,
-      "value": "0x174ec7",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/acquisition203.h",
-      "line": 50,
-      "value": "0x15c2764",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/acquisition203.h",
-      "line": 50,
-      "value": "0x174ecb",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/acquisition65.h",
-      "line": 8,
-      "value": "0x102bff",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/acquisition65.h",
-      "line": 8,
-      "value": "0x102ccf",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/acquisition65.h",
-      "line": 8,
-      "value": "0x102daf",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/acquisition65.h",
-      "line": 40,
-      "value": "0x154140",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/acquisition207.h",
-      "line": 64,
-      "value": "0x399f80",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/acquisition207.h",
-      "line": 86,
-      "value": "0x4589a0",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/acquisition207.h",
-      "line": 100,
-      "value": "0x459b40",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/acquisition207.h",
-      "line": 117,
-      "value": "0x18a590",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/acquisition207.h",
-      "line": 118,
-      "value": "0x15ae80",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/acquisition207.h",
-      "line": 119,
-      "value": "0x180cd0",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/acquisition207.h",
-      "line": 137,
-      "value": "0x15b3680",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/acquisition207.h",
-      "line": 284,
-      "value": "0x16aa00",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/acquisition207.h",
-      "line": 284,
-      "value": "0x1b8740",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/acquisition207.h",
-      "line": 288,
-      "value": "0x48d6f3",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/acquisition207.h",
-      "line": 289,
-      "value": "0x48d6f9",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/acquisition207.h",
-      "line": 292,
-      "value": "0x459b4d",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/acquisition207.h",
-      "line": 293,
-      "value": "0x459b53",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/acquisition207.h",
-      "line": 296,
-      "value": "0x175360",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/acquisition207.h",
-      "line": 297,
-      "value": "0x175366",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/acquisition207.h",
-      "line": 300,
-      "value": "0x175346",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/acquisition207.h",
-      "line": 301,
-      "value": "0x17534c",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/acquisition207.h",
-      "line": 304,
-      "value": "0x1b8830",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/acquisition207.h",
-      "line": 305,
-      "value": "0x1b8836",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/acquisition208.h",
+      "source": "native/deck/frontage137.h",
       "line": 51,
-      "value": "0x1aaed0",
+      "value": "0x2557e0",
       "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+      "classification": "Reviewed group frontage dependency already in an immutable engine region"
     },
     {
-      "source": "native/deck/acquisition208.h",
-      "line": 60,
-      "value": "0x47efc0",
+      "source": "native/deck/frontage137.h",
+      "line": 53,
+      "value": "0x15cffdc",
       "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+      "classification": "Reviewed group frontage dependency already in an immutable engine region"
     },
     {
-      "source": "native/deck/acquisition208.h",
-      "line": 66,
-      "value": "0x48d6a0",
+      "source": "native/deck/frontage137.h",
+      "line": 53,
+      "value": "0x2e6f00",
       "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+      "classification": "Reviewed group frontage dependency already in an immutable engine region"
     },
     {
-      "source": "native/deck/acquisition208.h",
-      "line": 67,
-      "value": "0x48d860",
+      "source": "native/deck/frontage137.h",
+      "line": 54,
+      "value": "0x1cc200",
       "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+      "classification": "Reviewed group frontage dependency already in an immutable engine region"
     },
     {
-      "source": "native/deck/acquisition208.h",
-      "line": 68,
-      "value": "0x1752d0",
+      "source": "native/deck/frontage137.h",
+      "line": 61,
+      "value": "0x1d0d40",
       "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+      "classification": "Reviewed group frontage dependency already in an immutable engine region"
     },
     {
-      "source": "native/deck/overlay_gate181.h",
-      "line": 10,
-      "value": "0x170d284",
+      "source": "native/deck/frontage137.h",
+      "line": 62,
+      "value": "0x15c4da0",
       "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+      "classification": "Reviewed group frontage dependency already in an immutable engine region"
     },
     {
-      "source": "native/deck/overlay_gate181.h",
-      "line": 14,
-      "value": "0x281fc",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/overlay_gate181.h",
-      "line": 15,
-      "value": "0x15d1a74",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/frontend181.h",
+      "source": "native/deck/frontage137.h",
       "line": 63,
-      "value": "0xf92ae0",
+      "value": "0x1d10f0",
       "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+      "classification": "Reviewed group frontage dependency already in an immutable engine region"
     },
     {
-      "source": "native/deck/frontend181.h",
-      "line": 155,
-      "value": "0x10001",
+      "source": "native/deck/frontage137.h",
+      "line": 143,
+      "value": "0x28048",
       "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/frontend181.h",
-      "line": 229,
-      "value": "0x16209f8",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/frontend181.h",
-      "line": 407,
-      "value": "0xea3a90",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/frontend181.h",
-      "line": 407,
-      "value": "0xea3930",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/context181.h",
-      "line": 26,
-      "value": "0x127a210",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/context181.h",
-      "line": 27,
-      "value": "0x172cb74",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/viewport181.h",
-      "line": 18,
-      "value": "0xea32b0",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/camera_edges205.h",
-      "line": 40,
-      "value": "0x304800",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/camera_edges205.h",
-      "line": 40,
-      "value": "0x8fb619",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/camera_edges205.h",
-      "line": 56,
-      "value": "0x304820",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/camera_edges205.h",
-      "line": 56,
-      "value": "0x8fb62b",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/camera_edges205.h",
-      "line": 57,
-      "value": "0x30481b",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/camera_edges205.h",
-      "line": 57,
-      "value": "0x8fb626",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/ui214.h",
-      "line": 13,
-      "value": "0x16e2aac",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/ui214.h",
-      "line": 13,
-      "value": "0x1704cdc",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/ui214.h",
-      "line": 23,
-      "value": "0xf955b0",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/ui214.h",
-      "line": 31,
-      "value": "0xf98900",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/ui214.h",
-      "line": 38,
-      "value": "0xf920a0",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/ui214.h",
-      "line": 56,
-      "value": "0xf87480",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/tooltip85.h",
-      "line": 35,
-      "value": "0xf8a4e0",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/tooltip85.h",
-      "line": 36,
-      "value": "0x1401080",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/tooltip85.h",
-      "line": 36,
-      "value": "0x1421f70",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/tooltip85.h",
-      "line": 37,
-      "value": "0x13e35d0",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/tooltip85.h",
-      "line": 37,
-      "value": "0x1421ec0",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/tooltip85.h",
-      "line": 144,
-      "value": "0x1752370",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/tooltip85.h",
-      "line": 145,
-      "value": "0x1752488",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/tooltip85.h",
-      "line": 148,
-      "value": "0x1754574",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/native_ui185.h",
-      "line": 16,
-      "value": "0xbd75f0",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/native_ui185.h",
-      "line": 85,
-      "value": "0x16e2aac",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/native_ui185.h",
-      "line": 85,
-      "value": "0x1704cdc",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/native_ui185.h",
-      "line": 117,
-      "value": "0xf98900",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/native_ui185.h",
-      "line": 146,
-      "value": "0xf955b0",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/native_ui185.h",
-      "line": 150,
-      "value": "0xf920a0",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/native_ui185.h",
-      "line": 163,
-      "value": "0xea2d60",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/native_ui185.h",
-      "line": 163,
-      "value": "0xea37c0",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/native_ui185.h",
-      "line": 163,
-      "value": "0xea32b0",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/native_ui185.h",
-      "line": 164,
-      "value": "0x13f7c00",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/native_ui185.h",
-      "line": 164,
-      "value": "0x13f7d20",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/native_ui185.h",
-      "line": 164,
-      "value": "0xf77f70",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/native_ui185.h",
-      "line": 164,
-      "value": "0x1096060",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/native_ui185.h",
-      "line": 185,
-      "value": "0x1754574",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/battle_speech226.h",
-      "line": 12,
-      "value": "0x170d284",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/battle_speech226.h",
-      "line": 19,
-      "value": "0x2827c",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/battle_speech226.h",
-      "line": 20,
-      "value": "0x15d3c38",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/native_input185.h",
-      "line": 11,
-      "value": "0xbd75f0",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/zoom181.h",
-      "line": 11,
-      "value": "0x904c10",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/campaign181.h",
-      "line": 6,
-      "value": "0x8c09e0",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/campaign181.h",
-      "line": 6,
-      "value": "0x8c08a0",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/campaign181.h",
-      "line": 6,
-      "value": "0x8c0d10",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/campaign181.h",
-      "line": 6,
-      "value": "0x8c0b20",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/campaign181.h",
-      "line": 6,
-      "value": "0x8ef030",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/campaign181.h",
-      "line": 6,
-      "value": "0x8f0490",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
-    },
-    {
-      "source": "native/deck/campaign181.h",
-      "line": 15,
-      "value": "0x16209f8",
-      "function": null,
-      "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+      "classification": "Reviewed group frontage dependency already in an immutable engine region"
     }
   ],
   "protected_functions": 62643,

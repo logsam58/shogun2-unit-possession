@@ -39,6 +39,11 @@ int wmain(int argc,wchar_t** argv){try{
         require(workshop165::ui_root168(path,false)==custom,"Legacy/timestamp UI bytes changed");
         require(workshop168::selected_root(game,prefix+L"mod \""+std::filesystem::path(tag).wstring()+L"\";")==custom,"Legacy UI selection failed");
     }
+    for(bool legacy:{false,true}){
+        const auto empty=mods/(legacy?L"empty-pfh2.pack":L"empty-pfh3.pack");
+        pack168(empty,"ui\\frontend ui\\layout_scripts\\root.luac",{},3,"",legacy);
+        refuses168([&](){workshop165::ui_root168(empty,false);},"Empty frontend override silently ignored");
+    }
     pack168(mods/L"bad-flags.pack","db\\fixture",{'x'},0x83);
     bool named=false;try{workshop168::selected_root(game,prefix+L"mod \"bad-flags.pack\";");}
     catch(const std::exception& error){named=std::string(error.what()).find("bad-flags.pack")!=std::string::npos;}
@@ -76,6 +81,21 @@ int wmain(int argc,wchar_t** argv){try{
     refuses168([&](){workshop168::selected_root(game,prefix+L"mod \"legacy-possession.pack\";",sha169);},"Legacy/mixed possession copy accepted as a menu addon");
     pack168(mods/L"incomplete-copy.pack","ui\\frontend ui\\layout_scripts\\root.luac",self);
     refuses168([&](){workshop168::selected_root(game,prefix+L"mod \"incomplete-copy.pack\";",sha169);},"Self bootstrap without metadata delegated recursively");
+    const auto foreign_marker="/S2UP-Workshop165-"+std::string(64,'b')+".dll";
+    pack168(mods/L"foreign-root.pack","ui\\frontend ui\\layout_scripts\\root.luac",
+            {foreign_marker.begin(),foreign_marker.end()});
+    refuses168([&](){workshop168::selected_root(game,prefix+L"mod \"foreign-root.pack\";",sha169);},
+               "Foreign bootstrap without metadata accepted as a menu addon");
+    const auto mixed_marker=marker+foreign_marker;
+    pack168(mods/L"mixed-root.pack","ui\\frontend ui\\layout_scripts\\root.luac",
+            {mixed_marker.begin(),mixed_marker.end()},3,meta);
+    refuses168([&](){workshop168::selected_root(game,prefix+L"mod \"mixed-root.pack\";",sha169);},
+               "A current marker concealed a different bootstrap");
+    const std::string unrelated="return '/S2UP-Workshop165-example.dll'";
+    pack168(mods/L"similar-root.pack","ui\\frontend ui\\layout_scripts\\root.luac",
+            {unrelated.begin(),unrelated.end()});
+    require(workshop168::selected_root(game,prefix+L"mod \"similar-root.pack\";",sha169)==
+            std::vector<unsigned char>(unrelated.begin(),unrelated.end()),"Ordinary addon with a similar name rejected");
     pack168(second/L"ui-a.pack","db\\unit_stats_land_tables\\not_ui",{'u','n','i','t'});
     refuses168([&](){workshop168::selected_root(game,two+L"mod \"ui-a.pack\";");},"Ambiguous UI/non-UI duplicate filename accepted");
     pack168(second/L"ui-a.pack","ui\\frontend ui\\layout_scripts\\root.luac",custom);

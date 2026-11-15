@@ -25,7 +25,7 @@ Take control of a soldier in **Total War: SHOGUN 2**, fight in first or third pe
 
 Use the existing [Steam Workshop item](https://steamcommunity.com/sharedfiles/filedetails/?id=3825625050). The combined build uses that same item; a separate Deck subscription is unnecessary.
 
-**Maintained source: v0.37, PC and Steam Deck.** The [v0.37 source tag](https://github.com/logsam58/shogun2-unit-possession/tree/v0.37) contains Revision 126. See [what changed](docs/releases/v0.37.md) and the [record of source and Workshop versions](docs/current-release.json).
+**Current version: v0.38, Revision 142, for PC and Steam Deck.** See the [source tag](https://github.com/logsam58/shogun2-unit-possession/tree/v0.38), [release notes](docs/releases/v0.38.md), and [Workshop build record](docs/current-release.json).
 
 No installer is provided. Fonts, artwork and audio are prepared from your own installed game.
 
@@ -34,7 +34,7 @@ No installer is provided. Fonts, artwork and audio are prepared from your own in
 For Steam Deck, use the Windows game through Proton as described below. Desktop resolution alone does not enable the Deck profile.
 
 - An owned installation of the **original Windows Steam version of Total War: SHOGUN 2**, using the supported game build.
-- The installed game's `data.pack` and compatible native fonts from `local_en.pack` or a supported `local_*.pack`. HUD text is English; not every localization has been tested.
+- The installed game’s `data.pack` and language packs. You can keep your game language. The mod fills in missing HUD font sizes locally, and the HUD text is in English. Non-English gameplay testing is still pending.
 - English advisor audio and the Windows media components are optional. If unavailable, the mod omits the friendly-fire voice.
 
 No compiler or Python installation is needed to play. The mod prepares its resources from your installed game on first launch and caches them for reuse; those resources are not bundled in the download.
@@ -74,7 +74,7 @@ Returning to RTS keeps the Army control setting from possession.
 | --- | --- |
 | **Caps Lock / F9** | Possess a soldier in the selected unit; at closest RTS zoom, point the mouse cursor at who you want |
 | **Caps Lock / F10 / Escape** | Return to your previous RTS camera |
-| **Hold Left Alt** | Commander. Click to assign or right-click to close. In possession, press V to switch to Unit Orders. WASD still moves your soldier while the wheel is open. Click Hold Here once to walk or twice to run. Follow Me adjusts its pace as you move. |
+| **Hold Right Alt** | Commander. Click to assign or right-click to close. In possession, press V to switch to Unit Orders. WASD still moves your soldier while the wheel is open. Click Hold Here once to walk or twice to run. Follow Me adjusts its pace as you move. |
 | **WASD** | Move |
 | **Shift** | Run; hold **W + Shift + LMB** toward an eligible enemy to request a charge. Use melee mode; release RMB. |
 | **Mouse** | Look around |
@@ -113,7 +113,7 @@ Use the **Windows** Steam game through Proton; **Proton 9.0-4** is the tested ve
 
 Steam controller settings label the action sets as **Unit Possession Layout**. Hold **View** for the in-game guide; L1/R1 change pages and B closes it. Tap View in battle RTS to toggle the HUD; in possession it shares K’s three-step cycle.
 
-Left stick pans the map or moves your soldier. Right stick turns/zooms in campaign, turns/tilts in battle and looks around during possession. Hold R3 while possessed to switch first/third person. Cursor position does not drive map movement on Deck.
+Left stick pans the map or moves your soldier. Right stick turns/zooms in campaign, turns/tilts in battle and looks around during possession. Hold R3 while aiming a bow or while your arrow is in flight to follow it. Hold R3 when there is no arrow to follow to switch first/third person. Cursor position does not drive map movement on Deck.
 
 To charge, hold **forward + L3 + RT**, with your unit in melee mode and LT released. Sprinting alone does not request a charge. Hold R1 for the four-section command wheel and choose with the right stick. Press RT once to confirm. Double-press RT on Hold Here to run.
 
@@ -145,7 +145,8 @@ To charge, hold **forward + L3 + RT**, with your unit in melee mode and LT relea
 | R3 or right trackpad click held | Show formations and ranges |
 | A | Halt selected troops |
 | Left trackpad click | Click an edge to move in one of eight directions. Click the center and drag to rotate. Release to issue the order, holding L4 to queue it. |
-| Both trackpad clicks held + slide both thumbs | Slide your thumbs apart to widen the formation or together to narrow it. Release to confirm. |
+| Both trackpad clicks held + slide both thumbs | Resize the selected group together in place. Spread your thumbs to widen its frontage or pinch to narrow it. Release to confirm. |
+| Hold L3 + L2 and drag on the right trackpad | Move the selected troops while keeping their formation. |
 | D-pad up / down / left / right | Tap: select group1 /2 /3 /4; hold: assign current selection |
 | L4 held | Select card range or queue orders |
 | L3 held + R2 | Add/remove one unit at the cursor; the point is held still until R2 releases |
@@ -171,7 +172,8 @@ To charge, hold **forward + L3 + RT**, with your unit in melee mode and LT relea
 | Click L3 | Toggle sprint |
 | L4 held | Orbit the third-person camera |
 | Hold L5 | Toggle the unit's Skirmish mode where supported |
-| R4 / R5 | Toggle slow motion / normal speed, or pause / resume, respectively |
+| R4 | Cycle slow motion, pause and normal speed |
+| R5 | Pause / resume |
 | View / Menu | Tap: cycle HUD; hold: controls / game menu while remaining possessed |
 
 
@@ -187,6 +189,9 @@ Large campaign panels currently reduce their scale to fit. Fully enlarged, reflo
 | Naval battles | Possession and ship commands are not available |
 | Multiplayer, Versus and campaign drop-in | Not implemented |
 | Unit and overhaul mods | Uses available custom and replacement portraits from enabled packs. Missing artwork leaves the rest of the HUD visible. Individual pack combinations still need testing. |
+| Last Alliance: Total War 0.5.2 | The pack reader accepts its original texture paths. All nine packs were tested together on Steam Deck in Revision 139. |
+| Morning Sun 3.0 | Campaign loading verified on PC in Revision 140. |
+| Weierstrass Units for Vanilla | Possession and the selected unit’s portrait verified on PC in Revision 140. |
 | Shogun 2 Bugfix engine / Shogun2 Loader | Reviewed compatibility checks and an owner-accepted Test172 combination; neither mod is required |
 | Mods replacing the front-end root script entry | Can preserve one enabled root when our bootstrap runs; different competing roots can still conflict |
 | Older DInput installation of this mod | Do not combine with Workshop |
@@ -208,7 +213,7 @@ See [known issues and reporting details](docs/KNOWN_ISSUES.md) for additional co
 | Problem | What to check |
 | --- | --- |
 | **F9 does nothing** | Select a living friendly unit in a single-player land battle or siege. Check that the mod is enabled, restart after enabling/updating, and confirm you have the supported Windows Steam game build. |
-| **HUD or resources fail to load** | Check `data.pack` and the installed language pack. Compatible native fonts are required; English audio is optional. Include the exact startup warning. Changed or unfamiliar cache files are preserved; do not delete them blindly. |
+| **HUD or resources fail to load** | Check `data.pack` and the installed language pack. Include your game language, any community language patch and the exact startup warning. Changed or unfamiliar cache files are preserved; do not delete them blindly. |
 | **Problems after upgrading** | Check that the older setup.exe version is uninstalled and its camera-helper launch option removed. Do not run both loaders. |
 | **Shots or volleys do not fire** | Note the exact unit, weapon and ammunition, and whether the problem affects your soldier, the rest of the unit, or both. Not all combinations have been tested. |
 | **Missing HUD or unusual timing** | Report resolution, fullscreen/windowed mode, Windows scaling, monitor refresh rate, battle speed and whether the whole game slowed down. |

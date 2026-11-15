@@ -41,7 +41,7 @@ class ContextBindingsTests(unittest.TestCase):
   labels={c:native.labels(c)for c in native.SETS}
   self.assertNotIn('Y',labels['Menu'])
   self.assertEqual(labels['Possession']['B'],'Toggle crouch')
-  self.assertEqual(labels['Possession']['R4'],'Toggle slow motion / normal speed')
+  self.assertEqual(labels['Possession']['R4'],'Cycle slow motion / pause / play')
   self.assertEqual(labels['Possession']['R5'],'Pause / resume battle')
   self.assertEqual(labels['Possession']['L5'],'Toggle Skirmish (hold)')
   self.assertEqual(labels['Campaign']['X'],'Zoom home')
@@ -49,7 +49,7 @@ class ContextBindingsTests(unittest.TestCase):
   self.assertEqual(labels['RTS']['L5'],'Tap: toggle fire at will; hold: toggle skirmish')
   self.assertEqual(labels['RTS']['R5'],'Tap: group / ungroup; hold: lock / unlock formation')
   self.assertEqual(labels['RTS']['R3'],'Show formations / range (hold)');self.assertEqual(labels['RTS']['Y'],'Possess soldier')
-  self.assertEqual(labels['Possession']['R3'],'Change first / third person (hold)')
+  self.assertEqual(labels['Possession']['R3'],'Follow arrow or change camera view (hold)')
   self.assertEqual(labels['Possession']['Left'],'Third-person camera closer')
  def test_display_only_semantic_filter_retains_bindings(self):
   changed=self.bindings.replace('"Select"','"Choose"')
@@ -67,11 +67,11 @@ class ContextBindingsTests(unittest.TestCase):
   for key,wanted in [('major_revision','3'),('minor_revision','12')]:
    self.assertEqual(manifest[key],wanted);self.assertEqual(config[key],wanted)
   self.assertEqual(manifest['major_revision_affects_xinput'],'0');self.assertEqual(manifest['major_revision_affects_mousekb'],'0')
- def test_y_is_sole_possession_entry_and_r3_label_only_changes_view(self):
+ def test_y_is_sole_possession_entry_and_r3_labels_contextual_camera(self):
   self.assertIn('game_action RTS181 RTS_R3',self.bindings)
   self.assertEqual(native.labels('RTS')['Y'],'Possess soldier')
   self.assertEqual(native.labels('Possession')['Y'],'Return to RTS')
-  self.assertEqual(native.labels('Possession')['R3'],'Change first / third person (hold)')
+  self.assertEqual(native.labels('Possession')['R3'],'Follow arrow or change camera view (hold)')
  def test_right_pad_click_is_formations_only_in_battle(self):
   for context in ('Menu','Campaign','Possession'):
    self.assertNotIn('RightPadClick',native.labels(context))

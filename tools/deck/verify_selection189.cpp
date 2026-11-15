@@ -26,7 +26,17 @@ int wmain(int argc,wchar_t** argv){assert(argc==3);SetErrorMode(SEM_FAILCRITICAL
   {deck189::SelectionModifiers owned(base,MK_CONTROL);construct(event,1,0,&object,0,0);assert(event[0]==1&&event[3]==1&&event[2]==0);++cases;}
   {deck189::SelectionModifiers owned(base,MK_SHIFT);construct(event,1,0,&object,0,0);assert(event[2]==1&&event[3]==0);++cases;}
   {deck189::SelectionModifiers owned(base,MK_SHIFT|MK_CONTROL);construct(event,1,0,&object,0,0);assert(event[2]==1&&event[3]==1);++cases;}
-  memset(event,0,sizeof event);construct(event,1,0,&object,0,0);assert(event[2]==0&&event[3]==0);++cases;
+  memset(event,0,sizeof event);construct(event,1,0,&object,0,0);assert(event[1]==0&&event[2]==0&&event[3]==0);++cases;
+  keys[0x38]=3;keys[0xb8]=7;
+  {deck189::SelectionModifiers owned(base,0,deck189::AltKey::Left);
+   assert(query(0x37)&&!query(0x74));
+   construct(event,1,0,&object,0,0);assert(event[1]==1&&!event[2]&&!event[3]);++cases;}
+  assert(keys[0x38]==3&&keys[0xb8]==7);++cases;
+  {deck189::SelectionModifiers owned(base,0,deck189::AltKey::Right);
+   assert(!query(0x37)&&query(0x74));
+   construct(event,1,0,&object,0,0);assert(event[1]==1);++cases;}
+  assert(keys[0x38]==3&&keys[0xb8]==7);++cases;
+  keys[0x38]=keys[0xb8]=0;
  }
  // Campaign poll holds the same DI modifiers and refreshes the actual UI
  // producer; verify the native cached consumer, not just WM modifier flags.
@@ -38,4 +48,4 @@ int wmain(int argc,wchar_t** argv){assert(argc==3);SetErrorMode(SEM_FAILCRITICAL
   memset(keys,0,256);campaign.clear();campaign.apply(keys,true,true,1002,7);refresh(0,0);assert(!ctrl()&&!keys[0x2a]);++cases;
  }
  keys[0x1d]=0x80;{deck189::SelectionModifiers owned(base,MK_CONTROL|MK_SHIFT);assert(ctrl()&&keys[0x2a]==0x80);++cases;}assert(keys[0x1d]==0x80&&!keys[0x2a]);++cases;
- }deck174::Frame f;f.buttons=deck174::bit(deck174::Button::L1)|deck174::bit(deck174::Button::RightPadTouch)|deck174::bit(deck174::Button::RightPadClick);f.right_pad={.3f,.7f};auto modal=deck188::campaign_menu_frame189(f,true);assert(!(modal.buttons&deck174::bit(deck174::Button::RightPadTouch))&&(modal.buttons&deck174::bit(deck174::Button::LeftPadTouch))&&modal.left_pad.y==.7f);auto map=deck188::campaign_menu_frame189(f,false);assert(map.buttons&deck174::bit(deck174::Button::RightPadTouch));std::cout<<"PASS selection189: "<<cases<<" original native Ctrl producer/query/UI-cache/battlefield-event cases on stock+Bugfix, plus right-pad modal mode shift; no game or Steam.\n";}
+ }deck174::Frame f;f.buttons=deck174::bit(deck174::Button::L1)|deck174::bit(deck174::Button::RightPadTouch)|deck174::bit(deck174::Button::RightPadClick);f.right_pad={.3f,.7f};auto modal=deck188::campaign_menu_frame189(f,true);assert(!(modal.buttons&deck174::bit(deck174::Button::RightPadTouch))&&(modal.buttons&deck174::bit(deck174::Button::LeftPadTouch))&&modal.left_pad.y==.7f);auto map=deck188::campaign_menu_frame189(f,false);assert(map.buttons&deck174::bit(deck174::Button::RightPadTouch));std::cout<<"PASS selection189: "<<cases<<" original native Ctrl and Alt producer/query/UI-cache/battlefield-event cases on stock+Bugfix, plus right-pad modal mode shift; no game or Steam.\n";}

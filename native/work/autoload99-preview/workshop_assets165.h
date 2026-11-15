@@ -2,6 +2,37 @@
 // Called only by the Workshop worker. The existing extractor is a hidden child;
 // it reads owned packs, writes a user cache and never changes the game/Steam.
 #include <filesystem>
+#include "../../deck/proton_paths174.h"
+#include "../../../tools/installer/localization167.h"
+static std::wstring workshop_resource_key165(const std::wstring& game){
+    const auto data=std::filesystem::path(game)/L"data";
+    deck174::paths::read_directory(data);
+    const auto installed=locale167::installed(data);
+    // Either the selected language or any available fallback can affect the bundle.
+    std::wstring identity=L"s2up-localization-141";
+    identity.push_back(L'\0');
+    identity+=game;
+    identity.push_back(L'\0');
+    identity+=installed.active;
+    identity.push_back(L'\0');
+    for(const auto& path:installed.packs){
+        deck174::paths::read_file(path);
+        identity+=path.filename().wstring()+L":"+std::to_wstring(std::filesystem::file_size(path))+
+                  L":"+std::to_wstring(std::filesystem::last_write_time(path).time_since_epoch().count());
+        identity.push_back(L'\0');
+    }
+    const auto sha=assets159::sha(identity.data(),identity.size()*sizeof(wchar_t));
+    require(sha.size()==64,"Cannot identify installed localization for local resource cache");
+    return std::wstring(sha.begin(),sha.begin()+24);
+}
+static std::wstring workshop_shared_folder165(const std::wstring& runtime,const std::wstring& resource_key){
+    const std::string identity=std::string(assets159::recipe)+
+                               std::string(resource_key.begin(),resource_key.end());
+    const auto sha=assets159::sha(identity.data(),identity.size());
+    require(sha.size()==64,"Cannot identify shared resource cache");
+    return (std::filesystem::path(runtime).parent_path()/
+            (L"resources159-"+std::wstring(sha.begin(),sha.begin()+32))).wstring();
+}
 static std::wstring quoted165(const std::wstring& value){
     std::wstring out=L"\"";unsigned slashes=0;
     for(wchar_t c:value){if(c==L'\\'){++slashes;continue;}
@@ -40,12 +71,10 @@ static void owned_extractor165(const std::wstring& helper,std::wstring command,c
     require(WaitForSingleObject(process.h,timeout)==WAIT_OBJECT_0,"Owned extractor timed out; its job will close");
     DWORD exit=1;require(GetExitCodeProcess(process.h,&exit)&&exit==0,"Local resource preparation failed");
 }
-static bool retire_staging166(const std::wstring& staging){
-    // Recover only exact generated resource data. Unknown, partial or changed
-    // files are preserved. A fixed staging name bounds even failed attempts.
+static bool inspect_staging166(const std::wstring& staging,std::vector<std::filesystem::path>& files){
+    // Preserve unknown or invalid files. A fixed staging name bounds failed attempts.
     workshop165::plain(staging);
     if(GetFileAttributesW(staging.c_str())==INVALID_FILE_ATTRIBUTES)return true;
-    std::vector<std::filesystem::path> files;
     for(const auto& item:std::filesystem::directory_iterator(staging)){
         workshop165::plain(item.path());if(!item.is_regular_file())return false;
         auto name=item.path().filename().wstring();assets159::Store store;
@@ -56,52 +85,81 @@ static bool retire_staging166(const std::wstring& staging){
         }else return false;
         files.push_back(item.path());
     }
+    return true;
+}
+static bool retire_staging166(const std::wstring& staging){
+    std::vector<std::filesystem::path> files;
+    if(!inspect_staging166(staging,files))return false;
+    if(GetFileAttributesW(staging.c_str())==INVALID_FILE_ATTRIBUTES)return true;
     for(const auto& file:files)if(!DeleteFileW(file.c_str()))return false;
     return RemoveDirectoryW(staging.c_str())!=0;
 }
-static void workshop_assets165(HMODULE module,const std::wstring& game){
+static constexpr const wchar_t* shared_bundles166[]={L"hud-assets159.s2fp",L"qte-assets159.s2fp"};
+static bool recover_shared166(const std::wstring& staging,const std::wstring& shared){
+    std::vector<std::filesystem::path> files;
+    require(inspect_staging166(staging,files),
+            "Unknown or incomplete resource staging preserved; no new copies created");
+    std::vector<std::pair<std::wstring,std::wstring>> moves;
+    for(const auto* name:shared_bundles166){
+        const auto from=staging+L"\\"+name,to=shared+L"\\"+name;
+        const bool staged=std::find(files.begin(),files.end(),std::filesystem::path(from))!=files.end();
+        const bool published=GetFileAttributesW(to.c_str())!=INVALID_FILE_ATTRIBUTES;
+        if(staged&&published)
+            require(matching_local_bytes159(from,to),"Existing shared resource cache differs; preserved");
+        if(staged&&!published)moves.emplace_back(from,to);
+        if(!staged&&!published)return false;
+    }
+    for(const auto& [from,to]:moves)
+        require(MoveFileExW(from.c_str(),to.c_str(),MOVEFILE_WRITE_THROUGH)!=0,
+                "Cannot commit shared resources; target preserved");
+    return true;
+}
+static void workshop_assets165(HMODULE module,const std::wstring& game,const std::wstring& resource_key){
     workshop165::plain(runtime_folder);
     auto valid=[](const std::wstring& folder){
         workshop165::plain(folder+L"\\hud-assets159.s2fp");workshop165::plain(folder+L"\\qte-assets159.s2fp");
         assets159::Store hud,qte;return hud.load(folder+L"\\hud-assets159.s2fp",1)&&qte.load(folder+L"\\qte-assets159.s2fp",2);
     };
     if(valid(runtime_folder)){record(2,"Owned local resources verified");return;}
-    for(const wchar_t* name:{L"hud-assets159.s2fp",L"qte-assets159.s2fp"}){
+    for(const auto* name:shared_bundles166){
         auto path=runtime_folder+L"\\"+name;
         if(GetFileAttributesW(path.c_str())!=INVALID_FILE_ATTRIBUTES){assets159::Store store;require(store.load(path,name[0]==L'h'?1:2),"Existing local cache is foreign/corrupt; preserved");}
     }
-    auto shared=(std::filesystem::path(runtime_folder).parent_path()/(L"resources159-locale167-"+std::wstring(assets159::recipe,assets159::recipe+64))).wstring();
+    auto shared=workshop_shared_folder165(runtime_folder,resource_key);
     workshop165::plain(shared);
     require(CreateDirectoryW(shared.c_str(),nullptr)||GetLastError()==ERROR_ALREADY_EXISTS,"Shared local resources unavailable");
     // Exclusive, crash-safe preparation lock. Its only file is removed by the OS.
     Handle lock(CreateFileW((shared+L"\\prepare166.lock").c_str(),GENERIC_WRITE|DELETE,FILE_SHARE_READ|FILE_SHARE_DELETE,
         nullptr,CREATE_NEW,FILE_ATTRIBUTE_TEMPORARY|FILE_FLAG_DELETE_ON_CLOSE,nullptr));
-    require(lock.h!=INVALID_HANDLE_VALUE,"Another resource preparation is active; restart after it finishes");
+    const bool owns_lock=lock.h!=INVALID_HANDLE_VALUE;
     if(!valid(shared)){
-        for(const wchar_t* name:{L"hud-assets159.s2fp",L"qte-assets159.s2fp"}){
+        require(owns_lock,"Another resource preparation is active; restart after it finishes");
+        for(const auto* name:shared_bundles166){
             auto path=shared+L"\\"+name;assets159::Store store;
             if(GetFileAttributesW(path.c_str())!=INVALID_FILE_ATTRIBUTES)
                 require(store.load(path,name[0]==L'h'?1:2),"Changed shared resources preserved");
         }
         auto staging=shared+L"\\resources-pending166";
-        require(retire_staging166(staging),"Unknown or incomplete resource staging preserved; no new copies created");
-        auto helper=extract(module,104,L"prepare-local-assets159.exe",EMBEDDED_PREPARER_SHA);
-        record(2,"Preparing artwork, fonts, cards, ability icons and voice from this owned game");
-        std::wstring command=quoted165(helper)+L" "+quoted165(game)+L" "+quoted165(staging);
-        try{
+        if(!recover_shared166(staging,shared)){
+            require(retire_staging166(staging),"Cannot retire verified incomplete resource staging");
+            auto helper=extract(module,104,L"prepare-local-assets159.exe",EMBEDDED_PREPARER_SHA);
+            record(2,"Preparing artwork, fonts, cards, ability icons and voice from this owned game");
+            std::wstring command=quoted165(helper)+L" "+quoted165(game)+L" "+quoted165(staging);
             owned_extractor165(helper,command,runtime_folder,L"",120000);
-            require(valid(staging),"Prepared local resources failed validation");
-            for(const wchar_t* name:{L"hud-assets159.s2fp",L"qte-assets159.s2fp"}){
-                auto from=staging+L"\\"+name,to=shared+L"\\"+name;
-                if(GetFileAttributesW(to.c_str())!=INVALID_FILE_ATTRIBUTES){require(hash_file(from)==hash_file(to),"Existing shared resource cache differs; preserved");require(DeleteFileW(from.c_str())!=0,"Cannot retire owned staging duplicate");}
-                else require(MoveFileExW(from.c_str(),to.c_str(),MOVEFILE_WRITE_THROUGH)!=0,"Cannot commit shared resources; target preserved");
+            if(workshop_resource_key165(game)!=resource_key){
+                retire_staging166(staging);
+                throw std::runtime_error("Installed localization changed during preparation; restart the game");
             }
-            require(retire_staging166(staging)&&valid(shared),"Shared resource commit failed");
-        }catch(...){retire_staging166(staging);throw;}
+            require(recover_shared166(staging,shared),"Prepared local resources failed validation");
+        }
+        require(retire_staging166(staging)&&valid(shared),"Shared resource commit failed");
     }
     for(unsigned kind:{1u,2u}){
         const wchar_t* name=kind==1?L"hud-assets159.s2fp":L"qte-assets159.s2fp";
-        cache_local159(shared+L"\\"+name,runtime_folder+L"\\"+name,kind,true);
+        // Uncontended publication can hard-link the bundle. A reader of a
+        // completed cache can copy it without coordinating the rename of a
+        // hard-link alias with another process under Proton.
+        cache_local159(shared+L"\\"+name,runtime_folder+L"\\"+name,kind,owns_lock);
     }
     require(valid(runtime_folder),"Local resource cache commit failed");
     record(2,"Owned local resources ready; no resources were downloaded");

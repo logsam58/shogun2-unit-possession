@@ -28,8 +28,58 @@ int wmain(int argc,wchar_t** argv){C(argc==3);auto dir=fs::path(argv[1]);C(!fs::
  for(size_t n:{size_t(0),size_t(17),size_t(19)}){refused=false;try{decode(Bytes(art.begin(),art.begin()+n));}catch(...){refused=true;}C(refused);}
  pack(dir/L"data/data.pack",0,{{"ui/units/info/shared.tga",tga(8,16,10)}});
  pack(dir/L"data/disabled.pack",3,{{"ui/units/info/shared.tga",tga(8,16,20)}});
- pack(dir/L"data/enabled.pack",3,{{"db/uniforms_tables/custom",table(L"special_card")},{"ui/units/info/shared.tga",tga(8,16,30)},{"ui/units/info/special_card.tga",tga(9,17,40)}},true,true);
+ pack(dir/L"data/enabled.pack",3,{
+  {"db/uniforms_tables/custom",table(L"special_card")},
+  {"ui/battle ui/textures/Banner.dds",{1}},
+  {"ui/battle ui/textures/banner.dds",{2}},
+  {"ui/units/info/shared.tga",tga(8,16,30)},
+  {"ui/units/info/special_card.tga",tga(9,17,40)}},true,true);
+ // Ambiguous artwork and tables must not hide independent resources.
+ pack(dir/L"data/ambiguous.pack",3,{
+  {"db/uniforms_tables/Conflicted",table(L"new_portrait")},
+  {"db/uniforms_tables/conflicted",table(L"shared")},
+  {"ui/units/info/Shared.tga",tga(8,16,31)},
+  {"ui/units/info/sHARED.tga",tga(8,16,32)},
+  {"ui/units/info/shared.tga",tga(8,16,33)},
+  {"ui/units/info/new_portrait.tga",tga(8,16,34)}});
+ try{
+  auto resources=index(dir/L"data/ambiguous.pack");
+  C(resources.size()==1&&resources.count("ui/units/info/new_portrait.tga")==1);
+ }catch(const std::exception& error){
+  std::cerr<<"Ambiguous resource hid independent artwork: "<<error.what()<<"\n";
+  return 1;
+ }
+ const std::wstring collision=L"mod \"ambiguous.pack\";";
+ Bytes collision_selection;for(auto ch:collision)number(collision_selection,ch,2);
+ save(dir/L"used_mods.txt",collision_selection);
+ Catalog scoped;scoped.configure(dir);
+ auto shared=scoped.card(L"mod_unit",L"mod_clan",L"shared",L"");
+ auto independent=scoped.card(L"mod_unit",L"mod_clan",L"new_portrait",L"");
+ C(shared&&shared->pixels[2]==10);
+ C(independent&&independent->pixels[2]==34);
+ std::cout<<"PASS colliding card entries are omitted while independent resources and stock fallback survive\n";
+ pack(dir/L"data/truncated.pack",3,{
+  {"ui/battle ui/textures/banner.dds",{1,2}},
+  {"zz_unrelated.dat",{3,4}}});
+ fs::resize_file(dir/L"data/truncated.pack",fs::file_size(dir/L"data/truncated.pack")-1);
+ for(const auto* name:{L"truncated.pack"}){
+  refused=false;
+  try{index(dir/L"data"/name);}catch(const std::exception&){refused=true;}
+  C(refused);
+ }
+ try{C(index(dir/L"data/enabled.pack").size()==3);}
+ catch(const std::exception& error){std::cerr<<"Unrelated alias hid enabled card resources: "<<error.what()<<"\n";return 1;}
  std::wstring select=L"// enabled cards only\nmod \"enabled.pack\";";Bytes sel{255,254};for(auto c:select)number(sel,c,2);save(dir/L"used_mods.txt",sel);
+ save(dir/L"data/ui/units/icons/cache_icon.tga",tga(8,16,81));
+ save(dir/L"data/ui/units/info/cache_info.tga",tga(8,16,82));
+ Catalog cache_keys;cache_keys.configure(dir);
+ auto icon_only=cache_keys.card(L"cache_unit",L"cache_clan",L"cache_info\nother",L"cache_icon");
+ auto info_first=cache_keys.card(L"cache_unit",L"cache_clan",L"cache_info",L"other\ncache_icon");
+ if(!icon_only||!info_first||icon_only->pixels[2]!=81||info_first->pixels[2]!=82){
+  std::cerr<<"Different card requests shared one cached picture\n";return 1;
+ }
+ assert(cache_keys.card(L"cache_unit",L"cache_clan",L"cache_info\nother",L"cache_icon")==icon_only);
+ std::cout<<"PASS HUD card cache distinguishes fields and returns the existing picture on a hit\n";
  Catalog catalog;catalog.configure(dir);auto a=catalog.card(L"unknown_mod_unit",L"clan",L"shared",L"");C(a&&a->pixels[2]==30);auto custom=catalog.card(L"mod_unit",L"mod_clan",L"shared",L"");C(custom&&custom->w==9&&custom->h==17&&custom->pixels[2]==40);C(catalog.card(L"new_mod_unit",L"x",L"absent",L"")==nullptr);C(catalog.card(L"new_mod_unit",L"x",L"../../evil",L"")==nullptr);
  for(unsigned i=0;i<100;++i)catalog.card(std::to_wstring(i),L"x",L"absent",L"");C(a->pixels[2]==30&&custom->pixels[2]==40); // retained View ownership survives cache eviction
 
@@ -73,6 +123,110 @@ int wmain(int argc,wchar_t** argv){C(argc==3);auto dir=fs::path(argv[1]);C(!fs::
  Catalog bad_selection;bad_selection.configure(dir);
  auto base_picture=bad_selection.card(L"modded",L"mod_clan",L"shared",L"");
  C(base_picture&&base_picture->pixels[2]==10);
+ // Workshop can replace an indexed pack before deferred artwork arrives.
+ const auto stale_pack=dir/L"data/stale.pack";
+ const auto replacement=dir/L"data/replacement.pack";
+ const auto stale_name="ui/units/info/hot_art.tga";
+ pack(stale_pack,3,{{stale_name,tga(8,16,83)}});
+ pack(replacement,3,{{"ui/units/info/new_art.tga",tga(8,16,84)}});
+ const auto indexed=index(stale_pack);
+ C(indexed.size()==1);
+ C(decode(payload(indexed.at(stale_name),10000)).pixels[2]==83);
+ const auto original_stamp=fs::last_write_time(stale_pack);
+ C(fs::file_size(stale_pack)==fs::file_size(replacement));
+ fs::last_write_time(replacement,original_stamp);
+ std::wstring stale_directive=L"mod \"stale.pack\";";
+ Bytes stale_selection;for(auto ch:stale_directive)number(stale_selection,ch,2);
+ save(dir/L"used_mods.txt",stale_selection);
+ Catalog stale;
+ stale.configure(dir);
+ C(MoveFileExW(replacement.c_str(),stale_pack.c_str(),MOVEFILE_REPLACE_EXISTING)!=0);
+ C(fs::last_write_time(stale_pack)==original_stamp);
+ refused=false;try{payload(indexed.at(stale_name),10000);}catch(const std::exception&){refused=true;}
+ if(!refused){std::cerr<<"Offset from an older pack read replacement artwork\n";return 1;}
+ ++cases;
+ auto fallback=stale.card(L"test",L"clan",L"hot_art",L"cache_icon");
+ C(fallback&&fallback->pixels[2]==81);
+ Catalog refreshed;
+ refreshed.configure(dir);
+ auto fresh=refreshed.card(L"test",L"clan",L"new_art",L"");
+ C(fresh&&fresh->pixels[2]==84);
+ std::cout<<"PASS changed Workshop pack refused stale offsets and kept HUD artwork fallback\n";
+ // Two distinct packs share a selected filename. Keep unambiguous resources
+ // available while avoiding a guessed winner for this optional portrait.
+ const auto first_library=dir/L"workshop/first";
+ const auto duplicate=dir/L"workshop/duplicate";
+ pack(first_library/L"overlap.pack",3,{{"ui/units/info/shared.tga",tga(8,16,90)}});
+ pack(duplicate/L"overlap.pack",3,{{"ui/units/info/shared.tga",tga(8,16,91)}});
+ auto select_overlap=[&](bool reverse){
+  const auto& first=reverse?duplicate:first_library;
+  const auto& second=reverse?first_library:duplicate;
+  const std::wstring text=L"add_working_directory \""+first.generic_wstring()+
+     L"\";add_working_directory \""+second.generic_wstring()+
+     L"\";mod \"enabled.pack\";mod \"overlap.pack\";";
+  Bytes bytes;
+  for(auto ch:text)number(bytes,ch,2);
+  save(dir/L"used_mods.txt",bytes);
+ };
+ for(bool reverse:{false,true}){
+  select_overlap(reverse);
+  Catalog overlap;overlap.configure(dir);
+  auto resolved=overlap.card(L"test",L"clan",L"shared",L"");
+  if(!resolved||resolved->pixels[2]!=30){
+   std::cerr<<"Ambiguous pack filename overrode unambiguous artwork\n";
+   return 1;
+  }
+  ++cases;
+ }
+ C(DeleteFileW((duplicate/L"overlap.pack").c_str())!=0);
+ C(CreateHardLinkW((duplicate/L"overlap.pack").c_str(),(first_library/L"overlap.pack").c_str(),nullptr)!=0);
+ const std::wstring aliases=L"add_working_directory \""+first_library.generic_wstring()+
+     L"\";add_working_directory \""+duplicate.generic_wstring()+L"\";mod \"overlap.pack\";";
+ Bytes alias_bytes;
+ for(auto ch:aliases)number(alias_bytes,ch,2);
+ save(dir/L"used_mods.txt",alias_bytes);
+ Catalog aliased;aliased.configure(dir);
+ auto aliased_card=aliased.card(L"test",L"clan",L"shared",L"");
+ C(aliased_card&&aliased_card->pixels[2]==90);
+ std::cout<<"PASS same-name distinct packs fall back, while two paths to the same pack keep its artwork\n";
+ // A valid index can still contain an unsupported or damaged portrait.
+ pack(dir/L"data/valid_fallback.pack",3,{{"ui/units/info/shared.tga",tga(8,16,92)}});
+ pack(dir/L"data/damaged_front.pack",3,{{"ui/units/info/shared.tga",{1,2,3}}});
+ pack(dir/L"data/damaged_top.pack",3,{{"ui/units/info/shared.tga",{4,5,6}}});
+ auto select_portraits=[&](const std::wstring& directives){
+  Bytes bytes;for(auto ch:directives)number(bytes,ch,2);
+  save(dir/L"used_mods.txt",bytes);
+ };
+ select_portraits(L"mod \"valid_fallback.pack\";mod \"damaged_front.pack\";mod \"damaged_top.pack\";"
+                  L"mod \"damaged_front.pack\";mod \"damaged_top.pack\";");
+ Catalog damaged;damaged.configure(dir);
+ auto retained=damaged.card(L"test",L"clan",L"shared",L"");
+ if(!retained||retained->pixels[2]!=92){
+  std::cerr<<"Damaged override hid a valid lower-priority portrait\n";
+  return 1;
+ }
+ ++cases;
+ save(dir/L"data/ui/units/info/shared.tga",{1,2,3});
+ Catalog broken_loose;broken_loose.configure(dir);
+ auto from_pack=broken_loose.card(L"test",L"clan",L"shared",L"");
+ C(from_pack&&from_pack->pixels[2]==92);
+ save(dir/L"data/ui/units/info/shared.tga",tga(8,16,93));
+ Catalog loose_override;loose_override.configure(dir);
+ auto loose_card=loose_override.card(L"test",L"clan",L"shared",L"");
+ C(loose_card&&loose_card->pixels[2]==93);
+ C(fs::remove(dir/L"data/ui/units/info/shared.tga"));
+ select_portraits(L"mod \"damaged_top.pack\";mod \"valid_fallback.pack\";");
+ Catalog valid_override;valid_override.configure(dir);
+ auto from_override=valid_override.card(L"test",L"clan",L"shared",L"");
+ C(from_override&&from_override->pixels[2]==92);
+ pack(dir/L"data/damaged_third.pack",3,{{"ui/units/info/shared.tga",{7,8,9}}});
+ pack(dir/L"data/damaged_fourth.pack",3,{{"ui/units/info/shared.tga",{10,11,12}}});
+ select_portraits(L"mod \"valid_fallback.pack\";mod \"damaged_front.pack\";mod \"damaged_top.pack\";"
+                  L"mod \"damaged_third.pack\";mod \"damaged_fourth.pack\";");
+ Catalog bounded;bounded.configure(dir);
+ auto icon_fallback=bounded.card(L"test",L"clan",L"shared",L"cache_icon");
+ C(icon_fallback&&icon_fallback->pixels[2]==81);
+ std::cout<<"PASS damaged portraits use bounded lower-priority pack and loose artwork fallbacks\n";
  auto owned=index(fs::path(argv[2])/L"data/data.pack");auto u=owned.find("db/uniforms_tables/uniforms");C(u!=owned.end());auto rows=uniforms(payload(u->second,8*1024*1024));C(rows.size()==331);C(rows.front().unit==L"Art_European_Cannons"&&rows.front().card==L"Ashigaru_Art_European_Cannons");auto native=owned.find("ui/units/info/ashigaru_inf_matchlock_ashigaru.tga");C(native!=owned.end());auto actual=decode(payload(native->second,16*1024*1024));C(actual.w>0&&actual.h>0&&actual.h>actual.w);
  // Encode a private generated PNG and read it through the same in-memory path.
  {Gdiplus::Bitmap bitmap(8,16,32,PixelFormat32bppARGB,pic.pixels.data());UINT n=0,bytes=0;Gdiplus::GetImageEncodersSize(&n,&bytes);Bytes enc(bytes);auto e=reinterpret_cast<Gdiplus::ImageCodecInfo*>(enc.data());C(Gdiplus::GetImageEncoders(n,bytes,e)==Gdiplus::Ok);for(unsigned i=0;i<n;++i)if(!wcscmp(e[i].MimeType,L"image/png")){auto p=dir/L"own.png";C(bitmap.Save(p.c_str(),&e[i].Clsid)==Gdiplus::Ok);auto png=decode(file(p,100000));C(png.w==8&&png.h==16&&png.pixels[2]==77);}}

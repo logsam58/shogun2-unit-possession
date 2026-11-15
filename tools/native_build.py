@@ -538,6 +538,7 @@ def local_assets():
                     'mfreadwrite.lib',
                     'mfuuid.lib',
                     'shell32.lib',
+                    'gdi32.lib',
                     'delayimp.lib',
                     '/DELAYLOAD:mfplat.dll',
                     '/DELAYLOAD:mfreadwrite.dll',

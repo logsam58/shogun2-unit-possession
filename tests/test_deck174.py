@@ -91,18 +91,33 @@ class DeckDefaultsTests(unittest.TestCase):
             self.assertIn(path,exported)
 
     def test_path_adapter_preserves_shared_parser_and_refuses_unreviewed_source(self):
-        import shutil
+        import hashlib
         import adapt_paths174
+        inputs = {}
+        for name, expected in adapt_paths174.PINNED.items():
+            path = 'tools/workshop/' + name
+            source = (ROOT / path).read_bytes()
+            if hashlib.sha256(source).hexdigest() != expected:
+                try:
+                    tagged = subprocess.run(['git', '-C', str(ROOT), 'show', 'v0.37:' + path],
+                                            check=False, capture_output=True)
+                except FileNotFoundError:
+                    self.skipTest('Historical parser fixture requires the v0.37 source tag')
+                if tagged.returncode:
+                    self.skipTest('Historical parser fixture requires the v0.37 source tag')
+                source = tagged.stdout
+            self.assertEqual(hashlib.sha256(source).hexdigest(), expected)
+            inputs[name] = source
         with tempfile.TemporaryDirectory() as folder:
             snapshot=Path(folder);(snapshot/'tools/workshop').mkdir(parents=True)
             (snapshot/'tools/deck').mkdir()
-            for name in adapt_paths174.PINNED:
-                shutil.copyfile(ROOT/'tools/workshop'/name,snapshot/'tools/workshop'/name)
+            for name, source in inputs.items():
+                (snapshot/'tools/workshop'/name).write_bytes(source)
             receipt=adapt_paths174.generate(snapshot)
             self.assertTrue(receipt['parser_and_fingerprint_logic_unchanged'])
             self.assertFalse(receipt['normal_Windows_runtime_sources_modified'])
             for name in adapt_paths174.PINNED:
-                self.assertEqual((snapshot/'tools/workshop'/name).read_bytes(),(ROOT/'tools/workshop'/name).read_bytes())
+                self.assertEqual((snapshot/'tools/workshop'/name).read_bytes(),inputs[name])
             with self.assertRaises(FileExistsError):adapt_paths174.generate(snapshot)
             with (snapshot/'tools/workshop/pack165.h').open('ab') as f:f.write(b'// changed')
             with self.assertRaises(ValueError):adapt_paths174.generate(snapshot)

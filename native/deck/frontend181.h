@@ -428,7 +428,6 @@ static bool focus_text(const std::string& text){
     InterlockedExchange(&target_pending,1);return true;
 }
 
-static HANDLE campaign_guard181=INVALID_HANDLE_VALUE;
 #include "viewport181.h"
 #include "context181.h"
 static bool panel_state188(const std::string& value){
@@ -475,16 +474,49 @@ static bool context_state(void* lua){
  return context181::observe(lua,argument(lua));
 #endif
 }
-static bool prepare_campaign(void* lua){
-#ifdef S2UP_FRONTEND181_STANDALONE
- (void)lua;return false;
+#ifndef S2UP_FRONTEND181_STANDALONE
+using PushLuaBytes181 = void (__cdecl*)(void*,const char*,size_t);
+static PushLuaBytes181 campaign_string_api181(){
+#ifdef S2UP165_LUA_FIXTURE
+ return reinterpret_cast<PushLuaBytes181>(GetProcAddress(GetModuleHandleW(nullptr),"lua_pushlstring"));
 #else
- if(!caller165(lua))return false;
- StateGuard165 guard;
- if(campaign_guard181!=INVALID_HANDLE_VALUE){CloseHandle(campaign_guard181);campaign_guard181=INVALID_HANDLE_VALUE;}
- auto selection=read_text(game165+L"\\used_mods.txt");
- auto bytes=workshop168::selected_root(game165,selection,hash_file(own165()),"ui/campaign ui/layout.root.luac",60729,"d14bea292474e62bb6e1e7a5f4938cdfa121b5bcca3003d693c9a31d5d703b50");
- campaign_guard181=workshop165::transient_root168(own165()+L".campaign.luac",bytes);return true;
+ // Both admitted engines match the complete Lua 5.1 string-push body.
+ const auto engine=GetModuleHandleW(L"Empire.Retail.dll");
+ if(!engine)return nullptr;
+ const auto entry=reinterpret_cast<const unsigned char*>(engine)+0xea3250;
+ constexpr unsigned char expected[]={0x56,0x57,0x8b,0x7c,0x24,0x0c,0x8b,0x4f,0x10,0x8b,0x41,0x44,0x3b,0x41,0x40,0x72,0x09,0x57,0xe8,0xb9,0x4a,0x00,0x00,0x83,0xc4,0x04,0xff,0x74,0x24,0x14,0x8b,0x77,0x08,0xff,0x74,0x24,0x14,0x57,0xe8,0xe5,0x53,0x00,0x00,0x83,0xc4,0x0c,0x89,0x06,0xc7,0x46,0x04,0x04,0x00,0x00,0x00,0x83,0x47,0x08,0x08,0x5f,0x5e,0xc3};
+ unsigned char actual[sizeof expected]{};
+ SIZE_T read=0;
+ if(!ReadProcessMemory(GetCurrentProcess(),entry,actual,sizeof actual,&read)||
+     read!=sizeof actual||memcmp(actual,expected,sizeof actual)!=0)return nullptr;
+ return reinterpret_cast<PushLuaBytes181>(entry);
+#endif
+}
+#endif
+static int prepare_campaign(void* lua){
+#ifdef S2UP_FRONTEND181_STANDALONE
+ (void)lua;
+ return 0;
+#else
+ if(!caller165(lua))return 0;
+ const auto push=campaign_string_api181();
+ if(!push)return 0;
+ // Lua allocation can raise a Lua error. Keep native locks and destructible
+ // locals out of that call and let Lua's protected caller handle the error.
+ constexpr size_t limit=262144;
+ static thread_local char buffer[limit];
+ size_t size=0;
+ {
+  StateGuard165 guard;
+  auto selection=read_mod_selection165();
+  auto bytes=workshop168::selected_root(game165,selection,hash_file(own165()),
+      "ui/campaign ui/layout.root.luac",60729,"d14bea292474e62bb6e1e7a5f4938cdfa121b5bcca3003d693c9a31d5d703b50");
+  if(bytes.empty()||bytes.size()>limit)return 0;
+  size=bytes.size();
+  memcpy(buffer,bytes.data(),size);
+ }
+ push(lua,buffer,size);
+ return 1;
 #endif
 }
 }
@@ -517,7 +549,10 @@ MENU181(focus,menu181::focus_text(menu181::argument(lua)))
 MENU181(error,(menu181::report(lua),false))
 MENU181(attach,menu181::attach(menu181::argument(lua)))
 MENU181(detach,menu181::detach(menu181::argument(lua)))
-MENU181(campaign_prepare,menu181::prepare_campaign(lua))
+extern "C" __declspec(dllexport) int __cdecl s2up_menu_campaign_prepare181(void* lua){
+ try{return menu181::prepare_campaign(lua);}
+ catch(const std::exception& e){menu181::remember(e.what(),strlen(e.what()));return 0;}
+}
 MENU181(pause,menu181::ui_pause)
 MENU181(next,(InterlockedExchange(&menu181::next_pending,0)!=0))
 MENU181(previous,(InterlockedExchange(&menu181::previous_pending,0)!=0))

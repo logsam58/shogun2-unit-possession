@@ -99,7 +99,7 @@ static WNDPROC native_window_proc;
 #include "melee_control.h"
 #include "equipment_input81.h"
 static void weapon_mouse143(UINT message,bool active);
-static volatile LONG arrow_watch107;
+static volatile LONG arrow_watch107,deck_arrow_watch107;
 static SRWLOCK arrow_shot_lock107=SRWLOCK_INIT;
 static arrowcam107::Shot latest_arrow107;
 static arrowcam107::Shot arrow_shot107(){
@@ -156,7 +156,8 @@ static bool speed_key214(HWND window,UINT message,WPARAM key,LPARAM flags){
         uintptr_t root{},table{},env{};
         if(native214::value(base+0x1bc8180,root)&&root&&native214::value(root,table)&&
            table==base+0x170d284&&native214::value(root+0x110,env)&&env==environment)
-            personal_speed214.apply(base,root,environment,key=='3');
+            personal_speed214.apply(base,root,environment,
+                key=='3'?native214::SpeedInput::PauseResume:native214::SpeedInput::SlowNormal);
     }
     return true;
 }
@@ -971,7 +972,7 @@ static bool death_camera_update156(uintptr_t camera){
         return death_context(camera);
     }__finally{--camera_callback_depth;}
 }
-static void relinquish(){InterlockedExchange(&arrow_watch107,0);commander76::exchange.leave_possession();if(state->mode==POSSESSED)commander_cancel76();InterlockedExchange(&mount_camera_locked154,0);InterlockedExchange(&mount_request154,0);InterlockedExchange(&routing_empty_lease154,0);view_reset152();InterlockedExchange(&dismount_cleanup143,0);charge_reset139();InterlockedExchange(&entry_movement125,0);combat_focus125.reset();combat_pair_reset126();InterlockedExchange(&combat_entry_locked126,0);InterlockedExchange(&animation_look_active104,0);command_reset100();climb_reset97();request_rts_restore90();next_accuracy90=0;publish_accuracy90(nullptr,0,0);InterlockedExchange(&mounted_heading85,-1);equipment_reset81();reset_death_view();InterlockedExchange(&manual_arrow_released,0);state->arrow_visual_hidden=0;possession_lease.release();InterlockedExchange(&state->input,0);InterlockedExchange(&state->aiming,0);state->aim_pose=0;InterlockedExchange(&state->weapon_phase,WEAPON_IDLE);possessed=0;environment=0;unit=0;InterlockedExchange(&state->follow,0);InterlockedExchange(&state->pending_order,0);follow_target=false;InterlockedExchange(&state->fire_request,0);InterlockedExchange(&state->mode,IDLE);}
+static void relinquish(){InterlockedExchange(&arrow_watch107,0);InterlockedExchange(&deck_arrow_watch107,0);commander76::exchange.leave_possession();if(state->mode==POSSESSED)commander_cancel76();InterlockedExchange(&mount_camera_locked154,0);InterlockedExchange(&mount_request154,0);InterlockedExchange(&routing_empty_lease154,0);view_reset152();InterlockedExchange(&dismount_cleanup143,0);charge_reset139();InterlockedExchange(&entry_movement125,0);combat_focus125.reset();combat_pair_reset126();InterlockedExchange(&combat_entry_locked126,0);InterlockedExchange(&animation_look_active104,0);command_reset100();climb_reset97();request_rts_restore90();next_accuracy90=0;publish_accuracy90(nullptr,0,0);InterlockedExchange(&mounted_heading85,-1);equipment_reset81();reset_death_view();InterlockedExchange(&manual_arrow_released,0);state->arrow_visual_hidden=0;possession_lease.release();InterlockedExchange(&state->input,0);InterlockedExchange(&state->aiming,0);state->aim_pose=0;InterlockedExchange(&state->weapon_phase,WEAPON_IDLE);possessed=0;environment=0;unit=0;InterlockedExchange(&state->follow,0);InterlockedExchange(&state->pending_order,0);follow_target=false;InterlockedExchange(&state->fire_request,0);InterlockedExchange(&state->mode,IDLE);}
 static void end_death_on_window(){
     if(!InterlockedExchange(&death_return_pending,0))return;
     __try{uintptr_t manager=possession_lease.identity.manager;uintptr_t env=environment;
@@ -1288,6 +1289,7 @@ static DWORD WINAPI worker(void*) {
             const bool gameplay214=focus&&!campaign_pointer181&&!native_modal214();
             bool charge_locked146=charge_input_locked146();
             if(!focus||!down(VK_MBUTTON))InterlockedExchange(&arrow_watch107,0);
+            if(!focus)InterlockedExchange(&deck_arrow_watch107,0);
             if(!focus||!down(VK_MBUTTON)||!third_person152)orbit_button154(false);
             equipment_sample_input81(gameplay214&&!charge_locked146);ability_sample141(gameplay214&&!charge_locked146);
             if(!gameplay214)bow_sample142(down(VK_LBUTTON),false);
