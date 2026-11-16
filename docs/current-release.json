@@ -11,27 +11,27 @@
     "item": "3825625050",
     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3825625050",
     "candidate": 181,
-    "revision": "speed-arrow-142",
+    "revision": "main-combat150",
     "pack": "shogun2_unit_possession_workshop165.pack",
-    "pack_sha256": "301d1970785729c713e8d043f75b85ae4330220a21543d5321717931f175fd7e",
-    "pack_bytes": 4670071,
-    "steam_manifest": "1390392144500548356",
+    "pack_sha256": "eae1aa0221ff8ce161c3cd3dee7145fe7003222b0d5ef9542992f5fca08f118d",
+    "pack_bytes": 4719434,
+    "steam_manifest": "4077362554520392574",
     "uploaded_and_exact_download_verified": true,
-    "last_verified_date": "2026-11-15",
-    "steam_time_updated": 1794766026,
+    "last_verified_date": "2026-11-16",
+    "steam_time_updated": 1794863819,
     "published_change_notes": "https://steamcommunity.com/sharedfiles/filedetails/changelog/3825625050",
     "last_known_verified_delivery": {
       "item": "3825625050",
       "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3825625050",
       "candidate": 181,
-      "revision": "speed-arrow-142",
+      "revision": "main-combat150",
       "pack": "shogun2_unit_possession_workshop165.pack",
-      "pack_sha256": "301d1970785729c713e8d043f75b85ae4330220a21543d5321717931f175fd7e",
-      "pack_bytes": 4670071,
-      "steam_manifest": "1390392144500548356",
+      "pack_sha256": "eae1aa0221ff8ce161c3cd3dee7145fe7003222b0d5ef9542992f5fca08f118d",
+      "pack_bytes": 4719434,
+      "steam_manifest": "4077362554520392574",
       "uploaded_and_exact_download_verified": true,
-      "last_verified_date": "2026-11-15",
-      "steam_time_updated": 1794766026,
+      "last_verified_date": "2026-11-16",
+      "steam_time_updated": 1794863819,
       "published_change_notes": "https://steamcommunity.com/sharedfiles/filedetails/changelog/3825625050"
     },
     "updated_by_this_GitHub_source_push": false
@@ -97,13 +97,14 @@
     "first_party_license": "MIT",
     "resources": "from owned game",
     "status_icons": "original native icons",
-    "branch_policy": "Regular Workshop source on main; experimental naval and Steam Remote Play on testing"
+    "branch_policy": "Regular Workshop source and Steam Remote Play on main; naval possession and native replay experiments on testing"
   },
   "support": {
     "naval_possession": "not supported; planned later",
     "multiplayer": "not implemented; Versus and campaign drop-in under consideration",
     "expected": "visual/gameplay bugs and occasional crashes",
-    "Steam_Deck": "Windows game through Proton; tested Proton 9.0-4; contextual Steam Input/UI; no official Valve verification claim"
+    "Steam_Deck": "Windows game through Proton; tested Proton 9.0-4; contextual Steam Input/UI; no official Valve verification claim",
+    "Steam_Remote_Play": "Main source: Windows host uses Deck UI and input for a directly streamed Deck controller and requests 1280 x 800"
   },
   "open": [
     "intermittent attack charging",
@@ -129,7 +130,7 @@
     "native_sha256": "f0f3fe0edffcc8a5927d727043baf3fed23e3706302e4173b93aa136b69933ba",
     "pack_distributed_by_this_source_push": false
   },
-  "source_status": "Main contains Revision 150. The v0.38 source tag and last verified Workshop download contain Revision 142.",
+  "source_status": "Main contains Revision 150 plus Steam Remote Play support. The last verified Workshop download is Revision 150. The v0.38 source tag contains Revision 142.",
   "last_tagged_release": {
     "version": "0.33",
     "url": "https://github.com/logsam58/shogun2-unit-possession/releases/tag/v0.33"

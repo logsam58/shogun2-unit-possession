@@ -1,6 +1,7 @@
 // Owned fixture only. No Steam client, game or input is started.
 #include "../../native/deck/device192.h"
 #include <cstring>
+#include "fake_input174.h"
 static int mode;static unsigned calls;
 struct Fake final:device192::Utils010 {
  void unused0()override{__debugbreak();}
@@ -45,3 +46,26 @@ extern "C" __declspec(dllexport) unsigned __cdecl FixtureCalls192(){return calls
 extern "C" __declspec(dllexport) int __cdecl SteamAPI_GetHSteamPipe(){return mode==2?0:12;}
 extern "C" __declspec(dllexport) void* __cdecl SteamClient(){return &object;}
 extern "C" __declspec(dllexport) void* __cdecl SteamAPI_ISteamClient_GetISteamUtils(void* client,int pipe,const char* version){if(client!=&object||pipe!=12||strcmp(version,"SteamUtils010"))return nullptr;return mode==3?nullptr:mode==4?static_cast<void*>(&bad):static_cast<void*>(&object);}
+
+static deck174::FakeSteam input;
+static uint32_t session_id;
+static bool guest;
+struct Remote {
+    virtual uint32_t count(){return session_id?1:0;}
+    virtual uint32_t id(int index){return index==0?session_id:0;}
+    virtual bool together(uint32_t){return guest;}
+} remote;
+extern "C" __declspec(dllexport) int __cdecl SteamAPI_GetHSteamUser(){return 7;}
+extern "C" __declspec(dllexport) void* __cdecl SteamAPI_ISteamClient_GetISteamGenericInterface(
+    void* client,int user,int pipe,const char* version){
+    if(client!=&object||user!=7||pipe!=12)return nullptr;
+    if(!strcmp(version,"STEAMREMOTEPLAY_INTERFACE_VERSION004"))return &remote;
+    if(!strcmp(version,"SteamInput006"))return &input;
+    return nullptr;
+}
+extern "C" __declspec(dllexport) void __cdecl FixtureRemote130(uint32_t id,uint32_t forwarded,bool together,int type){
+    session_id=id;
+    guest=together;
+    input.remote=forwarded;
+    input.type=type;
+}

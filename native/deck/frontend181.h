@@ -1,4 +1,5 @@
 #pragma once
+#include "remote_display130.h"
 #include "device192.h"
 #include "frontend177.h" // retain verified file/glyph helpers, not old UI polling
 #include "menu179.h"
@@ -540,7 +541,14 @@ MENU181(legend184,false) // retired export; no legend generation
 MENU181(glyphs,menu181::read().glyphs)
 MENU181(glyph_failed,menu181::read().glyph_failed)
 MENU181(cancel,menu181::ui_back)
-MENU181(heartbeat,(InterlockedIncrement(&menu181::ui_frames),true))
+static bool menu_heartbeat181() {
+    InterlockedIncrement(&menu181::ui_frames);
+    if (!menu181::campaign_mode && GetCurrentThreadId() == menu181::ui_owner181 &&
+        !deck177::battle_request().active())
+        remote131::queue();
+    return true;
+}
+MENU181(heartbeat,menu_heartbeat181())
 MENU181(up,menu181::ui_direction==1)
 MENU181(down,menu181::ui_direction==2)
 MENU181(left,menu181::ui_direction==3)

@@ -25,7 +25,7 @@ Take control of a soldier in **Total War: SHOGUN 2**, fight in first or third pe
 
 Use the existing [Steam Workshop item](https://steamcommunity.com/sharedfiles/filedetails/?id=3825625050). The combined build uses that same item; a separate Deck subscription is unnecessary.
 
-**Main source is at Revision 150.** The last verified Steam Workshop download is v0.38, Revision 142, for PC and Steam Deck. See the [changelog](CHANGELOG.md) and [build record](docs/current-release.json).
+**The last verified Workshop build is Revision 150.** The Remote Play support below is in the latest GitHub source. See the [changelog](CHANGELOG.md) and [build record](docs/current-release.json).
 
 No installer is provided. Fonts, artwork and audio are prepared from your own installed game.
 
@@ -178,6 +178,10 @@ To charge, toggle sprint with **L3**, push forward and hold **RT**, with your un
 
 
 Large campaign panels currently reduce their scale to fit. Fully enlarged, reflowed layouts remain unfinished. Occasional campaign-to-battle controller failures remain under investigation.
+
+## Steam Remote Play
+
+Enable Unit Possession on the Windows host. With Shogun 2 closed on the host, choose **Stream** on the Deck. When Steam forwards the built-in Deck controller, the mod uses the Deck UI and button prompts and requests a 1280 × 800 render size. If the game was already open on the host, restart it through **Stream** to pick up the Deck profile.
 
 ## Compatibility
 

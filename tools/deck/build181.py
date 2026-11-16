@@ -126,7 +126,7 @@ def main():
     fake=bin_dir/'steam_api.dll';device=bin_dir/'verify_device192.exe'
     commands.extend([[*common,'/LD',snapshot/'tools/deck/fake_steam192.cpp','/Fo'+str(bin_dir/'fake-steam192.obj'),'/Fe'+str(fake)],
                      [*common,snapshot/'tools/deck/verify_device192.cpp','/Fo'+str(bin_dir/'verify-device192.obj'),'/Fe'+str(device),'/link','user32.lib'],
-                     [device,fake,'0'],[device,fake,'1']])
+                     [device,fake,'0'],[device,fake,'1'],[device,fake,'2']])
     dispatch=bin_dir/'controls-boundary181.exe'
     commands.extend([[*common,'/DS2FP_LOCAL_ASSETS','/DNOMINMAX','/I'+str(snapshot/'native/outputs/shogun2-accuracy90-preview/src'),snapshot/'tools/deck/verify_dispatch181.cpp','/Fo'+str(bin_dir/'dispatch.obj'),'/Fe'+str(dispatch),'/link',*hook_objects,'bcrypt.lib','user32.lib','gdi32.lib','gdiplus.lib','d3d11.lib','d3d9.lib','dxgi.lib','d3dcompiler.lib'],[dispatch]])
     batch=out/'new-fixtures.cmd';batch.write_text(batch_script(a.vcvars.resolve(),commands))

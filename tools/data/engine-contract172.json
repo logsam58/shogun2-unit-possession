@@ -21,8 +21,9 @@
     "native/deck/commander_wheel84.h": "2fabb25b1d33ed261308be52010d671346e88e750ac34c3678cacae0c7b97917",
     "native/common/card_image217.h": "3988beb1ef8c17fb368ae421d5266365622a88956190aab78eec797c81fc120c",
     "native/vendor/bcdec/bcdec.h": "134520764d96f70a27db814173616c89ad85db95fbd3328417c7a8c77e7ca189",
-    "native/deck/steam_input174.h": "630b8cc0ac7fe00709c0c05c33f1a2b9ec11b235e26d1ccf9af04f99a341b70f",
-    "native/deck/device192.h": "b224182afdf18939620eb11c33959ea02f2984bf352f84e6b37245497e4df7ea",
+    "native/deck/steam_input174.h": "d5f50b86addaa8fe09a30c7afb1fceace0477c5f045eb8255f01447b6e65150d",
+    "native/deck/device192.h": "37e7dffd65877251f3048b4f999c59ec6bffa6fca6e02c85e19ddcb94b6499fa",
+    "native/deck/remote_play130.h": "18b4f859cf987f1a1a5572738e841dc72bdf68a524269debffa06ba3e28cd0cb",
     "native/deck/input174.h": "f1b781761f51179c12ff3560332aac1aa27c7e4dd16e43894d00658c672c8a2a",
     "native/deck/binding_profiles182.h": "ccecafd02297b44e108219559d9b00ad6a1366b7c409215e67dfa5034e0610fa",
     "native/deck/channel181.h": "12aff64c6fce1af2d2f7d12f13454a753173fd130c1251d2c363decee67baa68",
@@ -272,7 +273,7 @@
     "native/outputs/shogun2-accuracy90-preview/src/personal_input199.h": "9f08be37ffc2558735ddc84406b6e5babf1e36af2e82a71f48207302a2f22afa",
     "native/outputs/shogun2-accuracy90-preview/src/identity.h": "01d37028885c43a0e399278070830ced7df438a3eb26aafff2e75fc21c803bfb",
     "tools/workshop/entry165.cpp": "4195811d92588a0d64e891c5ba3a646f97132ae1e7418c6570a3a04c8d68cdc8",
-    "native/deck/frontend181.h": "c623a89cbe83c70ac0314c918a81bcf6eea74fd8b699992f5cd0ce3c0f7ad2e4",
+    "native/deck/frontend181.h": "f25c7d3de511168c611bfb30751cecc955dc0330c6cd233a0f1ad62bdc32b4b6",
     "native/deck/context181.h": "86fdd8a5fa798c88342872a60aba2801e24117209473c59c91780bb8235d164b",
     "native/deck/viewport181.h": "aac237fd3baf7c998ccfdcc28f607f7651ea8c7e99bb60c087ca838f7b70ffee",
     "native/deck/camera_edges205.h": "f9941aaeb68b5a964d4242a4e03f9f9c1c05f6f813a2c6ecae6adcd7b5d2699c",
@@ -297,6 +298,7 @@
     "native/deck/menu179.h": "e32c3ff6a4e3681d4b7aa177d063e94934eb205053d6c2d4d4ad3bbf890643ef",
     "native/deck/frontend177.h": "63dd78cee773dcdb43b7d67a17b4f979715cf61ed8fe8bfb6fec8d1bfa71028c",
     "tools/deck/pack174_generated.h": "1f2ab23130b5ec2733ee2a529af3cae9aa68e76a38a888f56e3facfd44fce53a",
+    "native/deck/remote_display130.h": "88e799595116338b5a3ac7037e64824983e25edbc10c9f880eca7d892da754cc",
     "native/work/autoload99-preview/workshop_assets165.h": "c6ff0b2adfbd4e744a92a8bfc87b7faffeaf1df40160d2777e4bfa7d24260a53",
     "tools/deck/ui_compat174_generated.h": "4e15c13f74e5612af6f85ed3dda603004211aefc0eb2faac9ca205b52549cff0",
     "native/work/autoload99-preview/integrated.h": "0d1745d4041532e84867b41fb5e9ace7d692110dc3d9c9e313af2d985ffe0c3d",
@@ -33117,6 +33119,76 @@
       "value": "0x3dd9d0",
       "function": null,
       "classification": "Reviewed Deck175 dependency already in unchanged immutable engine region; native call bodies separately byte-verified"
+    },
+    {
+      "source": "native/deck/remote_display130.h",
+      "line": 49,
+      "value": "0x141eae0",
+      "function": null,
+      "classification": "conservative numeric seed; not a claimed ABI proof"
+    },
+    {
+      "source": "native/deck/remote_display130.h",
+      "line": 50,
+      "value": "0x141f3f0",
+      "function": "0x141f3f0",
+      "classification": "conservative numeric seed; not a claimed ABI proof"
+    },
+    {
+      "source": "native/deck/remote_display130.h",
+      "line": 51,
+      "value": "0x1416cf0",
+      "function": null,
+      "classification": "conservative numeric seed; not a claimed ABI proof"
+    },
+    {
+      "source": "native/deck/remote_display130.h",
+      "line": 55,
+      "value": "0x1754574",
+      "function": null,
+      "classification": "conservative numeric seed; not a claimed ABI proof"
+    },
+    {
+      "source": "native/deck/remote_display130.h",
+      "line": 58,
+      "value": "0x13dbce0",
+      "function": null,
+      "classification": "conservative numeric seed; not a claimed ABI proof"
+    },
+    {
+      "source": "native/deck/remote_display130.h",
+      "line": 60,
+      "value": "0x1754560",
+      "function": null,
+      "classification": "conservative numeric seed; not a claimed ABI proof"
+    },
+    {
+      "source": "native/deck/remote_display130.h",
+      "line": 67,
+      "value": "0x17666f8",
+      "function": null,
+      "classification": "conservative numeric seed; not a claimed ABI proof"
+    },
+    {
+      "source": "native/deck/remote_display130.h",
+      "line": 67,
+      "value": "0x1456710",
+      "function": null,
+      "classification": "conservative numeric seed; not a claimed ABI proof"
+    },
+    {
+      "source": "native/deck/remote_display130.h",
+      "line": 68,
+      "value": "0x1766c68",
+      "function": null,
+      "classification": "conservative numeric seed; not a claimed ABI proof"
+    },
+    {
+      "source": "native/deck/remote_display130.h",
+      "line": 68,
+      "value": "0x1467d20",
+      "function": null,
+      "classification": "conservative numeric seed; not a claimed ABI proof"
     }
   ],
   "protected_functions": 62643,

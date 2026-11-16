@@ -10,13 +10,13 @@ int wmain(){try{
     for(unsigned n=0;n<22;++n)rejects159([&]{tga159(Bytes159(pixel.begin(),pixel.begin()+n));});
     auto rle=pixel;rle[2]=10;rle.insert(rle.begin()+18,128);need159(tga159(rle).pixels==image.pixels,"RLE differs");rle[18]=129;rejects159([&]{tga159(rle);});
     auto large=pixel;large[12]=255;large[13]=255;rejects159([&]{tga159(large);});
-    Bundle159 q(2);q.add(101,Bytes159{1,2,3,4},1,1);for(unsigned i=201;i<=220;++i)q.add(i,Bytes159{1,2,3});q.save(root/L"valid.s2fp");
+    Bundle159 q(2);q.add(101,Bytes159{1,2,3,4},1,1);for(unsigned i=201;i<=220;++i)q.add(i,Bytes159{1,2,3});write159(root/L"valid.s2fp",q.finish());
     assets159::Store store;need159(store.load((root/L"valid.s2fp").wstring(),2),"Valid bundle failed");
     Bundle159 silent(1);
     for(unsigned i=101;i<=103;++i)silent.add(i,Bytes159{1,2,3,4},1,1);
     for(unsigned i=201;i<=220;++i)silent.add(i,Bytes159{1,2,3});
     silent.add(430,Bytes159{1,2,3,4},1,1);silent.add(431,Bytes159{1,2,3,4},1,1);
-    silent.save(root/L"without-optional-voice.s2fp");
+    write159(root/L"without-optional-voice.s2fp",silent.finish());
     need159(store.load((root/L"without-optional-voice.s2fp").wstring(),1)&&!store.get(301).bytes,"Valid silent HUD rejected");
     need159(!store.load((root/L"valid.s2fp").wstring(),1),"Foreign bundle kind accepted");
     for(unsigned position:{0u,8u,12u,16u,20u,84u,96u,100u,104u,168u}){

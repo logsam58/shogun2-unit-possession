@@ -1798,7 +1798,7 @@
     },
     {
       "path": "native/deck/device192.h",
-      "line": 58,
+      "line": 59,
       "tags": [
         "abi"
       ],
@@ -1806,7 +1806,7 @@
     },
     {
       "path": "native/deck/device192.h",
-      "line": 109,
+      "line": 118,
       "tags": [
         "synchronization"
       ],
@@ -2450,7 +2450,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 53,
+      "line": 54,
       "tags": [
         "abi"
       ],
@@ -2458,7 +2458,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 63,
+      "line": 64,
       "tags": [
         "abi"
       ],
@@ -2466,7 +2466,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 83,
+      "line": 84,
       "tags": [
         "synchronization"
       ],
@@ -2474,7 +2474,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 89,
+      "line": 90,
       "tags": [
         "synchronization"
       ],
@@ -2482,7 +2482,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 92,
+      "line": 93,
       "tags": [
         "synchronization"
       ],
@@ -2490,7 +2490,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 97,
+      "line": 98,
       "tags": [
         "synchronization"
       ],
@@ -2498,7 +2498,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 99,
+      "line": 100,
       "tags": [
         "synchronization"
       ],
@@ -2506,7 +2506,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 101,
+      "line": 102,
       "tags": [
         "synchronization"
       ],
@@ -2514,7 +2514,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 105,
+      "line": 106,
       "tags": [
         "synchronization"
       ],
@@ -2522,7 +2522,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 177,
+      "line": 178,
       "tags": [
         "synchronization"
       ],
@@ -2530,23 +2530,23 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 225,
+      "line": 226,
       "tags": [
         "synchronization"
-      ],
-      "rvas": []
-    },
-    {
-      "path": "native/deck/frontend181.h",
-      "line": 228,
-      "tags": [
-        "abi"
       ],
       "rvas": []
     },
     {
       "path": "native/deck/frontend181.h",
       "line": 229,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/deck/frontend181.h",
+      "line": 230,
       "tags": [
         "native_offset"
       ],
@@ -2556,7 +2556,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 236,
+      "line": 237,
       "tags": [
         "abi"
       ],
@@ -2564,17 +2564,9 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 243,
+      "line": 244,
       "tags": [
         "abi"
-      ],
-      "rvas": []
-    },
-    {
-      "path": "native/deck/frontend181.h",
-      "line": 254,
-      "tags": [
-        "synchronization"
       ],
       "rvas": []
     },
@@ -2588,7 +2580,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 280,
+      "line": 256,
       "tags": [
         "synchronization"
       ],
@@ -2596,7 +2588,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 285,
+      "line": 281,
       "tags": [
         "synchronization"
       ],
@@ -2604,7 +2596,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 299,
+      "line": 286,
       "tags": [
         "synchronization"
       ],
@@ -2612,7 +2604,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 302,
+      "line": 300,
       "tags": [
         "synchronization"
       ],
@@ -2620,7 +2612,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 308,
+      "line": 303,
       "tags": [
         "synchronization"
       ],
@@ -2628,7 +2620,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 330,
+      "line": 309,
       "tags": [
         "synchronization"
       ],
@@ -2636,7 +2628,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 334,
+      "line": 331,
       "tags": [
         "synchronization"
       ],
@@ -2644,7 +2636,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 350,
+      "line": 335,
       "tags": [
         "synchronization"
       ],
@@ -2652,7 +2644,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 359,
+      "line": 351,
       "tags": [
         "synchronization"
       ],
@@ -2660,7 +2652,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 364,
+      "line": 360,
       "tags": [
         "synchronization"
       ],
@@ -2668,7 +2660,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 367,
+      "line": 365,
       "tags": [
         "synchronization"
       ],
@@ -2676,7 +2668,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 379,
+      "line": 368,
       "tags": [
         "synchronization"
       ],
@@ -2684,7 +2676,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 390,
+      "line": 380,
       "tags": [
         "synchronization"
       ],
@@ -2692,7 +2684,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 394,
+      "line": 391,
       "tags": [
         "synchronization"
       ],
@@ -2700,7 +2692,15 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 408,
+      "line": 395,
+      "tags": [
+        "synchronization"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/deck/frontend181.h",
+      "line": 409,
       "tags": [
         "abi"
       ],
@@ -2708,7 +2708,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 409,
+      "line": 410,
       "tags": [
         "native_offset"
       ],
@@ -2718,7 +2718,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 410,
+      "line": 411,
       "tags": [
         "native_offset"
       ],
@@ -2728,7 +2728,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 427,
+      "line": 428,
       "tags": [
         "synchronization"
       ],
@@ -2736,7 +2736,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 442,
+      "line": 443,
       "tags": [
         "synchronization"
       ],
@@ -2744,7 +2744,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 466,
+      "line": 467,
       "tags": [
         "native_offset"
       ],
@@ -2754,7 +2754,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 478,
+      "line": 479,
       "tags": [
         "abi"
       ],
@@ -2762,7 +2762,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 507,
+      "line": 508,
       "tags": [
         "synchronization"
       ],
@@ -2770,7 +2770,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 523,
+      "line": 524,
       "tags": [
         "abi"
       ],
@@ -2778,23 +2778,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 552,
-      "tags": [
-        "abi"
-      ],
-      "rvas": []
-    },
-    {
-      "path": "native/deck/frontend181.h",
-      "line": 578,
-      "tags": [
-        "abi"
-      ],
-      "rvas": []
-    },
-    {
-      "path": "native/deck/frontend181.h",
-      "line": 580,
+      "line": 560,
       "tags": [
         "abi"
       ],
@@ -2804,14 +2788,13 @@
       "path": "native/deck/frontend181.h",
       "line": 586,
       "tags": [
-        "abi",
-        "synchronization"
+        "abi"
       ],
       "rvas": []
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 593,
+      "line": 588,
       "tags": [
         "abi"
       ],
@@ -2821,13 +2804,22 @@
       "path": "native/deck/frontend181.h",
       "line": 594,
       "tags": [
+        "abi",
+        "synchronization"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/deck/frontend181.h",
+      "line": 601,
+      "tags": [
         "abi"
       ],
       "rvas": []
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 598,
+      "line": 602,
       "tags": [
         "abi"
       ],
@@ -2837,13 +2829,13 @@
       "path": "native/deck/frontend181.h",
       "line": 606,
       "tags": [
-        "synchronization"
+        "abi"
       ],
       "rvas": []
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 608,
+      "line": 614,
       "tags": [
         "synchronization"
       ],
@@ -2851,7 +2843,15 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 612,
+      "line": 616,
+      "tags": [
+        "synchronization"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/deck/frontend181.h",
+      "line": 620,
       "tags": [
         "abi"
       ],
@@ -3492,6 +3492,266 @@
       "rvas": []
     },
     {
+      "path": "native/deck/remote_display130.h",
+      "line": 34,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/deck/remote_display130.h",
+      "line": 35,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/deck/remote_display130.h",
+      "line": 36,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/deck/remote_display130.h",
+      "line": 37,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/deck/remote_display130.h",
+      "line": 49,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x141eae0"
+      ]
+    },
+    {
+      "path": "native/deck/remote_display130.h",
+      "line": 50,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x141f3f0"
+      ]
+    },
+    {
+      "path": "native/deck/remote_display130.h",
+      "line": 51,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x1416cf0"
+      ]
+    },
+    {
+      "path": "native/deck/remote_display130.h",
+      "line": 52,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x1c9a940"
+      ]
+    },
+    {
+      "path": "native/deck/remote_display130.h",
+      "line": 53,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x1c9a938"
+      ]
+    },
+    {
+      "path": "native/deck/remote_display130.h",
+      "line": 54,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x17c7560"
+      ]
+    },
+    {
+      "path": "native/deck/remote_display130.h",
+      "line": 55,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x1754574"
+      ]
+    },
+    {
+      "path": "native/deck/remote_display130.h",
+      "line": 58,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x13dbce0"
+      ]
+    },
+    {
+      "path": "native/deck/remote_display130.h",
+      "line": 59,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x1c9a924"
+      ]
+    },
+    {
+      "path": "native/deck/remote_display130.h",
+      "line": 60,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x1754560"
+      ]
+    },
+    {
+      "path": "native/deck/remote_display130.h",
+      "line": 65,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x1c9a93c"
+      ]
+    },
+    {
+      "path": "native/deck/remote_display130.h",
+      "line": 67,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x1456710",
+        "0x17666f8"
+      ]
+    },
+    {
+      "path": "native/deck/remote_display130.h",
+      "line": 68,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x1467d20",
+        "0x1766c68"
+      ]
+    },
+    {
+      "path": "native/deck/remote_play130.h",
+      "line": 28,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/deck/remote_play130.h",
+      "line": 29,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/deck/remote_play130.h",
+      "line": 30,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/deck/remote_play130.h",
+      "line": 60,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/deck/remote_play130.h",
+      "line": 61,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/deck/remote_play130.h",
+      "line": 62,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/deck/remote_play130.h",
+      "line": 85,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/deck/remote_play130.h",
+      "line": 86,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/deck/remote_play130.h",
+      "line": 87,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/deck/remote_play130.h",
+      "line": 88,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/deck/remote_play130.h",
+      "line": 89,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/deck/remote_play130.h",
+      "line": 90,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
       "path": "native/deck/selection189.h",
       "line": 13,
       "tags": [
@@ -3526,7 +3786,7 @@
     },
     {
       "path": "native/deck/steam_input174.h",
-      "line": 204,
+      "line": 220,
       "tags": [
         "abi"
       ],
@@ -3534,7 +3794,7 @@
     },
     {
       "path": "native/deck/steam_input174.h",
-      "line": 205,
+      "line": 221,
       "tags": [
         "abi"
       ],
