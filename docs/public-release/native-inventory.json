@@ -2965,25 +2965,7 @@
     },
     {
       "path": "native/deck/locomotion203.h",
-      "line": 98,
-      "tags": [
-        "native_offset"
-      ],
-      "rvas": [
-        "0x15cb80"
-      ]
-    },
-    {
-      "path": "native/deck/locomotion203.h",
-      "line": 101,
-      "tags": [
-        "abi"
-      ],
-      "rvas": []
-    },
-    {
-      "path": "native/deck/locomotion203.h",
-      "line": 144,
+      "line": 88,
       "tags": [
         "native_offset"
       ],
@@ -2993,7 +2975,35 @@
     },
     {
       "path": "native/deck/locomotion203.h",
-      "line": 175,
+      "line": 173,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x15cb80"
+      ]
+    },
+    {
+      "path": "native/deck/locomotion203.h",
+      "line": 176,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/deck/locomotion203.h",
+      "line": 228,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x3dd9b0"
+      ]
+    },
+    {
+      "path": "native/deck/locomotion203.h",
+      "line": 259,
       "tags": [
         "native_offset"
       ],
@@ -3003,7 +3013,7 @@
     },
     {
       "path": "native/deck/locomotion203.h",
-      "line": 176,
+      "line": 260,
       "tags": [
         "native_offset"
       ],
@@ -3013,7 +3023,7 @@
     },
     {
       "path": "native/deck/locomotion203.h",
-      "line": 182,
+      "line": 266,
       "tags": [
         "native_offset"
       ],
@@ -3023,7 +3033,7 @@
     },
     {
       "path": "native/deck/locomotion203.h",
-      "line": 183,
+      "line": 267,
       "tags": [
         "hook",
         "native_offset"
@@ -3836,7 +3846,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 81,
+      "line": 82,
       "tags": [
         "synchronization"
       ],
@@ -3844,7 +3854,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 83,
+      "line": 84,
       "tags": [
         "synchronization"
       ],
@@ -3852,7 +3862,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 88,
+      "line": 89,
       "tags": [
         "synchronization"
       ],
@@ -3860,7 +3870,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 94,
+      "line": 95,
       "tags": [
         "synchronization"
       ],
@@ -3868,7 +3878,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 106,
+      "line": 107,
       "tags": [
         "synchronization"
       ],
@@ -3876,7 +3886,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 109,
+      "line": 110,
       "tags": [
         "synchronization"
       ],
@@ -3884,7 +3894,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 111,
+      "line": 112,
       "tags": [
         "synchronization"
       ],
@@ -3892,21 +3902,11 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 133,
+      "line": 134,
       "tags": [
         "abi"
       ],
       "rvas": []
-    },
-    {
-      "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 157,
-      "tags": [
-        "native_offset"
-      ],
-      "rvas": [
-        "0x1bc8180"
-      ]
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
@@ -3915,17 +3915,17 @@
         "native_offset"
       ],
       "rvas": [
-        "0x170d284"
+        "0x1bc8180"
       ]
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 197,
+      "line": 159,
       "tags": [
         "native_offset"
       ],
       "rvas": [
-        "0x1bc8180"
+        "0x170d284"
       ]
     },
     {
@@ -3935,20 +3935,22 @@
         "native_offset"
       ],
       "rvas": [
+        "0x1bc8180"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
+      "line": 199,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
         "0x170d284"
       ]
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 270,
-      "tags": [
-        "abi"
-      ],
-      "rvas": []
-    },
-    {
-      "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 278,
+      "line": 271,
       "tags": [
         "abi"
       ],
@@ -3964,7 +3966,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 283,
+      "line": 280,
       "tags": [
         "abi"
       ],
@@ -3972,7 +3974,15 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 315,
+      "line": 284,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
+      "line": 316,
       "tags": [
         "native_offset"
       ],
@@ -3982,7 +3992,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 336,
+      "line": 337,
       "tags": [
         "synchronization"
       ],
@@ -3990,7 +4000,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 340,
+      "line": 341,
       "tags": [
         "synchronization"
       ],
@@ -3998,7 +4008,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 364,
+      "line": 384,
       "tags": [
         "native_offset"
       ],
@@ -4008,7 +4018,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 391,
+      "line": 411,
       "tags": [
         "native_offset"
       ],
@@ -4018,23 +4028,23 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 464,
-      "tags": [
-        "synchronization"
-      ],
-      "rvas": []
-    },
-    {
-      "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 468,
-      "tags": [
-        "synchronization"
-      ],
-      "rvas": []
-    },
-    {
-      "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
       "line": 480,
+      "tags": [
+        "synchronization"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
+      "line": 484,
+      "tags": [
+        "synchronization"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
+      "line": 496,
       "tags": [
         "abi"
       ],
@@ -4042,7 +4052,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 503,
+      "line": 519,
       "tags": [
         "native_offset"
       ],
@@ -4052,7 +4062,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 522,
+      "line": 538,
       "tags": [
         "native_offset"
       ],
@@ -4062,7 +4072,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 557,
+      "line": 573,
       "tags": [
         "synchronization"
       ],
@@ -4070,7 +4080,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 579,
+      "line": 595,
       "tags": [
         "native_offset"
       ],
@@ -4080,7 +4090,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 614,
+      "line": 642,
       "tags": [
         "native_offset"
       ],
@@ -4090,7 +4100,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 632,
+      "line": 660,
       "tags": [
         "native_offset"
       ],
@@ -4100,7 +4110,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 638,
+      "line": 666,
       "tags": [
         "native_offset"
       ],
@@ -4110,7 +4120,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 706,
+      "line": 740,
       "tags": [
         "native_offset"
       ],
@@ -4120,7 +4130,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 712,
+      "line": 746,
       "tags": [
         "native_offset"
       ],
@@ -4130,7 +4140,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 717,
+      "line": 751,
       "tags": [
         "native_offset"
       ],
@@ -4140,7 +4150,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 724,
+      "line": 758,
       "tags": [
         "native_offset"
       ],
@@ -4150,7 +4160,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 757,
+      "line": 802,
       "tags": [
         "native_offset"
       ],
@@ -4160,7 +4170,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 761,
+      "line": 806,
       "tags": [
         "native_offset"
       ],
@@ -4170,7 +4180,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 794,
+      "line": 839,
       "tags": [
         "synchronization"
       ],
@@ -4178,7 +4188,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 795,
+      "line": 840,
       "tags": [
         "synchronization"
       ],
@@ -4186,7 +4196,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 801,
+      "line": 846,
       "tags": [
         "abi"
       ],
@@ -4194,7 +4204,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 804,
+      "line": 849,
       "tags": [
         "native_offset"
       ],
@@ -4204,7 +4214,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 812,
+      "line": 857,
       "tags": [
         "abi"
       ],
@@ -4212,7 +4222,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 822,
+      "line": 867,
       "tags": [
         "abi"
       ],
@@ -4220,7 +4230,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 929,
+      "line": 974,
       "tags": [
         "abi"
       ],
@@ -4228,7 +4238,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 971,
+      "line": 1016,
       "tags": [
         "native_offset"
       ],
@@ -4238,7 +4248,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 981,
+      "line": 1026,
       "tags": [
         "native_offset"
       ],
@@ -4248,23 +4258,33 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 1093,
+      "line": 1075,
       "tags": [
-        "abi"
+        "native_offset"
       ],
-      "rvas": []
-    },
-    {
-      "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 1194,
-      "tags": [
-        "abi"
-      ],
-      "rvas": []
+      "rvas": [
+        "0x3dd9b0"
+      ]
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
       "line": 1218,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
+      "line": 1327,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
+      "line": 1351,
       "tags": [
         "native_offset"
       ],
@@ -4274,7 +4294,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 1220,
+      "line": 1353,
       "tags": [
         "native_offset"
       ],
@@ -4285,7 +4305,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 1223,
+      "line": 1356,
       "tags": [
         "native_offset"
       ],
@@ -4295,7 +4315,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 1229,
+      "line": 1362,
       "tags": [
         "hook"
       ],
@@ -4303,7 +4323,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 1230,
+      "line": 1363,
       "tags": [
         "hook"
       ],
@@ -4311,7 +4331,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 1231,
+      "line": 1364,
       "tags": [
         "hook"
       ],
@@ -4319,7 +4339,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 1232,
+      "line": 1365,
       "tags": [
         "hook"
       ],
@@ -4327,7 +4347,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 1233,
+      "line": 1366,
       "tags": [
         "native_offset"
       ],
@@ -4337,7 +4357,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 1236,
+      "line": 1369,
       "tags": [
         "hook"
       ],
@@ -4345,7 +4365,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 1240,
+      "line": 1373,
       "tags": [
         "hook",
         "native_offset"
@@ -4356,7 +4376,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 1241,
+      "line": 1374,
       "tags": [
         "native_offset"
       ],
@@ -4366,7 +4386,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 1244,
+      "line": 1377,
       "tags": [
         "hook"
       ],
@@ -4374,7 +4394,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 1270,
+      "line": 1403,
       "tags": [
         "hook"
       ],
@@ -4382,7 +4402,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 1361,
+      "line": 1503,
       "tags": [
         "synchronization"
       ],
@@ -4390,7 +4410,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 1386,
+      "line": 1528,
       "tags": [
         "hook"
       ],
@@ -4398,7 +4418,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 1387,
+      "line": 1529,
       "tags": [
         "hook"
       ],
@@ -4406,7 +4426,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 1388,
+      "line": 1530,
       "tags": [
         "hook",
         "native_offset"
@@ -4419,7 +4439,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 1389,
+      "line": 1531,
       "tags": [
         "hook",
         "native_offset"
@@ -4448,7 +4468,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 1390,
+      "line": 1532,
       "tags": [
         "hook",
         "native_offset"
@@ -4459,7 +4479,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 1391,
+      "line": 1533,
       "tags": [
         "hook",
         "native_offset"
@@ -4471,7 +4491,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 1392,
+      "line": 1534,
       "tags": [
         "hook",
         "native_offset"
@@ -4491,7 +4511,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 1395,
+      "line": 1537,
       "tags": [
         "hook",
         "native_offset"
@@ -4502,7 +4522,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 1402,
+      "line": 1544,
       "tags": [
         "native_offset"
       ],
@@ -4512,7 +4532,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/adapter.cpp",
-      "line": 1410,
+      "line": 1552,
       "tags": [
         "abi"
       ],
@@ -4765,52 +4785,6 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/camera_pick150.h",
-      "line": 9,
-      "tags": [
-        "native_offset"
-      ],
-      "rvas": [
-        "0x15d1a74"
-      ]
-    },
-    {
-      "path": "native/outputs/shogun2-accuracy90-preview/src/camera_pick150.h",
-      "line": 12,
-      "tags": [
-        "abi"
-      ],
-      "rvas": []
-    },
-    {
-      "path": "native/outputs/shogun2-accuracy90-preview/src/camera_pick150.h",
-      "line": 13,
-      "tags": [
-        "native_offset"
-      ],
-      "rvas": [
-        "0x29a450"
-      ]
-    },
-    {
-      "path": "native/outputs/shogun2-accuracy90-preview/src/camera_pick150.h",
-      "line": 18,
-      "tags": [
-        "abi"
-      ],
-      "rvas": []
-    },
-    {
-      "path": "native/outputs/shogun2-accuracy90-preview/src/camera_pick150.h",
-      "line": 19,
-      "tags": [
-        "native_offset"
-      ],
-      "rvas": [
-        "0xbd4d70"
-      ]
-    },
-    {
-      "path": "native/outputs/shogun2-accuracy90-preview/src/camera_pick150.h",
       "line": 24,
       "tags": [
         "abi"
@@ -4824,40 +4798,12 @@
         "native_offset"
       ],
       "rvas": [
-        "0x342a40"
-      ]
-    },
-    {
-      "path": "native/outputs/shogun2-accuracy90-preview/src/camera_pick150.h",
-      "line": 27,
-      "tags": [
-        "native_offset"
-      ],
-      "rvas": [
-        "0x1580000"
-      ]
-    },
-    {
-      "path": "native/outputs/shogun2-accuracy90-preview/src/camera_pick150.h",
-      "line": 29,
-      "tags": [
-        "abi"
-      ],
-      "rvas": []
-    },
-    {
-      "path": "native/outputs/shogun2-accuracy90-preview/src/camera_pick150.h",
-      "line": 30,
-      "tags": [
-        "native_offset"
-      ],
-      "rvas": [
         "0x13660f0"
       ]
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/camera_pick150.h",
-      "line": 40,
+      "line": 35,
       "tags": [
         "abi"
       ],
@@ -4865,7 +4811,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/camera_pick150.h",
-      "line": 41,
+      "line": 36,
       "tags": [
         "native_offset"
       ],
@@ -4875,7 +4821,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/camera_pick150.h",
-      "line": 49,
+      "line": 44,
       "tags": [
         "native_offset"
       ],
@@ -4885,7 +4831,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/camera_pick150.h",
-      "line": 50,
+      "line": 45,
       "tags": [
         "abi"
       ],
@@ -4893,13 +4839,69 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/camera_pick150.h",
-      "line": 57,
+      "line": 52,
       "tags": [
         "abi",
         "native_offset"
       ],
       "rvas": [
         "0xf04d0"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/camera_pick150.h",
+      "line": 59,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x15d1a74"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/camera_pick150.h",
+      "line": 64,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/camera_pick150.h",
+      "line": 65,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0xbd4d70"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/camera_pick150.h",
+      "line": 70,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/camera_pick150.h",
+      "line": 71,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x342a40"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/camera_pick150.h",
+      "line": 73,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x1580000"
       ]
     },
     {
@@ -5982,7 +5984,101 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/follow_voice125.h",
+      "line": 45,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/follow_voice125.h",
       "line": 47,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/follow_voice125.h",
+      "line": 59,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/follow_voice125.h",
+      "line": 63,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/follow_voice125.h",
+      "line": 70,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x2bf760"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/follow_voice125.h",
+      "line": 71,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x2fd265"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/follow_voice125.h",
+      "line": 73,
+      "tags": [
+        "hook",
+        "native_offset"
+      ],
+      "rvas": [
+        "0x2bf760"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/follow_voice125.h",
+      "line": 77,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x2d0ac0"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/follow_voice125.h",
+      "line": 78,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x2fd240"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/follow_voice125.h",
+      "line": 80,
+      "tags": [
+        "hook",
+        "native_offset"
+      ],
+      "rvas": [
+        "0x2d0ac0"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/follow_voice125.h",
+      "line": 85,
       "tags": [
         "native_offset"
       ],
@@ -5992,7 +6088,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/follow_voice125.h",
-      "line": 51,
+      "line": 89,
       "tags": [
         "hook",
         "native_offset"
@@ -7637,7 +7733,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/native_charge148.h",
-      "line": 168,
+      "line": 166,
       "tags": [
         "native_offset"
       ],
@@ -7647,7 +7743,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/native_charge148.h",
-      "line": 179,
+      "line": 177,
       "tags": [
         "native_offset"
       ],
@@ -7657,7 +7753,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/native_charge148.h",
-      "line": 197,
+      "line": 195,
       "tags": [
         "native_offset"
       ],
@@ -7667,7 +7763,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/native_charge148.h",
-      "line": 203,
+      "line": 201,
       "tags": [
         "abi",
         "native_offset"
@@ -7678,7 +7774,27 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/native_charge148.h",
-      "line": 213,
+      "line": 230,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x15e8524"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/native_charge148.h",
+      "line": 265,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x3e53d0"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/native_charge148.h",
+      "line": 292,
       "tags": [
         "synchronization"
       ],
@@ -7686,7 +7802,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/native_charge148.h",
-      "line": 218,
+      "line": 297,
       "tags": [
         "synchronization"
       ],
@@ -7694,7 +7810,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/native_charge148.h",
-      "line": 226,
+      "line": 305,
       "tags": [
         "synchronization"
       ],
@@ -7702,7 +7818,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/native_charge148.h",
-      "line": 228,
+      "line": 307,
       "tags": [
         "synchronization"
       ],
@@ -7710,7 +7826,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/native_charge148.h",
-      "line": 235,
+      "line": 314,
       "tags": [
         "synchronization"
       ],
@@ -7718,7 +7834,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/native_charge148.h",
-      "line": 238,
+      "line": 317,
       "tags": [
         "synchronization"
       ],
@@ -7726,7 +7842,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/native_charge148.h",
-      "line": 241,
+      "line": 320,
       "tags": [
         "abi"
       ],
@@ -7734,7 +7850,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/native_charge148.h",
-      "line": 248,
+      "line": 327,
       "tags": [
         "abi"
       ],
@@ -7742,7 +7858,17 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/native_charge148.h",
-      "line": 270,
+      "line": 342,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x3dd9d0"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/native_charge148.h",
+      "line": 354,
       "tags": [
         "synchronization"
       ],
@@ -7750,7 +7876,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/native_charge148.h",
-      "line": 273,
+      "line": 357,
       "tags": [
         "synchronization"
       ],
@@ -7758,7 +7884,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/native_charge148.h",
-      "line": 279,
+      "line": 363,
       "tags": [
         "native_offset"
       ],
@@ -7769,7 +7895,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/native_charge148.h",
-      "line": 280,
+      "line": 364,
       "tags": [
         "hook",
         "native_offset"
@@ -7780,7 +7906,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/native_charge148.h",
-      "line": 281,
+      "line": 365,
       "tags": [
         "hook",
         "native_offset"
@@ -8904,7 +9030,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/personal_input199.h",
-      "line": 9,
+      "line": 29,
       "tags": [
         "synchronization"
       ],
@@ -8912,7 +9038,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/personal_input199.h",
-      "line": 11,
+      "line": 31,
       "tags": [
         "synchronization"
       ],
@@ -10826,22 +10952,6 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_camera_pick150.cpp",
-      "line": 9,
-      "tags": [
-        "abi"
-      ],
-      "rvas": []
-    },
-    {
-      "path": "native/outputs/shogun2-accuracy90-preview/src/verify_camera_pick150.cpp",
-      "line": 10,
-      "tags": [
-        "abi"
-      ],
-      "rvas": []
-    },
-    {
-      "path": "native/outputs/shogun2-accuracy90-preview/src/verify_camera_pick150.cpp",
       "line": 12,
       "tags": [
         "abi"
@@ -10858,7 +10968,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_camera_pick150.cpp",
-      "line": 22,
+      "line": 15,
       "tags": [
         "abi"
       ],
@@ -10866,31 +10976,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_camera_pick150.cpp",
-      "line": 23,
-      "tags": [
-        "abi"
-      ],
-      "rvas": []
-    },
-    {
-      "path": "native/outputs/shogun2-accuracy90-preview/src/verify_camera_pick150.cpp",
-      "line": 24,
-      "tags": [
-        "abi"
-      ],
-      "rvas": []
-    },
-    {
-      "path": "native/outputs/shogun2-accuracy90-preview/src/verify_camera_pick150.cpp",
-      "line": 25,
-      "tags": [
-        "abi"
-      ],
-      "rvas": []
-    },
-    {
-      "path": "native/outputs/shogun2-accuracy90-preview/src/verify_camera_pick150.cpp",
-      "line": 26,
+      "line": 16,
       "tags": [
         "abi"
       ],
@@ -10900,6 +10986,56 @@
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_camera_pick150.cpp",
       "line": 33,
       "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/verify_camera_pick150.cpp",
+      "line": 34,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/verify_camera_pick150.cpp",
+      "line": 35,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/verify_camera_pick150.cpp",
+      "line": 36,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/verify_camera_pick150.cpp",
+      "line": 38,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/verify_camera_pick150.cpp",
+      "line": 43,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x15d22e8"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/verify_camera_pick150.cpp",
+      "line": 56,
+      "tags": [
         "native_offset"
       ],
       "rvas": [
@@ -10908,7 +11044,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_camera_pick150.cpp",
-      "line": 34,
+      "line": 57,
       "tags": [
         "native_offset"
       ],
@@ -10918,7 +11054,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_camera_pick150.cpp",
-      "line": 35,
+      "line": 58,
       "tags": [
         "native_offset"
       ],
@@ -10929,7 +11065,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_camera_pick150.cpp",
-      "line": 41,
+      "line": 65,
       "tags": [
         "native_offset"
       ],
@@ -10939,7 +11075,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_camera_pick150.cpp",
-      "line": 46,
+      "line": 70,
       "tags": [
         "native_offset"
       ],
@@ -10950,7 +11086,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_camera_pick150.cpp",
-      "line": 69,
+      "line": 93,
       "tags": [
         "native_offset"
       ],
@@ -10960,17 +11096,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_camera_pick150.cpp",
-      "line": 82,
-      "tags": [
-        "native_offset"
-      ],
-      "rvas": [
-        "0x192e710"
-      ]
-    },
-    {
-      "path": "native/outputs/shogun2-accuracy90-preview/src/verify_camera_pick150.cpp",
-      "line": 92,
+      "line": 160,
       "tags": [
         "native_offset"
       ],
@@ -10980,7 +11106,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_camera_pick150.cpp",
-      "line": 96,
+      "line": 164,
       "tags": [
         "native_offset"
       ],
@@ -11224,7 +11350,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_charge148.cpp",
-      "line": 54,
+      "line": 26,
       "tags": [
         "abi"
       ],
@@ -11232,7 +11358,39 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_charge148.cpp",
-      "line": 55,
+      "line": 27,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/verify_charge148.cpp",
+      "line": 28,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/verify_charge148.cpp",
+      "line": 29,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/verify_charge148.cpp",
+      "line": 59,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/verify_charge148.cpp",
+      "line": 60,
       "tags": [
         "native_offset"
       ],
@@ -11242,7 +11400,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_charge148.cpp",
-      "line": 57,
+      "line": 62,
       "tags": [
         "native_offset"
       ],
@@ -11252,7 +11410,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_charge148.cpp",
-      "line": 76,
+      "line": 81,
       "tags": [
         "hook"
       ],
@@ -11260,7 +11418,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_charge148.cpp",
-      "line": 93,
+      "line": 98,
       "tags": [
         "native_offset"
       ],
@@ -11270,7 +11428,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_charge148.cpp",
-      "line": 95,
+      "line": 100,
       "tags": [
         "abi",
         "native_offset"
@@ -11281,7 +11439,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_charge148.cpp",
-      "line": 111,
+      "line": 116,
       "tags": [
         "native_offset"
       ],
@@ -11291,7 +11449,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_charge148.cpp",
-      "line": 124,
+      "line": 142,
       "tags": [
         "native_offset"
       ],
@@ -11301,7 +11459,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_charge148.cpp",
-      "line": 126,
+      "line": 144,
       "tags": [
         "native_offset"
       ],
@@ -11311,7 +11469,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_charge148.cpp",
-      "line": 128,
+      "line": 146,
       "tags": [
         "native_offset"
       ],
@@ -11321,17 +11479,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_charge148.cpp",
-      "line": 130,
-      "tags": [
-        "native_offset"
-      ],
-      "rvas": [
-        "0x3dd9d0"
-      ]
-    },
-    {
-      "path": "native/outputs/shogun2-accuracy90-preview/src/verify_charge148.cpp",
-      "line": 132,
+      "line": 150,
       "tags": [
         "native_offset"
       ],
@@ -11341,7 +11489,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_charge148.cpp",
-      "line": 134,
+      "line": 152,
       "tags": [
         "native_offset"
       ],
@@ -11351,7 +11499,47 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_charge148.cpp",
-      "line": 181,
+      "line": 199,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x15dfec8"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/verify_charge148.cpp",
+      "line": 201,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x3f59e0"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/verify_charge148.cpp",
+      "line": 244,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x3dacf0"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/verify_charge148.cpp",
+      "line": 251,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x3ca8f0"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/verify_charge148.cpp",
+      "line": 260,
       "tags": [
         "native_offset"
       ],
@@ -11361,7 +11549,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_charge148.cpp",
-      "line": 186,
+      "line": 265,
       "tags": [
         "native_offset"
       ],
@@ -11371,7 +11559,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_charge148.cpp",
-      "line": 192,
+      "line": 271,
       "tags": [
         "native_offset"
       ],
@@ -11381,7 +11569,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_charge148.cpp",
-      "line": 198,
+      "line": 277,
       "tags": [
         "hook"
       ],
@@ -12609,6 +12797,94 @@
       ],
       "rvas": [
         "0x15e65f4"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/verify_main_qol.cpp",
+      "line": 10,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/verify_main_qol.cpp",
+      "line": 13,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/verify_main_qol.cpp",
+      "line": 16,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/verify_main_qol.cpp",
+      "line": 23,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/verify_main_qol.cpp",
+      "line": 30,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/verify_main_qol.cpp",
+      "line": 77,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x3e8b50"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/verify_main_qol.cpp",
+      "line": 94,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/verify_main_qol.cpp",
+      "line": 95,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x3f0370"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/verify_main_qol.cpp",
+      "line": 114,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x3ca920"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/verify_main_qol.cpp",
+      "line": 232,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x3ca920"
       ]
     },
     {
@@ -16094,7 +16370,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 20,
+      "line": 34,
       "tags": [
         "abi"
       ],
@@ -16102,7 +16378,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 28,
+      "line": 42,
       "tags": [
         "abi"
       ],
@@ -16110,23 +16386,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 51,
-      "tags": [
-        "synchronization"
-      ],
-      "rvas": []
-    },
-    {
-      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 54,
-      "tags": [
-        "synchronization"
-      ],
-      "rvas": []
-    },
-    {
-      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 58,
+      "line": 65,
       "tags": [
         "synchronization"
       ],
@@ -16142,7 +16402,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 71,
+      "line": 72,
       "tags": [
         "synchronization"
       ],
@@ -16150,7 +16410,23 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 121,
+      "line": 82,
+      "tags": [
+        "synchronization"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
+      "line": 85,
+      "tags": [
+        "synchronization"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
+      "line": 135,
       "tags": [
         "native_offset"
       ],
@@ -16160,7 +16436,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 136,
+      "line": 150,
       "tags": [
         "synchronization"
       ],
@@ -16168,7 +16444,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 216,
+      "line": 230,
       "tags": [
         "native_offset"
       ],
@@ -16178,7 +16454,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 232,
+      "line": 246,
       "tags": [
         "synchronization"
       ],
@@ -16186,7 +16462,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 305,
+      "line": 319,
       "tags": [
         "abi"
       ],
@@ -16194,7 +16470,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 309,
+      "line": 323,
       "tags": [
         "synchronization"
       ],
@@ -16202,7 +16478,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 338,
+      "line": 352,
       "tags": [
         "abi"
       ],
@@ -16210,7 +16486,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 347,
+      "line": 372,
       "tags": [
         "abi"
       ],
@@ -16218,7 +16494,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 363,
+      "line": 388,
       "tags": [
         "abi"
       ],
@@ -16226,47 +16502,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 371,
-      "tags": [
-        "abi"
-      ],
-      "rvas": []
-    },
-    {
-      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 380,
-      "tags": [
-        "abi"
-      ],
-      "rvas": []
-    },
-    {
-      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 383,
-      "tags": [
-        "abi"
-      ],
-      "rvas": []
-    },
-    {
-      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 387,
-      "tags": [
-        "abi"
-      ],
-      "rvas": []
-    },
-    {
-      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 390,
-      "tags": [
-        "abi"
-      ],
-      "rvas": []
-    },
-    {
-      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 397,
+      "line": 396,
       "tags": [
         "abi"
       ],
@@ -16282,7 +16518,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 409,
+      "line": 408,
       "tags": [
         "abi"
       ],
@@ -16290,7 +16526,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 414,
+      "line": 412,
       "tags": [
         "abi"
       ],
@@ -16298,7 +16534,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 424,
+      "line": 415,
       "tags": [
         "abi"
       ],
@@ -16306,33 +16542,43 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 467,
+      "line": 422,
       "tags": [
-        "native_offset"
+        "abi"
       ],
-      "rvas": [
-        "0x3ca920"
-      ]
+      "rvas": []
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 473,
+      "line": 430,
       "tags": [
-        "native_offset"
+        "abi"
       ],
-      "rvas": [
-        "0x3d28b0"
-      ]
+      "rvas": []
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 481,
+      "line": 434,
       "tags": [
-        "native_offset"
+        "abi"
       ],
-      "rvas": [
-        "0x3d2ef0"
-      ]
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
+      "line": 439,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
+      "line": 449,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
@@ -16346,7 +16592,27 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 533,
+      "line": 498,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x3d28b0"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
+      "line": 506,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x3d2ef0"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
+      "line": 517,
       "tags": [
         "native_offset"
       ],
@@ -16356,7 +16622,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 544,
+      "line": 558,
       "tags": [
         "native_offset"
       ],
@@ -16366,7 +16632,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 563,
+      "line": 569,
       "tags": [
         "native_offset"
       ],
@@ -16376,7 +16642,17 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 624,
+      "line": 588,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x3ca920"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
+      "line": 649,
       "tags": [
         "native_offset"
       ],
@@ -16386,182 +16662,12 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 678,
-      "tags": [
-        "native_offset"
-      ],
-      "rvas": [
-        "0x3ca920"
-      ]
-    },
-    {
-      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 679,
-      "tags": [
-        "hook",
-        "native_offset"
-      ],
-      "rvas": [
-        "0x3ca920"
-      ]
-    },
-    {
-      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 681,
-      "tags": [
-        "native_offset"
-      ],
-      "rvas": [
-        "0x3f0370"
-      ]
-    },
-    {
-      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 683,
-      "tags": [
-        "native_offset"
-      ],
-      "rvas": [
-        "0x3f03d0"
-      ]
-    },
-    {
-      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 684,
-      "tags": [
-        "hook",
-        "native_offset"
-      ],
-      "rvas": [
-        "0x3f0370"
-      ]
-    },
-    {
-      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 685,
-      "tags": [
-        "hook",
-        "native_offset"
-      ],
-      "rvas": [
-        "0x3f03d0"
-      ]
-    },
-    {
-      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 688,
-      "tags": [
-        "native_offset"
-      ],
-      "rvas": [
-        "0x3d3e90"
-      ]
-    },
-    {
-      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 689,
-      "tags": [
-        "native_offset"
-      ],
-      "rvas": [
-        "0x3d3480"
-      ]
-    },
-    {
-      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 690,
-      "tags": [
-        "hook",
-        "native_offset"
-      ],
-      "rvas": [
-        "0x3d3e90"
-      ]
-    },
-    {
-      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 693,
-      "tags": [
-        "native_offset"
-      ],
-      "rvas": [
-        "0x3d3e60"
-      ]
-    },
-    {
-      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 694,
-      "tags": [
-        "native_offset"
-      ],
-      "rvas": [
-        "0x3d3fc0"
-      ]
-    },
-    {
-      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 695,
-      "tags": [
-        "hook",
-        "native_offset"
-      ],
-      "rvas": [
-        "0x3d3e60"
-      ]
-    },
-    {
-      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 696,
-      "tags": [
-        "hook",
-        "native_offset"
-      ],
-      "rvas": [
-        "0x3d3fc0"
-      ]
-    },
-    {
-      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 700,
-      "tags": [
-        "native_offset"
-      ],
-      "rvas": [
-        "0x3d4320",
-        "0x3e8b50"
-      ]
-    },
-    {
-      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 701,
-      "tags": [
-        "hook",
-        "native_offset"
-      ],
-      "rvas": [
-        "0x3e8b50"
-      ]
-    },
-    {
-      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 702,
-      "tags": [
-        "hook",
-        "native_offset"
-      ],
-      "rvas": [
-        "0x3e3f50"
-      ]
-    },
-    {
-      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
       "line": 703,
       "tags": [
-        "hook",
         "native_offset"
       ],
       "rvas": [
-        "0x3d3630"
+        "0x3ca920"
       ]
     },
     {
@@ -16572,7 +16678,7 @@
         "native_offset"
       ],
       "rvas": [
-        "0x3d4320"
+        "0x3ca920"
       ]
     },
     {
@@ -16582,28 +16688,39 @@
         "native_offset"
       ],
       "rvas": [
-        "0x3e1a20"
+        "0x3f0370"
       ]
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 707,
+      "line": 708,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x3f03d0"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
+      "line": 709,
       "tags": [
         "hook",
         "native_offset"
       ],
       "rvas": [
-        "0x3e1a20"
+        "0x3f0370"
       ]
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 712,
+      "line": 710,
       "tags": [
+        "hook",
         "native_offset"
       ],
       "rvas": [
-        "0x3d3ce0"
+        "0x3f03d0"
       ]
     },
     {
@@ -16613,7 +16730,7 @@
         "native_offset"
       ],
       "rvas": [
-        "0x3d33f0"
+        "0x3d3e90"
       ]
     },
     {
@@ -16623,12 +16740,171 @@
         "native_offset"
       ],
       "rvas": [
-        "0x3d3d40"
+        "0x3d3480"
       ]
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
       "line": 715,
+      "tags": [
+        "hook",
+        "native_offset"
+      ],
+      "rvas": [
+        "0x3d3e90"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
+      "line": 718,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x3d3e60"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
+      "line": 719,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x3d3fc0"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
+      "line": 720,
+      "tags": [
+        "hook",
+        "native_offset"
+      ],
+      "rvas": [
+        "0x3d3e60"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
+      "line": 721,
+      "tags": [
+        "hook",
+        "native_offset"
+      ],
+      "rvas": [
+        "0x3d3fc0"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
+      "line": 725,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x3d4320",
+        "0x3e8b50"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
+      "line": 726,
+      "tags": [
+        "hook",
+        "native_offset"
+      ],
+      "rvas": [
+        "0x3e8b50"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
+      "line": 727,
+      "tags": [
+        "hook",
+        "native_offset"
+      ],
+      "rvas": [
+        "0x3e3f50"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
+      "line": 728,
+      "tags": [
+        "hook",
+        "native_offset"
+      ],
+      "rvas": [
+        "0x3d3630"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
+      "line": 729,
+      "tags": [
+        "hook",
+        "native_offset"
+      ],
+      "rvas": [
+        "0x3d4320"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
+      "line": 731,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x3e1a20"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
+      "line": 732,
+      "tags": [
+        "hook",
+        "native_offset"
+      ],
+      "rvas": [
+        "0x3e1a20"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
+      "line": 737,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x3d3ce0"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
+      "line": 738,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x3d33f0"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
+      "line": 739,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x3d3d40"
+      ]
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
+      "line": 740,
       "tags": [
         "native_offset"
       ],
@@ -16638,7 +16914,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 716,
+      "line": 741,
       "tags": [
         "hook",
         "native_offset"
@@ -16649,7 +16925,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 717,
+      "line": 742,
       "tags": [
         "hook",
         "native_offset"
@@ -16660,7 +16936,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 718,
+      "line": 743,
       "tags": [
         "hook",
         "native_offset"
@@ -16671,7 +16947,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/weapon_animation.h",
-      "line": 719,
+      "line": 744,
       "tags": [
         "hook",
         "native_offset"

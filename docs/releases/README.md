@@ -2,7 +2,7 @@
 
 # Release history
 
-**Current source: [v0.38](v0.38.md)** — Revision 142 for PC and Steam Deck. [Release identity](../current-release.json)
+**Current main source is Revision 150.** The [v0.38 tag](v0.38.md) records the prior Workshop build, Revision 142. [Release identity](../current-release.json)
 and [validation](../../VALIDATION.md) define the exact build and evidence.
 
 Earlier release notes and receipts remain unchanged as historical records.

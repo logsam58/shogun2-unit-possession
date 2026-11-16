@@ -1,33 +1,28 @@
 #pragma once
-// One native cursor-ray query at F9 entry, only at the stock RTS zoom floor.
-// No cursor/input mutation, orders, recurring scan or replacement geometry.
-static uintptr_t camera_center_actor150(uintptr_t environment150,uintptr_t phase,uintptr_t camera){
+// The center hit must win a majority of five native screen-space rays.
+static constexpr float cursor_pick_radius150=3.f;
+static constexpr float cursor_area_radius150=8.f;
+struct CameraHover150 {
+    uintptr_t exact{};
+    uintptr_t hits[9]{};
+    bool includes(uintptr_t actor,uintptr_t mount) const {
+        for(auto hit:hits)if(hit&&(hit==actor||hit==mount))return true;
+        return false;
+    }
+};
+static bool camera_pick_majority150(uintptr_t center,const uintptr_t (&neighbors)[4]){
+    if(!center)return false;
+    unsigned count=1;
+    for(auto hit:neighbors)if(hit==center)++count;
+    return count>=3;
+}
+static uintptr_t camera_actor_ray150(uintptr_t phase,uintptr_t context,float x,float y){
     struct Hits150 {unsigned capacity{},count{};uintptr_t data{};} hits;
     struct Segment150 {unsigned kind{3};float start[3]{},end[3]{};} segment;
     uintptr_t result=0;bool returned=false;
     __try{
-        if(!environment150||!phase||!camera||field<uintptr_t>(camera,0)!=base+0x15d1a74)return 0;
-        // Original293cd0 clamps camera+180 against this virtual144 getter.
-        // Original29a450 selects the live native property; a0b60 returns x87.
-        using Minimum150=float(__thiscall*)(void*);
-        float minimum=reinterpret_cast<Minimum150>(base+0x29a450)(reinterpret_cast<void*>(camera));
-        float height=field<float>(camera,0x180);
-        if(!std::isfinite(minimum)||!std::isfinite(height)||minimum<0||height<0||height>minimum)return 0;
-        // Original335260 reads bd4d70's normalized CLIENT cursor coordinates.
-        // Use the same coordinates and transform, not the center of the screen.
-        using Cursor151=const float*(__cdecl*)();
-        auto cursor=reinterpret_cast<Cursor151>(base+0xbd4d70)();
-        if(!cursor||!std::isfinite(cursor[0])||!std::isfinite(cursor[1])||
-           cursor[0]<0||cursor[0]>1||cursor[1]<0||cursor[1]>1)return 0;
-        float x151=cursor[0]*2.f-1.f,y151=1.f-cursor[1]*2.f;
-        // Same rendered context/unprojection, including cached matrices.
-        using Context150=uintptr_t(__thiscall*)(void*);
-        auto renderer=reinterpret_cast<Context150>(base+0x342a40)(reinterpret_cast<void*>(environment150));
-        auto table=renderer?field<uintptr_t>(renderer,0):0,getter=table?field<uintptr_t>(table,0x18):0;
-        if(getter<base||getter>=base+0x1580000)return 0;
-        auto context=reinterpret_cast<Context150>(getter)(reinterpret_cast<void*>(renderer));if(!context)return 0;
         float target[3]{};using Unproject150=void(__thiscall*)(void*,float*,float,float,float);
-        reinterpret_cast<Unproject150>(base+0x13660f0)(reinterpret_cast<void*>(context),target,x151,y151,1.f);
+        reinterpret_cast<Unproject150>(base+0x13660f0)(reinterpret_cast<void*>(context),target,x,y,1.f);
         float direction[3]{},length=0;
         for(unsigned i=0;i<3;++i){
             segment.start[i]=field<float>(context,0x60+i*4);
@@ -57,7 +52,41 @@ static uintptr_t camera_center_actor150(uintptr_t environment150,uintptr_t phase
         __try{using Free150=void(__cdecl*)(void*);reinterpret_cast<Free150>(base+0xf04d0)(reinterpret_cast<void*>(hits.data));}
         __except(EXCEPTION_EXECUTE_HANDLER){result=0;}
     }
-    // Entry's existing selected-view/NativeSubject checks prove this pointer
-    // against the current holder, ownership, mount backlinks and lifetime.
     return result;
+}
+static CameraHover150 camera_hover_actors150(uintptr_t environment150,uintptr_t phase,uintptr_t camera){
+    __try{
+        if(!environment150||!phase||!camera||field<uintptr_t>(camera,0)!=base+0x15d1a74)return {};
+        RECT viewport{};
+        if(!input_window||!GetClientRect(input_window,&viewport)||viewport.right<200||viewport.bottom<200)
+            return {};
+        // Same normalized client coordinates and rendered context as 335260.
+        using Cursor151=const float*(__cdecl*)();
+        const auto cursor=reinterpret_cast<Cursor151>(base+0xbd4d70)();
+        if(!cursor||!std::isfinite(cursor[0])||!std::isfinite(cursor[1])||
+           cursor[0]<0||cursor[0]>1||cursor[1]<0||cursor[1]>1)return {};
+        const float x=cursor[0]*2.f-1.f,y=1.f-cursor[1]*2.f;
+        const float dx=2.f*cursor_pick_radius150/viewport.right,dy=2.f*cursor_pick_radius150/viewport.bottom;
+        using Context150=uintptr_t(__thiscall*)(void*);
+        const auto renderer=reinterpret_cast<Context150>(base+0x342a40)(reinterpret_cast<void*>(environment150));
+        const auto table=renderer?field<uintptr_t>(renderer,0):0,getter=table?field<uintptr_t>(table,0x18):0;
+        if(getter<base||getter>=base+0x1580000)return {};
+        const auto context=reinterpret_cast<Context150>(getter)(reinterpret_cast<void*>(renderer));
+        if(!context)return {};
+        auto ray=[&](float x_offset,float y_offset){
+            const float sx=x+x_offset,sy=y+y_offset;
+            if(std::abs(sx)>1.f||std::abs(sy)>1.f)return uintptr_t{};
+            return camera_actor_ray150(phase,context,sx,sy);
+        };
+        const float area_x=2.f*cursor_area_radius150/viewport.right;
+        const float area_y=2.f*cursor_area_radius150/viewport.bottom;
+        const auto center=ray(0,0);
+        const uintptr_t neighbors[]={ray(-dx,0),ray(dx,0),ray(0,-dy),ray(0,dy)};
+        // The wider samples are only a fallback pool. They cannot change a
+        // confirmed exact pick or select through a native world occluder.
+        CameraHover150 hover{camera_pick_majority150(center,neighbors)?center:0,
+            {center,neighbors[0],neighbors[1],neighbors[2],neighbors[3],
+             ray(-area_x,-area_y),ray(area_x,-area_y),ray(-area_x,area_y),ray(area_x,area_y)}};
+        return hover;
+    }__except(EXCEPTION_EXECUTE_HANDLER){return {};}
 }

@@ -42,6 +42,44 @@ static bool quiet_follow_voice125(const void* event){
 static void __fastcall order_voice125(void* voice,void*,const void* event){
     if(!quiet_follow_voice125(event))original_order_voice125(voice,event);
 }
+using LandMoveArrow=void(__thiscall*)(void*,const void*,unsigned);
+static LandMoveArrow original_land_move_arrow;
+using LandRouteArrows=void(__thiscall*)(void*,const void*,unsigned,unsigned);
+static LandRouteArrows original_land_route_arrows;
+static bool hide_follow_arrow(uintptr_t display){
+    __try{
+        // The native display constructor stores this battle and formation
+        // at +6c/+70. The original renderer's false branch hides all three
+        // arrow components and leaves path data, marker state and orders intact.
+        return unit&&display&&environment&&!command_placing100&&
+            field<uintptr_t>(display,0x6c)==environment&&field<uintptr_t>(display,0x70)==unit&&
+            field<unsigned>(unit,4)==possession_lease.identity.unit_id&&follow_voice_owned125();
+    }__except(EXCEPTION_EXECUTE_HANDLER){return false;}
+}
+static void __fastcall land_move_arrow(void* display,void*,const void* draw,unsigned visible){
+    const bool hide=(visible&0xff)&&hide_follow_arrow(reinterpret_cast<uintptr_t>(display));
+    original_land_move_arrow(display,draw,hide?0u:visible);
+}
+static void __fastcall land_route_arrows(void* display,void*,const void* draw,unsigned visible,unsigned forced){
+    const bool hide=((visible|forced)&0xff)&&hide_follow_arrow(reinterpret_cast<uintptr_t>(display));
+    original_land_route_arrows(display,draw,hide?0u:visible,hide?0u:forced);
+}
+static void create_land_move_arrow(){
+    const unsigned char entry[]={0x81,0xec,0x84,0,0,0,0x80,0xbc,0x24,0x8c,0,0,0,0};
+    const unsigned char caller[]={0xe8,0xf6,0x24,0xfc,0xff};
+    require(!memcmp(reinterpret_cast<void*>(base+0x2bf760),entry,sizeof entry)&&
+            !memcmp(reinterpret_cast<void*>(base+0x2fd265),caller,sizeof caller),
+            "Native land movement arrow signature differs");
+    require(MH_CreateHook(reinterpret_cast<void*>(base+0x2bf760),reinterpret_cast<void*>(&land_move_arrow),
+            reinterpret_cast<void**>(&original_land_move_arrow))==MH_OK,"Land movement arrow hook failed");
+    const unsigned char route_entry[]={0x81,0xec,0xe8,0,0,0,0x80,0xbc,0x24,0xf4,0,0,0,0};
+    const unsigned char route_caller[]={0xe8,0x7b,0x38,0xfd,0xff};
+    require(!memcmp(reinterpret_cast<void*>(base+0x2d0ac0),route_entry,sizeof route_entry)&&
+            !memcmp(reinterpret_cast<void*>(base+0x2fd240),route_caller,sizeof route_caller),
+            "Native land route arrow signature differs");
+    require(MH_CreateHook(reinterpret_cast<void*>(base+0x2d0ac0),reinterpret_cast<void*>(&land_route_arrows),
+            reinterpret_cast<void**>(&original_land_route_arrows))==MH_OK,"Land route arrow hook failed");
+}
 static bool follow_voice_signatures125(){
     const unsigned char voice[]={0x83,0xec,0x14,0x56,0x8b,0x74,0x24,0x1c};
     return !memcmp(reinterpret_cast<void*>(base+0x2fc450),voice,8)&&field<uintptr_t>(base,0x15d5114)==base+0x2fc450;

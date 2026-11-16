@@ -1,0 +1,41 @@
+{
+  "revision": 150,
+  "channel": "regular",
+  "base_revision": 149,
+  "last_verified_workshop_revision": 142,
+  "pack": "shogun2_unit_possession_workshop165.pack",
+  "pack_sha256": "eae1aa0221ff8ce161c3cd3dee7145fe7003222b0d5ef9542992f5fca08f118d",
+  "pack_bytes": 4719434,
+  "bridge_sha256": "f0f3fe0edffcc8a5927d727043baf3fed23e3706302e4173b93aa136b69933ba",
+  "component_sha256": {
+    "possession-v46.dll": "9f529b6afef9d50f4ce515a3584f1da11b76fcc4c0eb5c3248398ad708397403",
+    "possession-hud.exe": "710b284c9976837adead2910273b87df1e0773da02aa18815fb2c8b538a4e3c4",
+    "qte-playable-v79.dll": "34eca1beefebb71e7613ce2e55225405fa5cd8586f301f187bf8ee15ae02c1d3",
+    "prepare-local-assets159.exe": "8b3cbf066ff3f593848b545b96ae6117b88ee43c437010377849ffe1d035bd61"
+  },
+  "offline_checks": {
+    "component_checks": [
+      "minhook",
+      "main-qol-adapter",
+      "verify_main_qol",
+      "verify_camera_pick150",
+      "verify_native_commands100",
+      "verify_mounted_camera",
+      "verify_charge148",
+      "verify_animation_ownership105"
+    ],
+    "workshop_checks": 20,
+    "campaign_pack_readback": true
+  },
+  "pc_staging": {
+    "verified": true,
+    "rollback_revision": 149,
+    "rollback_sha256": "2c3dc962d736fe538d53574b6e11875e48511454de1b9ec7d8b6bc028cdaf379"
+  },
+  "gameplay": {
+    "pc_owner_confirmed_hover_possession_during_melee": true,
+    "runtime_hash_checked_during_owner_test": false,
+    "steam_deck_hardware_tested": false
+  },
+  "workshop_uploaded_as_part_of_this_update": false
+}

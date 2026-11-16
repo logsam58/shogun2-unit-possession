@@ -1,6 +1,12 @@
 # Validation
 
-The maintained PC and Steam Deck source is v0.38, Revision 142. The Steam
+Main contains Revision 150. The owner confirmed immediate hover possession
+during melee on PC. The [Revision 150 validation record](docs/public-release/REVISION150_VALIDATION.json)
+records the offline build and fixture checks and the separate PC staging result.
+
+## Historical v0.38 Workshop validation
+
+The v0.38 PC and Steam Deck source tag contains Revision 142. The Steam
 Workshop upload and downloaded pack were verified by SHA-256. The
 [Revision 142 validation record](docs/public-release/V0_38_VALIDATION.json)
 distinguishes offline package and control checks from gameplay reports on

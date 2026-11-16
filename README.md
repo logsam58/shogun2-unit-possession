@@ -13,9 +13,9 @@ Take control of a soldier in **Total War: SHOGUN 2**, fight in first or third pe
 ## Features
 
 - **First- and third-person play:** start in third person, switch with **P**, adjust camera distance, or orbit your soldier.
-- **Soldier selection:** at the closest RTS zoom, point at a soldier in your selected unit and press **Caps Lock** or **F9**. Generals, officers, flag bearers and musicians use their own equipment. From further away, the mod picks a soldier for you.
+- **Soldier selection:** point at a soldier in the selected unit at any zoom and press **Caps Lock** or **F9**. You can take over mid-fight. If the cursor is between soldiers, the mod tries someone nearby before picking from the rest of the unit. Generals, officers, flag bearers and musicians use their own equipment.
 - **Ranged combat:** aim and fire bows, guns and thrown weapons. Hold and release bow shots to vary their strength. Unit accuracy affects shot spread; sights help you allow for projectile drop.
-- **Melee combat:** time the displayed mouse-button prompts during the game's combat animations. Personal charges use forward sprint plus the primary attack input, with native charge contact and paired outcomes.
+- **Melee combat:** time the displayed mouse-button prompts during the game's combat animations. Sprint forward and hold the primary attack button to charge. Shogun handles contact and paired outcomes.
 - **Unit commands:** issue move and attack orders, drag formations, stop, hold position, follow, and choose fire orders. The game's formations, pathfinding, morale and fatigue still apply.
 - **Abilities and ammunition:** select the options available to your unit, including targeted friendly abilities such as Inspire, subject to the game's restrictions and cooldowns.
 - **Cavalry and sieges:** ride cavalry, order supported units to mount or dismount, and attempt castle-wall climbing. Climbing is intermittent.
@@ -25,7 +25,7 @@ Take control of a soldier in **Total War: SHOGUN 2**, fight in first or third pe
 
 Use the existing [Steam Workshop item](https://steamcommunity.com/sharedfiles/filedetails/?id=3825625050). The combined build uses that same item; a separate Deck subscription is unnecessary.
 
-**Current version: v0.38, Revision 142, for PC and Steam Deck.** See the [source tag](https://github.com/logsam58/shogun2-unit-possession/tree/v0.38), [release notes](docs/releases/v0.38.md), and [Workshop build record](docs/current-release.json).
+**Main source is at Revision 150.** The last verified Steam Workshop download is v0.38, Revision 142, for PC and Steam Deck. See the [changelog](CHANGELOG.md) and [build record](docs/current-release.json).
 
 No installer is provided. Fonts, artwork and audio are prepared from your own installed game.
 
@@ -72,7 +72,7 @@ Returning to RTS keeps the Army control setting from possession.
 
 | Key | Action |
 | --- | --- |
-| **Caps Lock / F9** | Possess a soldier in the selected unit; at closest RTS zoom, point the mouse cursor at who you want |
+| **Caps Lock / F9** | Possess a soldier in the selected unit. Point at the soldier you want at any zoom. |
 | **Caps Lock / F10 / Escape** | Return to your previous RTS camera |
 | **Hold Right Alt** | Commander. Click to assign or right-click to close. In possession, press V to switch to Unit Orders. WASD still moves your soldier while the wheel is open. Click Hold Here once to walk or twice to run. Follow Me adjusts its pace as you move. |
 | **WASD** | Move |
@@ -83,7 +83,7 @@ Returning to RTS keeps the Army control setting from possession.
 | **Hold middle mouse** in third person | Follow an arrow you just shot, or orbit your soldier when no arrow is available |
 | **M** | Order the unit to mount/dismount, where supported |
 | **Hold RMB** | Ready your personal ranged weapon, including while the formation is in melee mode |
-| **LMB** | Fire guns or thrown weapons; hold and release for bow draw strength |
+| **LMB** | Fire guns or thrown weapons. Hold and release for bow draw strength. Tap outside aiming or melee to cheer where supported. |
 | **1** | Toggle the whole unit's native melee/ranged mode, where supported |
 | **3** | Pause / resume the battle |
 | **4** | Toggle slow motion / normal battle speed |
@@ -101,7 +101,7 @@ Returning to RTS keeps the Army control setting from possession.
 | **Q — Move / Attack** | Point at the ground to move, or an enemy or supported breakable target to attack. Tap to walk; double-tap to run or charge. Hold Q and drag left to right to set the formation, then release. |
 | **E — Stop** | Stop the unit. |
 | **Z — Hold Here** | Form up at your current position, facing the direction you're looking when you press Z. Tap to walk there; double-tap to run. |
-| **C — Follow Me** | Form up beside you. Run to catch up when needed, then match your pace. When you stop, your men finish forming up around you. |
+| **C — Follow Me** | Form up beside you. Run to catch up when needed, then match your pace. When you stop, your men finish forming up around you. Follow Me hides its movement arrows. |
 | **Tap R — Fire orders** | Cycle **Hold Fire → Fire at Will → Fire on Command**. Fire on Command tells the unit to fire when you fire. |
 | **Hold R — Skirmish** | Toggle the unit's Skirmish mode where supported. |
 
@@ -115,7 +115,7 @@ Steam controller settings label the action sets as **Unit Possession Layout**. H
 
 Left stick pans the map or moves your soldier. Right stick turns/zooms in campaign, turns/tilts in battle and looks around during possession. Hold R3 while aiming a bow or while your arrow is in flight to follow it. Hold R3 when there is no arrow to follow to switch first/third person. Cursor position does not drive map movement on Deck.
 
-To charge, hold **forward + L3 + RT**, with your unit in melee mode and LT released. Sprinting alone does not request a charge. Hold R1 for the four-section command wheel and choose with the right stick. Press RT once to confirm. Double-press RT on Hold Here to run.
+To charge, toggle sprint with **L3**, push forward and hold **RT**, with your unit in melee mode and LT released. Sprinting alone does not request a charge. Hold R1 for the four-section command wheel and choose with the right stick. Press RT once to confirm. Double-press RT on Hold Here to run.
 
 ### Campaign
 
@@ -160,7 +160,7 @@ To charge, hold **forward + L3 + RT**, with your unit in melee mode and LT relea
 
 | Input | Action |
 |---|---|
-| R2 | Fire; hold/release bow; primary melee or QTE response |
+| R2 | Fire, hold/release to draw a bow, or use the primary melee prompt. Tap outside aiming or melee to cheer where supported. |
 | L2 | Ready ranged weapon; secondary melee or QTE response |
 | R1 held | Orders wheel. Choose with the right stick and press RT to confirm. Double-press RT on Hold Here to run. A switches to Commander and B closes the wheel. The left stick still moves your soldier. |
 | Wheel up / down / left / right | Follow Me / Stop / Hold Here / Cycle Fire Orders |

@@ -1,5 +1,14 @@
 # Changelog
 
+## Revision 150 — 2026-11-16
+
+- Hover over a soldier at any zoom level to possess them, even mid-fight.
+- Sprint toward an enemy and hold attack to charge alongside your unit.
+- Tap attack while idle to cheer. Sprint to cancel.
+- Improved walking and turning, restored sneaking in forests, and hid the movement arrows during Follow Me.
+
+[Revision 150 validation](docs/public-release/REVISION150_VALIDATION.json).
+
 ## v0.38 — 2026-11-15
 
 - Fixed startup with the original Last Alliance 0.5.2 pack set. Case-only duplicate texture paths no longer stop the scan. Improved modded portrait lookup and fallback.

@@ -89,9 +89,10 @@
     "revision142_actual_workshop_delivery_verified": true,
     "revision142_live_gameplay_verified": false,
     "revision142_non_english_gameplay_verified": false,
-    "revision142_deck_r3_live_verified": false
+    "revision142_deck_r3_live_verified": false,
+    "revision150_owner_pc_melee_hover_confirmed": true
   },
-  "validation": "docs/public-release/V0_38_VALIDATION.json",
+  "validation": "docs/public-release/REVISION150_VALIDATION.json",
   "owner_decisions": {
     "first_party_license": "MIT",
     "resources": "from owned game",
@@ -120,18 +121,18 @@
   "history": "Historical tags and release notes remain. Installer downloads were removed; earlier game-resource-containing downloads remain absent.",
   "legal_clearance": "Resource exclusion is not legal clearance for native hooks/reverse engineering; see PROVENANCE.md.",
   "github_runtime": {
-    "revision": "custom-battle-tooltip-126",
+    "revision": 150,
     "candidate": 181,
     "pack": "shogun2_unit_possession_workshop165.pack",
-    "pack_sha256": "64054dc25361ee7e21c70ddddcb526dd56d6f789125ea7abf5202d819f70249d",
-    "pack_bytes": 4662688,
-    "native_sha256": "34f38e848a933e93a42f774cb55b47f3327e8f0d1ba69cee2a9237c22ff884c8",
+    "pack_sha256": "eae1aa0221ff8ce161c3cd3dee7145fe7003222b0d5ef9542992f5fca08f118d",
+    "pack_bytes": 4719434,
+    "native_sha256": "f0f3fe0edffcc8a5927d727043baf3fed23e3706302e4173b93aa136b69933ba",
     "pack_distributed_by_this_source_push": false
   },
-  "source_status": "v0.37 tags Revision 126. The owner confirmed the Custom Battle setup tooltip fix on PC.",
+  "source_status": "Main contains Revision 150. The v0.38 source tag and last verified Workshop download contain Revision 142.",
   "last_tagged_release": {
     "version": "0.33",
     "url": "https://github.com/logsam58/shogun2-unit-possession/releases/tag/v0.33"
   },
-  "source_tag_url": "https://github.com/logsam58/shogun2-unit-possession/tree/v0.37"
+  "source_tag_url": "https://github.com/logsam58/shogun2-unit-possession/tree/v0.38"
 }
