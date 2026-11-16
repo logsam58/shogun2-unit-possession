@@ -1,9 +1,9 @@
 {
   "schema": 3,
   "product": "Shogun 2 Unit Possession",
-  "version": "0.37",
+  "version": "0.38",
   "branch": "testing",
-  "tag": null,
+  "tag": "v0.38",
   "release_url": null,
   "repository_visibility": "public; owner controls visibility",
   "format": "Steam Workshop; automatic resources from each owned game",
@@ -11,44 +11,30 @@
     "item": "3825625050",
     "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3825625050",
     "candidate": 181,
-    "revision": "custom-battle-tooltip-126",
+    "revision": "main-combat150",
     "pack": "shogun2_unit_possession_workshop165.pack",
-    "pack_sha256": "64054dc25361ee7e21c70ddddcb526dd56d6f789125ea7abf5202d819f70249d",
-    "pack_bytes": 4662688,
-    "steam_manifest": "7228153338856273762",
+    "pack_sha256": "eae1aa0221ff8ce161c3cd3dee7145fe7003222b0d5ef9542992f5fca08f118d",
+    "pack_bytes": 4719434,
+    "steam_manifest": "4077362554520392574",
     "uploaded_and_exact_download_verified": true,
-    "last_verified_date": "2026-11-10",
-    "steam_time_updated": 1794270286,
+    "last_verified_date": "2026-11-16",
+    "steam_time_updated": 1794863819,
     "published_change_notes": "https://steamcommunity.com/sharedfiles/filedetails/changelog/3825625050",
     "last_known_verified_delivery": {
       "item": "3825625050",
       "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3825625050",
       "candidate": 181,
-      "revision": "custom-battle-tooltip-126",
+      "revision": "main-combat150",
       "pack": "shogun2_unit_possession_workshop165.pack",
-      "pack_sha256": "64054dc25361ee7e21c70ddddcb526dd56d6f789125ea7abf5202d819f70249d",
-      "pack_bytes": 4662688,
-      "steam_manifest": "7228153338856273762",
+      "pack_sha256": "eae1aa0221ff8ce161c3cd3dee7145fe7003222b0d5ef9542992f5fca08f118d",
+      "pack_bytes": 4719434,
+      "steam_manifest": "4077362554520392574",
       "uploaded_and_exact_download_verified": true,
-      "last_verified_date": "2026-11-10",
-      "steam_time_updated": 1794270286,
+      "last_verified_date": "2026-11-16",
+      "steam_time_updated": 1794863819,
       "published_change_notes": "https://steamcommunity.com/sharedfiles/filedetails/changelog/3825625050"
     },
-    "updated_by_this_GitHub_source_push": false,
-    "prior_verified_delivery": {
-      "item": "3825625050",
-      "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3825625050",
-      "candidate": 181,
-      "revision": "melee-rts-39",
-      "pack": "shogun2_unit_possession_workshop165.pack",
-      "pack_sha256": "a68637165024934159d5dcdf36efc1c941f50b0f10666394bfe777fc90947449",
-      "pack_bytes": 4275374,
-      "steam_manifest": "2737704436340709338",
-      "uploaded_and_exact_download_verified": true,
-      "last_verified_date": "2026-11-05",
-      "steam_time_updated": 1793760330,
-      "published_change_notes": "https://steamcommunity.com/sharedfiles/filedetails/changelog/3825625050"
-    }
+    "updated_by_this_GitHub_source_push": false
   },
   "source_kit": null,
   "player_archive": null,
@@ -100,22 +86,21 @@
     "revision125_live_gameplay_verified": false,
     "revision126_custom_battle_tooltip_pc_owner_accepted": true,
     "revision126_custom_battle_tooltip_deck_hardware_verified": false,
-    "revision129_naval_manual_acceptance": [
-      "correct directions",
-      "stutter removed",
-      "movement on moving ship",
-      "possess/release/repossess"
-    ]
+    "revision142_actual_workshop_delivery_verified": true,
+    "revision142_live_gameplay_verified": false,
+    "revision142_non_english_gameplay_verified": false,
+    "revision142_deck_r3_live_verified": false,
+    "revision150_owner_pc_melee_hover_confirmed": true
   },
-  "validation": "docs/testing/naval129.json",
+  "validation": "docs/public-release/REVISION150_VALIDATION.json",
   "owner_decisions": {
     "first_party_license": "MIT",
     "resources": "from owned game",
     "status_icons": "original native icons",
-    "branch_policy": "main stable; testing for owner-requested experiments"
+    "branch_policy": "Regular Workshop source on main; naval, Steam Remote Play and native battle replay experiments on testing"
   },
   "support": {
-    "naval_possession": "Experimental PC single-player ordinary sailor movement/camera/return to duty; no personal naval combat or Deck naval input.",
+    "naval_possession": "Experimental: single-player PC sailor movement and return to duty",
     "multiplayer": "not implemented; Versus and campaign drop-in under consideration",
     "expected": "visual/gameplay bugs and occasional crashes",
     "Steam_Deck": "Windows game through Proton; tested Proton 9.0-4; contextual Steam Input/UI; no official Valve verification claim"
@@ -136,18 +121,26 @@
   "history": "Historical tags and release notes remain. Installer downloads were removed; earlier game-resource-containing downloads remain absent.",
   "legal_clearance": "Resource exclusion is not legal clearance for native hooks/reverse engineering; see PROVENANCE.md.",
   "github_runtime": {
-    "revision": "naval-crew129-private-test",
+    "revision": 150,
     "candidate": 181,
-    "pack": "shogun2_unit_possession_testing_branch.pack",
-    "pack_sha256": "8e11c9ff1abf28ea697f1abbe5a9c04c5dd982b352910bed905651bd91d32f31",
-    "pack_bytes": 4677156,
-    "native_sha256": "fff912ff4efea43d8d82fb19437526dad76143cb0f428b278a4338cb3bb1130e",
+    "pack": "shogun2_unit_possession_workshop165.pack",
+    "pack_sha256": "eae1aa0221ff8ce161c3cd3dee7145fe7003222b0d5ef9542992f5fca08f118d",
+    "pack_bytes": 4719434,
+    "native_sha256": "f0f3fe0edffcc8a5927d727043baf3fed23e3706302e4173b93aa136b69933ba",
     "pack_distributed_by_this_source_push": false
   },
-  "source_status": "Testing branch: Revision129 naval movement experiment accepted by owner; stable main/v0.37 remains Revision126.",
+  "source_status": "Main contains Revision 150. The v0.38 source tag and last verified Workshop download contain Revision 142.",
   "last_tagged_release": {
     "version": "0.33",
     "url": "https://github.com/logsam58/shogun2-unit-possession/releases/tag/v0.33"
   },
-  "source_tag_url": null
+  "source_tag_url": "https://github.com/logsam58/shogun2-unit-possession/tree/v0.38",
+  "testing": {
+    "workshop_baseline": 150,
+    "naval_baseline": 129,
+    "remote_play_baseline": 132,
+    "native_replay_baseline": 148,
+    "combined_gameplay_verified": false,
+    "validation": "docs/testing/revision150.json"
+  }
 }

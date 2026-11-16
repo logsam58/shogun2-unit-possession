@@ -11,35 +11,68 @@
 static LRESULT CALLBACK fixture_window(HWND window,UINT msg,WPARAM wparam,LPARAM lparam){
  return DefWindowProcW(window,msg,wparam,lparam);
 }
-static void verify_display130(){
+struct DisplayFixture {
+ remote131::Mode mode{};
+ HWND window{};
+ remote131::Size request{};
+ unsigned commits{};
+ bool restore_bounds{}, restore_render_size{}, refuse_target{};
+};
+static void __fastcall set_windowed(DisplayFixture* f,void*,bool windowed){
+ f->mode.windowed=windowed;
+}
+static void __fastcall request_size(remote131::Mode* mode,void*,const remote131::Size* size){
+ auto* f=reinterpret_cast<DisplayFixture*>(mode);
+ f->request=*size;
+ mode->pending=1;
+}
+static void __fastcall commit_display(DisplayFixture* f,void*){
+ ++f->commits;
+ if(f->refuse_target&&f->request.width==remote131::deck_width)return;
+ if(f->commits==1&&f->restore_bounds)
+  assert(SetWindowPos(f->window,nullptr,30,30,960,640,SWP_NOACTIVATE|SWP_NOZORDER));
+ if(f->commits==1&&f->restore_render_size){
+  RECT client{};assert(GetClientRect(f->window,&client));f->request={client.right,client.bottom};
+ }
+ f->mode.width=f->request.width;
+ f->mode.height=f->request.height;
+ f->mode.pending=0;
+}
+static void verify_display132(){
+ using namespace remote131;
  HINSTANCE app=GetModuleHandleW(nullptr);
- WNDCLASSW cls{};cls.lpfnWndProc=fixture_window;cls.hInstance=app;cls.lpszClassName=L"SHOGUN 2";
+ WNDCLASSW cls{};cls.lpfnWndProc=fixture_window;cls.hInstance=app;cls.lpszClassName=L"S2UP display fixture";
  assert(RegisterClassW(&cls));
  const DWORD ex=WS_EX_LAYERED|WS_EX_TOOLWINDOW|WS_EX_NOACTIVATE;
- HWND window=CreateWindowExW(ex,cls.lpszClassName,L"Offscreen display fixture",WS_OVERLAPPEDWINDOW,
-                              30,30,960,640,nullptr,nullptr,app,nullptr);
- assert(window&&SetLayeredWindowAttributes(window,0,0,LWA_ALPHA));
- ShowWindow(window,SW_SHOWNOACTIVATE);
- RECT old{},current{},client{};assert(GetWindowRect(window,&old));
- MONITORINFO info{sizeof(MONITORINFO)};
- assert(GetMonitorInfoW(MonitorFromWindow(window,MONITOR_DEFAULTTONEAREST),&info));
- RECT expected{0,0,1280,800};
- assert(AdjustWindowRectEx(&expected,WS_OVERLAPPEDWINDOW,FALSE,ex));
- if(expected.right-expected.left<=info.rcWork.right-info.rcWork.left&&
-    expected.bottom-expected.top<=info.rcWork.bottom-info.rcWork.top){
-  remote130::Display display;
-  display.update(true,window);
-  assert(GetClientRect(window,&client)&&client.right==1280&&client.bottom==800);
-  display.update(false,nullptr);
-  assert(GetWindowRect(window,&current)&&EqualRect(&current,&old));
-  std::cout<<"PASS remote130: game window receives 1280x800 client size and exact placement restoration\n";
- }else{
-  remote130::Display display;display.update(true,window);
-  assert(GetWindowRect(window,&current)&&EqualRect(&current,&old));
-  std::cout<<"PASS remote130: insufficient monitor work area preserves window placement\n";
+ for(unsigned scenario=0;scenario<4;++scenario){
+  HWND window=CreateWindowExW(ex,cls.lpszClassName,L"Offscreen display fixture",WS_OVERLAPPEDWINDOW,
+                               30,30,960,640,nullptr,nullptr,app,nullptr);
+  assert(window&&SetLayeredWindowAttributes(window,0,0,LWA_ALPHA));
+  ShowWindow(window,SW_SHOWNOACTIVATE);
+  RECT before{},after{},client{};assert(GetWindowRect(window,&before)&&GetClientRect(window,&client));
+  DisplayFixture f{};f.window=window;f.mode.width=client.right;f.mode.height=client.bottom;
+  f.restore_bounds=scenario==1||scenario==2;
+  f.restore_render_size=scenario==2;
+  f.refuse_target=scenario==3;
+  const auto original=f.mode;
+  Engine engine{reinterpret_cast<uintptr_t>(&f),reinterpret_cast<uintptr_t>(&f.mode),
+   reinterpret_cast<uintptr_t>(&set_windowed),reinterpret_cast<uintptr_t>(&request_size),
+   reinterpret_cast<uintptr_t>(&commit_display)};
+  assert(apply_display(window,engine,original)==!f.refuse_target);
+  if(f.refuse_target){
+   assert(f.commits==2&&!f.mode.windowed&&f.mode.width==original.width&&f.mode.height==original.height);
+   assert(GetWindowRect(window,&after)&&EqualRect(&before,&after));
+  }else{
+   assert(f.commits==(f.restore_render_size?2u:1u));
+   assert(f.mode.windowed&&!f.mode.pending&&f.mode.width==deck_width&&f.mode.height==deck_height);
+   assert(client_is(window,{deck_width,deck_height}));
+  }
+  assert(DestroyWindow(window));
  }
- assert(DestroyWindow(window)&&UnregisterClassW(cls.lpszClassName,app));
+ assert(UnregisterClassW(cls.lpszClassName,app));
+ std::cout<<"PASS remote display: normal commit, bounds restored during release, size resampled, and exact failure rollback\n";
 }
+
 int wmain(int argc,wchar_t** argv){
  SetErrorMode(SEM_FAILCRITICALERRORS|SEM_NOGPFAULTERRORBOX);_set_error_mode(_OUT_TO_STDERR);
  if(argc==4&&!wcscmp(argv[1],L"--reader")){device192::Reader reader;assert(reader.deck(DWORD(wcstoul(argv[2],nullptr,10)))==(argv[3][0]==L'1'));return 0;}
@@ -69,7 +102,7 @@ int wmain(int argc,wchar_t** argv){
   remote(19,19,true,14);
   assert(!backend.sample(1750000,true,frame)&&!frame.connected);
   assert(backend.close());
-  verify_display130();
+  verify_display132();
   std::cout<<"PASS remote130: direct Deck discovery, wrong/local/guest/other inputs rejected, native bindings, disconnect, reconnect\n";
   return 0;
  }

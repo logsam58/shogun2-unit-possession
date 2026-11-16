@@ -21,7 +21,7 @@ struct ClickHost:deck175::Host {
  void modifiers(bool s,bool c)override{shift=s;ctrl=c;}
  bool pointer(Vec2 delta)override{x+=int(delta.x*1000);y+=int(delta.y*1000);clicks.move(x,y,4,4);return true;}
  bool select(bool down,bool additive)override{bool twice=clicks.button(down,additive||ctrl||shift,x,y,now,500,4,4);messages.push_back(down?(twice?WM_LBUTTONDBLCLK:WM_LBUTTONDOWN):WM_LBUTTONUP);return true;}
- bool order(unsigned,bool)override{clicks.reset();return true;}
+ bool order(unsigned,bool,bool)override{clicks.reset();return true;}
  bool halt()override{return true;}
  bool camera(Vec2,float,float,float,float)override{return true;}
 };

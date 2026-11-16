@@ -1,0 +1,79 @@
+{
+  "version": "0.38",
+  "revision": 142,
+  "channel": "regular",
+  "workshop": {
+    "item": "3825625050",
+    "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3825625050",
+    "candidate": 181,
+    "revision": "speed-arrow-142",
+    "pack": "shogun2_unit_possession_workshop165.pack",
+    "pack_sha256": "301d1970785729c713e8d043f75b85ae4330220a21543d5321717931f175fd7e",
+    "pack_bytes": 4670071,
+    "steam_manifest": "1390392144500548356",
+    "uploaded_and_exact_download_verified": true,
+    "last_verified_date": "2026-11-15",
+    "steam_time_updated": 1794766026,
+    "published_change_notes": "https://steamcommunity.com/sharedfiles/filedetails/changelog/3825625050"
+  },
+  "build": {
+    "bridge_sha256": "9b64f47b4de6463990817e24cd2fbccf96657d8fe0ab3b61bacef95063cde0e1",
+    "component_sha256": {
+      "possession-v46.dll": "393377ae9f67943d91a12482e08394eaf68ac90e824ef4050455c8fb1cf76e5e",
+      "possession-hud.exe": "710b284c9976837adead2910273b87df1e0773da02aa18815fb2c8b538a4e3c4",
+      "qte-playable-v79.dll": "34eca1beefebb71e7613ce2e55225405fa5cd8586f301f187bf8ee15ae02c1d3",
+      "prepare-local-assets159.exe": "8b3cbf066ff3f593848b545b96ae6117b88ee43c437010377849ffe1d035bd61"
+    },
+    "workshop_checks": 20,
+    "campaign_test": {
+      "candidate": 181,
+      "compiled_menu_campaign_cases": 8,
+      "compiled_campaign_selection_cases": 5,
+      "owned_reader_cases": 30,
+      "context_backend_cases": 5,
+      "stale_file_suites": 2,
+      "production_pack_readback": true,
+      "no_campaign_handoff_created": true,
+      "actual_stock_campaign_handoff_sha256": "d14bea292474e62bb6e1e7a5f4938cdfa121b5bcca3003d693c9a31d5d703b50",
+      "stock_execution": "mocked only; exact handed-off bytes compared",
+      "native_entry": "inert fixture; real export lookup and campaign preparation",
+      "game_or_Steam_started": false,
+      "Deck_validation": false
+    },
+    "russian_retest_byte_exact": true,
+    "language_helper_unchanged": true,
+    "live_gameplay_verified": false
+  },
+  "last_alliance": {
+    "revision": 139,
+    "unchanged_packs": 9,
+    "original_archive_md5": "8b6e84c7516f2d6b8a2358a6f63b7abf",
+    "frontend_and_campaign_roots": [
+      "frontend\tok\t255b305cefb24a68cf6d2fc79d07efad7c0252acfd98ecd3ad10fa55c959cae8",
+      "campaign\tok\td14bea292474e62bb6e1e7a5f4938cdfa121b5bcca3003d693c9a31d5d703b50"
+    ],
+    "case_only_duplicate_texture_payloads_match": 3,
+    "duplicate_protected_cases": 3,
+    "owner_reported_played_with_all_nine_on_deck": true,
+    "context": "Revision 142 retains the reader fix. The three duplicate texture pairs were independently rechecked in the original models pack."
+  },
+  "earlier_owner_reports": {
+    "revision_140_morning_sun_3_0": "Campaign loaded on PC.",
+    "revision_140_weierstrass_units_for_vanilla": "A custom unit could be possessed and its portrait appeared."
+  },
+  "localization": {
+    "offline_resource_checks": [
+      "Czech",
+      "English",
+      "French",
+      "German",
+      "Italian",
+      "Polish",
+      "Russian",
+      "Spanish"
+    ],
+    "non_english_gameplay_verified": false,
+    "hud_translated": false
+  },
+  "revision_142_deck_r3_live_verified": false
+}

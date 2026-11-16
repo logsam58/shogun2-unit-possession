@@ -19,7 +19,7 @@ class FormationPad {
         uintptr_t object{}, table{};
         unsigned id{};
         bool group{};
-        float x{}, z{}, move_x{}, move_z{};
+        float x{}, y{}, z{}, move_x{}, move_z{};
         uint16_t facing{};
     };
     struct Destination { terrain224::Point point{}; uint16_t facing{}; };
@@ -185,8 +185,9 @@ class FormationPad {
                 member.group?pose:pose+0x10,world);
         } __except(EXCEPTION_EXECUTE_HANDLER) { return false; }
         member.x=world[0];
+        member.y=world[1];
         member.z=world[2];
-        return std::isfinite(member.x)&&std::isfinite(member.z)&&
+        return std::isfinite(member.x)&&std::isfinite(member.y)&&std::isfinite(member.z)&&
             std::fabs(member.x)<=100000.f&&std::fabs(member.z)<=100000.f;
     }
     uintptr_t terrain_manager() const {

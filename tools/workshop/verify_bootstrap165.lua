@@ -30,6 +30,50 @@ for i=1,2 do
     local actual=run(wrapper_path)
     for k,v in pairs(original)do assert(actual[k]==v,"Callback differs: "..k)end
 end
+-- Win32 delete-on-close can deny new opens while the native guard lives.
+-- Rename reports ENOENT only after the bridge has retired its own handoff.
+local function assert_gone(path)
+    local ok,_,code=os.rename(path,path..".probe")
+    if ok then os.rename(path..".probe",path)end
+    assert(not ok and code==2,"Frontend left a protected handoff on disk")
+end
+local function failure_case(mode)
+    local env,count=env165()
+    local handoff,checked
+    env.package.loadlib=function(path,symbol)
+        handoff=path..".root.luac"
+        return package.loadlib(path,symbol)
+    end
+    if mode=="callback" then
+        env.system.ClearRequiredFiles=function()
+            count.clear=count.clear+1
+            assert_gone(assert(handoff))
+            checked=true
+            error("Fixture stock callback failed")
+        end
+    else
+        env.io=setmetatable({open=function(path,flags)
+            if path==handoff then
+                if mode=="open" then return nil end
+                return {read=function()error("Fixture read failed")end,
+                        close=function()checked=true end}
+            end
+            if path=="data/data.pack" then
+                return io.open(assert(os.getenv("S2UP165_FIXTURE_GAME")).."/data/data.pack",flags)
+            end
+            return io.open(path,flags)
+        end},{__index=io})
+    end
+    local chunk=assert(loadfile(wrapper_path))
+    setfenv(chunk,env)
+    chunk()
+    assert(count.clear==1,"Stock menu did not run exactly once")
+    if mode~="open" then assert(checked,"Frontend did not clean up before stock entry or fallback")end
+    assert_gone(assert(handoff))
+end
+for _,mode in ipairs({"callback","open","read"})do failure_case(mode)end
+print("PASS frontend handoff released before original callback and after open/read errors")
+
 -- The production DLL must refuse this standalone Lua host without a worker.
 local prod=assert(arg[3]);local prepare=assert(package.loadlib(prod,"s2up_workshop_prepare165"))
 assert(prepare(true)==nil,"Production bridge accepted non-game host")

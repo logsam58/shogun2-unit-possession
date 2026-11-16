@@ -14,6 +14,20 @@ using ChooseAnimation=unsigned(__thiscall*)(void*,const float*);
 using ReleaseTime=float(__thiscall*)(void*,unsigned,unsigned);
 using WeaponOrigin=void*(__thiscall*)(void*,float*,unsigned,unsigned);
 static PlayAnimation original_play;
+struct CheerClip {
+    unsigned lease;
+    uintptr_t rider, motion, clip;
+    unsigned id;
+};
+static CheerClip cheer_clip;
+static ClimbRequest199 cheer_request;
+static bool cheer_active(uintptr_t actor){
+    return enabled&&state&&!state->stop&&!state->release&&state->mode==POSSESSED&&
+        possession_lease.active&&cheer_clip.lease==possession_lease.generation&&
+        cheer_clip.rider==possessed&&(actor==cheer_clip.rider||actor==cheer_clip.motion)&&
+        cheer_clip.clip&&field<uintptr_t>(cheer_clip.rider,0x474)==cheer_clip.clip&&
+        field<unsigned>(cheer_clip.rider,0x1d4)==cheer_clip.id;
+}
 static ChangeState original_change;
 static RangedAction original_draw,original_native_release;
 static RangedAction original_reload_tick;
@@ -341,6 +355,17 @@ static bool __fastcall weapon_animation_events_hook(void* actor,void*,void* clip
         // This native routine adds the frame's root motion to actor intent.
         // A held frame must not add that displacement again on each update.
         InterlockedIncrement(&mounted_root_skips);return false;
+    }
+    const auto subject=reinterpret_cast<uintptr_t>(actor);
+    if(subject==cheer_clip.rider&&reinterpret_cast<uintptr_t>(clip)==cheer_clip.clip&&cheer_active(subject)){
+        // 3f03d0 accumulates translation and heading in native motion intent.
+        // Let it process the frame, then remove only this clip's movement.
+        const float x=field<float>(subject,0xd8),y=field<float>(subject,0xdc),z=field<float>(subject,0xe0);
+        const auto turn=field<unsigned short>(subject,0xe4);
+        const bool accepted=original_animation_events(actor,clip,frame);
+        field<float>(subject,0xd8)=x;field<float>(subject,0xdc)=y;field<float>(subject,0xe0)=z;
+        field<unsigned short>(subject,0xe4)=turn;
+        return accepted;
     }
     return original_animation_events(actor,clip,frame);
 }

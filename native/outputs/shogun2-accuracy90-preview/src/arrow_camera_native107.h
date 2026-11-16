@@ -51,10 +51,27 @@ static ArrowSample122 read_arrow_flight107(const arrowcam107::Shot& shot,arrowca
     }__except(EXCEPTION_EXECUTE_HANDLER){}
     return ArrowSample122::Unreadable;
 }
+static void end_deck_arrow_watch107(){
+    if(InterlockedExchange(&deck_arrow_watch107,0)&&!arrow_watch107)equipment_arrow_camera123(false);
+}
+static bool begin_deck_arrow_watch107(){
+    if(dead_view()||commander76::pc_wheel||command_placing100||charge_input_locked146())return false;
+    if(!(bow_family142==1&&state->aiming)){
+        const auto shot=arrow_shot107();
+        if(!arrowcam107::eligible(shot,state->lease_generation,GetTickCount64()))return false;
+        arrowcam107::Flight live{};
+        unsigned slot=arrowcam107::no_projectile;
+        const auto sample=read_arrow_flight107(shot,live,slot);
+        if(sample!=ArrowSample122::Flying&&sample!=ArrowSample122::Impact)return false;
+    }
+    orbit_button154(false);
+    InterlockedExchange(&deck_arrow_watch107,1);
+    return true;
+}
 static bool apply_arrow_view107(uintptr_t camera){
     static thread_local arrowcam107::Presentation presentation;
     static thread_local unsigned slot=arrowcam107::no_projectile;
-    if(!arrow_watch107||!input_window||GetForegroundWindow()!=input_window||
+    if((!arrow_watch107&&!deck_arrow_watch107)||!input_window||GetForegroundWindow()!=input_window||
        GetCurrentThreadId()!=state->window_thread||state->release||state->stop||dead_view()||
        native_modal214()||commander76::pc_wheel||command_placing100||!camera_owned(camera)){
         presentation={};return false;
@@ -74,7 +91,10 @@ static bool apply_arrow_view107(uintptr_t camera){
     const bool ended=sample==ArrowSample122::Missing||sample==ArrowSample122::Impact;
     using Clock=std::chrono::steady_clock;
     const double sample_time=std::chrono::duration<double,std::milli>(Clock::now().time_since_epoch()).count();
-    if(!presentation.update(shot,sample_time,observed?&live:nullptr,ended))return false;
+    if(!presentation.update(shot,sample_time,observed?&live:nullptr,ended)){
+        if(presentation.landed)end_deck_arrow_watch107();
+        return false;
+    }
     __try {
         float eye[3]{},target[3]{},up[3]{};
         if(!arrowcam107::chase(presentation.flight,eye,target))return false;

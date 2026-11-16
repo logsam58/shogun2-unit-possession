@@ -1,0 +1,45 @@
+{
+  "workshop_baseline": 150,
+  "workshop_source_commit": "15ab1c1b677c74011d39bfad0e4a8a8e07fac1d8",
+  "experiments": {
+    "naval": {
+      "baseline": 129,
+      "prior_gameplay": "PC single-player sailor movement aboard a moving ship and repeated return to duty"
+    },
+    "remote_play": {
+      "baseline": 132,
+      "prior_gameplay": "Owner verified 1280 x 800 rendering on the streamed Deck. Windows host selects the Deck profile when Steam forwards the Deck controller at launch."
+    },
+    "native_replay": {
+      "baseline": 148,
+      "scope": "Single-player infantry and officer movement, gait and formation changes with normal F9 or Caps Lock. Use the same Testing build to record and watch."
+    }
+  },
+  "offline_checks": {
+    "components": [
+      "local-assets-extractor",
+      "local-assets-prepare",
+      "local-assets-format-render-tests",
+      "minhook",
+      "adapter",
+      "qte",
+      "hud"
+    ],
+    "workshop_pack_checks": 20,
+    "campaign_entry_cases": 8,
+    "campaign_stock_and_mod_selection_cases": 5,
+    "campaign_pack_reader_cases": 30,
+    "private_pack_readback": true,
+    "naval": "Native task, control and camera fixtures on both supported engines",
+    "remote_play": "Steam device selection, controller reconnect, profile and display sizing fixtures",
+    "replay": "Carrier and runtime fixtures and two-soldier parity with native squad changes and pre-movement idle release",
+    "land": "Movement, selection, native orders, mounted camera, charge and animation ownership fixtures"
+  },
+  "private_build": {
+    "pack": "shogun2_unit_possession_testing_branch.pack",
+    "pack_sha256": "80e95776898368f9d473414d788b4ae56d92f21194bb94711a728f44efb2fba8",
+    "pack_bytes": 4768701,
+    "native_sha256": "128d1fb1322448abc19bd09b2ddd0b766fdd9f2fc549986ad20b354c7983da38"
+  },
+  "combined_in_game_validation": false
+}

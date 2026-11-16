@@ -12,7 +12,8 @@ struct FakeHost:Host {
     void cancel_owned(const Identity& i)override{if(current(i))events.push_back({'C'});}
     bool pointer(Vec2 v)override{events.push_back({'P',v});return !reject_pointer;}
     bool select(bool down,bool modifier)override{events.push_back({down?'D':'U',{},0,0,0,0,modifier});if(down&&retire_after_press)alive=false;return down||!reject_release;}
-    bool order(unsigned phase,bool)override{events.push_back({phase==0?'B':phase==1?'V':'E'});return phase!=2||!reject_commit;}
+    bool order(unsigned phase,bool,bool)override{events.push_back({phase==0?'B':phase==1?'V':'E'});return phase!=2||!reject_commit;}
+    bool centered_drag(unsigned phase,float spread)override{events.push_back({phase==0?'L':phase==1?'W':'F',{spread,0}});return phase!=2||!reject_commit;}
     bool halt()override{events.push_back({'H'});return true;}
     bool camera(Vec2 pan,float rotate,float zoom,float pitch,float dt)override{events.push_back({'M',pan,rotate,zoom,pitch,dt});return true;}
     unsigned count(char kind)const{unsigned n=0;for(auto e:events)if(e.kind==kind)++n;return n;}
@@ -63,5 +64,34 @@ int main(){
     TEST("failed native selection release cancels the owned gesture",{Exercise x;x.feed();x.feed(bit(Button::RightPadClick));x.host.reject_release=true;x.feed();assert(x.r.rejected&&x.host.count('C')==1);});
     TEST("failed native confirm release cancels the owned gesture",{Exercise x;x.feed();x.host.reject_release=true;x.feed(bit(Button::A));assert(x.r.rejected&&x.host.count('C')==1);});
     TEST("failed native order commit cancels without reporting success",{Exercise x;x.feed();x.feed(0,{},1);x.host.reject_commit=true;x.feed();assert(x.r.rejected&&!x.r.committed&&x.host.count('C')==1);});
+    {
+        const auto both=bit(Button::LeftPadClick)|bit(Button::RightPadClick);
+        for(float direction:{-1.f,1.f}){
+            Exercise x;Config config;config.community_rts=true;x.r.configure(config);
+            deck216::FinePad pad;
+            auto feed=[&](uint64_t buttons,float travel,float lt=0,float rt=0){
+                x.now+=8000;auto p=proof(x.host);auto f=frame(x.now,++x.sequence);
+                f.buttons=buttons;f.left_pad.x=-travel;f.right_pad.x=travel;
+                f.left_trigger=lt;f.right_trigger=rt;
+                x.r.begin(p,x.host,x.now);x.r.sample(f,p,x.host,x.now,pad.sample(f,x.now));
+            };
+            feed(0,0);feed(both,0);assert(x.host.events.empty());
+            feed(both,direction*.34f,1,1);feed(both,direction*.60f,1,1);
+            feed(bit(Button::LeftPadClick),0,1,1);feed(0,0,1,1);
+            assert(x.host.events.size()==3&&x.host.events[0].kind=='L'&&
+                   x.host.events[1].kind=='W'&&x.host.events[1].value.x==direction&&
+                   x.host.events[2].kind=='F'&&x.host.events[2].value.x==direction&&x.r.committed==1);
+            feed(0,0);feed(both,0);feed(both,direction*.60f);
+            x.r.reset(x.host);
+            assert(x.host.count('C')==1&&x.host.count('F')==1);
+            pad.reset();
+            feed(0,0);feed(both,0);feed(both,direction*.60f);
+            feed(both,0);feed(0,0);
+            assert(x.host.count('C')==2&&x.host.count('F')==1);
+            feed(0,0,1);feed(0,0);
+            assert(x.host.count('B')==1&&x.host.count('E')==1);
+        }
+        std::cout<<"PASS native Alt drag routing: spread, pinch, single placement, cancellation and ordinary LT\n";
+    }
     std::cout<<"PASS "<<passed<<" RTS175 policy/queue checks; engine and hardware not exercised\n";
 }

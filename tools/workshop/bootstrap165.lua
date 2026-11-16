@@ -103,14 +103,23 @@ local function initialize165()
     payload=nil
     local prepare,why=package.loadlib(path,"s2up_workshop_prepare165");assert(type(prepare)=="function",why)
     local start,reason=package.loadlib(path,"s2up_workshop_start165");assert(type(start)=="function",reason)
+    local close_root=assert(package.loadlib(path,"s2up_workshop_close_root165"))
     error_reporter167=package.loadlib(path,"s2up_workshop_error167")
     -- Each entry checks exactly one argument, then returns that existing value
     -- on success; no Lua stack writes or engine object calls are needed.
     assert(prepare(true),"Owned root preparation failed")
     -- Native guard owns this temporary file. D shares delete access; this mode
     -- is verified in the supported engine CRT and the matching float Lua host.
-    local f=assert(io.open(path..".root.luac","rbD"),"Prepared UI root unavailable")
-    local original=f:read(262145);f:close();assert(original and #original>0 and #original<=262144,"Prepared UI root exceeds bound")
+    local ok,original=pcall(function()
+        local f=assert(io.open(path..".root.luac","rbD"),"Prepared UI root unavailable")
+        local read,bytes=pcall(function()return f:read(262145)end)
+        f:close()
+        assert(read,bytes)
+        assert(bytes and #bytes>0 and #bytes<=262144,"Prepared UI root exceeds bound")
+        return bytes
+    end)
+    assert(close_root(true),"Owned root cleanup failed")
+    assert(ok,original)
     run_stock167(original)
 
     do

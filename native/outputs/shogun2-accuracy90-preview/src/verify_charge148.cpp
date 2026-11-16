@@ -22,6 +22,10 @@ static void __fastcall unused_path148(void*,void*,const void*,const void*){}
 static void __fastcall unused_direct148(void*,void*,const void*,float,unsigned){}
 static void __fastcall unused_point148(void*,void*){}
 static float __fastcall alignment_speed149(void*,void*,unsigned){return 2.f;}
+static void __fastcall omit_pose_notification(void*,void*,unsigned){}
+static unsigned __fastcall fixture_has_alignment(void*,void*){return 1;}
+static unsigned __fastcall fixture_pair_clock(void*,void*){return 0;}
+static unsigned __fastcall fixture_pair_class(void*,void*,void*){return 0;}
 static void* __fastcall contact_words148(void*,void*,unsigned bytes,unsigned){return words147((bytes+3)/4,0);}
 static unsigned native_bits148[8]{};
 static LONG CALLBACK first_fault148(EXCEPTION_POINTERS* e){
@@ -50,6 +54,7 @@ int main(){SetUnhandledExceptionFilter(&fault147);try{
     f.jump(0x3df290,reinterpret_cast<void*>(&unused_path148));f.jump(0x3de710,reinterpret_cast<void*>(&unused_direct148));f.jump(0x370b40,reinterpret_cast<void*>(&unused_point148));
     f.jump(0x3ddc60,reinterpret_cast<void*>(&contact_words148));
     f.jump(0x18b470,reinterpret_cast<void*>(&alignment_speed149)); // Native unit walk pace is the explicit alignment provider.
+    f.jump(0x37dd90,reinterpret_cast<void*>(&omit_pose_notification));
     VirtualProtect(f.image,0x1580000,old,&old);FlushInstructionCache(GetCurrentProcess(),f.image,0x1580000);
     using Factory=uintptr_t(__thiscall*)(void*,unsigned);
     auto formation=reinterpret_cast<Factory>(base+0x166d60)(reinterpret_cast<void*>(unit),0);field<uintptr_t>(unit,0xb9c)=formation;
@@ -113,7 +118,20 @@ int main(){SetUnhandledExceptionFilter(&fault147);try{
     auto cached_blocks=blocks147.size();
     for(unsigned i=0;i<100;++i){charge_probe_tick148=0;charge_boundary146(unit,false);require(!charge_input_locked146(),"Repeated rejected scene created a charge");}
     require(blocks147.size()==cached_blocks,"Repeated native perception accumulated live allocations");
-    state->follow=1;blocked_scene148=false;charge_probe_tick148=0;charge_boundary146(unit,false);require(state->follow==1,"Personal charge cancelled Follow Me");
+    state->follow=1;blocked_scene148=false;charge_probe_tick148=0;
+    ChargeHold199 hold;
+    const auto pressed=charge_intent199(FORWARD|RUN,true,false,true);
+    const unsigned generation=possession_lease.generation;
+    const auto publish=[&](unsigned input,unsigned lease,uint64_t tick){charge_physical_input148=hold.sample(input,lease,tick);charge_boundary146(unit,false);};
+    publish(pressed,generation,1000);publish(pressed,generation,1090);publish(FORWARD|RUN,generation,1100);
+    require(!charge_input_locked146(),"A tap armed a charge after release");
+    publish(pressed,generation,1200);publish(pressed,generation+1,1350);
+    require(!charge_input_locked146(),"An older possession lease contributed to a hold");
+    publish(0,generation,1360);publish(pressed,generation,1400);publish(pressed,generation,1549);
+    require(!charge_input_locked146(),"Charge started before the hold threshold");
+    publish(pressed,generation,1550);
+    require(charge_input_locked146()&&state->follow==1,"Held attack did not start native charge or altered Follow Me");
+    std::cout<<"PASS: an attack tap never arms a charge; current sprint plus held attack starts it.\n";
     if(!charge_input_locked146()||!charge_native_task146(actor))std::cerr<<"Start stage cells="<<cell_calls148<<" candidates="<<charge_candidates148<<" eligible="<<charge_eligibility148<<" starts="<<charge_starts139<<" returns="<<charge_returns146<<" errors="<<charge_errors139<<" reject="<<charge_reject148<<" target="<<charge_control146.proof.target<<" task="<<std::hex<<field<uintptr_t>(actor,0x250)-base<<" present="<<unsigned(field<unsigned char>(actor,0x2e8))<<" done="<<unsigned(field<unsigned char>(actor,0x258))<<std::dec<<"\n";
     require(charge_input_locked146()&&charge_native_task146(actor)&&field<uintptr_t>(actor+0x250,0x1c)==enemies[0],"Native perception/eligibility did not choose nearest valid forward enemy");
     require(charge_control146.squad==ip&&field<uintptr_t>(actor,0x3b4)==ip&&field<uintptr_t>(actor+0x250,0x20)==eu&&!field<unsigned>(unit,0x9ec),"Personal charge depended on whole-unit order or rejoined distant formation");
@@ -127,12 +145,15 @@ int main(){SetUnhandledExceptionFilter(&fault147);try{
     require(charge_contacts148==1&&field<unsigned>(controller,0x14)==1,"Charge pose wait blocked an incoming native attack/defence");
     reinterpret_cast<UnitTick130>(base+0x3e6d50)(reinterpret_cast<void*>(actor+0x250));
     field<float>(actor,0x1ac)=5;field<float>(actor,0x150)=1;
-    reinterpret_cast<UnitTick130>(base+0x3dd9d0)(reinterpret_cast<void*>(actor));
-    require(field<unsigned>(actor,0x244)==2&&field<unsigned>(actor,0x1d0)==16,"Original entry/motion did not classify a real charge");
+    require(field<unsigned>(actor,0x244)==2&&field<unsigned>(actor,0x1d0)!=16,
+        "Native task did not expose the charge gait before pose publication");
     reinterpret_cast<ChargeContact148>(base+0x3c0bd0)(reinterpret_cast<void*>(controller),actor,enemies[1]);
     require(field<unsigned>(controller,0x14)==1,"An unrelated outgoing contact stole the selected charge");
     reinterpret_cast<ChargeContact148>(base+0x3c0bd0)(reinterpret_cast<void*>(controller),actor,enemies[0]);
-    require(charge_contacts148==2&&charge_control146.queued&&field<unsigned>(controller,0x14)==2,"Original incoming/outgoing contact queue did not establish handoff");
+    require(field<unsigned>(actor,0x1d0)==16&&charge_pose_wait149==1&&charge_contacts148==2&&
+        charge_control146.queued&&field<unsigned>(controller,0x14)==2,
+        "Qualified first charge contact was lost before native pose publication");
+    std::cout<<"PASS: qualified first charge contact resolved the pending native gait and queued in the same call.\n";
     field<unsigned char>(actor,0x258)=1;charge_boundary146(unit,true);require(charge_input_locked146(),"Charge task completion lost queued native encounter to QTE");
     field<unsigned>(P::ptr(f.common),0x50)=103;charge_boundary146(unit,true);require(!charge_input_locked146(),"Processed/expired contact kept charge control forever");
     charge_probe_tick148=0;charge_boundary146(unit,false);require(charge_input_locked146(),"Fresh charge after expired queue did not start");
@@ -169,10 +190,68 @@ int main(){SetUnhandledExceptionFilter(&fault147);try{
         "Charge alignment stepped through its native endpoint");
     charge_boundary146(unit,true);require(charge_pose_entries149>=1&&charge_pair_plan149==16,"Actual native charge classification/plan observation missing");
     std::cout<<"PASS charge pace72: native selected target, charge-rate alignment, ordinary fallback, and no overshoot.\n";
+    // Run stock 3f59e0 with fixture pose permission and witness callbacks.
+    // The acceleration, bearing and movement-intent writer are original.
+    uintptr_t witness_ports[7]{};
+    witness_ports[0]=witness_ports[6]=reinterpret_cast<uintptr_t>(&fixture_pair_clock);
+    witness_ports[1]=reinterpret_cast<uintptr_t>(&fixture_pair_class);
+    field<uintptr_t>(w149,0)=reinterpret_cast<uintptr_t>(witness_ports);
+    auto& admit=field<uintptr_t>(base+0x15dfec8,0x11c);
+    const auto stock_admit=admit;admit=reinterpret_cast<uintptr_t>(&fixture_has_alignment);
+    auto native_steer=reinterpret_cast<UnitTick130>(base+0x3f59e0);
+    for(unsigned media:{0x98u,0xb4u}){
+        field<uintptr_t>(w149,0x98)=field<uintptr_t>(w149,0xb4)=0;
+        field<uintptr_t>(w149,media)=P::ptr(pair149)+0x160;
+        field<unsigned>(w149,0x5c)=media==0x98?16:0;
+        for(auto participant:{actor,enemies[0]}){
+            field<unsigned char>(participant,0x198)=0;
+            field<uintptr_t>(participant,0x20c)=P::ptr(f.config);
+            field<float>(participant,0xd8)=field<float>(participant,0xe0)=0.f;
+            field<float>(participant,0x8c)=0.f;field<float>(participant,0x94)=3.f;
+            field<float>(participant,0x69c)=field<float>(participant,0x48)+1.f;
+            field<float>(participant,0x6a4)=field<float>(participant,0x50)+2.f;
+            field<float>(participant,0x6ac)=4.f;field<float>(participant,0x6b0)=2.f;
+            field<float>(participant,0x6b4)=1.f;field<unsigned>(participant,0x6b8)=0x10000;
+            native_steer(reinterpret_cast<void*>(participant));
+            require(field<unsigned char>(participant,0x198)==1&&field<float>(participant,0xD8)>0.f,
+                "Original charge alignment did not generate a fresh native step");
+            const auto& bytes=participant==actor?f.actor:enemy;
+            const auto before_native=bytes;
+            require(!prepare(participant)&&bytes==before_native,
+                "Possession overwrote the stock registered charge step");
+        }
+    }
+    admit=stock_admit;
+    field<uintptr_t>(w149,0x98)=field<uintptr_t>(w149,0xb4)=0;
+    std::cout<<"PASS: original 3f59e0 paired and fallback charge alignment retained for both participants.\n";
     field<unsigned char>(w149,0xd1)=1;field<float>(actor,0xd8)=7;state->heartbeat=GetTickCount64();require(!prepare(actor)&&field<float>(actor,0xd8)==7,"Native charge playback received an alignment override");
     melee60::Request off149;PossessionMeleeCommitment63(&off149);melee_handoff78.reset();melee_opponent_motion78.reset();field<uintptr_t>(actor,0x688)=field<uintptr_t>(enemies[0],0x688)=0;
     charge_boundary146(unit,true);require(!charge_input_locked146(),"Finished native pair kept charge control forever");
     charge_physical_input148=0;
+    // Start outside the native animation matchup. Reuse the actual formation
+    // scheduler on a peer and verify the player gets an independent native task.
+    field<unsigned>(actor,0x1f0)=0;field<unsigned>(actor,0x1d0)=0;
+    field<float>(actor,0x94)=5;field<float>(actor,0x48)=field<float>(actor,0x50)=0;
+    field<float>(enemies[0],0x48)=field<float>(enemies[1],0x48)=0;
+    field<float>(enemies[0],0x50)=36;field<float>(enemies[1],0x50)=42;
+    charge_physical_input148=pressed;charge_probe_tick148=0;
+    charge_boundary146(unit,false);require(!charge_input_locked146(),"Long-range trigger had no native formation charge assignment");
+    std::array<unsigned char,0xa0> peer_parent{};
+    field<uintptr_t>(peer,0x2f0)=peer;
+    field<uintptr_t>(peer,0x2f4)=reinterpret_cast<uintptr_t>(peer_parent.data());
+    peer_parent[0x9c]=1;
+    ChargeIntent139 assigned{enemies[1],eu,0,1,0,0,{}};
+    reinterpret_cast<ChargeScheduled148>(base+0x3dacf0)(reinterpret_cast<void*>(peer),&assigned);
+    require(charge_formation147(peer,true),"Native peer formation task was not scheduled");
+    charge_probe_tick148=0;charge_boundary146(unit,false);
+    require(charge_input_locked146()&&charge_native_task146(actor)&&field<uintptr_t>(actor+0x250,0x1c)==enemies[0],
+        "Native formation charge outside 12m failed to assign the player's own closest facing opponent");
+    require(charge_formation147(peer,true)&&field<uintptr_t>(peer+0x2f8,0x20)==enemies[1],"Personal charge modified the peer task");
+    field<unsigned char>(actor,0x258)=1;charge_boundary146(unit,true);
+    reinterpret_cast<UnitTick130>(base+0x3ca8f0)(reinterpret_cast<void*>(peer+0x2f0));
+    field<float>(enemies[0],0x50)=8;field<float>(enemies[1],0x50)=10;
+    charge_physical_input148=0;
+    std::cout<<"PASS: native formation assignment starts a separate personal charge 36m away, before animation matching.\n";
     // Current native target death/removal does not manufacture a replacement.
     field<unsigned char>(enemies[0],0xf0)=0;field<unsigned char>(enemies[1],0xf0)=0;charge_probe_tick148=0;charge_physical_input148=charge_intent199(FORWARD|RUN,true,false,true);charge_boundary146(unit,false);require(!charge_input_locked146(),"No valid forward enemy still created a charge");
     charge_physical_input148=0;

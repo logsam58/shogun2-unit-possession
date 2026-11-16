@@ -123,6 +123,11 @@ static void match_formation_run91(uintptr_t actor,unsigned input,Intent directio
     }__except(EXCEPTION_EXECUTE_HANDLER){}
 }
 
+static void replay_record_motion147(uintptr_t actor,float x,float z,uint16_t facing);
+static void apply_native_intent147(uintptr_t actor,float x,float z,uint16_t facing){
+    const float target[2]={x,z};
+    reinterpret_cast<NativeIntent>(base+0x3936f0)(reinterpret_cast<void*>(actor),target,facing);
+}
 static bool issue_native_intent(uintptr_t actor,const Intent& intent,unsigned bearing){
     float x=field<float>(actor,0x48),z=field<float>(actor,0x50);
     float target[2]={x+intent.x,z+intent.z};
@@ -137,5 +142,7 @@ static bool issue_native_intent(uintptr_t actor,const Intent& intent,unsigned be
     state->native_intent_x=field<float>(actor,0xd8);state->native_intent_z=field<float>(actor,0xe0);
     if(state->native_intent_flag!=1||!std::isfinite(state->native_intent_magnitude)||
         !std::isfinite(state->native_intent_x)||!std::isfinite(state->native_intent_z))return false;
-    ++state->native_intent_calls;return true;
+    ++state->native_intent_calls;
+    replay_record_motion147(actor,target[0],target[1],static_cast<uint16_t>(heading));
+    return true;
 }

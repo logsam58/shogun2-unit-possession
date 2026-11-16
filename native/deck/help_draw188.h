@@ -74,7 +74,7 @@ inline HelpPage help_page188(deck174::Context mode,unsigned page){
   S(unsigned(B::Left),L"D-pad left",L"Tap to select group 3. Hold to assign."),
   S(unsigned(B::Right),L"D-pad right",L"Tap to select group 4. Hold to assign."),
   S(24,L"Press L2 twice",L"Run to a spot or charge an enemy"),
-  E(View,L"Tap to hide or show the battle UI"),
+  S(24,L"L3 + LT",L"Drag with right pad to keep formation."),
  };
  static const HelpEntry possession[]={
   S(26,L"Left stick",L"Move your soldier"),
@@ -86,7 +86,7 @@ inline HelpPage help_page188(deck174::Context mode,unsigned page){
   E(Y,L"Go back to commanding the army"),
   E(A,L"Climb a wall when prompted"),
   E(X,L"Switch your unit's weapon mode"),
-  E(R3,L"Hold to switch camera views"),
+  E(R3,L"Hold to follow an arrow or switch views"),
   S(29,L"Right trackpad",L"Look around"),
   E(Menu,L"Open the pause menu"),
  };
@@ -95,7 +95,7 @@ inline HelpPage help_page188(deck174::Context mode,unsigned page){
   S(unsigned(B::L1),L"Press L1 twice",L"Tell your unit to run or charge"),
   E(R1,L"Hold for orders. A: Commander. RT: assign."),
   E(R5,L"Pause or resume the battle"),
-  E(R4,L"Switch slow motion on or off"),
+  E(R4,L"Cycle slow motion, pause and play"),
   E(View,L"Tap to change what's shown on screen"),
   S(unsigned(B::Up),L"D-pad up",L"Choose an ability or special ammo"),
   S(unsigned(B::Down),L"D-pad down",L"Use your choice or end an active ability"),
@@ -133,10 +133,10 @@ template<class Glyph,class Text>bool draw_help188(Gdiplus::Graphics& g,deck174::
  }else if(mode==deck174::Context::RTS){
   if(page){
    tip=L"Tap a D-pad direction to select its group. Hold the direction to assign selected troops.";
-   extra=L"Hold both pad clicks. Slide thumbs apart to widen or together to narrow. Release to confirm.";
+   extra=L"Hold both pad clicks and spread or pinch to resize the selected formation in place. Release to confirm.";
   }else{
    tip=L"Select one of your units and press Y to play as a soldier. Press R2 twice on a unit to jump the camera to it.";
-   extra=L"Hold the right trackpad click for formations and range. Press B to cancel placement or clear selection.";
+   extra=L"Hold the right pad click for formations and range. Tap View to toggle the HUD. B cancels or clears selection.";
   }
  }else if(mode==deck174::Context::Possession){
   if(page){

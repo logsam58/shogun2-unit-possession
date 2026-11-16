@@ -11,6 +11,11 @@ static INIT_ONCE host_once165=INIT_ONCE_STATIC_INIT,start_once165=INIT_ONCE_STAT
 static std::wstring game165;
 static HANDLE root_guard165=INVALID_HANDLE_VALUE;
 static bool prepared165=false;
+static void close_root165(){
+    if(root_guard165==INVALID_HANDLE_VALUE)return;
+    CloseHandle(root_guard165);
+    root_guard165=INVALID_HANDLE_VALUE;
+}
 static SRWLOCK state_lock165=SRWLOCK_INIT;
 struct StateGuard165 {StateGuard165(){AcquireSRWLockExclusive(&state_lock165);}~StateGuard165(){ReleaseSRWLockExclusive(&state_lock165);}};
 using LuaGetTop165=int(__cdecl*)(void*);
@@ -51,6 +56,17 @@ static BOOL CALLBACK bind165(PINIT_ONCE,void*,void**){try{
 #endif
 }catch(const std::exception& error){get_top165=nullptr;failure165(error.what());}return TRUE;}
 static bool caller165(void* state){InitOnceExecuteOnce(&host_once165,bind165,nullptr,nullptr);return get_top165&&get_top165(state)==1;}
+static std::wstring read_mod_selection165(){
+#ifdef S2UP165_LUA_FIXTURE
+    // Offline fixtures choose their own manifest even when using installed game data.
+    wchar_t fixture[32768]{};
+    const DWORD size=GetEnvironmentVariableW(L"S2UP168_FIXTURE_SELECTION",fixture,32768);
+    require(size<32768,"Fixture mod selection path is too long");
+    return size?read_text(fixture):std::wstring{};
+#else
+    return read_text(game165+L"\\used_mods.txt");
+#endif
+}
 #include "../../native/deck/frontend181.h"
 extern "C" __declspec(dllexport) int __cdecl s2up_workshop_prepare165(void* state){StateGuard165 guard;try{
     if(!caller165(state))return 0;
@@ -63,16 +79,8 @@ extern "C" __declspec(dllexport) int __cdecl s2up_workshop_prepare165(void* stat
         deck85::install_tooltips(reinterpret_cast<uintptr_t>(GetModuleHandleW(L"Empire.Retail.dll")));
     }
 #endif
-    prepared165=false;if(root_guard165!=INVALID_HANDLE_VALUE){CloseHandle(root_guard165);root_guard165=INVALID_HANDLE_VALUE;}
-    auto selection_path168=game165+L"\\used_mods.txt";
-    std::wstring selection_text169;
-#ifdef S2UP165_LUA_FIXTURE
-    wchar_t selection_fixture168[32768]{};DWORD count168=GetEnvironmentVariableW(L"S2UP168_FIXTURE_SELECTION",selection_fixture168,32768);
-    if(count168&&count168<32768)selection_text169=read_text(selection_fixture168);
-#else
-    selection_text169=read_text(selection_path168);
-#endif
-    auto bytes=workshop168::selected_root(game165,selection_text169,hash_file(own165()));
+    prepared165=false;close_root165();
+    auto bytes=workshop168::selected_root(game165,read_mod_selection165(),hash_file(own165()));
     auto path=own165()+L".root.luac";
     root_guard165=workshop165::transient_root168(path,bytes);
     require(root_guard165!=INVALID_HANDLE_VALUE,"Cannot protect original root while Lua loads it");
@@ -83,7 +91,13 @@ extern "C" __declspec(dllexport) int __cdecl s2up_workshop_prepare165(void* stat
     // Sole Lua caller supplies true. Return that existing argument as one result;
     // lua_gettop checked the arity, no Lua internals/stack writes are performed.
     return 1;
-}catch(const std::exception& error){if(root_guard165!=INVALID_HANDLE_VALUE){CloseHandle(root_guard165);root_guard165=INVALID_HANDLE_VALUE;}failure165(error.what());return 0;}}
+}catch(const std::exception& error){close_root165();failure165(error.what());return 0;}}
+extern "C" __declspec(dllexport) int __cdecl s2up_workshop_close_root165(void* state){
+    StateGuard165 guard;
+    if(!caller165(state)||!prepared165)return 0;
+    close_root165();
+    return 1;
+}
 static BOOL CALLBACK begin165(PINIT_ONCE,void*,void**){
 #ifdef S2UP165_LUA_FIXTURE
     return TRUE; // Fixture must never load gameplay, hooks or a HUD.
@@ -95,7 +109,7 @@ static BOOL CALLBACK begin165(PINIT_ONCE,void*,void**){
 }
 extern "C" __declspec(dllexport) int __cdecl s2up_workshop_start165(void* state){StateGuard165 guard;try{
     if(!caller165(state)||!prepared165)return 0;
-    if(root_guard165!=INVALID_HANDLE_VALUE){CloseHandle(root_guard165);root_guard165=INVALID_HANDLE_VALUE;}
+    close_root165();
     if(!InitOnceExecuteOnce(&start_once165,begin165,nullptr,nullptr))return 0;
     auto stamp=process_stamp165();auto path=own165()+L".pid"+std::to_wstring(GetCurrentProcessId())+L".start"+stamp+L".json";
     std::string text="{\"schema\":1,\"test\":"+std::to_string(EMBEDDED_WORKSHOP_TEST)+",\"pid\":"+std::to_string(GetCurrentProcessId())+",\"process_start_filetime\":\""+std::string(stamp.begin(),stamp.end())+"\",\"native_entry\":true,\"local_original_script\":true,\"chooser\":false,"

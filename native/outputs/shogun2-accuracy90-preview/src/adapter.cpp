@@ -1,3 +1,4 @@
+#include <random>
 #include "identity.h"
 #include "../../../deck/channel181.h"
 #include "../../../deck/native214.h"
@@ -99,7 +100,7 @@ static WNDPROC native_window_proc;
 #include "melee_control.h"
 #include "equipment_input81.h"
 static void weapon_mouse143(UINT message,bool active);
-static volatile LONG arrow_watch107;
+static volatile LONG arrow_watch107,deck_arrow_watch107;
 static SRWLOCK arrow_shot_lock107=SRWLOCK_INIT;
 static arrowcam107::Shot latest_arrow107;
 static arrowcam107::Shot arrow_shot107(){
@@ -160,7 +161,8 @@ static bool speed_key214(HWND window,UINT message,WPARAM key,LPARAM flags){
         uintptr_t root{},table{},env{};
         if(native214::value(base+0x1bc8180,root)&&root&&native214::value(root,table)&&
            table==base+0x170d284&&native214::value(root+0x110,env)&&env==environment)
-            personal_speed214.apply(base,root,environment,key=='3');
+            personal_speed214.apply(base,root,environment,
+                key=='3'?native214::SpeedInput::PauseResume:native214::SpeedInput::SlowNormal);
     }
     return true;
 }
@@ -355,6 +357,25 @@ static void note_follow_release93(){
     __try{LONG flags=field<unsigned char>(possessed,0xf0)|(field<unsigned char>(possessed,0xa1)<<8)|(field<unsigned char>(possessed,0xa2)<<16)|(field<unsigned char>(possessed,0xa3)<<24);InterlockedExchange(&release_flags93,flags);}__except(EXCEPTION_EXECUTE_HANDLER){InterlockedExchange(&release_flags93,-1);}
 }
 // Called only on the game thread, immediately before its native motion integrator.
+static bool native_playing_pair(uintptr_t actor,uintptr_t env){
+    __try{
+        if(!actor)return false;
+        const auto pair=field<uintptr_t>(actor,0x688);
+        if(!pair||field<uintptr_t>(pair,4)!=env||field<unsigned char>(pair,0xc)!=1||
+           field<unsigned>(pair,0x38)!=2||field<unsigned char>(pair,0xd1)!=1)return false;
+        const auto one=field<uintptr_t>(pair,0x30),two=field<uintptr_t>(pair,0x34);
+        const auto other=actor==one?two:actor==two?one:0;
+        return other&&other!=actor&&field<uintptr_t>(other,0x28)==env&&field<uintptr_t>(other,0x688)==pair;
+    }__except(EXCEPTION_EXECUTE_HANDLER){return false;}
+}
+// Hover only chooses an actor. All camera entry paths use this admission.
+// A live native exchange can own recovery/grounding while the camera follows.
+static bool possession_camera_subject(uintptr_t actor,uintptr_t actor_unit,uintptr_t view,
+                                      uintptr_t env,bool committed,NativeSubject& motion){
+    if(native_subject(actor,actor_unit,view,committed,motion))return true;
+    return !committed&&native_subject(actor,actor_unit,view,true,motion)&&
+        (native_playing_pair(actor,env)||native_playing_pair(motion.actor,env));
+}
 static bool followed(uintptr_t actor,bool acquire,bool commit=true) {
     __try {
         if(!acquire&&dead_view())return death_context();
@@ -412,7 +433,7 @@ static bool followed(uintptr_t actor,bool acquire,bool commit=true) {
         PossessionIdentity candidate{env,common,phase,manager,cam,view,actor_holder,actor,actor_unit,
             field<uintptr_t>(actor,0x20c),field<unsigned>(actor,0x1c8),field<unsigned>(actor_unit,4)};
         if(!acquire&&commit&&camera_callback_depth&&GetCurrentThreadId()==state->window_thread)dismount_observe143(candidate);
-        NativeSubject motion;if(!native_subject(actor,actor_unit,view,committed,motion)){
+        NativeSubject motion;if(!possession_camera_subject(actor,actor_unit,view,env,committed,motion)){
             // During a proved native dismount, retain the SAME live human's
             // camera only. Every manual-motion/weapon path yields below.
             if(!acquire&&dismount_pending143(candidate))return true;
@@ -439,10 +460,6 @@ static bool followed(uintptr_t actor,bool acquire,bool commit=true) {
             return reject_follow93(29);
         }
         if(!candidate.config||!candidate.unit_id)return reject_follow93(25);
-        // Finish an already-playing stock exchange before taking its actor.
-        // Rewinding it would risk duplicating a casualty already committed.
-        uintptr_t existing=field<uintptr_t>(actor,0x688);
-        if(existing&&field<unsigned char>(existing,0xd1)!=0)return reject_follow93(26);
         if(!commit)return true;
         if(!possession_lease.acquire(candidate))return reject_follow93(27);
         environment=env;unit=actor_unit;state->actor_index=idx;state->unit_id=candidate.unit_id;
@@ -614,11 +631,23 @@ static bool apply_melee_motion(uintptr_t actor){
             if(!other_actor||!actor152::kind(base,field<uintptr_t>(other_actor,0),other_kind)||field<uintptr_t>(other_actor,0x688)!=witness)return true;
             auto other_unit=field<uintptr_t>(other_actor,0x214);if(!other_unit)return true;
             if(field<unsigned>(other_actor,0x1c8)!=(player?request.opponent:request.player)||field<unsigned>(other_unit,4)!=(player?request.opponent_unit:request.player_unit))return true;
-            // Read the targets registered by ORIGINAL preparation on this actor,
-            // rather than following formation orders or pulling the pair apart.
+            const auto attacker=player?actor:other_actor;
+            const auto defender=player?other_actor:actor;
+            const bool selected_charge=charge_input_locked146()&&charge_target_locked72(attacker,defender);
+            // Stock 3f59e0 writes the registered charge's motion via 3936f0
+            // before this integration boundary. 366a10 clears +198 at the
+            // end of the tick. Preserve both participants' prepared step,
+            // including native acceleration, bearing and collision response.
+            if(selected_charge&&field<uintptr_t>(witness,4)==environment&&
+               (field<uintptr_t>(witness,0x98)||field<uintptr_t>(witness,0xb4))&&
+               field<unsigned char>(actor,0x198)==1&&
+               std::isfinite(field<float>(actor,0x150))&&std::isfinite(field<float>(actor,0xd8))&&
+               std::isfinite(field<float>(actor,0xe0)))return true;
+            // Retain the current alignment fallback when no native step was
+            // prepared, and the existing path for ordinary melee and QTEs.
             float tx=field<float>(actor,0x69c),tz=field<float>(actor,0x6a4),distance=std::hypot(tx-x,tz-z);
             float speed=reinterpret_cast<UnitSpeed>(base+0x18b470)(reinterpret_cast<void*>(actor_unit),0);
-            if(charging&&charge_target_locked72(actor,other_actor)&&field<unsigned>(witness,0x78)==2){
+            if(charging&&selected_charge&&field<unsigned>(witness,0x78)==2){
                 for(unsigned i=0;i<2;++i){
                     // Native 3e5d40 uses plan 16 and config+2c for the
                     // attacking runner's approach to a registered encounter.
@@ -693,6 +722,12 @@ static void entry_failed(unsigned error){
     if(!possessed)InterlockedExchange(&state->mode,IDLE);
 }
 #include "camera_pick150.h"
+static unsigned random_soldier_index(unsigned count){
+    LARGE_INTEGER tick{};
+    QueryPerformanceCounter(&tick);
+    std::minstd_rand generator(static_cast<unsigned>(tick.QuadPart));
+    return std::uniform_int_distribution<unsigned>(0,count-1)(generator);
+}
 static void enter_selected_soldier(){
     if(!state||!camera_entry_live(enabled!=0,state->stop!=0,state->release!=0,
         GetTickCount64()-state->heartbeat,state->mode))return;
@@ -744,8 +779,11 @@ static void enter_selected_soldier(){
         unsigned count=field<unsigned>(view,0x18);
         uintptr_t array=field<uintptr_t>(view,0x1c);
         if(!array||!count||count>1000){entry_failed(10);return;}
-        auto center_actor150=camera_center_actor150(env,phase,camera);
-        bool live=false;Choice97 choice{};int choice_score98=-1;
+        const auto hover=camera_hover_actors150(env,phase,camera);
+        Choice97 exact{};
+        std::array<unsigned,1000> eligible{};
+        std::array<unsigned,18> nearby{}; // One human, or one human and one mount, per hit.
+        unsigned eligible_count=0,nearby_count=0;
         for(unsigned i=0;i<count;++i){
             uintptr_t holder=field<uintptr_t>(array,i*4),actor=holder?field<uintptr_t>(holder,8):0;
             // Validate the selected view by actor backlinks without indexing a
@@ -756,14 +794,22 @@ static void enter_selected_soldier(){
             // infantry actor may satisfy the candidate check below or the
             // post-construction followed() identity check.
             if(actor&&field<uintptr_t>(actor,0x214)!=selected_unit){entry_failed(15);return;}
-            NativeSubject motion;if(actor&&native_subject(actor,selected_unit,view,false,motion)){
-                auto witness=field<uintptr_t>(actor,0x688);if(witness&&field<unsigned char>(witness,0xd1))continue;
-                live=true;int score98=wall_subject97(actor)?2:0;if(actor==field<uintptr_t>(manager,0x8fc))++score98;
-                if(center_actor150&&(actor==center_actor150||motion.actor==center_actor150))score98+=4;
-                if(score98>choice_score98){choice_score98=score98;choice={env,phase,manager,view,selected_unit,holder,actor,field<unsigned>(actor,0x1c8),field<unsigned>(actor,0x218)};}
-            }
+            NativeSubject motion{};
+            if(!actor||!possession_camera_subject(actor,selected_unit,view,env,false,motion))continue;
+            eligible[eligible_count++]=i;
+            if(hover.exact&&(hover.exact==actor||hover.exact==motion.actor))
+                exact={env,phase,manager,view,selected_unit,holder,actor,field<unsigned>(actor,0x1c8),field<unsigned>(actor,0x218)};
+            if(nearby_count<nearby.size()&&hover.includes(actor,motion.actor))nearby[nearby_count++]=i;
         }
-        if(!live){entry_failed(11);return;}
+        if(!eligible_count){entry_failed(11);return;}
+        auto choice=exact;
+        if(!choice.actor){
+            const unsigned index=nearby_count?nearby[random_soldier_index(nearby_count)]:
+                eligible[random_soldier_index(eligible_count)];
+            const auto holder=field<uintptr_t>(array,index*4);
+            const auto actor=field<uintptr_t>(holder,8);
+            choice={env,phase,manager,view,selected_unit,holder,actor,field<unsigned>(actor,0x1c8),field<unsigned>(actor,0x218)};
+        }
         // Window-message boundary on the observed camera/window owner thread,
         // outside this thread's borrowed camera and native input callbacks.
         // The original native function constructs and selects the soldier camera.
@@ -773,7 +819,7 @@ static void enter_selected_soldier(){
         __finally{choice97={};}
         camera=field<uintptr_t>(manager,0x8e0);
         uintptr_t actor=camera?field<uintptr_t>(camera,0x188):0;
-        if(camera&&field<uintptr_t>(camera,0)==base+0x15d22e8&&actor&&adopt_possession97(actor)){
+        if(camera&&field<uintptr_t>(camera,0)==base+0x15d22e8&&actor==choice.actor&&adopt_possession97(actor)){
             ++state->camera_acquisitions;state->acquisition_error=0;return;
         }
         entry_failed(12);
@@ -801,7 +847,10 @@ static void pose_manual_origin(float* origin);
 static bool posed_arrow_origin(float* origin);
 #include "weapon_animation.h"
 #include "formation_arrival129.h"
+#include "replay_record148.h"
 #include "unit_detach130.h"
+#include "replay_exact147.h"
+#include "replay_formation148.h"
 #include "equipment_native81.h"
 #include "mount154.h"
 // Revision40 attachment predicate was not reached for the display arrow.
@@ -992,7 +1041,7 @@ static bool death_camera_update156(uintptr_t camera){
         return death_context(camera);
     }__finally{--camera_callback_depth;}
 }
-static void relinquish(){InterlockedExchange(&arrow_watch107,0);commander76::exchange.leave_possession();if(state->mode==POSSESSED)commander_cancel76();InterlockedExchange(&mount_camera_locked154,0);InterlockedExchange(&mount_request154,0);InterlockedExchange(&routing_empty_lease154,0);view_reset152();InterlockedExchange(&dismount_cleanup143,0);charge_reset139();InterlockedExchange(&entry_movement125,0);combat_focus125.reset();combat_pair_reset126();InterlockedExchange(&combat_entry_locked126,0);InterlockedExchange(&animation_look_active104,0);command_reset100();climb_reset97();request_rts_restore90();next_accuracy90=0;publish_accuracy90(nullptr,0,0);InterlockedExchange(&mounted_heading85,-1);equipment_reset81();reset_death_view();InterlockedExchange(&manual_arrow_released,0);state->arrow_visual_hidden=0;possession_lease.release();InterlockedExchange(&state->input,0);InterlockedExchange(&state->aiming,0);state->aim_pose=0;InterlockedExchange(&state->weapon_phase,WEAPON_IDLE);possessed=0;environment=0;unit=0;InterlockedExchange(&state->follow,0);InterlockedExchange(&state->pending_order,0);follow_target=false;InterlockedExchange(&state->fire_request,0);InterlockedExchange(&state->mode,IDLE);}
+static void relinquish(){cheer_request.clear();cheer_clip={};InterlockedExchange(&arrow_watch107,0);InterlockedExchange(&deck_arrow_watch107,0);commander76::exchange.leave_possession();if(state->mode==POSSESSED)commander_cancel76();InterlockedExchange(&mount_camera_locked154,0);InterlockedExchange(&mount_request154,0);InterlockedExchange(&routing_empty_lease154,0);view_reset152();InterlockedExchange(&dismount_cleanup143,0);charge_reset139();InterlockedExchange(&entry_movement125,0);combat_focus125.reset();combat_pair_reset126();InterlockedExchange(&combat_entry_locked126,0);InterlockedExchange(&animation_look_active104,0);command_reset100();climb_reset97();request_rts_restore90();next_accuracy90=0;publish_accuracy90(nullptr,0,0);InterlockedExchange(&mounted_heading85,-1);equipment_reset81();reset_death_view();InterlockedExchange(&manual_arrow_released,0);state->arrow_visual_hidden=0;possession_lease.release();InterlockedExchange(&state->input,0);InterlockedExchange(&state->aiming,0);state->aim_pose=0;InterlockedExchange(&state->weapon_phase,WEAPON_IDLE);possessed=0;environment=0;unit=0;InterlockedExchange(&state->follow,0);InterlockedExchange(&state->pending_order,0);follow_target=false;InterlockedExchange(&state->fire_request,0);InterlockedExchange(&state->mode,IDLE);}
 static void end_death_on_window(){
     if(!InterlockedExchange(&death_return_pending,0))return;
     __try{uintptr_t manager=possession_lease.identity.manager;uintptr_t env=environment;
@@ -1004,12 +1053,69 @@ static void end_death_on_window(){
     }__except(EXCEPTION_EXECUTE_HANDLER){relinquish();}
 }
 #include "../../../deck/locomotion203.h"
+static bool cheer_sprint_input(unsigned input,bool mounted){
+    input=personal_travel_input91(input,state->follow!=0,state->aiming||state->aim_pose,mounted);
+    const bool moving=mounted_forward95(input)||(!mounted&&(mounted_backward95(input)||
+        bool(input&LEFT)!=bool(input&RIGHT)));
+    return moving&&native_sprint_requested133(input);
+}
+static void cancel_cheer_for_sprint(uintptr_t actor){
+    cheer_request.clear();
+    if(!cheer_active(actor)||!member_owned130(actor))return;
+    // Native 3ca920 clears the active clip and leaves the movement state
+    // available to the normal sprint or charge update on this same tick.
+    original_animation_stop82(reinterpret_cast<void*>(possessed));
+    cheer_clip={};
+}
+static bool start_or_hold_cheer(uintptr_t actor){
+    const auto lease=possession_lease.generation;
+    const bool requested=cheer_request.take(lease,GetTickCount64());
+    if(cheer_active(actor))return true;
+    cheer_clip={};
+    if(!requested||!original_play||!locomotion_ordinary203(actor)||equipment_crouched81()||
+       !followed(possessed,false)||!member_owned130(possessed)||field<unsigned char>(possessed,0xf0)!=1)return false;
+
+    // Named entries in the native clip table. Weapon and modded rigs may
+    // supply only some variants. Resolve each clip through the actor's rig.
+    const unsigned first=possession_lease.identity.mount?0x48a:0x485;
+    unsigned id=first;
+    uintptr_t clip=0;
+    for(;id<first+5;++id){
+        clip=locomotion_clip62(possessed,id);
+        const auto animation=clip?field<uintptr_t>(clip,4):0;
+        if(animation){
+            const unsigned frames=field<unsigned>(animation,0x64);
+            if(frames&&frames<=4096)break;
+        }
+        clip=0;
+    }
+    if(!clip)return false;
+
+    const auto previous=field<uintptr_t>(possessed,0x474);
+    if(previous){
+        const auto old_id=field<unsigned>(previous,0);
+        if(!locomotion_idle204(old_id)||locomotion_clip62(possessed,old_id)!=previous||
+           field<unsigned>(possessed,0x1d4)!=old_id)return false;
+        reinterpret_cast<UnitTick130>(base+0x3dd9b0)(reinterpret_cast<void*>(possessed));
+        if(field<uintptr_t>(possessed,0x474))return false;
+    }
+    if(field<uintptr_t>(possessed,0x18)||field<uintptr_t>(possessed,0x688))return false;
+    original_play(reinterpret_cast<void*>(possessed),id,0,0,1.f);
+    cheer_clip={lease,possessed,actor,clip,id};
+    return cheer_active(actor);
+}
 static bool prepare(uintptr_t actor) {
     __try {
         if(!enabled || state->stop || GetTickCount64()-state->heartbeat>500){relinquish();return false;}
         if(InterlockedExchange(&state->release,0)){relinquish();InterlockedExchange(&state->acquire,0);}
         if(state->acquire&&!possessed)adopt_possession97(actor);
         if((actor==possessed||actor==possession_lease.identity.mount)&&dismount_native_motion143())return false; // Original dismount owns movement/animation.
+        const bool sprinting=actor==locomotion_actor()&&(charge_input_locked146()||
+            cheer_sprint_input(unsigned(state->input),possession_lease.identity.mount!=0));
+        if(sprinting){
+            cancel_cheer_for_sprint(actor);
+            prepare_combat_footwork(actor,FORWARD|RUN);
+        }
         // A charge remains on rails, but original encounter registration can
         // now require its existing paired alignment before native playback.
         // Do not let the approach-only yield skip that proved handoff.
@@ -1018,6 +1124,13 @@ static bool prepare(uintptr_t actor) {
         if(actor!=locomotion_actor())return false;
         if(!confirm_follow93(possessed)){note_follow_release93();++state->identity_releases;relinquish();return false;}
         if(dead_view())return false;
+        // The camera and lease are already active. Preserve stock playback's
+        // movement for a fight entered mid-exchange just as for an owned QTE.
+        if(native_playing_pair(possessed,environment)||
+           (actor!=possessed&&native_playing_pair(actor,environment))){
+            InterlockedExchange(&entry_movement125,0);
+            return false;
+        }
         // Native horse jumping owns translation/animation through completion.
         // Manual WASD must not overwrite the stock launch, arc or landing.
         if(native_mounted_jump140(actor)){charge_reset139();InterlockedExchange(&entry_movement125,0);return false;}
@@ -1039,12 +1152,25 @@ static bool prepare(uintptr_t actor) {
         if(!std::isfinite(dt)||dt<0||dt>0.2f){relinquish();return false;}
         float yaw=state->yaw;
         if(!std::isfinite(yaw)){relinquish();return false;}
+        if(!sprinting&&start_or_hold_cheer(actor)){
+            // The normal integrator still runs. Remove any leftover player
+            // velocity and send a zero native movement intent for this frame.
+            for(unsigned offset:{0x70u,0x74u,0x78u,0x8cu,0x94u,0xd8u,0xe0u})field<float>(actor,offset)=0;
+            state->effective_speed=state->requested_speed=0;
+            InterlockedExchange(&entry_movement125,0);
+            InterlockedIncrement(&state->sequence);
+            for(unsigned i=0;i<3;++i)state->before[i]=field<float>(actor,0x48+i*4);
+            state->bearing=bearing;
+            if(issue_native_intent(actor,{},bearing))return true;
+            ++state->native_intent_errors;InterlockedIncrement(&state->sequence);relinquish();return false;
+        }
         bool crouch_locked=equipment_prepare_motion81();
         if(crouch_locked)InterlockedExchange(&entry_movement125,0);
         const bool mounted=possession_lease.identity.mount!=0;
         unsigned movement_input=personal_travel_input91(
             equipment81::movement_input(unsigned(state->input),crouch_locked),
             state->follow!=0,state->aiming||state->aim_pose,mounted);
+        if(!mounted&&prepare_combat_footwork(actor,movement_input))return false;
         if(mounted){
             if(horse_root_owns_motion95(actor,movement_input))return false;
             // Brake before reversing. If the native step cannot take over,
@@ -1091,6 +1217,9 @@ static bool prepare(uintptr_t actor) {
         }
         Intent intent={direction.x*speed*dt,direction.z*speed*dt,0};
         intent.turn=mounted?direction.turn:face_view(bearing,yaw,dt,turn_rate);
+        // Interrupt a native static idle before the first translation or
+        // body turn, even when the last measured gait speed was zero.
+        if(!crouch_locked&&(requested||intent.turn))release_locomotion_idle(actor);
         InterlockedIncrement(&state->sequence);
         for(unsigned i=0;i<3;++i)state->before[i]=field<float>(actor,0x48+i*4);
         if(!issue_native_intent(actor,intent,bearing)){
@@ -1121,13 +1250,26 @@ static void __fastcall detour(void* actor,void*) {
         if(!charge_input_locked146()&&hold_melee_motion(reinterpret_cast<uintptr_t>(actor))){
             InterlockedIncrement(reinterpret_cast<volatile LONG*>(&state->other_updates));return;
         }
-        const bool naval_controlled=naval127::prepare_motion(reinterpret_cast<uintptr_t>(actor));
-        bool controlled=!naval_controlled&&prepare(reinterpret_cast<uintptr_t>(actor));
+        const auto subject=reinterpret_cast<uintptr_t>(actor);
+        if(replay147::actor_scope.actor==subject)
+            replay_gait148(actor,replay147::actor_scope.occurrence,exactreplay147::Boundary::before_motion);
+        replay147::play_motion(subject);
+        const bool naval_controlled=naval127::prepare_motion(subject);
+        bool controlled=!naval_controlled&&prepare(subject);
         original(actor);
-        if(controlled){locomotion_mark203(reinterpret_cast<uintptr_t>(actor));finish(reinterpret_cast<uintptr_t>(actor));if(!possession_lease.identity.mount){refresh_accuracy90(reinterpret_cast<uintptr_t>(actor));weapon_tick(reinterpret_cast<uintptr_t>(actor));}}
-        else InterlockedIncrement(reinterpret_cast<volatile LONG*>(&state->other_updates));
+        replay147::finish_play_motion(subject);
+        if(controlled){
+            replay147::finish_live_motion(subject);
+            const bool cheering=cheer_active(subject);
+            if(!cheering)locomotion_mark203(subject);
+            finish(subject);
+            if(!cheering&&!possession_lease.identity.mount){refresh_accuracy90(subject);weapon_tick(subject);}
+        }else InterlockedIncrement(reinterpret_cast<volatile LONG*>(&state->other_updates));
         if(possession_lease.active&&possession_lease.identity.mount&&reinterpret_cast<uintptr_t>(actor)==possessed&&
-           followed(possessed,false)&&!dead_view()){refresh_accuracy90(possessed);weapon_tick(possessed);}
+           followed(possessed,false)&&!dead_view()&&!cheer_active(possessed)&&
+           !native_playing_pair(possessed,environment)&&!native_playing_pair(possession_lease.identity.mount,environment)){
+            refresh_accuracy90(possessed);weapon_tick(possessed);
+        }
     }__finally {InterlockedDecrement(&motion_callback_depth);}
 }
 static bool down(int vk){
@@ -1247,6 +1389,7 @@ static DWORD WINAPI worker(void*) {
         require(memcmp(matrix_target,matrix_sig,8)==0,"Camera matrix signature differs");
         memcpy(state->original_code,target,16);
         require(MH_Initialize()==MH_OK,"MinHook initialization failed");
+        replay147::create();
         require(MH_CreateHook(target,reinterpret_cast<void*>(&detour),reinterpret_cast<void**>(&original))==MH_OK,"Motion hook creation failed");
         require(MH_CreateHook(cancel_target,reinterpret_cast<void*>(&camera_cancel),reinterpret_cast<void**>(&original_cancel))==MH_OK,"Camera cancel hook failed");
         require(MH_CreateHook(toggle_target,reinterpret_cast<void*>(&camera_toggle),reinterpret_cast<void**>(&original_toggle))==MH_OK,"Camera toggle hook failed");
@@ -1265,7 +1408,7 @@ static DWORD WINAPI worker(void*) {
         require(MH_CreateHook(projectile_camera_target,reinterpret_cast<void*>(&projectile_camera),reinterpret_cast<void**>(&original_projectile_camera))==MH_OK,"Projectile camera hook failed");
         charge_mapping146();create_weapon_hooks();create_formation_arrival129();create_unit_detach130();create_locomotion203();create_mounted_render_hooks70();create_siege_hooks97();create_context_hooks103();
 
-        create_dispersion_hook();create_friendly_hook109();create_general_influence67();create_follow_voice125();
+        create_dispersion_hook();create_friendly_hook109();create_general_influence67();create_follow_voice125();create_land_move_arrow();
         create_interface_hooks();
         create_pose_hook();
         create_fatigue_hooks();
@@ -1298,6 +1441,7 @@ static DWORD WINAPI worker(void*) {
         Handle wheel_pulse121(CreateWaitableTimerExW(nullptr,nullptr,CREATE_WAITABLE_TIMER_HIGH_RESOLUTION,
             TIMER_MODIFY_STATE|SYNCHRONIZE));
         // Release builds remain available until explicit disable or game exit.
+        ChargeHold199 charge_hold;
         while(!state->stop) {
             DWORD foreground_pid=0;DWORD foreground_thread=GetWindowThreadProcessId(GetForegroundWindow(),&foreground_pid);bool focus=foreground_pid==GetCurrentProcessId();
             state->heartbeat=GetTickCount64();unsigned input=0;
@@ -1310,6 +1454,7 @@ static DWORD WINAPI worker(void*) {
             const bool gameplay214=focus&&!campaign_pointer181&&!native_modal214();
             bool charge_locked146=charge_input_locked146();
             if(!focus||!down(VK_MBUTTON))InterlockedExchange(&arrow_watch107,0);
+            if(!focus)InterlockedExchange(&deck_arrow_watch107,0);
             if(!focus||!down(VK_MBUTTON)||!third_person152)orbit_button154(false);
             equipment_sample_input81(gameplay214&&!charge_locked146);ability_sample141(gameplay214&&!charge_locked146);
             if(!gameplay214)bow_sample142(down(VK_LBUTTON),false);
@@ -1320,6 +1465,7 @@ static DWORD WINAPI worker(void*) {
                 bool firing142=!charge_locked146&&state->mode==POSSESSED&&!dead_view()&&!melee_locked&&!command_placing100&&down(VK_RBUTTON)&&equipment_ranged_selected81();
                 bow_sample142(click,firing142&&!state->weapon_phase&&!state->fire_ticket&&state->weapon_reload_remaining<=0);
                 if(click&&!left_mouse&&firing142&&bow_family142==0)InterlockedExchange(&state->fire_request,1);
+                const bool primary_pressed=click&&!left_mouse;
                 left_mouse=click;
                 InterlockedExchange(&state->aiming,!charge_locked146&&state->mode==POSSESSED&&!dead_view()&&!melee_locked&&!command_placing100&&down(VK_RBUTTON)?1:0);
                 state->window_thread=foreground_thread;
@@ -1329,6 +1475,11 @@ static DWORD WINAPI worker(void*) {
                     deck181::Sample pace;
                     if(deck181::read_sample(GetCurrentProcessId(),pace)&&deck181::controller_held(pace,deck183::WalkPace)&&
                        pace.lease==state->lease_generation&&pace.actor==state->actor_id&&pace.unit==state->unit_id)input|=WALK_OVERRIDE;
+                }
+                const bool sprinting=cheer_sprint_input(input,possession_lease.identity.mount!=0);
+                if(primary_pressed&&!down(VK_RBUTTON)&&!charge_locked146&&!melee_locked&&
+                   !dead_view()&&!command_placing100&&state->mode==POSSESSED&&!state->release){
+                    if(!sprinting)cheer_request.set(state->lease_generation,GetTickCount64());
                 }
                 bool a=down(VK_F9),b=down(VK_F10);
                 if(a&&!f9)request_possession();
@@ -1342,9 +1493,11 @@ static DWORD WINAPI worker(void*) {
                     else {InterlockedExchange(&entry_pending,0);entry_failed(14);}
                 }
             }else {if(!focus&&was_focus)InterlockedExchange(&state->release,1);f9=f10=false;}
-            if(!gameplay214){left_mouse=false;InterlockedExchange(&state->aiming,0);}
+            if(!gameplay214){left_mouse=down(VK_LBUTTON);cheer_request.clear();InterlockedExchange(&state->aiming,0);}
             if((state->mode!=POSSESSED||state->stop||state->release||!focus)&&interface_active)restore_interface_on_window();
-            InterlockedExchange(&charge_physical_input148,LONG(charge_intent199(input,down(VK_LBUTTON),down(VK_RBUTTON),gameplay214&&state->mode==POSSESSED&&!state->release&&!dead_view())));
+            const auto charge_input=charge_intent199(input,down(VK_LBUTTON),down(VK_RBUTTON),
+                gameplay214&&state->mode==POSSESSED&&!state->release&&!dead_view());
+            InterlockedExchange(&charge_physical_input148,LONG(charge_hold.sample(charge_input,state->lease_generation,GetTickCount64())));
             naval127::sample(input,gameplay214);
             was_focus=focus;input=entry_input125(input,gameplay214&&!dead_view()&&!charge_locked146);if(charge_locked146)input=0;
             InterlockedExchange(&state->input,dead_view()?0:LONG(input));
@@ -1406,6 +1559,7 @@ static DWORD WINAPI worker(void*) {
         MH_STATUS result=MH_OK;
         if(!commander76::disable())result=MH_UNKNOWN;
         if(!mileszero123::disable())result=MH_UNKNOWN;
+        if(!replay147::disable())result=MH_UNKNOWN;
         {auto keyboard_stop196=MH_DisableHook(keyboard_poll_target84);if(keyboard_stop196!=MH_OK&&keyboard_stop196!=MH_ERROR_DISABLED)result=MH_UNKNOWN;}
         for(unsigned rva:{0x3290a0u,0x3efc70u,0x2fc450u,0x2f79a0u,0x10ee5b0u,0x325ca0u,0x321d70u,0x3e5170u,0x2b68c0u,0x1587d0u,0x459b40u,0x1b3d30u})if(MH_DisableHook(reinterpret_cast<void*>(base+rva))!=MH_OK)result=MH_UNKNOWN;
         for(void* p:{reinterpret_cast<void*>(base+0xf9c360),reinterpret_cast<void*>(base+0xf9bf20),reinterpret_cast<void*>(base+0x122f740),cursor_target})if(MH_DisableHook(p)!=MH_OK)result=MH_UNKNOWN;

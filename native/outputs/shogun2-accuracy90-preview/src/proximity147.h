@@ -53,7 +53,9 @@ static bool proximity_retire147(Proximity147& p){
     if(field<uintptr_t>(p.unit,0xb9c)==p.independent)return false;
     if(field<unsigned>(p.independent,0x18))return false;
     using Retire=bool(__thiscall*)(void*,uintptr_t);
+    const auto retired=capture_squad148(p.unit,p.environment,p.independent);
     if(!reinterpret_cast<Retire>(base+0x169130)(reinterpret_cast<void*>(p.unit+0xb64),p.independent))return false;
+    record_formation148(p.actor,exactreplay147::Kind::retire_squad,retired);
     p.independent=0;InterlockedIncrement(&proximity_retired147);return true;
 }
 static bool proximity_transfer147(Proximity147& p,uintptr_t target,bool returning=false){
@@ -71,6 +73,10 @@ static bool proximity_transfer147(Proximity147& p,uintptr_t target,bool returnin
     // The native regroup path clears the old task and requests a new slot.
     // The release caller already excludes combat, recovery and special motion.
     const bool reset_formation=returning&&(source==target||officer);
+    const auto from=capture_squad148(p.unit,p.environment,source);
+    const auto to=capture_squad148(p.unit,p.environment,target);
+    record_formation148(p.actor,exactreplay147::Kind::transfer_member,{to.key,membership_proof148(from,to)},
+                        from.key,reset_formation?1u:0u);
     original_member_transfer130(reinterpret_cast<void*>(target),p.actor,reset_formation?1u:0u);
     return field<uintptr_t>(p.actor,0x3b4)==target&&squad_matches130(target,p.actor)==1;
 }
@@ -107,32 +113,52 @@ struct ReformDestination70 {
 struct ReformList70 {unsigned capacity,count;const ReformDestination70* entries;};
 static_assert(sizeof(ReformPoint70)==20&&sizeof(ReformDestination70)==32&&sizeof(ReformList70)==12);
 
-static bool reform_near_release70(const Proximity147& p,uintptr_t formation){
+static bool prepare_reform70(uintptr_t native_unit,uintptr_t formation,ReformDestination70& destination){
     // 42dfd0 reads the stock unit pose at +440. Reuse that exact point,
-    // heading and width in the single-unit apply path of 45e930. The caller's
-    // acknowledgment event, UI marker and move sound are outside 4668f0.
-    if(!enabled||!state||state->stop||state->release||state->mode!=IDLE||
-       possession_lease.active||state->lease_generation!=p.generation||
-       field<uintptr_t>(p.unit,0xb9c)!=formation||field<unsigned>(p.unit,0x9ec))return false;
-    const auto pose=field<uintptr_t>(p.unit,0x440);
-    if(!pose||!field<uintptr_t>(p.unit,0xc))return false;
-    ReformDestination70 destination{};
-    destination.unit_reference=p.unit+0xc;
+    // heading and width in the single-unit apply path of 45e930.
+    if(field<uintptr_t>(native_unit,0xb9c)!=formation||field<unsigned>(native_unit,0x9ec))return false;
+    const auto pose=field<uintptr_t>(native_unit,0x440);
+    if(!pose||!field<uintptr_t>(native_unit,0xc))return false;
+    destination.unit_reference=native_unit+0xc;
     memcpy(&destination.point,reinterpret_cast<const void*>(pose+0x10),sizeof destination.point);
     destination.width=field<float>(pose,0x24);
     destination.facing=field<unsigned short>(pose,0x28);
-    if(!std::isfinite(destination.point.position[0])||!std::isfinite(destination.point.position[1])||
-       !std::isfinite(destination.point.position[2])||!std::isfinite(destination.width)||destination.width<=0)return false;
+    return std::isfinite(destination.point.position[0])&&std::isfinite(destination.point.position[1])&&
+        std::isfinite(destination.point.position[2])&&std::isfinite(destination.width)&&destination.width>0;
+}
+static uint32_t reform_proof148(const ReformDestination70& order) noexcept {
+    uint32_t value=2166136261u;
+    for(float number:{order.point.position[0],order.point.position[1],order.point.position[2],order.width}){
+        uint32_t bits{};
+        memcpy(&bits,&number,sizeof bits);
+        value=(value^bits)*16777619u;
+    }
+    value=(value^order.facing)*16777619u;
+    value=(value^order.point.surface_id)*16777619u;
+    value=(value^uint32_t(order.point.surface!=0))*16777619u;
+    return value?value:1;
+}
+static bool apply_reform70(uintptr_t env,uintptr_t native_unit,const ReformDestination70& destination){
     const unsigned char apply[]={0x83,0xec,0x64,0x53,0x8b,0x5c,0x24,0x78};
     const unsigned char move[]={0x81,0xec,0x94,0,0,0,0x56,0x8b,0xf1};
     if(memcmp(reinterpret_cast<const void*>(base+0x4668f0),apply,sizeof apply)||
        memcmp(reinterpret_cast<const void*>(base+0x187000),move,sizeof move))return false;
-    // An empty native queue means append begins immediately. The native append
-    // branch leaves any other command state intact and queues one ordinary walk.
+    // The caller's acknowledgment, UI marker and move sound are outside
+    // 4668f0. The empty queue starts the original append immediately.
     const ReformList70 groups{},units{1,1,&destination};
     using Apply=void(__stdcall*)(uintptr_t,unsigned,unsigned,const ReformList70*,const ReformList70*,unsigned);
-    reinterpret_cast<Apply>(base+0x4668f0)(p.environment,0,1,&groups,&units,1);
-    return field<unsigned>(p.unit,0x9ec)==1;
+    reinterpret_cast<Apply>(base+0x4668f0)(env,0,1,&groups,&units,1);
+    return field<unsigned>(native_unit,0x9ec)==1;
+}
+static bool reform_near_release70(const Proximity147& p,uintptr_t formation){
+    if(!enabled||!state||state->stop||state->release||state->mode!=IDLE||
+       possession_lease.active||state->lease_generation!=p.generation)return false;
+    ReformDestination70 destination{};
+    if(!prepare_reform70(p.unit,formation,destination))return false;
+    const bool result=apply_reform70(p.environment,p.unit,destination);
+    const auto target=capture_squad148(p.unit,p.environment,formation);
+    record_formation148(p.actor,exactreplay147::Kind::reform_unit,{target.key,reform_proof148(destination)},0,uint16_t(result));
+    return result;
 }
 
 static void proximity_sync147(uintptr_t current,uintptr_t env,uintptr_t phase,unsigned phase_id){
@@ -152,6 +178,7 @@ static void proximity_sync147(uintptr_t current,uintptr_t env,uintptr_t phase,un
                 auto policy=reinterpret_cast<Policy>(base+0x1672b0)(reinterpret_cast<void*>(current));
                 target=reinterpret_cast<Factory>(base+0x166d60)(reinterpret_cast<void*>(current),policy);
                 if(!squad_registered130(target,current,env)){InterlockedIncrement(&proximity_errors147);continue;}
+                record_formation148(p.actor,exactreplay147::Kind::create_squad,capture_squad148(current,env,target),policy,3);
             }
             bool within=false;
             const bool release_in_range=p.joined&&target==p.formation&&field<uintptr_t>(p.actor,0x3b4)==target&&
@@ -162,7 +189,12 @@ static void proximity_sync147(uintptr_t current,uintptr_t env,uintptr_t phase,un
                p.generation==possession_lease.generation&&p.actor==locomotion_actor())continue;
             if(target!=p.independent&&proximity_transfer147(p,target,true)){
                 if(!release_in_range||!reform_near_release70(p,target))reissue_officer_slot68(p.actor,target,current,env);
-                if(field<uintptr_t>(current,0xb9c)==p.independent)reinterpret_cast<UnitTick130>(base+0x16b180)(reinterpret_cast<void*>(current));
+                if(field<uintptr_t>(current,0xb9c)==p.independent){
+                    const auto old=capture_squad148(current,env,p.independent);
+                    reinterpret_cast<UnitTick130>(base+0x16b180)(reinterpret_cast<void*>(current));
+                    const auto selected=capture_squad148(current,env,field<uintptr_t>(current,0xb9c));
+                    record_formation148(p.actor,exactreplay147::Kind::reselect_main,selected,old.key);
+                }
                 if(proximity_retire147(p))proximity_forget147(p);
             }
         }
@@ -200,6 +232,7 @@ static void proximity_sync147(uintptr_t current,uintptr_t env,uintptr_t phase,un
         using Factory=uintptr_t(__thiscall*)(void*,unsigned,uintptr_t,unsigned,unsigned);
         p->independent=reinterpret_cast<Factory>(base+0x1668e0)(reinterpret_cast<void*>(current+0xb64),2,current,0,0);
         if(!squad_registered130(p->independent,current,env)){p->independent=0;InterlockedIncrement(&proximity_errors147);return;}
+        record_formation148(p->actor,exactreplay147::Kind::create_squad,capture_squad148(current,env,p->independent),0,2);
         InterlockedIncrement(&proximity_created147);
     }
     auto target=within?p->formation:p->independent;

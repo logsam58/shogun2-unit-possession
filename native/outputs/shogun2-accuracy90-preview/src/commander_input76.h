@@ -260,7 +260,7 @@ static bool commander_window76(HWND window, UINT message, WPARAM key, LPARAM fla
     if(input.count && input.generation != state->lease_generation)input.count=0;
     const bool down = message == WM_KEYDOWN || message == WM_SYSKEYDOWN;
     const bool up = message == WM_KEYUP || message == WM_SYSKEYUP;
-    const bool alt = key == VK_LMENU || (key == VK_MENU && !(flags & (1L << 24)));
+    const bool alt = key == VK_RMENU || (key == VK_MENU && (flags & (1L << 24)));
     const auto rts_battle = alt && (down || up) ? commander_rts76() : commander76::Battle{};
     if (rts_battle.environment) commander76::exchange.watch_rts(rts_battle);
     const auto info = commander76::exchange.state();

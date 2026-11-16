@@ -17,6 +17,7 @@ static unsigned sampled_lease{},sampled_actor{},sampled_unit{};
 static unsigned hud_stage188{};static bool configured{};static volatile LONG reset_requested{},menu_open{};
 static deck174::Context context(){if(menu_open)return deck174::Context::Menu;return state&&state->mode==POSSESSED&&!state->stop&&!state->release?deck174::Context::Possession:deck174::Context::RTS;}
 static void clear_input(){
+ InterlockedExchange(&deck_arrow_watch107,0);
  InterlockedExchange(&commander76::deck_rts_wheel,0);
  InterlockedExchange(&commander76::deck_sector,-1);
  commander76::deck_pointer.store({});
@@ -47,6 +48,7 @@ static void present(){
  });
 }
 static void cancel_window(){
+ end_deck_arrow_watch107();
  InterlockedExchange(&commander76::deck_rts_wheel,0);
  InterlockedExchange(&commander76::deck_sector,-1);
  commander76::deck_pointer.store({});
@@ -150,7 +152,8 @@ static void dispatch(const deck181::Queued& queued,const ContextProof& proof){
    commander76::exchange.request(output.commander_sector,commander.generation);
   previous=output;
   if(proof.permits_rts()){
-   if(output.fine216.active||output.fine216.released||output.fine216.cancel||fine218.pending_release())
+   if(config.community_rts&&output.fine216.resizing&&GroupFrontage::has_groups(proof.identity.root))fine218.cancel();
+   else if(output.fine216.active||output.fine216.released||output.fine216.cancel||fine218.pending_release())
     fine218.sample(base,proof.identity.root,proof.identity.environment,output.fine216,[&](){ContextProof current;return native_context(current)&&current.permits_rts()&&current.identity==proof.identity;},
                    (owned_mouse_flags&(MK_LBUTTON|MK_RBUTTON))!=0);
    for(unsigned i=0;i<deck183::ShortcutCount;++i)if(output.shortcuts&(1u<<i))deck181::native_shortcuts183.put(i,GetTickCount64());
@@ -185,11 +188,15 @@ static void dispatch(const deck181::Queued& queued,const ContextProof& proof){
  commander76::deck_pointer.store(output.wheel_pointer);
  if(output.commander_confirm&&commander.available&&commander.possessed)
   commander76::exchange.request(output.commander_sector,commander.generation);
- if(output.held(deck181::P)){AcquireSRWLockExclusive(&view_lock152);++view_input152.toggles;ReleaseSRWLockExclusive(&view_lock152);}
+ if(!output.r3_held)end_deck_arrow_watch107();
+ if(output.r3_held&&!previous.r3_held&&!begin_deck_arrow_watch107()){
+  AcquireSRWLockExclusive(&view_lock152);++view_input152.toggles;ReleaseSRWLockExclusive(&view_lock152);
+ }
  if(output.held(deck181::M)&&!previous.held(deck181::M)&&!charge_input_locked146())InterlockedExchange(&mount_request154,LONG(state->lease_generation));
  if(output.held(deck181::K)&&!previous.held(deck181::K))hud_toggle188(proof,true);
  if(output.held(deck181::Escape)&&!previous.held(deck181::Escape))pause214(proof);
- if(output.toggle_slow214||output.toggle_pause214)speed214.apply(base,proof.identity.root,proof.identity.environment,output.toggle_pause214);
+ if(output.toggle_slow214||output.toggle_pause214)speed214.apply(base,proof.identity.root,proof.identity.environment,
+     output.toggle_pause214?native214::SpeedInput::PauseResume:native214::SpeedInput::Cycle);
  if(output.held(deck181::Cancel)&&!previous.held(deck181::Cancel)&&command_placing100)command_native_cancel100();
  for(const auto order:output.wheel_orders)commander_order101(input_window,order);
  if(output.skirmish)command_window_fire62(command100::Input::Skirmish);
@@ -199,7 +206,7 @@ static void dispatch(const deck181::Queued& queued,const ContextProof& proof){
   UINT message=key==VK_LBUTTON?(output.held(key)?WM_LBUTTONDOWN:WM_LBUTTONUP):key==VK_RBUTTON?(output.held(key)?WM_RBUTTONDOWN:WM_RBUTTONUP):(output.held(key)?WM_KEYDOWN:WM_KEYUP);
   weapon_window_proc(input_window,message,key==VK_LBUTTON||key==VK_RBUTTON?0:key,0);
  }
- orbit_button154(output.held(deck181::Middle));
+ orbit_button154(!deck_arrow_watch107&&output.held(deck181::Middle));
  // Trackpad displacement retains the existing worker path.
  // Stick turning is integrated by the owned camera callback, never twice.
  look201.add(output.look.x-output.stick_delta.x,output.look.y-output.stick_delta.y);

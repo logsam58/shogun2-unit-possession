@@ -15,10 +15,10 @@ inline CameraAxes178 camera_axes178(const Frame& f,const Config& c){
 class RtsRouter178 {
     Config config_;Normalizer normalizer_;uint64_t buttons_{};deck190::SteadyClick click_;
     bool selecting_{},selection_additive_{},ordering_{},left_{},right_{},pad_seed_{},zoom_seed_{};
-    Vec2 pad_{},zoom_{};uint64_t order_released_{},order_started_{};Vec2 order_origin_{};bool order_dragged_{};
+    Vec2 pad_{},zoom_{};uint64_t order_released_{},order_started_{};Vec2 order_origin_{};bool order_dragged_{},keep_formation_{};
 public:
     explicit RtsRouter178(Config value={}):config_(value){}
-    Batch update(const Frame& f,uint64_t now){
+    Batch update(const Frame& f,uint64_t now,bool trackpads_owned=false){
         Batch batch;auto emit=[&](Action a,Vec2 v=Vec2{},bool modifier=false){batch.add({a,Context::RTS,now,v,true,modifier,0});};
         Edges edge;
         if(!normalizer_.accept(f,now,config_,edge)){
@@ -39,19 +39,34 @@ public:
             // A held trigger must not restart a cancelled gesture.
             left_=left;right_=right;buttons_=f.buttons;return batch;
         }
-        auto pointer=click_.sample(f.right_pad,held(Button::RightPadTouch),select||left,select&&(additive||held(Button::L4)));
-        if(pointer.x||pointer.y)emit(Action::Pointer,pointer);
-        const bool previous_select=right_;
-        if(select&&!previous_select&&!selecting_){
-            if(ordering_)emit(Action::OrderCancel);ordering_=false;
-            emit(Action::SelectBegin,{},additive);selecting_=true;selection_additive_=additive;
-        }else if(!select&&selecting_){emit(Action::SelectEnd,{},selection_additive_);selecting_=selection_additive_=false;}
+        if(trackpads_owned){
+            click_.reset();
+            selecting_=selection_additive_=ordering_=false;
+            order_released_=0;
+        }else{
+            auto pointer=click_.sample(f.right_pad,held(Button::RightPadTouch),select||left,select&&(additive||held(Button::L4)));
+            if(pointer.x||pointer.y)emit(Action::Pointer,pointer);
+            const bool previous_select=right_;
+            if(select&&!previous_select&&!selecting_){
+                if(ordering_)emit(Action::OrderCancel);ordering_=false;
+                emit(Action::SelectBegin,{},additive);selecting_=true;selection_additive_=additive;
+            }else if(!select&&selecting_){emit(Action::SelectEnd,{},selection_additive_);selecting_=selection_additive_=false;}
 
-        if(left&&!left_&&!selecting_){
-            const bool twice=order_released_&&now>=order_released_&&now-order_released_<=uint64_t(config_.double_tap_ms)*1000;
-            batch.add({Action::OrderBegin,Context::RTS,now,{},true,held(Button::L4),twice?1u:0u});ordering_=true;order_started_=now;order_origin_=f.right_pad;order_dragged_=false;order_released_=0;
-        }else if(left&&ordering_){emit(Action::OrderUpdate,{},held(Button::L4));if(std::fabs(f.right_pad.x-order_origin_.x)>.02f||std::fabs(f.right_pad.y-order_origin_.y)>.02f)order_dragged_=true;}
-        else if(!left&&ordering_){emit(Action::OrderCommit,{},held(Button::L4));ordering_=false;order_released_=!order_dragged_&&now>=order_started_&&now-order_started_<=uint64_t(config_.hold_ms)*1000?now:0;}
+            if(left&&!left_&&!selecting_){
+                // Choose the formation gesture at LT press and retain it through LT release.
+                keep_formation_=additive;
+                const bool twice=!keep_formation_&&order_released_&&now>=order_released_&&now-order_released_<=uint64_t(config_.double_tap_ms)*1000;
+                batch.add({Action::OrderBegin,Context::RTS,now,{},true,held(Button::L4),twice?1u:0u,keep_formation_});
+                ordering_=true;order_started_=now;order_origin_=f.right_pad;order_dragged_=false;order_released_=0;
+            }else if(left&&ordering_){
+                batch.add({Action::OrderUpdate,Context::RTS,now,{},true,held(Button::L4),0,keep_formation_});
+                if(std::fabs(f.right_pad.x-order_origin_.x)>.02f||std::fabs(f.right_pad.y-order_origin_.y)>.02f)order_dragged_=true;
+            }else if(!left&&ordering_){
+                batch.add({Action::OrderCommit,Context::RTS,now,{},true,held(Button::L4),0,keep_formation_});
+                ordering_=false;
+                order_released_=!keep_formation_&&!order_dragged_&&now>=order_started_&&now-order_started_<=uint64_t(config_.hold_ms)*1000?now:0;
+            }
+        }
         auto camera_frame=f;camera_frame.buttons&=~(bit(Button::L1)|bit(Button::R1)|bit(Button::L3));
         const auto camera=camera_axes178(camera_frame,config_);
         if(camera.pan.x||camera.pan.y)emit(Action::CameraPan,camera.pan,camera.fast);

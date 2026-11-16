@@ -30,6 +30,7 @@ local function environment(mode)
         if mode=="loadlib-denied" then return nil,string.rep("fixture native load rejected ",1000) end
         if symbol=="s2up_workshop_error167" then return function()count.notified=count.notified+1 end end
         if symbol=="s2up_workshop_prepare165" then return function()return mode~="prepare-denied" and true or nil end end
+        if symbol=="s2up_workshop_close_root165" then return function()return true end end
         if symbol=="s2up_workshop_start165" then return function()assert(count.clear==1);return nil end end
         error("Unknown native entry")
     end

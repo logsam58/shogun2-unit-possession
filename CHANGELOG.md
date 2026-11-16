@@ -1,5 +1,24 @@
 # Changelog
 
+## Revision 150 — 2026-11-16
+
+- Hover over a soldier at any zoom level to possess them, even mid-fight.
+- Sprint toward an enemy and hold attack to charge alongside your unit.
+- Tap attack while idle to cheer. Sprint to cancel.
+- Improved walking and turning, restored sneaking in forests, and hid the movement arrows during Follow Me.
+
+[Revision 150 validation](docs/public-release/REVISION150_VALIDATION.json).
+
+## v0.38 — 2026-11-15
+
+- Fixed startup with the original Last Alliance 0.5.2 pack set. Case-only duplicate texture paths no longer stop the scan. Improved modded portrait lookup and fallback.
+- Fixed recovery from a stale campaign handoff on Steam Deck. Improved startup when the game is installed in a language other than English. Non-English gameplay feedback is welcome.
+- Moved the keyboard Commander wheel to Right Alt. Key 3 pauses and resumes, and key 4 toggles slow motion and normal speed.
+- Added Deck formation-preserving drag and group frontage adjustment. R4 cycles slow motion, pause and normal speed during possession.
+- Added a middle-mouse icon for the arrow camera on PC and a contextual R3 hold on Deck.
+
+[Release notes and validation](docs/releases/v0.38.md).
+
 ## v0.37 — 2026-11-09
 
 - Restored the original tooltips on the Custom Battle army setup screen.

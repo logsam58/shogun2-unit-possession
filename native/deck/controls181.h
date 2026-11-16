@@ -9,22 +9,20 @@
 #include "commander_wheel84.h"
 namespace deck181 {
 using deck174::Button;using deck174::Frame;using deck174::Context;using deck174::Vec2;
-enum class Gesture {None,Possess,ReturnRTS,Perspective};
-// Y owns possession/return. R3 only changes perspective while held in possession.
+// Start a hold only on a fresh press in the current possession.
 struct R3Gesture {
- bool held{},long_fired{};uint64_t pressed{};
+ bool armed{};uint64_t pressed{};
  void reset(){*this={};}
- Gesture sample(bool down,uint64_t now,Context context,const deck174::Config& c){
-  if(context!=Context::Possession||!down){reset();return Gesture::None;}
-  if(!held){held=true;pressed=now;}
-  if(!long_fired&&now>=pressed&&now-pressed>=uint64_t(c.hold_ms)*1000){long_fired=true;return Gesture::Perspective;}
-  return Gesture::None;
+ bool sample(bool held,bool edge,uint64_t now,unsigned hold_ms){
+  if(!held){reset();return false;}
+  if(edge){armed=true;pressed=now;}
+  return armed&&now>=pressed&&now-pressed>=uint64_t(hold_ms)*1000;
  }
 };
 
 enum Key:unsigned {Primary=1,Aim=2,Cancel=3,Middle=4,Shift=16,Control=17,Escape=27,Space=32,One=49,A=65,C=67,D=68,E=69,F=70,G=71,K=75,M=77,P=80,Q=81,R=82,S=83,T=84,W=87,Z=90,F9=120,F10=121};
 struct Output {
- Context context{Context::Inactive};std::array<uint32_t,8> keys{};Vec2 look{},stick_rate{},stick_delta{};float zoom{};bool accepted{},show_controls{},help_open{},help_blocked{};unsigned help_page{};unsigned shortcuts{},commander_rts_generation{};int commander_sector{-1};commander76::WheelPointer wheel_pointer{};bool commander_confirm{};std::array<commander76::UnitOrder,2> wheel_orders{};bool fire_at_will{},skirmish{},toggle_slow214{},toggle_pause214{};deck216::FineIntent fine216;
+ Context context{Context::Inactive};std::array<uint32_t,8> keys{};Vec2 look{},stick_rate{},stick_delta{};float zoom{};bool accepted{},show_controls{},help_open{},help_blocked{};unsigned help_page{};unsigned shortcuts{},commander_rts_generation{};int commander_sector{-1};commander76::WheelPointer wheel_pointer{};bool commander_confirm{};std::array<commander76::UnitOrder,2> wheel_orders{};bool fire_at_will{},skirmish{},toggle_slow214{},toggle_pause214{},r3_held{};deck216::FineIntent fine216;
  bool held(unsigned key)const{return key<256&&(keys[key/32]&(uint32_t(1)<<(key%32)))!=0;}
  void set(unsigned key){if(key<256)keys[key/32]|=uint32_t(1)<<(key%32);}
 };
@@ -109,29 +107,30 @@ public:
   auto help_event188=help188_.sample(frame,edges,now,context==Context::RTS||context==Context::Possession);
   out.help_open=help188_.open;out.help_page=help188_.page;
   out.help_blocked=help_event188.blocked;
-  if(help_event188.blocked){order_clicks_.reset();sprint_=Sprint::Default;following_=false;crouched_=false;fine216_.reset();command_wheel_=false;commander_page_=false;wheel_sector_=-1;wheel_cancelled_=true;clear_rts_commander();movement193_.reset();groups193_.reset();fire_grip_.reset();group_grip_.reset();if(!help188_.open)normalizer_.reset();return out;}
+  if(help_event188.blocked){r3_.reset();order_clicks_.reset();sprint_=Sprint::Default;following_=false;crouched_=false;fine216_.reset();command_wheel_=false;commander_page_=false;wheel_sector_=-1;wheel_cancelled_=true;clear_rts_commander();movement193_.reset();groups193_.reset();fire_grip_.reset();group_grip_.reset();if(!help188_.open)normalizer_.reset();return out;}
   if(help_event188.toggle_hud)out.set(K);
   if(context!=Context::RTS&&context!=Context::Possession)return out;
-  switch(r3_.sample(held(Button::R3),now,context,config_)){
-   case Gesture::Perspective:out.set(P);break;default:break;
-  }
   if(held(Button::Menu))out.set(Escape);
   if(context==Context::RTS){
    if(rts_commander(frame,edges,now,commander_rts_generation,commander_targets,out)){
     fine216_.reset();fine_cancelled_=held(Button::LeftPadClick);out.fine216.cancel=true;
     return out;
    }
-   if(!held(Button::LeftPadClick))fine_cancelled_=false;
-   if(down(Button::A)||down(Button::B)){
+   if(!held(Button::LeftPadClick)&&!held(Button::RightPadClick))fine_cancelled_=false;
+   if(down(Button::A)||down(Button::B)||down(Button::Y)||down(Button::Menu)){
+    out.fine216=fine216_.sample(frame,now);
+    out.fine216.cancel=true;
+    out.fine216.resizing=false;
     fine216_.reset();
     fine_cancelled_=held(Button::LeftPadClick);
-    out.fine216.cancel=true;
    }else if(!fine_cancelled_)out.fine216=fine216_.sample(frame,now);
+   if(config_.community_rts&&out.fine216.owns_right_pad&&!out.fine216.cancel)return out;
    auto request=[&](deck183::Shortcut action){out.shortcuts|=1u<<unsigned(action);};
    if(down(Button::Y))out.set(F9);if(held(Button::R3)||(held(Button::RightPadClick)&&!out.fine216.owns_right_pad))out.set(Space);if(down(Button::B))request(deck183::Deselect);
    if(down(Button::X))request(deck183::ToggleRun);
    if(down(Button::R4))request(held(Button::L4)?deck183::SelectAll:deck183::ToggleMelee); // L4 + R4 selects all; shoulders own zoom.
-   if(held(Button::L4))out.set(Shift);if(held(Button::L3))out.set(Control);
+   if(held(Button::L4))out.set(Shift);
+   if(held(Button::L3)&&frame.left_trigger<=config_.trigger_release)out.set(Control);
    const auto fire=fire_grip_.sample(held(Button::L5),down(Button::L5),now,config_.hold_ms);
    out.fire_at_will=fire==deck183::PressAction::Tap;
    out.skirmish=fire==deck183::PressAction::Hold;
@@ -170,6 +169,8 @@ public:
   wheel_directions_&=frame.buttons;
   const uint64_t directions=deck174::bit(Button::Up)|deck174::bit(Button::Down)|deck174::bit(Button::Left)|deck174::bit(Button::Right);
   const bool wheel=held(Button::R1);
+  if(wheel||held(Button::Menu)||held(Button::Y))r3_.reset();
+  else out.r3_held=r3_.sample(held(Button::R3),down(Button::R3),now,config_.hold_ms);
   const auto double_time=uint64_t(config_.double_tap_ms)*1000;
   if(wheel||command_wheel_||held(Button::Menu)||held(Button::Y))fire_grip_.reset();
   else out.skirmish=fire_grip_.sample(held(Button::L5),down(Button::L5),now,config_.hold_ms)==deck183::PressAction::Hold;

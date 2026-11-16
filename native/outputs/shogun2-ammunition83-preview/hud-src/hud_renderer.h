@@ -331,6 +331,18 @@ inline void mouse_image(Graphics& g,RectF r,bool left,bool active=true){
     g.DrawLine(&line,r.X+1,r.Y+r.Height*.49f,r.GetRight()-1,r.Y+r.Height*.49f);
     SolidBrush wheel(Color(255,220,209,170));g.FillRectangle(&wheel,r.X+r.Width*.5f-1.5f,r.Y+r.Height*.14f,3.f,r.Height*.18f);
 }
+inline void middle_mouse_image(Graphics& g,RectF r){
+    GraphicsPath shape;round_rect(shape,r,r.Width*.43f);
+    SolidBrush paper(Color(255,228,223,201)),wheel(red());
+    Pen outline(Color(255,61,50,34),1.1f);
+    const float middle=r.X+r.Width*.5f,split=r.Y+r.Height*.49f;
+    g.FillPath(&paper,&shape);g.DrawPath(&outline,&shape);
+    g.DrawLine(&outline,middle,r.Y+1.f,middle,split);
+    g.DrawLine(&outline,r.X+1.f,split,r.GetRight()-1.f,split);
+    const RectF scroll(middle-2.5f,r.Y+r.Height*.13f,5.f,r.Height*.27f);
+    GraphicsPath wheel_shape;round_rect(wheel_shape,scroll,2.f);
+    g.FillPath(&wheel,&wheel_shape);g.DrawPath(&outline,&wheel_shape);
+}
 enum class PanelFinish {Paper,Ink};
 inline constexpr float panel_rail=18.f;
 inline RectF panel_bounds(RectF r,float device){
@@ -738,14 +750,18 @@ inline void ink_rule(Graphics& g,RectF panel,float top){
 inline void ink_action(Graphics& g,RectF panel,float y,const wchar_t* key,const wchar_t* label,
                        float key_width=32.f,Color color=ink_ivory){
     const float x=panel.X+17;
-    key_image(g,key,RectF(x,panel.Y+y,key_width,24));
+    if(wcscmp(key,L"MMB")==0)middle_mouse_image(g,RectF(x+(key_width-17.f)*.5f,panel.Y+y+1.f,17.f,22.f));
+    else key_image(g,key,RectF(x,panel.Y+y,key_width,24));
     const float text_x=x+key_width+11;
-    ink_label(g,label,RectF(text_x,panel.Y+y,panel.GetRight()-17-text_x,24),15,color);
+    const RectF caption(text_x,panel.Y+y,panel.GetRight()-17-text_x,24);
+    if(wcscmp(key,L"MMB")==0||wcscmp(key,L"R3")==0)
+        native_fonts.paint_caption(g,label,caption,15,color,false,true);
+    else ink_label(g,label,caption,15,color);
 }
 
 inline void ink_orders(Graphics& g,const Assets& a,const View& v,const hudlayout108::Layout& layout){
     const bool desktop=!v.controller_ui;
-    const float height=desktop?(v.bow?383.f:357.f):233.f;
+    const float height=desktop?(v.bow?383.f:357.f):(v.bow?259.f:233.f);
     const RectF box(layout.width-ink_panel_right-ink_panel_width,
         (layout.height-height)*.5f,ink_panel_width,height);
     panel(g,a,box,PanelFinish::Ink);
@@ -776,7 +792,7 @@ inline void ink_orders(Graphics& g,const Assets& a,const View& v,const hudlayout
         ink_action(g,box,90,L"C",L"Follow me",32,v.following?ink_gold:ink_ivory);
         ink_action(g,box,115,L"R",tap.c_str(),32,v.commands_known?ink_gold:ink_ivory);
         ink_action(g,box,140,L"R",hold);
-        ink_action(g,box,165,L"Alt",L"AI Commander",40);
+        ink_action(g,box,165,L"Right Alt",L"AI Commander",78);
         ink_label(g,L"(Experimental)",RectF(box.X+68,box.Y+188,box.Width-85,17),13);
     }else{
         ink_action(g,box,40,L"Q",L"Move / attack");
@@ -788,13 +804,14 @@ inline void ink_orders(Graphics& g,const Assets& a,const View& v,const hudlayout
     ink_rule(g,box,split);
     ink_label(g,L"Possession",RectF(box.X+17,box.Y+split+6,box.Width-34,21),16,ink_gold);
     ink_action(g,box,split+28,L"3",L"Pause / resume");
-    ink_action(g,box,split+52,L"4",L"Slow motion");
+    ink_action(g,box,split+52,L"4",desktop?L"Slow / normal":L"Slow / pause / play");
     if(desktop){
         ink_action(g,box,split+76,L"Tab",L"Switch perspective",42);
         ink_action(g,box,split+100,L"Caps Lock",L"Back to RTS",88);
-        if(v.bow)ink_action(g,box,split+124,L"MMB",L"Hold to follow arrow",48);
+        if(v.bow)ink_action(g,box,split+124,L"MMB",L"Hold to follow arrow");
     }else{
         ink_action(g,box,split+76,L"F10",L"Exit possession");
+        if(v.bow)ink_action(g,box,split+102,L"R3",L"Hold to follow arrow");
     }
 }
 

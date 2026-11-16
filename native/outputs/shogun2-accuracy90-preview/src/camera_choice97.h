@@ -32,7 +32,7 @@ static bool choice_valid97(uintptr_t view,const Choice97& c){
         melee60::Request request{};committed=melee_request(request)||melee_handoff78.matches(locomotion_actor(),possession_lease.generation,
             possession_lease.identity.mount?possession_lease.identity.mount_id:possession_lease.identity.actor_id,possession_lease.identity.unit_id);
     }
-    NativeSubject motion;return native_subject(c.actor,c.unit,view,committed,motion);
+    NativeSubject motion;return possession_camera_subject(c.actor,c.unit,view,c.environment,committed,motion);
 }
 static Choice97 owned_choice97(uintptr_t view){
     if(!camera_scope104||!possessed||!possession_lease.active||view!=possession_lease.identity.view||!followed(possessed,false,false)||dead_view())return {};

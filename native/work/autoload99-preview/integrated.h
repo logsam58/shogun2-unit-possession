@@ -50,16 +50,85 @@ static void record(LONG stage,const std::string& detail){
     InterlockedExchange(&autoload_stage,stage);
     (void)detail; // Stage is observable in memory; routine startup creates no log.
 }
+static void write_component_stage(const std::wstring& stage,const void* bytes,DWORD size){
+    Handle file(CreateFileW(stage.c_str(),GENERIC_WRITE|DELETE,0,nullptr,CREATE_NEW,
+                           FILE_ATTRIBUTE_NORMAL,nullptr));
+    require(file.h!=INVALID_HANDLE_VALUE,"Cannot create exclusive component staging");
+    // An interrupted write should leave the final name available for retry.
+    // Keep the incomplete stage delete-pending until all its bytes are flushed.
+    FILE_DISPOSITION_INFO disposition{TRUE};
+    require(SetFileInformationByHandle(file.h,FileDispositionInfo,&disposition,sizeof disposition)!=0,
+            "Cannot protect incomplete component staging");
+    DWORD written=0;
+    require(WriteFile(file.h,bytes,size,&written,nullptr)&&written==size&&FlushFileBuffers(file.h),
+            "Cannot finish component staging");
+    disposition.DeleteFile=FALSE;
+    require(SetFileInformationByHandle(file.h,FileDispositionInfo,&disposition,sizeof disposition)!=0,
+            "Cannot retain completed component staging");
+}
 static std::wstring extract(HMODULE module,int id,const wchar_t* name,const char* expected){
-    std::wstring path=runtime_folder+L"\\"+name;
-    if(GetFileAttributesW(path.c_str())!=INVALID_FILE_ATTRIBUTES){require(hash_file(path)==expected,"Cached mod file differs; preserved without overwrite");return path;}
-    HRSRC resource=FindResourceW(module,MAKEINTRESOURCEW(id),MAKEINTRESOURCEW(10));require(resource!=nullptr,"Embedded mod component missing");
-    HGLOBAL loaded=LoadResource(module,resource);const void* bytes=LockResource(loaded);DWORD size=SizeofResource(module,resource);require(bytes&&size,"Embedded mod component empty");
-    Handle file(CreateFileW(path.c_str(),GENERIC_WRITE,0,nullptr,CREATE_NEW,FILE_ATTRIBUTE_NORMAL,nullptr));require(file.h!=INVALID_HANDLE_VALUE,"Cannot extract mod component");
-    DWORD written=0;require(WriteFile(file.h,bytes,size,&written,nullptr)&&written==size,"Cannot write mod component");
-    CloseHandle(file.h);file.h=nullptr;require(hash_file(path)==expected,"Extracted mod component failed integrity check");return path;
+    const auto path=runtime_folder+L"\\"+name;
+    if(GetFileAttributesW(path.c_str())!=INVALID_FILE_ATTRIBUTES){
+        require(hash_file(path)==expected,"Cached mod file differs; preserved without overwrite");
+        return path;
+    }
+    const auto stage=path+L".component.pending";
+    if(GetFileAttributesW(stage.c_str())==INVALID_FILE_ATTRIBUTES){
+        HRSRC resource=FindResourceW(module,MAKEINTRESOURCEW(id),MAKEINTRESOURCEW(10));
+        require(resource!=nullptr,"Embedded mod component missing");
+        HGLOBAL loaded=LoadResource(module,resource);
+        const void* bytes=LockResource(loaded);
+        const DWORD size=SizeofResource(module,resource);
+        require(bytes&&size,"Embedded mod component empty");
+        write_component_stage(stage,bytes,size);
+    }
+    require(hash_file(stage)==expected,"Unknown or incomplete component staging preserved");
+    if(!MoveFileExW(stage.c_str(),path.c_str(),MOVEFILE_WRITE_THROUGH))
+        require(GetFileAttributesW(path.c_str())!=INVALID_FILE_ATTRIBUTES,
+                "Cannot commit component cache; existing files preserved");
+    require(hash_file(path)==expected,"Published mod component differs; preserved without overwrite");
+    return path;
 }
 #ifdef S2FP_LOCAL_ASSETS
+static bool matching_local_bytes159(const std::wstring& source,const std::wstring& candidate){
+    Handle original(CreateFileW(source.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,
+                                OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,nullptr));
+    Handle other(CreateFileW(candidate.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,
+                             OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,nullptr));
+    FILE_ID_INFO a{},b{};
+    const FILE_ID_128 empty{};
+    if(original.h!=INVALID_HANDLE_VALUE&&other.h!=INVALID_HANDLE_VALUE&&
+       GetFileInformationByHandleEx(original.h,FileIdInfo,&a,sizeof a)&&
+       GetFileInformationByHandleEx(other.h,FileIdInfo,&b,sizeof b)&&
+       a.VolumeSerialNumber==b.VolumeSerialNumber&&
+       memcmp(&a.FileId,&empty,sizeof empty)&&!memcmp(&a.FileId,&b.FileId,sizeof a.FileId))
+        return true;
+    return hash_file(source)==hash_file(candidate);
+}
+static void copy_local_stage159(const std::wstring& source,const std::wstring& stage){
+    Handle input(CreateFileW(source.c_str(),GENERIC_READ,FILE_SHARE_READ,nullptr,
+                             OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,nullptr));
+    require(input.h!=INVALID_HANDLE_VALUE,"Cannot read local resource cache");
+    std::vector<unsigned char> buffer(256*1024);
+    Handle output(CreateFileW(stage.c_str(),GENERIC_WRITE|DELETE,0,nullptr,
+                              CREATE_NEW,FILE_ATTRIBUTE_NORMAL,nullptr));
+    require(output.h!=INVALID_HANDLE_VALUE,"Cannot stage local resource cache");
+    FILE_DISPOSITION_INFO disposition{TRUE};
+    require(SetFileInformationByHandle(output.h,FileDispositionInfo,&disposition,sizeof disposition)!=0,
+            "Cannot protect incomplete local resource copy");
+    for(;;){
+        DWORD count=0,written=0;
+        require(ReadFile(input.h,buffer.data(),DWORD(buffer.size()),&count,nullptr)!=0,
+                "Cannot read local resource cache");
+        if(!count)break;
+        require(WriteFile(output.h,buffer.data(),count,&written,nullptr)&&written==count,
+                "Cannot finish local resource copy");
+    }
+    require(FlushFileBuffers(output.h)!=0,"Cannot flush local resource copy");
+    disposition.DeleteFile=FALSE;
+    require(SetFileInformationByHandle(output.h,FileDispositionInfo,&disposition,sizeof disposition)!=0,
+            "Cannot retain completed local resource copy");
+}
 static void cache_local159(const std::wstring& source,const std::wstring& target,unsigned kind,bool share_bytes=false){
     assets159::Store input;require(input.load(source,kind),"Local game resources missing or corrupt; run the local-assets setup again");
     // The validator is no longer used. Close its map and file before creating
@@ -67,20 +136,29 @@ static void cache_local159(const std::wstring& source,const std::wstring& target
     // Keep immutable resource readers and all hash/foreign-file guards intact.
     input.clear();
     if(GetFileAttributesW(target.c_str())==INVALID_FILE_ATTRIBUTES){
-        auto stage=target+L".local159.pending166";
+        const auto stage=target+L".local159.pending166";
         bool owned=false;
         try{
             if(GetFileAttributesW(stage.c_str())==INVALID_FILE_ATTRIBUTES){
                 // On the same volume, updates share the immutable bytes.
                 if(!share_bytes||!CreateHardLinkW(stage.c_str(),source.c_str(),nullptr))
-                    require(CopyFileW(source.c_str(),stage.c_str(),TRUE)!=0,"Cannot stage local resource cache");
+                    copy_local_stage159(source,stage);
                 owned=true;
             }
-            require(hash_file(stage)==hash_file(source),"Staged local resources differ");
-            require(MoveFileExW(stage.c_str(),target.c_str(),MOVEFILE_WRITE_THROUGH)!=0,"Cannot commit local resource cache; existing files preserved");
-        }catch(...){if(owned)DeleteFileW(stage.c_str());throw;}
+            require(matching_local_bytes159(source,stage),"Staged local resources differ");
+            // The comparison releases both handles before renaming a link.
+            if(!MoveFileExW(stage.c_str(),target.c_str(),MOVEFILE_WRITE_THROUGH)){
+                const DWORD error=GetLastError();
+                require((error==ERROR_FILE_NOT_FOUND||error==ERROR_PATH_NOT_FOUND)&&
+                        GetFileAttributesW(target.c_str())!=INVALID_FILE_ATTRIBUTES,
+                        "Cannot commit local resource cache; existing files preserved");
+            }
+        }catch(...){
+            if(owned)DeleteFileW(stage.c_str());
+            throw;
+        }
     }
-    require(hash_file(source)==hash_file(target),"Local resource cache differs; preserved without overwrite");
+    require(matching_local_bytes159(source,target),"Local resource cache differs; preserved without overwrite");
     assets159::Store output;require(output.load(target,kind),"Local resource cache failed integrity check");
 }
 #endif
@@ -114,12 +192,14 @@ static std::string component_error168(HMODULE module,const char* fallback){
     return n&&n<sizeof text?std::string(text,n):std::string(fallback);
 }
 #if defined(POSSESSION_WORKSHOP_BUILD) && defined(S2FP_LOCAL_ASSETS)
-static void workshop_assets165(HMODULE module,const std::wstring& game);
+static std::wstring workshop_resource_key165(const std::wstring& game);
+static void workshop_assets165(HMODULE module,const std::wstring& game,const std::wstring& resource_key);
 #endif
 static DWORD WINAPI integrated_worker(void* argument){bool owned_adapter168=false,owned_qte168=false,owned_gate168=false;deck222::StartupGuard keyboard_startup222;try{
     wchar_t exe[MAX_PATH];require(GetModuleFileNameW(nullptr,exe,MAX_PATH)>0,"Game path unavailable");
     const wchar_t* name=wcsrchr(exe,L'\\');name=name?name+1:exe;
     if(_wcsicmp(name,L"shogun2.exe")&&_wcsicmp(name,L"shogun2.retail.exe")){InterlockedExchange(&autoload_stage,1);return 0;}
+    std::wstring game=exe;game=game.substr(0,game.find_last_of(L'\\'));
     runtime_folder=known_folder(CSIDL_LOCAL_APPDATA)+L"\\Shogun2PossessionCheckpoint45\\"
 #ifdef POSSESSION_WORKSHOP_BUILD
         L"workshop-"
@@ -127,16 +207,19 @@ static DWORD WINAPI integrated_worker(void* argument){bool owned_adapter168=fals
         L"integrated-"
 #endif
         +EMBEDDED_BUILD;
+#if defined(POSSESSION_WORKSHOP_BUILD) && defined(S2FP_LOCAL_ASSETS)
+    const auto resource_key=workshop_resource_key165(game);
+    runtime_folder+=L"-"+resource_key;
+#endif
     require(SHCreateDirectoryExW(nullptr,runtime_folder.c_str(),nullptr)==ERROR_SUCCESS||GetFileAttributesW(runtime_folder.c_str())!=INVALID_FILE_ATTRIBUTES,"Mod cache unavailable");
     record(2,"Integrated mod startup; no external installation or PowerShell required");
     if(!selected()){record(3,"Mod unchecked; no gameplay or HUD loaded");return 0;}
-    std::wstring game=exe;game=game.substr(0,game.find_last_of(L'\\'));
 #ifndef POSSESSION_WORKSHOP_BUILD
     require(hash_file(game+L"\\data\\shogun2_possession_checkpoint45.pack")==EMBEDDED_PACK_SHA,"Selected mod pack differs");
 #endif
 #ifdef S2FP_LOCAL_ASSETS
 #ifdef POSSESSION_WORKSHOP_BUILD
-    workshop_assets165(static_cast<HMODULE>(argument),game);
+    workshop_assets165(static_cast<HMODULE>(argument),game,resource_key);
 #else
     // Prepare outside the game process during setup; validate before any native hook loads.
     for(unsigned kind:{1u,2u}){

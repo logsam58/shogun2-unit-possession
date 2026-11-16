@@ -1,10 +1,16 @@
 -- Actual compiled Workshop bootstrap/native export lookup plus explicit mock
 -- Proton/UI input. Never Steam calls, game hooks or a remote Deck assertion.
 local bootstrap=assert(arg[1]);local campaign_bootstrap=assert(arg[2]);local reference_file=assert(io.open(assert(arg[3]),"rb"));local campaign_reference=reference_file:read("*a");reference_file:close();local passed=0
+local scenario=arg[4] or 'stock'
+local refused=scenario=='conflict' or scenario=='foreign' or scenario=='empty' or scenario=='foreign-root'
+assert(scenario=='stock' or scenario=='selected' or scenario=='companions' or refused)
+local fallback_file=arg[5]
 local function run(mode,campaign)
     local nodes={};local serial=0;local creates=0;local activated=0;local went_back=0;local stops=0
     local reports=0;local last_focus
     local unrequired=0;local stock_calls=0
+    local native_prepares,native_handoffs,attempts,menu_prepares=0,0,0,0
+    local diagnostic
     local flags={supported=true,prepare=true,active=true,focused=true,ready=true,poll=true}
     if mode=='desktop'then flags.supported=false end
     if mode=='prepare-failure'then flags.prepare=false end
@@ -54,6 +60,13 @@ local function run(mode,campaign)
         end},
         package={path='',loadlib=function(path,name)
             local real,why=package.loadlib(path,name);assert(type(real)=='function',why)
+            if scenario=='companions'and not campaign and name=='s2up_workshop_prepare165' then
+                return function(value)
+                    local ready=real(value)
+                    if ready==true then menu_prepares=menu_prepares+1 end
+                    return ready
+                end
+            end
             local key=name:match('^s2up_menu_(.+)181$')
             if not key then return real end
             lookups[key]=true
@@ -63,7 +76,18 @@ local function run(mode,campaign)
             if key=='back188'then return function(value)assert(value==true);went_back=went_back+1;return true end end
             if key=='context'then return function(tag)assert(type(tag)=='string');return real(tag)end end
             return function(value)
-                if key=='campaign_prepare'then if mode=='prepare-failure'then return false end;return real(value)end
+                if key=='campaign_prepare'then
+                    if mode=='prepare-failure'then return false end
+                    native_prepares=native_prepares+1
+                    local bytes=real(value)
+                    if refused then
+                        assert(bytes==nil,'Native campaign reader accepted an incompatible pack selection')
+                    else
+                        assert(type(bytes)=='string' and bytes==campaign_reference,'Native campaign export returned different bytes')
+                        native_handoffs=native_handoffs+1
+                    end
+                    return bytes
+                end
                 if key=='attach'then assert(type(value)=='string');return true end
                 if key=='detach'then stops=stops+1;return true end
                 if key=='focus'then assert(type(value)=='string');last_focus=value;return true end
@@ -72,11 +96,18 @@ local function run(mode,campaign)
                 if key=='stop'then stops=stops+1;return true end
                 return flags[key]
             end
-        end},print=function()end}
+        end},print=function(text)diagnostic=text end}
     if campaign then
         env.CampaignUI={};env.PanelManager={OpenPanels=function()return false end,CloseAllPanels=function()error("Direct panel close from draw callback is forbidden")end}
+        if fallback_file then
+            env.io=setmetatable({open=function(path,flags)
+                if path=='data/data.pack' then return io.open(fallback_file,flags) end
+                return io.open(path,flags)
+            end},{__index=io})
+        end
         env.loadstring=function(bytes,name)
             if name=='@owned-game/campaign-root'then
+                attempts=attempts+1
                 assert(bytes==campaign_reference,'Native/fallback campaign handoff bytes differ')
                 return function(...)stock_calls=stock_calls+1;assert(select('#',...)==3);local a,b,c=...;assert(a=='first'and b==nil and c=='last')end
             end
@@ -85,10 +116,25 @@ local function run(mode,campaign)
     end
     setmetatable(env,{__index=_G});local chunk=assert(loadfile(campaign and campaign_bootstrap or bootstrap));setfenv(chunk,env);chunk('first',nil,'last')
     local count=0;for name,fn in pairs(env)do if type(fn)=='function'and getfenv(fn)==env then count=count+1 end end
-    if campaign then assert(stock_calls==1,'Campaign original invoked zero/twice')else assert(count==37,'Stock callbacks/environment changed: '..count)end
-    if not(campaign and mode=='prepare-failure')then for _,name in ipairs({'supported','prepare','poll','stop','active','focused','ready','bindings','failed','glyphs','glyph_failed','cancel','heartbeat','error','up','down','left','right','focus','attach','detach','campaign_prepare','pause','next','previous','pan_left','pan_right','pan_up','pan_down','turn_left','turn_right','panel188','back188'})do assert(lookups[name],'Missing real native export '..name)end end
+    local recovered=campaign and (mode=='prepare-failure' or refused)
+    if campaign then
+        assert(stock_calls==1 and attempts==1,
+            'Campaign root did not run exactly once for '..scenario..': '..tostring(diagnostic))
+        assert(native_prepares==(mode=='prepare-failure' and 0 or 1),'Campaign preparation count changed')
+        assert(native_handoffs==(recovered and 0 or 1),'Expected campaign preparation route was not taken')
+    else
+        assert(count==37,'Stock callbacks/environment changed: '..count)
+        if scenario=='companions' then
+            assert(menu_prepares==1,'Frontend fell back or prepared more than once')
+        end
+    end
+    if not recovered then for _,name in ipairs({'supported','prepare','poll','stop','active','focused','ready','bindings','failed','glyphs','glyph_failed','cancel','heartbeat','error','up','down','left','right','focus','attach','detach','campaign_prepare','pause','next','previous','pan_left','pan_right','pan_up','pan_down','turn_left','turn_right','panel188','back188'})do assert(lookups[name],'Missing real native export '..name)end end
     local status;for _,c in pairs(nodes)do if c.id=='s2up_deck181_status'then status=c end end
-    if mode=='desktop'then
+    if refused then
+        assert(creates==0 and reports==0 and stops==0 and not lookups.supported and not root.callbacks.OnUpdatePulse,
+               'Campaign conflict must recover the stock root without attaching Deck controls')
+        assert(tostring(diagnostic):find('Owned campaign root preparation failed',1,true),'Campaign refusal did not reach stock recovery')
+    elseif mode=='desktop'then
         assert(creates==0 and reports==0 and stops==0 and not root.callbacks.OnUpdatePulse,'Desktop campaign must keep stock callbacks and no Deck children')
     elseif mode=='normal'then
         assert(creates==1 and not status,'Only the pulse owner exists before the new campaign texture is ready; main-menu legend is absent')
@@ -103,5 +149,16 @@ local function run(mode,campaign)
     end
     passed=passed+1;print('PASS compiled181 '..(campaign and'campaign'or'menu')..' '..mode..'; actual export lookup and owned handoff; UI/backend are explicit mocks')
 end
-for _,campaign in ipairs({false,true})do run('desktop',campaign);run('normal',campaign);run('UI-failure',campaign);run('prepare-failure',campaign)end
-print('PASS '..passed..' compiled181 menu/campaign bootstrap integration checks; no actual Deck execution')
+if scenario=='stock' then
+    for _,campaign in ipairs({false,true})do
+        for _,mode in ipairs({'desktop','normal','UI-failure','prepare-failure'})do run(mode,campaign)end
+    end
+    print('PASS '..passed..' compiled181 menu/campaign bootstrap integration checks; no actual Deck execution')
+elseif scenario=='companions' then
+    run('normal',false)
+    run('normal',true)
+    print('PASS '..passed..' compiled181 companion stock-root checks; no actual Deck execution')
+else
+    run('normal',true)
+    print('PASS compiled181 campaign selection '..scenario)
+end

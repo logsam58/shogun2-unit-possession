@@ -69,7 +69,12 @@ static bool unit_member130(uintptr_t native_unit,uintptr_t actor){
     return false;
 }
 static bool deny_member_insert130(uintptr_t squad,uintptr_t actor){
-    __try{if(proximity_managed147(actor))return proximity_deny147(squad,actor);return member_owned130(actor)&&!charge_member146(actor)&&squad_owner130(squad,unit,environment);}
+    __try{
+        uintptr_t replay_unit{},replay_env{};
+        if(replay_detached148(actor,&replay_unit,&replay_env))return squad_owner130(squad,replay_unit,replay_env);
+        if(proximity_managed147(actor))return proximity_deny147(squad,actor);
+        return member_owned130(actor)&&!charge_member146(actor)&&squad_owner130(squad,unit,environment);
+    }
     __except(EXCEPTION_EXECUTE_HANDLER){return false;}
 }
 static void __fastcall member_insert130(void* squad,void*,uintptr_t actor,unsigned clear){
@@ -81,7 +86,7 @@ static void __fastcall member_transfer130(void* squad,void*,uintptr_t actor,unsi
     if(deny_member_insert130(reinterpret_cast<uintptr_t>(squad),actor)){InterlockedIncrement(&member_denials130);return;}
     original_member_transfer130(squad,actor,clear);
 }
-static int __cdecl skip_regroup_member130(uintptr_t actor){return member_owned130(actor)&&!charge_member146(actor)&&!proximity_managed147(actor)?1:0;}
+static int __cdecl skip_regroup_member130(uintptr_t actor){return (replay_detached148(actor)||(member_owned130(actor)&&!charge_member146(actor)&&!proximity_managed147(actor)))?1:0;}
 static __declspec(naked) void regroup_gate130(){
     __asm{
         pushfd
@@ -100,7 +105,9 @@ static __declspec(naked) void regroup_gate130(){
         jmp dword ptr [original_regroup_gate130]
     }
 }
-static void forget_member130(Detached130& r){InterlockedDecrement(&detached_buckets130[detached_bucket130(r.actor)]);r={};InterlockedDecrement(&detached_count130);}
+static void forget_member130(Detached130& r){
+    record_formation148(r.actor,exactreplay147::Kind::detach_end);
+    InterlockedDecrement(&detached_buckets130[detached_bucket130(r.actor)]);r={};InterlockedDecrement(&detached_count130);}
 // Original 3e1780 -> 3da190 -> 3dbd70 gives each member its own slot
 // request. 14bc50 only restores membership and clears the old task. The
 // actor's native update consumes +648 only when its +665 flag is clear.
@@ -125,6 +132,7 @@ static void reissue_officer_slot68(uintptr_t actor,uintptr_t squad,uintptr_t nat
     // The normal actor update handles the actual route and gait.
     field<unsigned char>(actor,0x664)=0;
     field<unsigned char>(actor,0x665)=0;
+    record_formation148(actor,exactreplay147::Kind::officer_slot,capture_squad148(native_unit,env,squad));
 }
 static bool restore_member130(const Detached130& r,uintptr_t current_unit){
     if(field<unsigned>(current_unit,4)!=r.unit_id||field<uintptr_t>(current_unit,0x14)!=r.environment||
@@ -141,16 +149,27 @@ static bool restore_member130(const Detached130& r,uintptr_t current_unit){
             reissue_officer_slot68(actor,field<uintptr_t>(actor,0x3b4),current_unit,r.environment);
             return true;
         }
+        const auto from=capture_squad148(current_unit,r.environment,field<uintptr_t>(actor,0x3b4));
+        const auto to=capture_squad148(current_unit,r.environment,charge_target);
+        record_formation148(actor,exactreplay147::Kind::transfer_member,{to.key,membership_proof148(from,to)},from.key,1);
         original_member_transfer130(reinterpret_cast<void*>(charge_target),actor,1);
         return field<uintptr_t>(actor,0x3b4)==charge_target&&squad_matches130(charge_target,actor)==1;
     }
     auto target=charge_target?charge_target:r.preferred;
     if(!squad_registered130(target,current_unit,r.environment))target=field<uintptr_t>(current_unit,0xb9c);
     if(!squad_registered130(target,current_unit,r.environment))return false;
+    record_formation148(actor,exactreplay147::Kind::insert_member,capture_squad148(current_unit,r.environment,target),0,1);
     original_member_insert130(reinterpret_cast<void*>(target),actor,1);
     if(field<uintptr_t>(actor,0x3b4)!=target||squad_matches130(target,actor)!=1)return false;
     reissue_officer_slot68(actor,target,current_unit,r.environment);
     InterlockedIncrement(&member_rejoins130);return true;
+}
+static bool formation_task130(uintptr_t actor){
+    return !field<uintptr_t>(actor,0x18)&&!field<uintptr_t>(actor,0x688)&&field<unsigned char>(actor,0x384)==1&&
+        field<uintptr_t>(actor,0x2f8)==base+0x15dd7ac;
+}
+static void cancel_formation_task130(uintptr_t actor){
+    reinterpret_cast<UnitTick130>(base+0x3ca8f0)(reinterpret_cast<void*>(actor+0x2f0));
 }
 static void detach_member130(uintptr_t actor,const PossessionIdentity& id,unsigned generation){
     if(!actor||!member_owned130(actor)||charge_member146(actor)||proximity_managed147(actor)||!unit_member130(id.unit,actor))return;
@@ -159,15 +178,21 @@ static void detach_member130(uintptr_t actor,const PossessionIdentity& id,unsign
     if(!slot){InterlockedIncrement(&member_errors130);InterlockedExchange(&state->release,1);return;}
     auto squad=field<uintptr_t>(actor,0x3b4);
     if(squad&&(!squad_registered130(squad,id.unit,id.environment)||squad_matches130(squad,actor)!=1))return;
-    if(!slot->actor){*slot={id.environment,id.phase,id.unit,actor,field<uintptr_t>(actor,0x20c),squad,id.unit_id,field<unsigned>(actor,0x1c8),generation};InterlockedIncrement(&detached_buckets130[detached_bucket130(actor)]);InterlockedIncrement(&detached_count130);}
+    if(!slot->actor){
+        *slot={id.environment,id.phase,id.unit,actor,field<uintptr_t>(actor,0x20c),squad,id.unit_id,field<unsigned>(actor,0x1c8),generation};
+        InterlockedIncrement(&detached_buckets130[detached_bucket130(actor)]);InterlockedIncrement(&detached_count130);
+        record_formation148(actor,exactreplay147::Kind::detach_begin);
+    }
     else slot->generation=generation;
     if(!squad)return;
     if(!member_owned130(actor)||possession_lease.generation!=generation||!same_soldier(id,possession_lease.identity))return;
     // Retire only the exact native formation-move task. Combat, weapon,
     // recovery, climb and mount/passenger tasks are not cancelled here.
-    if(!field<uintptr_t>(actor,0x18)&&!field<uintptr_t>(actor,0x688)&&field<unsigned char>(actor,0x384)==1&&
-       field<uintptr_t>(actor,0x2f8)==base+0x15dd7ac)
-        reinterpret_cast<UnitTick130>(base+0x3ca8f0)(reinterpret_cast<void*>(actor+0x2f0));
+    if(formation_task130(actor)){
+        record_formation148(actor,exactreplay147::Kind::cancel_formation_task);
+        cancel_formation_task130(actor);
+    }
+    record_formation148(actor,exactreplay147::Kind::remove_member,capture_squad148(id.unit,id.environment,squad));
     reinterpret_cast<MemberRemove130>(base+0x1a80a0)(reinterpret_cast<void*>(squad),actor);
     if(field<uintptr_t>(actor,0x3b4)||squad_matches130(squad,actor)!=0){InterlockedIncrement(&member_errors130);InterlockedExchange(&state->release,1);return;}
     InterlockedIncrement(&member_detaches130);
@@ -195,11 +220,22 @@ static void sync_members130(uintptr_t current_unit){
 }
 static void __fastcall unit_tick130(void* current,void*){
     auto native_unit=reinterpret_cast<uintptr_t>(current);
+    const auto occurrence=replay_clock_unit148(native_unit);
     charge_boundary146(native_unit,false);
-    if(detached_count130||proximity_count147||native_unit==unit)sync_members130(native_unit);
+    replay_apply_unit148(native_unit,false,occurrence);
+    if(detached_count130||proximity_count147||native_unit==unit){
+        replay_unit_scope148(native_unit,false,occurrence);
+        sync_members130(native_unit);
+        replay_unit_scope148(0,false,0);
+    }
     original_unit_tick130(current);
     charge_boundary146(native_unit,true);
-    if(detached_count130||proximity_count147||native_unit==unit)sync_members130(native_unit);
+    replay_apply_unit148(native_unit,true,occurrence);
+    if(detached_count130||proximity_count147||native_unit==unit){
+        replay_unit_scope148(native_unit,true,occurrence);
+        sync_members130(native_unit);
+        replay_unit_scope148(0,false,0);
+    }
 }
 #include "unit_detach_combat130.h"
 static void create_unit_detach130(){

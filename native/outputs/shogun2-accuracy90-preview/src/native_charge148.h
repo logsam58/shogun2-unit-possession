@@ -154,13 +154,11 @@ static void refresh_combat_presence73(){
     if(possession_lease.active&&possession_lease.generation==lease)combat_presence73={now,lease,nearby};
     ReleaseSRWLockExclusive(&charge_lock146);
 }
-static bool charge_select148(uintptr_t actor,Charge139& selected){
+static bool charge_select148(uintptr_t actor,Charge139& selected,bool& too_close){
     ChargeList148 list{};bool found=false;
     __try{
-        float range=field<float>(base,0x1a4db40+0x5c),minimum=field<float>(base,0x1a4cfe0+0x5c),separation=field<float>(base,0x1a4d960+0x5c);
-        float vx=field<float>(actor,0x8c),vz=field<float>(actor,0x94);
-        if(!std::isfinite(range)||range<=0||range>100||!std::isfinite(minimum)||minimum<0||minimum>100||!std::isfinite(separation)||separation<=0||separation>=range||
-           !std::isfinite(vx)||!std::isfinite(vz)||vx*vx+vz*vz<minimum*minimum)return false;
+        float range=field<float>(base,0x1a4db40+0x5c),separation=field<float>(base,0x1a4d960+0x5c);
+        if(!std::isfinite(range)||range<=0||range>100||!std::isfinite(separation)||separation<=0||separation>=range)return false;
         auto common=field<uintptr_t>(environment,8),manager=common?field<uintptr_t>(common,0xcc):0;if(!manager)return false;
         InterlockedIncrement(&charge_queries148);
         // Original forward perception uses the same 0x71c half-angle as native
@@ -193,7 +191,7 @@ static bool charge_select148(uintptr_t actor,Charge139& selected){
             // Original charge entry completes immediately inside this live
             // minimum range. Do not skip the nearest real opponent and charge
             // another man farther back while already in contact with him.
-            if(distances[i]<=separation*separation){InterlockedIncrement(&charge_near_reject149);return false;}
+            if(distances[i]<=separation*separation){too_close=true;InterlockedIncrement(&charge_near_reject149);return false;}
             if(!reinterpret_cast<ChargeEligible148>(base+0x3e53d0)(reinterpret_cast<void*>(manager),actor,target))continue;
             InterlockedIncrement(&charge_eligibility148);
             float x=field<float>(target,0x48)-center[0],z=field<float>(target,0x50)-center[2],distance=std::hypot(x,z);
@@ -203,13 +201,94 @@ static bool charge_select148(uintptr_t actor,Charge139& selected){
     }__finally{if(list.data)reinterpret_cast<void(__cdecl*)(void*)>(base+0xf04d0)(reinterpret_cast<void*>(list.data));}
     return found;
 }
+// 184160/174ec0 schedule a live opposing formation before close contact.
+// Its per-soldier tasks (3824d0/3a9dc0) dispatch on their assigned start time.
+// Borrow only that target formation, then choose this soldier's own opponent.
+static bool charge_formation_target149(uintptr_t actor,Charge139& result){
+    const auto squad=field<uintptr_t>(unit,0xb9c);
+    if(!squad_registered130(squad,unit,environment))return false;
+    const auto members=field<uintptr_t>(squad,0x1c);
+    const auto count=field<unsigned>(squad,0x18);
+    if(!members||!count||count>2000)return false;
+    const auto center_x=field<float>(actor,0x48),center_y=field<float>(actor,0x4c),center_z=field<float>(actor,0x50);
+    const auto angle=field<unsigned short>(actor,0x64);
+    constexpr float turns=6.28318530718f/65536.f;
+    const float forward_x=std::sin(angle*turns),forward_z=std::cos(angle*turns);
+    // Same half angle as the native personal cone used by charge_select148.
+    const float forward_cutoff=std::cos(0x71c*turns);
+    const float separation=field<float>(base,0x1a4d960+0x5c);
+    const auto common=field<uintptr_t>(environment,8);
+    const auto manager=common?field<uintptr_t>(common,0xcc):0;
+    if(!manager||!std::isfinite(separation)||separation<=0||!std::isfinite(center_x)||!std::isfinite(center_y)||!std::isfinite(center_z))return false;
+    uintptr_t target_unit=0;
+    for(unsigned i=0;i<count;++i){
+        const auto peer=field<uintptr_t>(members,i*4);
+        if(!peer||peer==actor||field<uintptr_t>(peer,0x3b4)!=squad||
+           field<uintptr_t>(peer,0x214)!=unit||field<uintptr_t>(peer,0x28)!=environment||
+           field<unsigned char>(peer,0xf0)!=1)continue;
+        const auto table=field<uintptr_t>(peer,0);
+        if(!actor152::human(base,table)&&table!=base+0x15e8524)continue;
+        if(charge_formation147(peer,false)&&!field<unsigned char>(peer+0x2f8,0x10))
+            target_unit=field<uintptr_t>(peer+0x2f8,0x24);
+        if(!target_unit&&charge_native_task146(peer))
+            target_unit=field<uintptr_t>(peer+0x250,0x20);
+        if(target_unit)break;
+    }
+    if(!target_unit||target_unit==unit||field<uintptr_t>(target_unit,0x14)!=environment)return false;
+    const unsigned roster_offset=field<unsigned>(target_unit,0x384)?0x384:0x2bc;
+    const auto targets=field<uintptr_t>(target_unit,roster_offset+4);
+    const auto target_count=field<unsigned>(target_unit,roster_offset);
+    if(!targets||!target_count||target_count>2000)return false;
+    float nearest=FLT_MAX;
+    uintptr_t target=0;
+    for(unsigned i=0;i<target_count;++i){
+        const auto rider=field<uintptr_t>(targets,i*4);
+        if(!rider||!actor152::human(base,field<uintptr_t>(rider,0))||
+           field<uintptr_t>(rider,0x214)!=target_unit||field<uintptr_t>(rider,0x28)!=environment||
+           field<unsigned char>(rider,0xf0)!=1)continue;
+        const auto mount=field<uintptr_t>(rider,0x210);
+        const auto physical=mount?mount:rider;
+        // 3d1bf0 rejects candidates above/below the lower actor's native height
+        // envelope and uses bit 2 for hostile contacts.
+        if(!(field<unsigned>(actor,0x34)&field<unsigned>(physical,0x34)&2))continue;
+        const float dy=center_y-field<float>(physical,0x4c);
+        const float height=field<float>(dy>=0?physical:actor,0x54);
+        if(!(std::abs(dy)<height))continue;
+        const float dx=field<float>(physical,0x48)-center_x,dz=field<float>(physical,0x50)-center_z;
+        const float distance=std::hypot(dx,dz);
+        if(!std::isfinite(distance)||distance<=0||distance>=nearest||
+           dx*forward_x+dz*forward_z<distance*forward_cutoff)continue;
+        target=physical;
+        nearest=distance;
+    }
+    if(!target||nearest<=separation||!charge_bind_target139(result,target,target_unit)||
+       !reinterpret_cast<ChargeEligible148>(base+0x3e53d0)(reinterpret_cast<void*>(manager),actor,target))return false;
+    result.forward_x=(field<float>(target,0x48)-center_x)/nearest;
+    result.forward_z=(field<float>(target,0x50)-center_z)/nearest;
+    return true;
+}
+static bool charge_held149(){
+    const auto input=unsigned(InterlockedCompareExchange(&charge_physical_input148,0,0));
+    return (input&ChargePrimary199)&&charge_forward_sprint199(input);
+}
 static void charge_try148(){
     auto actor=locomotion_actor();unsigned generation=possession_lease.generation;
-    if((unsigned(InterlockedCompareExchange(&charge_physical_input148,0,0))&(FORWARD|RUN|BACKWARD|LEFT|RIGHT|ChargePrimary199))!=(FORWARD|RUN|ChargePrimary199)||!charge_admission146(actor))return;
-    auto now=GetTickCount64();if(charge_probe_lease148==generation&&now-charge_probe_tick148<100)return;charge_probe_lease148=generation;charge_probe_tick148=now;
+    if(!charge_held149()||!charge_admission146(actor))return;
+    const auto minimum=field<float>(base,0x1a4cfe0+0x5c);
+    const auto vx=field<float>(actor,0x8c),vz=field<float>(actor,0x94);
+    if(!std::isfinite(minimum)||minimum<0||minimum>100||
+       !std::isfinite(vx)||!std::isfinite(vz)||vx*vx+vz*vz<minimum*minimum)return;
+    const auto now=GetTickCount64();
+    if(charge_probe_lease148==generation&&now-charge_probe_tick148<100)return;
+    charge_probe_lease148=generation;charge_probe_tick148=now;
     sync_members130(unit);auto squad=field<uintptr_t>(actor,0x3b4);if(!charge_joined146(actor,squad)){InterlockedExchange(&charge_reject148,1);return;}
-    Charge139 selected{};if(!charge_select148(actor,selected)){InterlockedExchange(&charge_reject148,2);return;}
-    if(generation!=possession_lease.generation||!charge_admission146(actor)||!charge_target139(selected)||!charge_joined146(actor,squad))return;
+    Charge139 selected{};
+    bool too_close=false;
+    if(!charge_select148(actor,selected,too_close)&&(too_close||!charge_formation_target149(actor,selected))){
+        InterlockedExchange(&charge_reject148,2);return;
+    }
+    if(!charge_held149()||generation!=possession_lease.generation||!charge_admission146(actor)||
+       !charge_target139(selected)||!charge_joined146(actor,squad))return;
     AcquireSRWLockExclusive(&charge_lock146);
     auto& c=charge_control146;c={};c.proof=selected;c.proof.actor=actor;c.proof.generation=generation;c.proof.active=true;
     c.unit=unit;c.squad=squad;c.target_unit=selected.target_unit;c.target_id=selected.target_unit_serial;c.physical_serial=field<unsigned>(actor,0x1c8);c.assigning=true;
@@ -251,13 +330,18 @@ static void __fastcall charge_contact148(void* context,void*,uintptr_t one,uintp
         observe=charge_input_locked146()&&common&&manager==field<uintptr_t>(common,0xcc)&&(one==locomotion_actor()||two==locomotion_actor());
         if(observe){
             auto physical=locomotion_actor();
-            // Native3e5d40/4336b0 choose charge families from ACTUAL pose16.
-            // A freshly constructed task alone is not proof of that pose.
-            // Defer this personal queue call until original motion classifies
-            // it; do not fabricate pose/clip/outcome. Native jumps retain their
-            // own attack/defence classification and launch/landing authority.
             if(one==physical&&!charge_target_locked72(physical,two))return;
-            if(one==physical&&field<unsigned>(physical,0x1d0)!=16&&!native_mounted_jump140(physical)){InterlockedIncrement(&charge_pose_wait149);return;}
+            if(one==physical&&field<unsigned>(physical,0x1d0)!=16&&!native_mounted_jump140(physical)){
+                // The task can request charge gait before its first native
+                // pose update. Resolve that pending update at qualified contact.
+                if(!possession_lease.identity.mount&&charge_native_task146(physical)&&
+                   field<uintptr_t>(physical,0x26c)==two&&field<unsigned>(physical,0x244)==2&&
+                   field<unsigned>(physical,0x1f0)<=7&&!field<uintptr_t>(physical,0x18)&&
+                   !field<uintptr_t>(physical,0x688)&&!field<uintptr_t>(physical,0x474)&&
+                   !field<unsigned char>(physical,0x488)&&!field<unsigned char>(physical,0x489))
+                    reinterpret_cast<UnitTick130>(base+0x3dd9d0)(reinterpret_cast<void*>(physical));
+                if(field<unsigned>(physical,0x1d0)!=16){InterlockedIncrement(&charge_pose_wait149);return;}
+            }
             before=field<unsigned>(manager,0x14);
         }
     }__except(EXCEPTION_EXECUTE_HANDLER){observe=false;}

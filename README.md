@@ -1,16 +1,18 @@
 # Shogun 2 Unit Possession — Testing branch
 
-**Naval experiment: Revision 129.** This branch preserves the playable PC sailor-control test. The stable [main branch](https://github.com/logsam58/shogun2-unit-possession/tree/main) and existing Workshop item remain on Revision 126.
+**Testing is based on Workshop Revision 150.** Enable one Unit Possession entry at a time. See the [Testing validation record](docs/testing/revision150.json).
 
-In a single-player PC naval battle, start the battle, select one friendly ship, then press **F9 / Caps Lock**. Use **WASD** to move, **Shift** to run, the mouse to look, and **F10** to return to duty. The owner confirmed smooth movement, correct directions, movement aboard a moving ship, and repeated possession/return. Personal naval combat, boarding, crew switching, naval HUD and Deck naval controls are not implemented. See the [naval test record](docs/research/NAVAL129.md).
+### Naval possession on PC
+
+Start a single-player naval battle, select one friendly ship, and press **F9 / Caps Lock**. Use **WASD** to move, **Shift** to run, the mouse to look, and **F10** to return to duty. Revision 129 was tested aboard a moving ship and across repeated possession and release. This experiment covers controlling a sailor on deck. See the [naval test record](docs/research/NAVAL129.md).
 
 ### Steam Deck Remote Play
 
-Enable the Testing branch pack on the Windows host, leave Shogun 2 in windowed mode, and select **Stream** from the Deck with the game closed. The host selects the same Deck UI, action sets and controller prompts when Steam forwards the built-in Deck controller. The game window requests a 1280 × 800 client area when it fits on the host display. The previous placement returns when the stream ends if the game still uses the stream window placement.
+Enable the Testing pack on the Windows host and select **Stream** on the Deck while the game is closed. When Steam forwards the Deck controller, the host selects the Deck UI and controls and requests a 1280 × 800 render size. If you connect to a game already launched in desktop mode, restart it through **Stream** to pick up the Deck profile. The resolution change was tested with Revision 132.
 
-The controller profile is selected at launch. A Steam session that attaches to a game already launched in desktop mode needs a restart. Exclusive fullscreen uses the host’s display settings. The Steam Input and window sizing fixtures passed. Actual capture, prompts and controls still need a test on a physical Deck.
+### Native battle replay experiment
 
-Enable only one Unit Possession entry at a time. The separate **Testing branch** pack contains these experiments; it is not a new public Workshop release.
+Use **F9 / Caps Lock** as usual. The experiment records supported single-player infantry and officer movement, gait, and formation changes in the native battle replay. Use the same Testing build to record and watch the replay. Full battle parity and multiplayer synchronization are outside the current test scope.
 
 **NOW WITH STEAM DECK INTEGRATION**
 
@@ -25,9 +27,9 @@ Take control of a soldier in **Total War: SHOGUN 2**, fight in first or third pe
 ## Features
 
 - **First- and third-person play:** start in third person, switch with **P**, adjust camera distance, or orbit your soldier.
-- **Soldier selection:** at the closest RTS zoom, point at a soldier in your selected unit and press **Caps Lock** or **F9**. Generals, officers, flag bearers and musicians use their own equipment. From further away, the mod picks a soldier for you.
+- **Soldier selection:** point at a soldier in the selected unit at any zoom and press **Caps Lock** or **F9**. You can take over mid-fight. If the cursor is between soldiers, the mod tries someone nearby before picking from the rest of the unit. Generals, officers, flag bearers and musicians use their own equipment.
 - **Ranged combat:** aim and fire bows, guns and thrown weapons. Hold and release bow shots to vary their strength. Unit accuracy affects shot spread; sights help you allow for projectile drop.
-- **Melee combat:** time the displayed mouse-button prompts during the game's combat animations. Personal charges use forward sprint plus the primary attack input, with native charge contact and paired outcomes.
+- **Melee combat:** time the displayed mouse-button prompts during the game's combat animations. Sprint forward and hold the primary attack button to charge. Shogun handles contact and paired outcomes.
 - **Unit commands:** issue move and attack orders, drag formations, stop, hold position, follow, and choose fire orders. The game's formations, pathfinding, morale and fatigue still apply.
 - **Abilities and ammunition:** select the options available to your unit, including targeted friendly abilities such as Inspire, subject to the game's restrictions and cooldowns.
 - **Cavalry and sieges:** ride cavalry, order supported units to mount or dismount, and attempt castle-wall climbing. Climbing is intermittent.
@@ -37,7 +39,7 @@ Take control of a soldier in **Total War: SHOGUN 2**, fight in first or third pe
 
 Use the existing [Steam Workshop item](https://steamcommunity.com/sharedfiles/filedetails/?id=3825625050). The combined build uses that same item; a separate Deck subscription is unnecessary.
 
-**Maintained source: v0.37, PC and Steam Deck.** The [v0.37 source tag](https://github.com/logsam58/shogun2-unit-possession/tree/v0.37) contains Revision 126. See [what changed](docs/releases/v0.37.md) and the [record of source and Workshop versions](docs/current-release.json).
+**The regular Workshop item is on Revision 150.** See the [changelog](CHANGELOG.md) and [build record](docs/current-release.json).
 
 No installer is provided. Fonts, artwork and audio are prepared from your own installed game.
 
@@ -46,7 +48,7 @@ No installer is provided. Fonts, artwork and audio are prepared from your own in
 For Steam Deck, use the Windows game through Proton as described below. Desktop resolution alone does not enable the Deck profile.
 
 - An owned installation of the **original Windows Steam version of Total War: SHOGUN 2**, using the supported game build.
-- The installed game's `data.pack` and compatible native fonts from `local_en.pack` or a supported `local_*.pack`. HUD text is English; not every localization has been tested.
+- The installed game’s `data.pack` and language packs. You can keep your game language. The mod fills in missing HUD font sizes locally, and the HUD text is in English. Non-English gameplay testing is still pending.
 - English advisor audio and the Windows media components are optional. If unavailable, the mod omits the friendly-fire voice.
 
 No compiler or Python installation is needed to play. The mod prepares its resources from your installed game on first launch and caches them for reuse; those resources are not bundled in the download.
@@ -84,9 +86,9 @@ Returning to RTS keeps the Army control setting from possession.
 
 | Key | Action |
 | --- | --- |
-| **Caps Lock / F9** | Possess a soldier in the selected unit; at closest RTS zoom, point the mouse cursor at who you want |
+| **Caps Lock / F9** | Possess a soldier in the selected unit. Point at the soldier you want at any zoom. |
 | **Caps Lock / F10 / Escape** | Return to your previous RTS camera |
-| **Hold Left Alt** | Commander. Click to assign or right-click to close. In possession, press V to switch to Unit Orders. WASD still moves your soldier while the wheel is open. Click Hold Here once to walk or twice to run. Follow Me adjusts its pace as you move. |
+| **Hold Right Alt** | Commander. Click to assign or right-click to close. In possession, press V to switch to Unit Orders. WASD still moves your soldier while the wheel is open. Click Hold Here once to walk or twice to run. Follow Me adjusts its pace as you move. |
 | **WASD** | Move |
 | **Shift** | Run; hold **W + Shift + LMB** toward an eligible enemy to request a charge. Use melee mode; release RMB. |
 | **Mouse** | Look around |
@@ -95,7 +97,7 @@ Returning to RTS keeps the Army control setting from possession.
 | **Hold middle mouse** in third person | Follow an arrow you just shot, or orbit your soldier when no arrow is available |
 | **M** | Order the unit to mount/dismount, where supported |
 | **Hold RMB** | Ready your personal ranged weapon, including while the formation is in melee mode |
-| **LMB** | Fire guns or thrown weapons; hold and release for bow draw strength |
+| **LMB** | Fire guns or thrown weapons. Hold and release for bow draw strength. Tap outside aiming or melee to cheer where supported. |
 | **1** | Toggle the whole unit's native melee/ranged mode, where supported |
 | **3** | Pause / resume the battle |
 | **4** | Toggle slow motion / normal battle speed |
@@ -113,7 +115,7 @@ Returning to RTS keeps the Army control setting from possession.
 | **Q — Move / Attack** | Point at the ground to move, or an enemy or supported breakable target to attack. Tap to walk; double-tap to run or charge. Hold Q and drag left to right to set the formation, then release. |
 | **E — Stop** | Stop the unit. |
 | **Z — Hold Here** | Form up at your current position, facing the direction you're looking when you press Z. Tap to walk there; double-tap to run. |
-| **C — Follow Me** | Form up beside you. Run to catch up when needed, then match your pace. When you stop, your men finish forming up around you. |
+| **C — Follow Me** | Form up beside you. Run to catch up when needed, then match your pace. When you stop, your men finish forming up around you. Follow Me hides its movement arrows. |
 | **Tap R — Fire orders** | Cycle **Hold Fire → Fire at Will → Fire on Command**. Fire on Command tells the unit to fire when you fire. |
 | **Hold R — Skirmish** | Toggle the unit's Skirmish mode where supported. |
 
@@ -125,9 +127,9 @@ Use the **Windows** Steam game through Proton; **Proton 9.0-4** is the tested ve
 
 Steam controller settings label the action sets as **Unit Possession Layout**. Hold **View** for the in-game guide; L1/R1 change pages and B closes it. Tap View in battle RTS to toggle the HUD; in possession it shares K’s three-step cycle.
 
-Left stick pans the map or moves your soldier. Right stick turns/zooms in campaign, turns/tilts in battle and looks around during possession. Hold R3 while possessed to switch first/third person. Cursor position does not drive map movement on Deck.
+Left stick pans the map or moves your soldier. Right stick turns/zooms in campaign, turns/tilts in battle and looks around during possession. Hold R3 while aiming a bow or while your arrow is in flight to follow it. Hold R3 when there is no arrow to follow to switch first/third person. Cursor position does not drive map movement on Deck.
 
-To charge, hold **forward + L3 + RT**, with your unit in melee mode and LT released. Sprinting alone does not request a charge. Hold R1 for the four-section command wheel and choose with the right stick. Press RT once to confirm. Double-press RT on Hold Here to run.
+To charge, toggle sprint with **L3**, push forward and hold **RT**, with your unit in melee mode and LT released. Sprinting alone does not request a charge. Hold R1 for the four-section command wheel and choose with the right stick. Press RT once to confirm. Double-press RT on Hold Here to run.
 
 ### Campaign
 
@@ -157,7 +159,8 @@ To charge, hold **forward + L3 + RT**, with your unit in melee mode and LT relea
 | R3 or right trackpad click held | Show formations and ranges |
 | A | Halt selected troops |
 | Left trackpad click | Click an edge to move in one of eight directions. Click the center and drag to rotate. Release to issue the order, holding L4 to queue it. |
-| Both trackpad clicks held + slide both thumbs | Slide your thumbs apart to widen the formation or together to narrow it. Release to confirm. |
+| Both trackpad clicks held + slide both thumbs | Resize the selected group together in place. Spread your thumbs to widen its frontage or pinch to narrow it. Release to confirm. |
+| Hold L3 + L2 and drag on the right trackpad | Move the selected troops while keeping their formation. |
 | D-pad up / down / left / right | Tap: select group1 /2 /3 /4; hold: assign current selection |
 | L4 held | Select card range or queue orders |
 | L3 held + R2 | Add/remove one unit at the cursor; the point is held still until R2 releases |
@@ -171,7 +174,7 @@ To charge, hold **forward + L3 + RT**, with your unit in melee mode and LT relea
 
 | Input | Action |
 |---|---|
-| R2 | Fire; hold/release bow; primary melee or QTE response |
+| R2 | Fire, hold/release to draw a bow, or use the primary melee prompt. Tap outside aiming or melee to cheer where supported. |
 | L2 | Ready ranged weapon; secondary melee or QTE response |
 | R1 held | Orders wheel. Choose with the right stick and press RT to confirm. Double-press RT on Hold Here to run. A switches to Commander and B closes the wheel. The left stick still moves your soldier. |
 | Wheel up / down / left / right | Follow Me / Stop / Hold Here / Cycle Fire Orders |
@@ -183,7 +186,8 @@ To charge, hold **forward + L3 + RT**, with your unit in melee mode and LT relea
 | Click L3 | Toggle sprint |
 | L4 held | Orbit the third-person camera |
 | Hold L5 | Toggle the unit's Skirmish mode where supported |
-| R4 / R5 | Toggle slow motion / normal speed, or pause / resume, respectively |
+| R4 | Cycle slow motion, pause and normal speed |
+| R5 | Pause / resume |
 | View / Menu | Tap: cycle HUD; hold: controls / game menu while remaining possessed |
 
 
@@ -199,6 +203,9 @@ Large campaign panels currently reduce their scale to fit. Fully enlarged, reflo
 | Naval battles | Possession and ship commands are not available |
 | Multiplayer, Versus and campaign drop-in | Not implemented |
 | Unit and overhaul mods | Uses available custom and replacement portraits from enabled packs. Missing artwork leaves the rest of the HUD visible. Individual pack combinations still need testing. |
+| Last Alliance: Total War 0.5.2 | The pack reader accepts its original texture paths. All nine packs were tested together on Steam Deck in Revision 139. |
+| Morning Sun 3.0 | Campaign loading verified on PC in Revision 140. |
+| Weierstrass Units for Vanilla | Possession and the selected unit’s portrait verified on PC in Revision 140. |
 | Shogun 2 Bugfix engine / Shogun2 Loader | Reviewed compatibility checks and an owner-accepted Test172 combination; neither mod is required |
 | Mods replacing the front-end root script entry | Can preserve one enabled root when our bootstrap runs; different competing roots can still conflict |
 | Older DInput installation of this mod | Do not combine with Workshop |
@@ -220,7 +227,7 @@ See [known issues and reporting details](docs/KNOWN_ISSUES.md) for additional co
 | Problem | What to check |
 | --- | --- |
 | **F9 does nothing** | Select a living friendly unit in a single-player land battle or siege. Check that the mod is enabled, restart after enabling/updating, and confirm you have the supported Windows Steam game build. |
-| **HUD or resources fail to load** | Check `data.pack` and the installed language pack. Compatible native fonts are required; English audio is optional. Include the exact startup warning. Changed or unfamiliar cache files are preserved; do not delete them blindly. |
+| **HUD or resources fail to load** | Check `data.pack` and the installed language pack. Include your game language, any community language patch and the exact startup warning. Changed or unfamiliar cache files are preserved; do not delete them blindly. |
 | **Problems after upgrading** | Check that the older setup.exe version is uninstalled and its camera-helper launch option removed. Do not run both loaders. |
 | **Shots or volleys do not fire** | Note the exact unit, weapon and ammunition, and whether the problem affects your soldier, the rest of the unit, or both. Not all combinations have been tested. |
 | **Missing HUD or unusual timing** | Report resolution, fullscreen/windowed mode, Windows scaling, monitor refresh rate, battle speed and whether the whole game slowed down. |
