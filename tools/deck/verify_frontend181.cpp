@@ -59,7 +59,18 @@ int main(){
     f.buttons=0;f.left_trigger=1;menu181::campaign_cursor181(f,{1,0},campaign_host);f.left_trigger=0;f.right_trigger=1;menu181::campaign_cursor181(f,{1,0},campaign_host);assert(campaign_host.parks==1);++checks;
     menu181::Host residual;residual.wheel=.875f;residual.reset_cursor();assert(residual.wheel==.875f);residual.release_owned(false,false);assert(residual.wheel==0);++checks;
     assert(menu181::attach("campaign:detach-check"));menu181::running=1;menu181::stopping=0;assert(menu181::detach("campaign:detach-check")&&menu181::running&&!menu181::stopping&&!menu181::campaign_mode);menu181::running=0;++checks;
-    NavigationHost181 zoom_host;f.right_stick={1,.005f};assert(menu181::campaign_zoom181(f,.02f,zoom_host)&&zoom_host.scrolled==0);f.right_stick={0,1};assert(menu181::campaign_zoom181(f,.02f,zoom_host)&&zoom_host.scrolled<0);float amount=zoom_host.scrolled;f.right_stick={0,-1};assert(menu181::campaign_zoom181(f,.02f,zoom_host)&&zoom_host.scrolled>amount);assert(!menu181::campaign_zoom181(f,.06f,zoom_host));++checks;
+    f.right_stick={1,.005f};assert(menu181::campaign_zoom_rate181(f)==0);
+    f.right_stick={0,1};assert(menu181::campaign_zoom_rate181(f)==-2);
+    f.right_stick={0,-1};assert(menu181::campaign_zoom_rate181(f)==2);++checks;
+    int warps=0,messages=0;
+    auto warp=[&](int x,int y){assert(x==16&&y==15);++warps;return true;};
+    auto notify=[&](int x,int y){assert(x==16&&y==15);++messages;return true;};
+    assert(deck178::deliver_pointer(15,15,15,15,true,false,warp,notify)&&!warps&&!messages);
+    assert(deck178::deliver_pointer(15,15,16,15,true,false,warp,notify)&&warps==1&&!messages);
+    assert(deck178::deliver_pointer(15,15,16,15,true,true,warp,notify)&&warps==2&&messages==1);
+    assert(deck178::deliver_pointer(15,15,16,15,false,false,warp,notify)&&warps==3&&messages==2);
+    auto failed=[](int,int){return false;};
+    assert(!deck178::deliver_pointer(15,15,16,15,true,true,failed,notify)&&messages==2);++checks;
     // Campaign-only L3 boost; shoulders cannot add turn, Ctrl route is separate.
     f.left_stick={.4f,.8f};f.right_stick={.2f,.6f};f.buttons=0;
     const auto ordinary=menu181::campaign_axes194(f);assert(!ordinary.fast);

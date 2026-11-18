@@ -9,6 +9,7 @@
 #include "../../common/startup_gate168.h"
 #include "../../deck/device192.h"
 #include "../../deck/startup_handoff222.h"
+#include "../../deck/remote_input155.h"
 #include <shlobj.h>
 #include <regex>
 #ifdef S2FP_LOCAL_ASSETS
@@ -261,6 +262,12 @@ static DWORD WINAPI integrated_worker(void* argument){bool owned_adapter168=fals
     require(keyboard_startup222.acquire(device192::enabled()),"Native input owner did not yield before gameplay startup");
     auto adapter_module168=LoadLibraryW(adapter.c_str());require(adapter_module168!=nullptr,"Embedded possession engine failed to load");record(5,"Possession engine loaded; waiting for initialization");
     owned_adapter168=true;
+    if(device192::streaming()){
+        const auto bind=reinterpret_cast<remote155::Bind>(
+            GetProcAddress(adapter_module168,"S2UPBindRemoteInput155"));
+        require(bind&&bind(&remote155::channel(),remote155::Channel::version,sizeof(remote155::Channel)),
+                "Remote Play input handoff unavailable");
+    }
     wchar_t map_name[80];mapping_name(map_name,GetCurrentProcessId());bool ready=false;
     for(int i=0;i<200;++i){Handle map(OpenFileMappingW(FILE_MAP_READ,FALSE,map_name));if(map.h){auto state=static_cast<const Status*>(MapViewOfFile(map.h,FILE_MAP_READ,0,0,sizeof(Status)));if(state){bool valid=state->magic==POC_MAGIC&&state->version==46&&state->pid==GetCurrentProcessId()&&state->size==sizeof(Status);bool error=valid&&state->error!=0;ready=valid&&state->ready&&!state->stop;UnmapViewOfFile(state);if(error)throw std::runtime_error(component_error168(adapter_module168,"Possession engine rejected initialization"));if(ready)break;}}Sleep(50);}
     require(ready,"Possession engine did not become ready");

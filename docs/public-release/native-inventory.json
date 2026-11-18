@@ -725,7 +725,7 @@
     },
     {
       "path": "native/deck/adapter175.h",
-      "line": 50,
+      "line": 52,
       "tags": [
         "abi"
       ],
@@ -733,7 +733,7 @@
     },
     {
       "path": "native/deck/adapter175.h",
-      "line": 61,
+      "line": 63,
       "tags": [
         "native_offset"
       ],
@@ -745,7 +745,7 @@
     },
     {
       "path": "native/deck/adapter175.h",
-      "line": 65,
+      "line": 67,
       "tags": [
         "native_offset"
       ],
@@ -755,7 +755,7 @@
     },
     {
       "path": "native/deck/adapter175.h",
-      "line": 68,
+      "line": 70,
       "tags": [
         "native_offset"
       ],
@@ -765,7 +765,7 @@
     },
     {
       "path": "native/deck/adapter175.h",
-      "line": 70,
+      "line": 72,
       "tags": [
         "abi"
       ],
@@ -773,7 +773,7 @@
     },
     {
       "path": "native/deck/adapter175.h",
-      "line": 71,
+      "line": 73,
       "tags": [
         "native_offset"
       ],
@@ -783,7 +783,7 @@
     },
     {
       "path": "native/deck/adapter175.h",
-      "line": 108,
+      "line": 110,
       "tags": [
         "native_offset"
       ],
@@ -793,7 +793,7 @@
     },
     {
       "path": "native/deck/adapter175.h",
-      "line": 112,
+      "line": 114,
       "tags": [
         "native_offset"
       ],
@@ -803,7 +803,7 @@
     },
     {
       "path": "native/deck/adapter175.h",
-      "line": 189,
+      "line": 186,
       "tags": [
         "abi"
       ],
@@ -811,7 +811,7 @@
     },
     {
       "path": "native/deck/adapter175.h",
-      "line": 190,
+      "line": 187,
       "tags": [
         "native_offset"
       ],
@@ -821,7 +821,7 @@
     },
     {
       "path": "native/deck/adapter175.h",
-      "line": 197,
+      "line": 194,
       "tags": [
         "abi"
       ],
@@ -829,7 +829,7 @@
     },
     {
       "path": "native/deck/adapter175.h",
-      "line": 252,
+      "line": 249,
       "tags": [
         "native_offset"
       ],
@@ -840,7 +840,7 @@
     },
     {
       "path": "native/deck/adapter175.h",
-      "line": 268,
+      "line": 267,
       "tags": [
         "synchronization"
       ],
@@ -848,7 +848,7 @@
     },
     {
       "path": "native/deck/adapter175.h",
-      "line": 287,
+      "line": 286,
       "tags": [
         "synchronization"
       ],
@@ -856,7 +856,7 @@
     },
     {
       "path": "native/deck/adapter175.h",
-      "line": 289,
+      "line": 288,
       "tags": [
         "synchronization"
       ],
@@ -864,7 +864,7 @@
     },
     {
       "path": "native/deck/adapter175.h",
-      "line": 296,
+      "line": 295,
       "tags": [
         "synchronization"
       ],
@@ -872,7 +872,7 @@
     },
     {
       "path": "native/deck/adapter175.h",
-      "line": 304,
+      "line": 303,
       "tags": [
         "synchronization"
       ],
@@ -880,7 +880,7 @@
     },
     {
       "path": "native/deck/adapter175.h",
-      "line": 348,
+      "line": 360,
       "tags": [
         "synchronization"
       ],
@@ -888,7 +888,7 @@
     },
     {
       "path": "native/deck/adapter175.h",
-      "line": 368,
+      "line": 380,
       "tags": [
         "synchronization"
       ],
@@ -896,7 +896,7 @@
     },
     {
       "path": "native/deck/adapter175.h",
-      "line": 390,
+      "line": 402,
       "tags": [
         "synchronization"
       ],
@@ -904,7 +904,7 @@
     },
     {
       "path": "native/deck/adapter175.h",
-      "line": 410,
+      "line": 422,
       "tags": [
         "synchronization"
       ],
@@ -912,7 +912,7 @@
     },
     {
       "path": "native/deck/adapter175.h",
-      "line": 440,
+      "line": 454,
       "tags": [
         "synchronization"
       ],
@@ -920,7 +920,7 @@
     },
     {
       "path": "native/deck/adapter175.h",
-      "line": 455,
+      "line": 469,
       "tags": [
         "synchronization"
       ],
@@ -928,7 +928,7 @@
     },
     {
       "path": "native/deck/adapter175.h",
-      "line": 462,
+      "line": 476,
       "tags": [
         "abi"
       ],
@@ -936,7 +936,15 @@
     },
     {
       "path": "native/deck/adapter175.h",
-      "line": 464,
+      "line": 484,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/deck/adapter175.h",
+      "line": 486,
       "tags": [
         "abi"
       ],
@@ -944,7 +952,7 @@
     },
     {
       "path": "native/deck/battle181.h",
-      "line": 92,
+      "line": 101,
       "tags": [
         "abi"
       ],
@@ -952,7 +960,7 @@
     },
     {
       "path": "native/deck/battle181.h",
-      "line": 93,
+      "line": 102,
       "tags": [
         "native_offset"
       ],
@@ -962,7 +970,7 @@
     },
     {
       "path": "native/deck/battle181.h",
-      "line": 122,
+      "line": 131,
       "tags": [
         "abi",
         "native_offset"
@@ -973,7 +981,7 @@
     },
     {
       "path": "native/deck/battle181.h",
-      "line": 128,
+      "line": 137,
       "tags": [
         "abi"
       ],
@@ -981,7 +989,7 @@
     },
     {
       "path": "native/deck/battle181.h",
-      "line": 129,
+      "line": 138,
       "tags": [
         "native_offset"
       ],
@@ -991,7 +999,7 @@
     },
     {
       "path": "native/deck/battle181.h",
-      "line": 193,
+      "line": 202,
       "tags": [
         "synchronization"
       ],
@@ -1107,7 +1115,7 @@
     },
     {
       "path": "native/deck/campaign181.h",
-      "line": 10,
+      "line": 12,
       "tags": [
         "native_offset"
       ],
@@ -1117,7 +1125,7 @@
     },
     {
       "path": "native/deck/campaign181.h",
-      "line": 15,
+      "line": 17,
       "tags": [
         "native_offset"
       ],
@@ -1127,7 +1135,7 @@
     },
     {
       "path": "native/deck/campaign181.h",
-      "line": 16,
+      "line": 18,
       "tags": [
         "native_offset"
       ],
@@ -2450,7 +2458,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 54,
+      "line": 55,
       "tags": [
         "abi"
       ],
@@ -2458,7 +2466,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 64,
+      "line": 65,
       "tags": [
         "abi"
       ],
@@ -2466,7 +2474,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 84,
+      "line": 85,
       "tags": [
         "synchronization"
       ],
@@ -2482,7 +2490,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 93,
+      "line": 92,
       "tags": [
         "synchronization"
       ],
@@ -2490,7 +2498,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 98,
+      "line": 97,
       "tags": [
         "synchronization"
       ],
@@ -2498,7 +2506,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 100,
+      "line": 99,
       "tags": [
         "synchronization"
       ],
@@ -2506,7 +2514,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 102,
+      "line": 101,
       "tags": [
         "synchronization"
       ],
@@ -2514,7 +2522,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 106,
+      "line": 105,
       "tags": [
         "synchronization"
       ],
@@ -2522,7 +2530,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 178,
+      "line": 218,
       "tags": [
         "synchronization"
       ],
@@ -2530,7 +2538,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 226,
+      "line": 223,
       "tags": [
         "synchronization"
       ],
@@ -2538,7 +2546,15 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 229,
+      "line": 224,
+      "tags": [
+        "synchronization"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/deck/frontend181.h",
+      "line": 230,
       "tags": [
         "abi"
       ],
@@ -2546,7 +2562,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 230,
+      "line": 231,
       "tags": [
         "native_offset"
       ],
@@ -2556,7 +2572,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 237,
+      "line": 238,
       "tags": [
         "abi"
       ],
@@ -2564,7 +2580,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 244,
+      "line": 245,
       "tags": [
         "abi"
       ],
@@ -2572,7 +2588,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 255,
+      "line": 267,
       "tags": [
         "synchronization"
       ],
@@ -2580,7 +2596,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 256,
+      "line": 272,
       "tags": [
         "synchronization"
       ],
@@ -2588,7 +2604,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 281,
+      "line": 321,
       "tags": [
         "synchronization"
       ],
@@ -2596,7 +2612,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 286,
+      "line": 326,
       "tags": [
         "synchronization"
       ],
@@ -2604,7 +2620,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 300,
+      "line": 343,
       "tags": [
         "synchronization"
       ],
@@ -2612,7 +2628,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 303,
+      "line": 346,
       "tags": [
         "synchronization"
       ],
@@ -2620,7 +2636,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 309,
+      "line": 352,
       "tags": [
         "synchronization"
       ],
@@ -2628,7 +2644,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 331,
+      "line": 377,
       "tags": [
         "synchronization"
       ],
@@ -2636,7 +2652,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 335,
+      "line": 381,
       "tags": [
         "synchronization"
       ],
@@ -2644,7 +2660,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 351,
+      "line": 392,
       "tags": [
         "synchronization"
       ],
@@ -2652,7 +2668,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 360,
+      "line": 401,
       "tags": [
         "synchronization"
       ],
@@ -2660,55 +2676,55 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 365,
+      "line": 407,
       "tags": [
         "synchronization"
-      ],
-      "rvas": []
-    },
-    {
-      "path": "native/deck/frontend181.h",
-      "line": 368,
-      "tags": [
-        "synchronization"
-      ],
-      "rvas": []
-    },
-    {
-      "path": "native/deck/frontend181.h",
-      "line": 380,
-      "tags": [
-        "synchronization"
-      ],
-      "rvas": []
-    },
-    {
-      "path": "native/deck/frontend181.h",
-      "line": 391,
-      "tags": [
-        "synchronization"
-      ],
-      "rvas": []
-    },
-    {
-      "path": "native/deck/frontend181.h",
-      "line": 395,
-      "tags": [
-        "synchronization"
-      ],
-      "rvas": []
-    },
-    {
-      "path": "native/deck/frontend181.h",
-      "line": 409,
-      "tags": [
-        "abi"
       ],
       "rvas": []
     },
     {
       "path": "native/deck/frontend181.h",
       "line": 410,
+      "tags": [
+        "synchronization"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/deck/frontend181.h",
+      "line": 422,
+      "tags": [
+        "synchronization"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/deck/frontend181.h",
+      "line": 436,
+      "tags": [
+        "synchronization"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/deck/frontend181.h",
+      "line": 440,
+      "tags": [
+        "synchronization"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/deck/frontend181.h",
+      "line": 457,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/deck/frontend181.h",
+      "line": 458,
       "tags": [
         "native_offset"
       ],
@@ -2718,7 +2734,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 411,
+      "line": 459,
       "tags": [
         "native_offset"
       ],
@@ -2728,7 +2744,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 428,
+      "line": 476,
       "tags": [
         "synchronization"
       ],
@@ -2736,7 +2752,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 443,
+      "line": 491,
       "tags": [
         "synchronization"
       ],
@@ -2744,7 +2760,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 467,
+      "line": 515,
       "tags": [
         "native_offset"
       ],
@@ -2754,7 +2770,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 479,
+      "line": 527,
       "tags": [
         "abi"
       ],
@@ -2762,7 +2778,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 508,
+      "line": 556,
       "tags": [
         "synchronization"
       ],
@@ -2770,7 +2786,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 524,
+      "line": 572,
       "tags": [
         "abi"
       ],
@@ -2778,7 +2794,23 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 560,
+      "line": 597,
+      "tags": [
+        "synchronization"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/deck/frontend181.h",
+      "line": 600,
+      "tags": [
+        "synchronization"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/deck/frontend181.h",
+      "line": 625,
       "tags": [
         "abi"
       ],
@@ -2786,7 +2818,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 586,
+      "line": 651,
       "tags": [
         "abi"
       ],
@@ -2794,7 +2826,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 588,
+      "line": 653,
       "tags": [
         "abi"
       ],
@@ -2802,7 +2834,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 594,
+      "line": 659,
       "tags": [
         "abi",
         "synchronization"
@@ -2811,7 +2843,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 601,
+      "line": 666,
       "tags": [
         "abi"
       ],
@@ -2819,7 +2851,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 602,
+      "line": 667,
       "tags": [
         "abi"
       ],
@@ -2827,7 +2859,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 606,
+      "line": 671,
       "tags": [
         "abi"
       ],
@@ -2835,7 +2867,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 614,
+      "line": 679,
       "tags": [
         "synchronization"
       ],
@@ -2843,7 +2875,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 616,
+      "line": 681,
       "tags": [
         "synchronization"
       ],
@@ -2851,7 +2883,7 @@
     },
     {
       "path": "native/deck/frontend181.h",
-      "line": 620,
+      "line": 685,
       "tags": [
         "abi"
       ],
@@ -3492,6 +3524,58 @@
       "rvas": []
     },
     {
+      "path": "native/deck/remote_cursor152.h",
+      "line": 11,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/deck/remote_cursor152.h",
+      "line": 144,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x1c9a938"
+      ]
+    },
+    {
+      "path": "native/deck/remote_cursor152.h",
+      "line": 145,
+      "tags": [
+        "native_offset"
+      ],
+      "rvas": [
+        "0x1c9a93c"
+      ]
+    },
+    {
+      "path": "native/deck/remote_cursor152.h",
+      "line": 158,
+      "tags": [
+        "hook"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/deck/remote_cursor152.h",
+      "line": 160,
+      "tags": [
+        "hook"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/deck/remote_cursor152.h",
+      "line": 200,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
       "path": "native/deck/remote_display130.h",
       "line": 34,
       "tags": [
@@ -3656,6 +3740,30 @@
       ]
     },
     {
+      "path": "native/deck/remote_input155.h",
+      "line": 12,
+      "tags": [
+        "synchronization"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/deck/remote_input155.h",
+      "line": 13,
+      "tags": [
+        "synchronization"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/deck/remote_input155.h",
+      "line": 86,
+      "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
       "path": "native/deck/remote_play130.h",
       "line": 28,
       "tags": [
@@ -3786,7 +3894,7 @@
     },
     {
       "path": "native/deck/steam_input174.h",
-      "line": 220,
+      "line": 274,
       "tags": [
         "abi"
       ],
@@ -3794,7 +3902,7 @@
     },
     {
       "path": "native/deck/steam_input174.h",
-      "line": 221,
+      "line": 275,
       "tags": [
         "abi"
       ],
@@ -9109,7 +9217,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/native_overlay106.h",
-      "line": 122,
+      "line": 58,
       "tags": [
         "synchronization"
       ],
@@ -9117,7 +9225,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/native_overlay106.h",
-      "line": 130,
+      "line": 66,
       "tags": [
         "synchronization"
       ],
@@ -9125,7 +9233,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/native_overlay106.h",
-      "line": 134,
+      "line": 70,
       "tags": [
         "synchronization"
       ],
@@ -9133,7 +9241,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/native_overlay106.h",
-      "line": 140,
+      "line": 76,
       "tags": [
         "synchronization"
       ],
@@ -9141,7 +9249,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/native_overlay106.h",
-      "line": 143,
+      "line": 79,
       "tags": [
         "synchronization"
       ],
@@ -9149,7 +9257,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/native_overlay106.h",
-      "line": 144,
+      "line": 80,
       "tags": [
         "hook"
       ],
@@ -9157,7 +9265,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/native_overlay106.h",
-      "line": 158,
+      "line": 94,
       "tags": [
         "hook",
         "synchronization"
@@ -9368,7 +9476,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/proximity147.h",
-      "line": 128,
+      "line": 136,
       "tags": [
         "native_offset"
       ],
@@ -9378,7 +9486,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/proximity147.h",
-      "line": 129,
+      "line": 137,
       "tags": [
         "native_offset"
       ],
@@ -9388,7 +9496,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/proximity147.h",
-      "line": 133,
+      "line": 141,
       "tags": [
         "abi"
       ],
@@ -9396,7 +9504,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/proximity147.h",
-      "line": 134,
+      "line": 142,
       "tags": [
         "native_offset"
       ],
@@ -9406,7 +9514,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/proximity147.h",
-      "line": 151,
+      "line": 159,
       "tags": [
         "abi"
       ],
@@ -9414,7 +9522,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/proximity147.h",
-      "line": 152,
+      "line": 160,
       "tags": [
         "native_offset"
       ],
@@ -9424,7 +9532,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/proximity147.h",
-      "line": 153,
+      "line": 161,
       "tags": [
         "native_offset"
       ],
@@ -9434,7 +9542,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/proximity147.h",
-      "line": 165,
+      "line": 186,
       "tags": [
         "native_offset"
       ],
@@ -9444,7 +9552,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/proximity147.h",
-      "line": 200,
+      "line": 222,
       "tags": [
         "abi"
       ],
@@ -9452,7 +9560,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/proximity147.h",
-      "line": 201,
+      "line": 223,
       "tags": [
         "native_offset"
       ],
@@ -9462,7 +9570,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/proximity147.h",
-      "line": 224,
+      "line": 246,
       "tags": [
         "synchronization"
       ],
@@ -9470,7 +9578,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/proximity147.h",
-      "line": 226,
+      "line": 248,
       "tags": [
         "synchronization"
       ],
@@ -9478,7 +9586,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/proximity147.h",
-      "line": 235,
+      "line": 257,
       "tags": [
         "abi"
       ],
@@ -9486,7 +9594,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/proximity147.h",
-      "line": 253,
+      "line": 275,
       "tags": [
         "native_offset"
       ],
@@ -9497,7 +9605,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/proximity147.h",
-      "line": 254,
+      "line": 276,
       "tags": [
         "hook",
         "native_offset"
@@ -9957,7 +10065,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/unit_detach130.h",
-      "line": 108,
+      "line": 109,
       "tags": [
         "native_offset"
       ],
@@ -9967,7 +10075,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/unit_detach130.h",
-      "line": 169,
+      "line": 173,
       "tags": [
         "native_offset"
       ],
@@ -9977,7 +10085,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/unit_detach130.h",
-      "line": 170,
+      "line": 174,
       "tags": [
         "native_offset"
       ],
@@ -9987,7 +10095,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/unit_detach130.h",
-      "line": 171,
+      "line": 175,
       "tags": [
         "native_offset"
       ],
@@ -9997,7 +10105,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/unit_detach130.h",
-      "line": 177,
+      "line": 181,
       "tags": [
         "synchronization"
       ],
@@ -10005,7 +10113,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/unit_detach130.h",
-      "line": 194,
+      "line": 198,
       "tags": [
         "synchronization"
       ],
@@ -10013,7 +10121,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/unit_detach130.h",
-      "line": 196,
+      "line": 200,
       "tags": [
         "abi"
       ],
@@ -10021,7 +10129,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/unit_detach130.h",
-      "line": 210,
+      "line": 214,
       "tags": [
         "native_offset"
       ],
@@ -10032,7 +10140,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/unit_detach130.h",
-      "line": 211,
+      "line": 215,
       "tags": [
         "native_offset"
       ],
@@ -10043,7 +10151,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/unit_detach130.h",
-      "line": 215,
+      "line": 219,
       "tags": [
         "native_offset"
       ],
@@ -10054,7 +10162,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/unit_detach130.h",
-      "line": 216,
+      "line": 220,
       "tags": [
         "native_offset"
       ],
@@ -10066,7 +10174,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/unit_detach130.h",
-      "line": 217,
+      "line": 221,
       "tags": [
         "native_offset"
       ],
@@ -10077,7 +10185,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/unit_detach130.h",
-      "line": 218,
+      "line": 222,
       "tags": [
         "native_offset"
       ],
@@ -10087,7 +10195,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/unit_detach130.h",
-      "line": 219,
+      "line": 223,
       "tags": [
         "hook",
         "native_offset"
@@ -10098,7 +10206,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/unit_detach130.h",
-      "line": 220,
+      "line": 224,
       "tags": [
         "hook",
         "native_offset"
@@ -10109,7 +10217,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/unit_detach130.h",
-      "line": 221,
+      "line": 225,
       "tags": [
         "hook",
         "native_offset"
@@ -10120,7 +10228,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/unit_detach130.h",
-      "line": 222,
+      "line": 226,
       "tags": [
         "hook",
         "native_offset"
@@ -10131,7 +10239,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/unit_detach130.h",
-      "line": 231,
+      "line": 235,
       "tags": [
         "hook"
       ],
@@ -10139,7 +10247,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/unit_detach130.h",
-      "line": 237,
+      "line": 241,
       "tags": [
         "hook"
       ],
@@ -14860,7 +14968,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 63,
+      "line": 64,
       "tags": [
         "abi"
       ],
@@ -14868,15 +14976,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 69,
-      "tags": [
-        "abi"
-      ],
-      "rvas": []
-    },
-    {
-      "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 70,
+      "line": 71,
       "tags": [
         "abi"
       ],
@@ -14894,6 +14994,14 @@
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
       "line": 74,
       "tags": [
+        "abi"
+      ],
+      "rvas": []
+    },
+    {
+      "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
+      "line": 76,
+      "tags": [
         "native_offset"
       ],
       "rvas": [
@@ -14902,7 +15010,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 81,
+      "line": 83,
       "tags": [
         "abi"
       ],
@@ -14910,7 +15018,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 86,
+      "line": 88,
       "tags": [
         "abi"
       ],
@@ -14918,7 +15026,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 89,
+      "line": 91,
       "tags": [
         "abi"
       ],
@@ -14926,7 +15034,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 90,
+      "line": 92,
       "tags": [
         "abi"
       ],
@@ -14934,7 +15042,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 94,
+      "line": 96,
       "tags": [
         "abi"
       ],
@@ -14942,7 +15050,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 100,
+      "line": 102,
       "tags": [
         "abi"
       ],
@@ -14950,7 +15058,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 145,
+      "line": 147,
       "tags": [
         "native_offset"
       ],
@@ -14960,7 +15068,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 149,
+      "line": 151,
       "tags": [
         "native_offset"
       ],
@@ -14970,7 +15078,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 175,
+      "line": 177,
       "tags": [
         "native_offset"
       ],
@@ -14980,7 +15088,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 245,
+      "line": 247,
       "tags": [
         "abi"
       ],
@@ -14988,7 +15096,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 246,
+      "line": 248,
       "tags": [
         "abi"
       ],
@@ -14996,7 +15104,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 251,
+      "line": 253,
       "tags": [
         "native_offset"
       ],
@@ -15006,7 +15114,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 277,
+      "line": 279,
       "tags": [
         "abi"
       ],
@@ -15014,7 +15122,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 278,
+      "line": 280,
       "tags": [
         "native_offset"
       ],
@@ -15024,7 +15132,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 293,
+      "line": 295,
       "tags": [
         "native_offset"
       ],
@@ -15034,7 +15142,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 318,
+      "line": 320,
       "tags": [
         "native_offset"
       ],
@@ -15044,7 +15152,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 322,
+      "line": 324,
       "tags": [
         "native_offset"
       ],
@@ -15054,7 +15162,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 324,
+      "line": 326,
       "tags": [
         "native_offset"
       ],
@@ -15064,7 +15172,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 329,
+      "line": 331,
       "tags": [
         "native_offset"
       ],
@@ -15075,7 +15183,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 330,
+      "line": 332,
       "tags": [
         "native_offset"
       ],
@@ -15085,7 +15193,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 343,
+      "line": 345,
       "tags": [
         "abi"
       ],
@@ -15093,7 +15201,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 344,
+      "line": 346,
       "tags": [
         "native_offset"
       ],
@@ -15103,7 +15211,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 346,
+      "line": 348,
       "tags": [
         "native_offset"
       ],
@@ -15113,7 +15221,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 349,
+      "line": 351,
       "tags": [
         "native_offset"
       ],
@@ -15123,7 +15231,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 350,
+      "line": 352,
       "tags": [
         "native_offset"
       ],
@@ -15133,7 +15241,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 351,
+      "line": 353,
       "tags": [
         "abi"
       ],
@@ -15141,7 +15249,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 352,
+      "line": 354,
       "tags": [
         "native_offset"
       ],
@@ -15151,7 +15259,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 356,
+      "line": 358,
       "tags": [
         "native_offset"
       ],
@@ -15161,7 +15269,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 364,
+      "line": 366,
       "tags": [
         "hook"
       ],
@@ -15169,7 +15277,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 368,
+      "line": 370,
       "tags": [
         "native_offset"
       ],
@@ -15180,7 +15288,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 384,
+      "line": 386,
       "tags": [
         "native_offset"
       ],
@@ -15190,7 +15298,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 392,
+      "line": 394,
       "tags": [
         "abi",
         "native_offset"
@@ -15201,7 +15309,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 394,
+      "line": 396,
       "tags": [
         "abi"
       ],
@@ -15209,7 +15317,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 395,
+      "line": 397,
       "tags": [
         "native_offset"
       ],
@@ -15219,7 +15327,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 396,
+      "line": 398,
       "tags": [
         "abi",
         "native_offset"
@@ -15230,7 +15338,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 409,
+      "line": 411,
       "tags": [
         "native_offset"
       ],
@@ -15240,7 +15348,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 424,
+      "line": 426,
       "tags": [
         "native_offset"
       ],
@@ -15250,7 +15358,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 445,
+      "line": 447,
       "tags": [
         "native_offset"
       ],
@@ -15260,7 +15368,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 528,
+      "line": 580,
       "tags": [
         "native_offset"
       ],
@@ -15270,7 +15378,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 552,
+      "line": 608,
       "tags": [
         "native_offset"
       ],
@@ -15280,7 +15388,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 553,
+      "line": 609,
       "tags": [
         "native_offset"
       ],
@@ -15290,7 +15398,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 554,
+      "line": 610,
       "tags": [
         "native_offset"
       ],
@@ -15300,7 +15408,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 564,
+      "line": 620,
       "tags": [
         "native_offset"
       ],
@@ -15310,7 +15418,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 570,
+      "line": 626,
       "tags": [
         "native_offset"
       ],
@@ -15320,7 +15428,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 577,
+      "line": 633,
       "tags": [
         "hook"
       ],
@@ -15328,7 +15436,7 @@
     },
     {
       "path": "native/outputs/shogun2-accuracy90-preview/src/verify_proximity147.cpp",
-      "line": 580,
+      "line": 636,
       "tags": [
         "native_offset"
       ],
@@ -20059,7 +20167,7 @@
     },
     {
       "path": "native/work/autoload99-preview/integrated.h",
-      "line": 168,
+      "line": 169,
       "tags": [
         "native_offset"
       ],
@@ -20069,7 +20177,7 @@
     },
     {
       "path": "native/work/autoload99-preview/integrated.h",
-      "line": 188,
+      "line": 189,
       "tags": [
         "abi"
       ],
@@ -20077,7 +20185,7 @@
     },
     {
       "path": "native/work/autoload99-preview/integrated.h",
-      "line": 198,
+      "line": 199,
       "tags": [
         "abi"
       ],

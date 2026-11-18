@@ -90,9 +90,10 @@
     "revision142_live_gameplay_verified": false,
     "revision142_non_english_gameplay_verified": false,
     "revision142_deck_r3_live_verified": false,
-    "revision150_owner_pc_melee_hover_confirmed": true
+    "revision150_owner_pc_melee_hover_confirmed": true,
+    "revision156_owner_pc_wall_release_and_move_order_confirmed": true
   },
-  "validation": "docs/public-release/REVISION150_VALIDATION.json",
+  "validation": "docs/public-release/REVISION156_VALIDATION.json",
   "owner_decisions": {
     "first_party_license": "MIT",
     "resources": "from owned game",
@@ -122,15 +123,15 @@
   "history": "Historical tags and release notes remain. Installer downloads were removed; earlier game-resource-containing downloads remain absent.",
   "legal_clearance": "Resource exclusion is not legal clearance for native hooks/reverse engineering; see PROVENANCE.md.",
   "github_runtime": {
-    "revision": 150,
+    "revision": 156,
     "candidate": 181,
     "pack": "shogun2_unit_possession_workshop165.pack",
-    "pack_sha256": "eae1aa0221ff8ce161c3cd3dee7145fe7003222b0d5ef9542992f5fca08f118d",
-    "pack_bytes": 4719434,
-    "native_sha256": "f0f3fe0edffcc8a5927d727043baf3fed23e3706302e4173b93aa136b69933ba",
+    "pack_sha256": "3c87ca76d2e042bcaece8d282792b2a5438d90f9b2bb51657c95bfee732e1992",
+    "pack_bytes": 4753269,
+    "native_sha256": "17d03112f29fbe165b5d7b15bcf29e481769ac299fa55294de5c7a3d9f5f8c6f",
     "pack_distributed_by_this_source_push": false
   },
-  "source_status": "Main contains Revision 150 plus Steam Remote Play support. The last verified Workshop download is Revision 150. The v0.38 source tag contains Revision 142.",
+  "source_status": "Main contains Revision 156. The last verified Workshop download is Revision 150. The v0.38 source tag contains Revision 142.",
   "last_tagged_release": {
     "version": "0.33",
     "url": "https://github.com/logsam58/shogun2-unit-possession/releases/tag/v0.33"

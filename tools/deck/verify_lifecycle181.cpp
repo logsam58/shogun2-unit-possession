@@ -32,5 +32,41 @@ int main(){unsigned checks=0;deck177::Lease front,battle;CountedSteam181 fs,bs;S
  for(auto input:{std::pair<float,float>{1,0},{-1,0},{0,1},{0,-1},{1,1},{-1,-1},{1,-1},{-1,1}}){deck181::CampaignStep s{0x80000,input.first,input.second,0,0,1000};std::vector<unsigned> calls;assert(deck181::apply_campaign(s,0x80000,1050,[&](unsigned slot,float amount){assert(amount==1);calls.push_back(slot);}));if(input.first)assert(std::find(calls.begin(),calls.end(),input.first>0?0x9c:0xa0)!=calls.end());if(input.second)assert(std::find(calls.begin(),calls.end(),input.second>0?0x94:0x98)!=calls.end());++checks;}
  deck181::CampaignStep step{0x80000,0,0,.1f,0,1000};std::vector<unsigned> slots;assert(deck181::apply_campaign(step,0x80000,1050,[&](unsigned slot,float){slots.push_back(slot);}));assert(slots==std::vector<unsigned>({0x10c}));++checks;
  assert(!deck181::apply_campaign(step,0x80004,1050,[](unsigned,float){assert(false);}));assert(!deck181::apply_campaign(step,0x80000,1101,[](unsigned,float){assert(false);}));step.x=NAN;assert(!deck181::apply_campaign(step,0x80000,1050,[](unsigned,float){assert(false);}));++checks;
+ // Replay different worker schedules against the same UI frame times.
+ for(uint64_t frames:{30,60,90,120})for(uint64_t poll:{8000,15625,33000}){
+  deck181::CampaignMotion motion;
+  const deck181::CampaignRate rate{20,-10,.75f,-1.f};
+  const uint64_t start=1000000;
+  motion.publish(rate,start);
+  assert(!motion.consume(0x80000,start).camera);
+  uint64_t next_sample=start+poll;
+  double travel=0;
+  for(uint64_t frame=1;frame<=frames;++frame){
+   const auto time=start+1000000*frame/frames;
+   while(next_sample<=time){motion.publish(rate,next_sample);next_sample+=(next_sample/poll%2?poll:poll/2);}
+   assert(motion.ready(time));
+   const auto step=motion.consume(0x80000,time);
+   assert(step.camera==0x80000&&step.x>0&&step.y<0&&step.yaw>0&&step.zoom<0);
+   assert(std::fabs(step.x-20.f/frames)<.001f);
+   assert(std::fabs(step.y*2+step.x)<.001f&&std::fabs(step.zoom*20+step.x)<.001f);
+   travel+=step.x;
+   assert(!motion.ready(time+500)&&!motion.consume(0x80000,time+500).camera);
+  }
+  assert(std::fabs(travel-20)<.001);
+  motion.publish({},start+1001000);
+  assert(!motion.ready(start+1010000)&&!motion.consume(0x80000,start+1010000).camera);
+  motion.publish(rate,start+1020000);
+  assert(!motion.consume(0x80010,start+1025000).camera);
+  assert(!motion.ready(start+1120001));
+  motion.publish(rate,start+1160000);
+  assert(!motion.consume(0x80010,start+1160000).camera);
+  assert(motion.consume(0x80010,start+1168000).x>0);
+  assert(!motion.consume(0x80020,start+1176000).camera);++checks;
+ }
+ deck181::CampaignMotion legacy;
+ legacy.publish({20,0,0,0},1000000);
+ assert(!legacy.legacy_step(0,1,1000000));
+ assert(legacy.legacy_step(0,1,1016000)&&legacy.legacy_step(0,1,1016000));
+ assert(!legacy.legacy_step(0,1,1016000));++checks;
  std::cout<<"PASS "<<checks<<" lifecycle181 repeated ownership/native campaign dispatch checks; no hardware claim\n";
 }

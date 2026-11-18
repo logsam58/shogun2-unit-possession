@@ -124,6 +124,10 @@ struct Api {
 enum class BackendState : unsigned {Idle,WaitingSteam,NoInterface,UnsupportedEnvironment,
     InitializationFailed,ManifestRejected,WaitingDevice,AmbiguousDevice,RemoteDevice,
     WaitingBindings,Ready,WrongThread,Failed};
+inline bool retry_open(BackendState state, bool remote) {
+    return state == BackendState::WaitingSteam || state == BackendState::WaitingDevice ||
+           (remote && state == BackendState::InitializationFailed);
+}
 struct BackendInfo {
     bool initialized{},manifest_accepted{},handles_present{};
     int connected_count{},bad_origin_expected{},bad_origin_observed{};
@@ -134,9 +138,43 @@ class SteamBackend {
     uint64_t handle_{},action_set_{},sequence_{},epoch_{1};
     std::array<uint64_t,button_count> digital_{};std::array<uint64_t,6> analog_{};
     uint64_t last_sample_{},reassert_after214_{};bool focused214_{};
-    std::string pending_manifest_;
+    std::string manifest_path_;
+    bool manifest_pending_{};
+    uint64_t inactive_since_{};
+    bool manifest_refreshed_{};
+    static constexpr uint64_t remote_inactive_delay_us=6000000;
+
+    void reset_inactive() {
+        inactive_since_=0;
+        manifest_refreshed_=false;
+    }
+    bool refresh_inactive_remote(uint64_t now,bool focused,bool any_active) {
+        if(!remote_)return false;
+        if(!focused||any_active){
+            inactive_since_=0;
+            return false;
+        }
+        if(!inactive_since_)inactive_since_=now;
+        if(manifest_refreshed_||now-inactive_since_<remote_inactive_delay_us)return false;
+        // Recovery of the admitted layout only. Keep the existing SDK owner,
+        // session proof and focus guard. Suppress the failed sample regardless
+        // of whether Steam accepts the refresh.
+        manifest_refreshed_=true;
+        if(api_.manifest(manifest_path_.c_str())){
+            forget_handles();
+            ++epoch_;
+            api_.run();
+            if(fetch_handles()){
+                api_.activate(handle_,action_set_);
+                api_.run();
+            }
+        }
+        reassert_after214_=now+500000;
+        return true;
+    }
     bool remote_{};
-    uint64_t next_session_check_{};
+    uint64_t next_session_check_{}, next_manifest_attempt_{};
+    uint32_t active_session_{};
     remote130::Sessions sessions_{};
 
     void refresh_sessions(uint64_t now) {
@@ -144,10 +182,15 @@ class SteamBackend {
         sessions_ = remote130::direct_sessions(GetModuleHandleW(L"steam_api.dll"));
         next_session_check_ = now + 250000; // input timestamps use microseconds
     }
-    bool accepts(uint64_t handle) const {
-        if (!handle || api_.type(handle) != steam006::deck_type) return false;
-        const auto id = api_.remote_session(handle);
-        return remote_ ? sessions_.contains(id) : id == 0;
+    bool accepts(uint32_t session) const {
+        return remote_ ? sessions_.contains(session) : session == 0;
+    }
+    void forget_handles() {
+        action_set_=0;digital_={};analog_={};
+    }
+    void lose_controller() {
+        if(!handle_)return;
+        handle_=0;active_session_=0;last_sample_=0;forget_handles();reset_inactive();++epoch_;
     }
     std::string context_set_,context_prefix_;
     Context selected_context_{Context::Inactive};
@@ -181,7 +224,7 @@ public:
         const char* prefix=context==Context::Possession?"Possession_":context==Context::RTS?"RTS_":context==Context::Campaign?"Campaign_":"Menu_";
         const char* name=context==Context::Possession?"Possession181":context==Context::RTS?"RTS181":context==Context::Campaign?"Campaign181":"Menu181";
         selected_context_=context;
-        if(context_set_!=name){context_set_=name;context_prefix_=prefix;action_set_=0;digital_={};analog_={};++epoch_;last_sample_=0;}
+        if(context_set_!=name){context_set_=name;context_prefix_=prefix;forget_handles();reset_inactive();++epoch_;last_sample_=0;}
         return true;
     }
     const std::string& context_set()const{return context_set_;}
@@ -192,8 +235,8 @@ public:
     const char* glyph_file(int origin)const{return initialized_&&GetCurrentThreadId()==owner_&&info_.manifest_accepted?api_.glyph(origin):nullptr;}
     bool initialize(steam006::Api api,const char* absolute_manifest,bool require_deck=false) {
         if(initialized_||!api.self||!absolute_manifest||!absolute_manifest[0])return false;
-        owner_=GetCurrentThreadId();api_=api;info_={};pending_manifest_.clear();
-        remote_=device192::streaming();next_session_check_=0;sessions_={};
+        owner_=GetCurrentThreadId();api_=api;info_={};manifest_path_=absolute_manifest;manifest_pending_=false;reset_inactive();
+        remote_=device192::streaming();next_session_check_=next_manifest_attempt_=0;sessions_={};
         initialized_=api_.init();
         info_.initialized=initialized_;
         if(!initialized_){state_=BackendState::InitializationFailed;return false;}
@@ -203,11 +246,22 @@ public:
             if(count<0||count>16){state_=BackendState::Failed;close();return false;}
             // Discovery can complete on a later RunFrame. Keep this owned Init
             // alive instead of repeatedly shutting it down before data arrives.
-            if(!count){pending_manifest_=absolute_manifest;state_=BackendState::WaitingDevice;return true;}
-            for(int i=0;i<count;++i)if(accepts(controllers[i]))++decks;
-            if(decks!=1){state_=decks?BackendState::AmbiguousDevice:BackendState::WaitingDevice;close();return false;}
+            for(int i=0;i<count;++i)
+                if(controllers[i]&&api_.type(controllers[i])==steam006::deck_type&&
+                   accepts(api_.remote_session(controllers[i])))++decks;
+            if(decks!=1){
+                state_=decks?BackendState::AmbiguousDevice:BackendState::WaitingDevice;
+                // The session and forwarded controller can arrive on different
+                // frames during a handoff. Keep the owned reader waiting.
+                if(remote_||!count){manifest_pending_=true;return true;}
+                close();return false;
+            }
         }
-        if(!api_.manifest(absolute_manifest)){state_=BackendState::ManifestRejected;close();return false;}
+        if(!api_.manifest(manifest_path_.c_str())){
+            state_=BackendState::ManifestRejected;
+            if(remote_){manifest_pending_=true;return true;}
+            close();return false;
+        }
         info_.manifest_accepted=true;
         api_.run();state_=BackendState::WaitingDevice;return true;
     }
@@ -254,47 +308,53 @@ public:
         // handle and current-set value with an inactive binding data stream.
         // Re-resolve handles and reassert our existing action set on return;
         // never replace the user's layout, restart Steam or reinitialize input.
-        if(regained214){action_set_=0;digital_={};analog_={};last_sample_=0;reassert_after214_=0;++epoch_;}
+        if(regained214){forget_handles();last_sample_=0;reassert_after214_=0;inactive_since_=0;++epoch_;}
         refresh_sessions(now);
         api_.run();uint64_t handles[16]{};int count=api_.connected(handles);
         info_.connected_count=count;
         if(count<0||count>16){state_=BackendState::Failed;return false;}
         uint64_t selected=0;
+        uint32_t selected_session=0;
         bool remote_rejected=false;
         for(int i=0;i<count;++i){
-            if(!accepts(handles[i])){
-                if(handles[i]&&api_.type(handles[i])==steam006::deck_type&&api_.remote_session(handles[i]))
-                    remote_rejected=true;
-                continue;
-            }
+            if(!handles[i]||api_.type(handles[i])!=steam006::deck_type)continue;
+            const auto session=api_.remote_session(handles[i]);
+            if(!accepts(session)){remote_rejected|=session!=0;continue;}
             if(selected){
-                if(handle_){handle_=0;++epoch_;}
+                lose_controller();
                 state_=BackendState::AmbiguousDevice;return false;
             }
-            selected=handles[i];
+            selected=handles[i];selected_session=session;
         }
         if(!selected){
-            if(handle_){handle_=0;++epoch_;}
+            lose_controller();
             state_=remote_rejected?BackendState::RemoteDevice:BackendState::WaitingDevice;
             return false;
         }
-        if(!pending_manifest_.empty()){
-            if(!api_.manifest(pending_manifest_.c_str())){state_=BackendState::ManifestRejected;return false;}
-            pending_manifest_.clear();info_.manifest_accepted=true;api_.run();
+        if(manifest_pending_){
+            if(now<next_manifest_attempt_)return false;
+            if(!api_.manifest(manifest_path_.c_str())){
+                if(remote_)next_manifest_attempt_=now+500000;
+                state_=BackendState::ManifestRejected;return false;
+            }
+            manifest_pending_=false;info_.manifest_accepted=true;api_.run();
         }
         gamepad_index_=api_.gamepad_index(selected);
-        const bool changed214=handle_!=selected;
-        if(changed214||last_sample_&&now-last_sample_>250000){handle_=selected;action_set_=0;digital_={};analog_={};++epoch_;}
+        const bool changed=handle_!=selected||active_session_!=selected_session;
+        const bool sample_gap=last_sample_&&now-last_sample_>250000;
+        if(changed)reset_inactive();
+        if(changed||sample_gap){handle_=selected;active_session_=selected_session;forget_handles();++epoch_;}
         last_sample_=now;
         info_.handles_present=fetch_handles();
-        if(!info_.handles_present){state_=BackendState::WaitingBindings;return false;}
-        if(regained214||changed214||api_.current(handle_)!=action_set_){api_.activate(handle_,action_set_);api_.run();}
+        if(!info_.handles_present){inactive_since_=0;state_=BackendState::WaitingBindings;return false;}
+        if(regained214||changed||(remote_&&sample_gap)||api_.current(handle_)!=action_set_){api_.activate(handle_,action_set_);api_.run();}
         f.epoch=epoch_;f.sequence=++sequence_;f.connected=true;
         f.capabilities=Sticks|Triggers|Pads|Grips|StickTouch;
-        bool bound=true;
+        bool bound=true,any_active=false;
         for(unsigned i=0;i<button_count;++i) {
             if(!digital_[i])continue;
             auto d=api_.digital_data(handle_,digital_[i]);
+            any_active|=d.active;
             const bool physical=d.active&&valid_origins(handle_,digital_[i],steam006::digital[i].origin,true);
             if(physical)f.active_buttons|=uint64_t(1)<<i;
             if(physical&&d.state)f.buttons|=uint64_t(1)<<i;
@@ -307,6 +367,7 @@ public:
         for(unsigned i=0;i<6;++i) {
             if(!analog_[i])continue;
             auto a=api_.analog_data(handle_,analog_[i]);
+            any_active|=a.active;
             info_.analog_modes[i]=a.mode;
             bool good=a.active&&a.mode==(i<4?steam006::joystick_mode:steam006::trigger_mode)&&
                 std::isfinite(a.x)&&std::isfinite(a.y)&&
@@ -328,12 +389,13 @@ public:
         f.native_bindings=bound;
         if(!bound||!valid(f,now)){
             state_=BackendState::WaitingBindings;
+            if(refresh_inactive_remote(now,focused,any_active))return false;
             // A bounded retry repairs an inactive stream after client focus
             // handoff without continually modifying a valid live action set.
             if(focused&&now>=reassert_after214_){api_.activate(handle_,action_set_);api_.run();action_set_=0;digital_={};analog_={};reassert_after214_=now+500000;}
             return false;
         }
-        reassert_after214_=now+500000;state_=BackendState::Ready;return true;
+        reset_inactive();reassert_after214_=now+500000;state_=BackendState::Ready;return true;
     }
     bool show_bindings(){
         if(!initialized_||GetCurrentThreadId()!=owner_||state_!=BackendState::Ready||!handle_||!info_.manifest_accepted)return false;
@@ -345,7 +407,7 @@ public:
         if(!initialized_)return true;
         if(GetCurrentThreadId()!=owner_){state_=BackendState::WrongThread;return false;}
         bool ok=api_.shutdown();initialized_=false;handle_=action_set_=sequence_=last_sample_=0;
-        digital_={};analog_={};pending_manifest_.clear();focused214_=false;reassert_after214_=0;++epoch_;return ok;
+        forget_handles();active_session_=0;manifest_pending_=false;manifest_path_.clear();reset_inactive();focused214_=false;reassert_after214_=0;++epoch_;return ok;
     }
 };
 } // namespace deck174

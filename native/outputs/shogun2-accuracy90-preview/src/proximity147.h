@@ -6,7 +6,7 @@
 // master roster. A separated player keeps a REAL registered targetable group.
 struct Proximity147 {
     uintptr_t environment{},phase{},unit{},actor{},config{},formation{},independent{};
-    unsigned unit_id{},actor_id{},generation{};uint64_t checked{};bool joined{};
+    unsigned unit_id{},actor_id{},generation{};uint64_t checked{};bool joined{},wall_assigned{};
 };
 static Proximity147 proximity_records147[128];
 static volatile LONG proximity_count147,proximity_generation147,proximity_joined_generation147;
@@ -107,6 +107,12 @@ struct ReformDestination70 {
 struct ReformList70 {unsigned capacity,count;const ReformDestination70* entries;};
 static_assert(sizeof(ReformPoint70)==20&&sizeof(ReformDestination70)==32&&sizeof(ReformList70)==12);
 
+static bool unit_wall_assigned156(uintptr_t native_unit){
+    // Original 14f720 reads the native wall list's active byte through
+    // 180570. 14aef0 sets it when the engine registers an assigned wall.
+    return field<unsigned char>(native_unit,0xfac)!=0;
+}
+
 static bool reform_near_release70(const Proximity147& p,uintptr_t formation){
     // 42dfd0 reads the stock unit pose at +440. Reuse that exact point,
     // heading and width in the single-unit apply path of 45e930. The caller's
@@ -115,7 +121,9 @@ static bool reform_near_release70(const Proximity147& p,uintptr_t formation){
        possession_lease.active||state->lease_generation!=p.generation||
        field<uintptr_t>(p.unit,0xb9c)!=formation||field<unsigned>(p.unit,0x9ec))return false;
     const auto pose=field<uintptr_t>(p.unit,0x440);
-    if(!pose||!field<uintptr_t>(p.unit,0xc))return false;
+    // A silent ground move is unsafe on a native surface or in a
+    // local coordinate frame, regardless of the current wall-list state.
+    if(!pose||field<uintptr_t>(pose,0x1c)||field<uintptr_t>(pose,0x20)||!field<uintptr_t>(p.unit,0xc))return false;
     ReformDestination70 destination{};
     destination.unit_reference=p.unit+0xc;
     memcpy(&destination.point,reinterpret_cast<const void*>(pose+0x10),sizeof destination.point);
@@ -160,8 +168,21 @@ static void proximity_sync147(uintptr_t current,uintptr_t env,uintptr_t phase,un
             // thread drops the lease. Keep the near record until that handoff.
             if(release_in_range&&state->release&&state->mode==POSSESSED&&possession_lease.active&&
                p.generation==possession_lease.generation&&p.actor==locomotion_actor())continue;
-            if(target!=p.independent&&proximity_transfer147(p,target,true)){
-                if(!release_in_range||!reform_near_release70(p,target))reissue_officer_slot68(p.actor,target,current,env);
+            const bool on_wall=unit_wall_assigned156(current);
+            const bool preserve_assignment=p.wall_assigned||on_wall;
+            if(target!=p.independent&&proximity_transfer147(p,target,!preserve_assignment)){
+                if(preserve_assignment){
+                    // Keep the live wall assignment and any player order.
+                    // If the soldier already has a valid on-wall slot, let
+                    // the normal actor update request just that soldier's route.
+                    const auto pose=field<uintptr_t>(current,0x440);
+                    if(on_wall&&release_in_range&&pose&&!field<uintptr_t>(pose,0x20)&&!field<unsigned>(current,0x9ec)){
+                        const auto surface=field<uintptr_t>(pose,0x1c);
+                        if(surface)reissue_formation_slot68(p.actor,target,current,env,surface);
+                    }
+                }else if(!release_in_range||!reform_near_release70(p,target)){
+                    reissue_formation_slot68(p.actor,target,current,env);
+                }
                 if(field<uintptr_t>(current,0xb9c)==p.independent)reinterpret_cast<UnitTick130>(base+0x16b180)(reinterpret_cast<void*>(current));
                 if(proximity_retire147(p))proximity_forget147(p);
             }
@@ -176,6 +197,7 @@ static void proximity_sync147(uintptr_t current,uintptr_t env,uintptr_t phase,un
         *p={env,phase,current,actor,field<uintptr_t>(actor,0x20c),formation,0,field<unsigned>(current,4),field<unsigned>(actor,0x1c8),possession_lease.generation,0,true};InterlockedIncrement(&proximity_count147);
     }
     if(!proximity_identity147(*p,current))return;
+    p->wall_assigned=p->wall_assigned||unit_wall_assigned156(current);
     if(p->independent&&!squad_registered130(p->independent,current,env))p->independent=0;
     if(p->independent&&field<uintptr_t>(actor,0x3b4)!=p->independent){
         // Do not lose the only reference to an empty registered group when

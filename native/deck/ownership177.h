@@ -29,6 +29,8 @@ struct Lease {
 };
 inline bool claim_frontend(Lease& lease){
  if(battle_request().active()||busy(Owner::Battle))return false;
+ // Retain an existing lease until its worker has shut input down.
+ if(lease.handle)return true;
  if(!lease.acquire(Owner::Frontend))return false;
  if(battle_request().active()||busy(Owner::Battle)){lease.release();return false;}return true;
 }

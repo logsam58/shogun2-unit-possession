@@ -1,5 +1,14 @@
 # Changelog
 
+## Revision 156 — 2026-11-18
+
+- Added Steam Remote Play support. Streaming from a Windows PC to a Deck uses the Deck controls, HUD and prompts with a 1280 × 800 render size.
+- Improved how quickly the controller responds when entering battles and how reliably it returns to campaign during the same stream.
+- Smoothed campaign map navigation on Deck and adjusted cursor rendering in streamed menus and campaign.
+- Fixed units abandoning castle walls when possession ends. The soldier rejoins the formation and the unit follows new player orders.
+
+[Revision 156 validation](docs/public-release/REVISION156_VALIDATION.json).
+
 ## Revision 150 — 2026-11-16
 
 - Hover over a soldier at any zoom level to possess them, even mid-fight.

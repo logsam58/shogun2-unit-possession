@@ -20,6 +20,14 @@ struct Cursor {
         return true;
     }
 };
+// Avoid no-op OS cursor writes. The streamed Windows hover already receives
+// normal mouse movement from the warp. An owned drag needs the explicit button
+// flags, and Proton retains its explicit game-window notification.
+template<class Warp,class Notify>
+bool deliver_pointer(int from_x,int from_y,int x,int y,bool streaming,bool drag,Warp warp,Notify notify){
+    if(from_x==x&&from_y==y)return true;
+    return warp(x,y)&&((streaming&&!drag)||notify(x,y));
+}
 // The native camera's normal/override time factor already participates in its
 // height-dependent movement and rotation rates (325c50/2f7770/324950). Convert
 // our callback duration to native ticks rather than multiplying by dt twice.

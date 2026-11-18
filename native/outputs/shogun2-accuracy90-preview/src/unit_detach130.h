@@ -104,15 +104,19 @@ static void forget_member130(Detached130& r){InterlockedDecrement(&detached_buck
 // Original 3e1780 -> 3da190 -> 3dbd70 gives each member its own slot
 // request. 14bc50 only restores membership and clears the old task. The
 // actor's native update consumes +648 only when its +665 flag is clear.
-static void reissue_officer_slot68(uintptr_t actor,uintptr_t squad,uintptr_t native_unit,uintptr_t env){
-    if(field<uintptr_t>(actor,0)!=base+0x15dbfb4||field<uintptr_t>(actor,0x210)||
+static void reissue_formation_slot68(uintptr_t actor,uintptr_t squad,uintptr_t native_unit,uintptr_t env,
+    uintptr_t wall_surface=0){
+    if((!wall_surface&&field<uintptr_t>(actor,0)!=base+0x15dbfb4)||field<uintptr_t>(actor,0x210)||
        field<uintptr_t>(actor,0x18)||field<uintptr_t>(actor,0x688)||
        native_recovery103(actor)||wall_subject97(actor)||native_airborne_subject99(actor)||
        field<uintptr_t>(actor,0x28)!=env||native_routing(native_unit)||
        field<unsigned char>(actor,0x384)||field<unsigned char>(actor,0x665)!=1||
        !squad_registered130(squad,native_unit,env)||field<uintptr_t>(actor,0x3b4)!=squad||
        squad_matches130(squad,actor)!=1)return;
-    if(field<unsigned>(actor,0x658))return; // Absolute land slot only.
+    // 3dbd70 stores the slot's native location at +648, including its
+    // surface (+654) and coordinate frame (+658). Only re-arm a wall slot
+    // on the current formation surface, and compare only world coordinates.
+    if(field<uintptr_t>(actor,0x658)||(wall_surface&&field<uintptr_t>(actor,0x654)!=wall_surface))return;
     const float x=field<float>(actor,0x648),y=field<float>(actor,0x64c),z=field<float>(actor,0x650);
     const float dx=x-field<float>(squad,0x644),dz=z-field<float>(squad,0x648);
     const float radius=field<float>(squad,0x670);
@@ -138,7 +142,7 @@ static bool restore_member130(const Detached130& r,uintptr_t current_unit){
     if(!r.preferred&&!charge_target&&!field<uintptr_t>(actor,0x3b4))return true;
     if(field<uintptr_t>(actor,0x3b4)){
         if(!charge_target||field<uintptr_t>(actor,0x3b4)==charge_target){
-            reissue_officer_slot68(actor,field<uintptr_t>(actor,0x3b4),current_unit,r.environment);
+            reissue_formation_slot68(actor,field<uintptr_t>(actor,0x3b4),current_unit,r.environment);
             return true;
         }
         original_member_transfer130(reinterpret_cast<void*>(charge_target),actor,1);
@@ -149,7 +153,7 @@ static bool restore_member130(const Detached130& r,uintptr_t current_unit){
     if(!squad_registered130(target,current_unit,r.environment))return false;
     original_member_insert130(reinterpret_cast<void*>(target),actor,1);
     if(field<uintptr_t>(actor,0x3b4)!=target||squad_matches130(target,actor)!=1)return false;
-    reissue_officer_slot68(actor,target,current_unit,r.environment);
+    reissue_formation_slot68(actor,target,current_unit,r.environment);
     InterlockedIncrement(&member_rejoins130);return true;
 }
 static void detach_member130(uintptr_t actor,const PossessionIdentity& id,unsigned generation){

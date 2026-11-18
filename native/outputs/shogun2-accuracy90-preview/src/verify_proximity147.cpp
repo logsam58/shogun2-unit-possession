@@ -59,10 +59,12 @@ static void verify_general_ring67(uintptr_t physical) {
 }
 static constexpr DWORD slot_fixture_end68=0xE0533238;
 static float officer_slot_path68[3];
+static uintptr_t native_slot_surface156;
 static unsigned officer_path_requests68;
 static void __fastcall observe_slot_request68(void* order,void*,uintptr_t actor){
     require(actor==possessed,"Native path request targeted a different soldier");
     memcpy(officer_slot_path68,order,sizeof officer_slot_path68);
+    memcpy(&native_slot_surface156,static_cast<unsigned char*>(order)+0xc,sizeof native_slot_surface156);
     ++officer_path_requests68;
     RaiseException(slot_fixture_end68,0,0,nullptr);
 }
@@ -504,14 +506,40 @@ int main(){SetUnhandledExceptionFilter(&fault147);try{
  memcpy(reinterpret_cast<void*>(pose+0x10),&saved_position,sizeof saved_position);
  field<float>(pose,0x24)=27.625f;
  field<unsigned short>(pose,0x28)=0x7f90;
- auto saved_pose=width;
- for(unsigned scenario=0;scenario<4;++scenario){
+ const auto saved_pose=width;
+ uintptr_t wall_surface{};
+ for(unsigned scenario=0;scenario<10;++scenario){
+     const bool wall=scenario>=4&&scenario!=8;
+     const bool busy=scenario==3||scenario==5;
+     width=saved_pose;
+     const auto surface=(wall&&scenario!=6)||scenario==8?reinterpret_cast<uintptr_t>(&wall_surface):0;
+     field<uintptr_t>(pose,0x1c)=surface;
+     field<unsigned char>(unit,0xfac)=wall?1:0;
+     field<unsigned>(unit,0xfb4)=wall?1:0;
      state->mode=POSSESSED;state->release=0;
      require(followed(possessed,true),"Acquire fresh reform test identity");
      state->lease_generation=possession_lease.generation;
-     set_distance(scenario==1?20.f:2.f);
+     set_distance(scenario==1||scenario==9?20.f:2.f);
      if(scenario==2)field<float>(possessed,0x48)=field<float>(P::ptr(f.peer),0x48)+20.f;
-     field<unsigned>(unit,0x9ec)=scenario==3?1u:0u;
+     if(scenario==6){
+         // A player order took the unit off the wall before release.
+         require(proximity_find147(possessed)->wall_assigned,"Wall assignment was not observed during possession");
+         field<unsigned char>(unit,0xfac)=0;
+         field<unsigned>(unit,0xfb4)=0;
+     }
+     field<unsigned>(unit,0x9ec)=busy?1u:0u;
+     // Match an already issued personal wall slot, with one mismatched-surface control.
+     field<float>(possessed,0x648)=field<float>(formation,0x644);
+     field<float>(possessed,0x64c)=126.855316f;
+     field<float>(possessed,0x650)=field<float>(formation,0x648);
+     field<uintptr_t>(possessed,0x654)=scenario==7?0:surface;
+     field<uintptr_t>(possessed,0x658)=0;
+     field<unsigned char>(possessed,0x664)=field<unsigned char>(possessed,0x665)=1;
+     field<unsigned char>(possessed,0x384)=0;
+     const auto current_pose=width;
+     const auto order_before=field<uintptr_t>(unit,0x454);
+     const auto peer_group=field<uintptr_t>(P::ptr(f.peer),0x3b4);
+     const auto peer_task=field<unsigned>(P::ptr(f.peer),0x674);
      field<unsigned>(unit,0x9f0)=field<unsigned>(unit,0x9f4)=0;
      const auto counter=field<unsigned>(common,0x54);
      if(!scenario){
@@ -520,8 +548,32 @@ int main(){SetUnhandledExceptionFilter(&fault147);try{
                  "Reform ran before possession relinquished its lease");
      }
      state->release=0;state->mode=IDLE;possession_lease.release();sync_members130(unit);
-     require(!proximity_count147&&squad_matches130(formation,possessed)==1&&width==saved_pose,
+     require(!proximity_count147&&squad_matches130(formation,possessed)==1&&width==current_pose,
              "Release changed the native pose or failed to restore formation membership");
+     if(wall||scenario==8){
+         const bool active_wall=wall&&scenario!=6;
+         require(field<unsigned char>(unit,0xfac)==unsigned(active_wall)&&
+             field<unsigned>(unit,0xfb4)==unsigned(active_wall)&&field<uintptr_t>(unit,0x454)==order_before&&
+             field<uintptr_t>(P::ptr(f.peer),0x3b4)==peer_group&&field<unsigned>(P::ptr(f.peer),0x674)==peer_task,
+             "Release changed a wall assignment, the player's order, or another soldier's task");
+         const unsigned char consumed=scenario==4?0:1;
+         require(field<unsigned char>(possessed,0x664)==consumed&&field<unsigned char>(possessed,0x665)==consumed,
+             "Release rearmed the wrong personal wall slot or missed the matching slot");
+         if(scenario==4){
+             require(VirtualProtect(f.image,0x1580000,PAGE_EXECUTE_READWRITE,&code_protection)!=0,
+                 "Protect wall slot probe");
+             for(unsigned i=0;i<3;++i)f.jump(providers[i],handlers[i]);
+             FlushInstructionCache(GetCurrentProcess(),f.image,0x1580000);
+             const auto requests=officer_path_requests68;
+             require(native_slot_probe68(possessed)&&officer_path_requests68==requests+1&&
+                 native_slot_surface156==surface&&officer_slot_path68[0]==field<float>(possessed,0x648)&&
+                 officer_slot_path68[1]==field<float>(possessed,0x64c)&&officer_slot_path68[2]==field<float>(possessed,0x650),
+                 "Original soldier update did not request the matching wall slot on its native surface");
+             for(unsigned i=0;i<3;++i)memcpy(reinterpret_cast<void*>(base+providers[i]),provider_bytes[i],5);
+             require(VirtualProtect(f.image,0x1580000,code_protection,&code_protection)!=0,"Restore wall probe protection");
+             FlushInstructionCache(GetCurrentProcess(),f.image,0x1580000);
+         }
+     }
      if(!scenario){
          const auto order=unit+0x454;
          require(field<unsigned>(unit,0x9ec)==1&&field<unsigned>(common,0x54)==counter+1&&
@@ -535,15 +587,19 @@ int main(){SetUnhandledExceptionFilter(&fault147);try{
          require(field<unsigned>(unit,0x9ec)==1&&field<unsigned>(common,0x54)==counter+1,
                  "A completed release queued another reform");
      }else{
-         require(field<unsigned>(unit,0x9ec)==(scenario==3?1u:0u)&&field<unsigned>(common,0x54)==counter,
-                 "Reform issued for a distant soldier, stale proximity or an occupied queue");
+         require(field<unsigned>(unit,0x9ec)==unsigned(busy)&&field<unsigned>(common,0x54)==counter,
+                 "Reform issued for a protected wall, distant soldier, stale proximity or occupied queue");
      }
  }
+ width=saved_pose;
+ field<unsigned char>(unit,0xfac)=0;
+ field<unsigned>(unit,0xfb4)=0;
+ field<uintptr_t>(possessed,0x654)=0;
  field<unsigned>(unit,0x9ec)=field<unsigned>(unit,0x9f0)=field<unsigned>(unit,0x9f4)=0;
  field<uintptr_t>(unit,0xc)=field<uintptr_t>(unit,0x444)=0;
  state->mode=POSSESSED;require(followed(possessed,true),"Restore pre-reform fixture lease");
  state->lease_generation=possession_lease.generation;
- std::cout<<"PASS reform70: native silent same-pose walk queue on near release only; pending release, distant, stale-range and busy-queue guards.\n";
+ std::cout<<"PASS reform70: native silent walk on near ground release only; wall assignment, manual orders, native pose and soldier-only slot preserved.\n";
 
  // If every other soldier dies, native main-group selection can adopt the
  // independent player group. Exit must create a normal formation before

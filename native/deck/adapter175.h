@@ -9,6 +9,7 @@
 #include "config174.h"
 #include "steam_input174.h"
 #include "recovery218.h"
+#include "remote_input155.h"
 #include "proton_paths174.h"
 #include "native_guard175.h"
 #include "orders175.h"
@@ -31,6 +32,7 @@ static SRWLOCK queue_lock=SRWLOCK_INIT;
 static deck181::Mailbox mailbox;
 static Mailbox rts_mailbox;
 static deck174::SteamBackend backend;
+static deck174::BackendState remote_status=deck174::BackendState::Idle;
 static Rts rts;
 static deck174::Config config;
 static volatile LONG posted_tick214{};
@@ -117,16 +119,11 @@ struct NativeHost:Host {
         RECT rect{};POINT pixel{};if(!point(rect,pixel)||!deck174::finite(delta))return false;
         int x=pixel.x,y=pixel.y;
         if(!cursor178.move(x,y,rect.right,rect.bottom,double(delta.x)*rect.right*.6*config.cursor_sensitivity,-double(delta.y)*rect.bottom*.6*config.cursor_sensitivity))return false;
-        pixel.x=x;pixel.y=y;
-        selection193.move(x,y,std::max(1,GetSystemMetrics(SM_CXDOUBLECLK)/2),std::max(1,GetSystemMetrics(SM_CYDOUBLECLK)/2));
-        if(!ClientToScreen(input_window,&pixel))return false;
-        // This moves the game's focused native cursor, not a system input
-        // injection or a keyboard/mouse controller preset. The game's own move
-        // message performs hit-testing and draws its ordinary cursor.
-        if(!SetCursorPos(pixel.x,pixel.y))return false;
-        // Direct native gestures do not alter OS button state. Supply the
-        // owned drag bits on native moves; the queued OS move may have none.
-        return event(WM_MOUSEMOVE,owned_mouse_flags,owned_formation_drag);
+        return deck178::deliver_pointer(pixel.x,pixel.y,x,y,device192::streaming(),
+            owned_formation_drag||owned_mouse_flags!=0,[&](int px,int py){
+                selection193.move(px,py,std::max(1,GetSystemMetrics(SM_CXDOUBLECLK)/2),std::max(1,GetSystemMetrics(SM_CYDOUBLECLK)/2));
+                POINT screen{px,py};return ClientToScreen(input_window,&screen)&&SetCursorPos(screen.x,screen.y);
+            },[&](int,int){return event(WM_MOUSEMOVE,owned_mouse_flags,owned_formation_drag);});
     }
     void reset_pointer()override{cursor178.reset();}
     void reset_clicks()override{selection193.reset();}
@@ -263,6 +260,8 @@ static void yield181(){
  // campaign bridge may then reacquire its own disabled original trampoline.
  // If the site changed unexpectedly, retain ownership and never overwrite it.
  if(!keyboard_owner196.release())return;
+ if(running&&device192::streaming())
+    if(auto* transport=remote155::battle_channel.load())transport->clear();
  modifiers188.clear();
  if(running){if(!deck218::close_reader(backend,running))return;InterlockedExchange(&running,0);controller181::clear_input();}
  AcquireSRWLockExclusive(&queue_lock);mailbox.invalidate();rts_mailbox.invalidate();ReleaseSRWLockExclusive(&queue_lock);
@@ -320,22 +319,35 @@ static void poll(HMODULE module){
     // Refresh the actual native UI modifier consumer at the event boundary.
     if(!message_id){std::wstring name=L"S2UP.Deck175.Frame."+std::to_wstring(GetCurrentProcessId());message_id=RegisterWindowMessageW(name.c_str());if(!message_id){InterlockedExchange(&errors,3);return;}}
     const auto input_context=controller181::context();
-    backend.select_context(input_context);
+    const bool streaming=device192::streaming();
+    auto* transport=streaming?remote155::battle_channel.load():nullptr;
+    if(streaming&&!transport)return;
+    if(!streaming)backend.select_context(input_context);
     if(!running&&GetTickCount64()>=next_attempt){
         if(!deck177::claim_battle(input_lease177))return;
         // A frontend can start between the first check and lease creation.
         // Its poll waits for this lease, so release before entering Steam.
         if(deck177::busy(deck177::Owner::Frontend)){input_lease177.release();return;}
         if(!keyboard_owner196.acquire()){input_lease177.release();return;}
-        int n=WideCharToMultiByte(CP_UTF8,WC_ERR_INVALID_CHARS,manifest_path.data(),int(manifest_path.size()),nullptr,0,nullptr,nullptr);
-        if(n<=0){input_lease177.release();InterlockedIncrement(&errors);return;}std::string utf(size_t(n),'\0');WideCharToMultiByte(CP_UTF8,WC_ERR_INVALID_CHARS,manifest_path.data(),int(manifest_path.size()),utf.data(),n,nullptr,nullptr);
-        if(backend.open_existing(utf.c_str(),true))InterlockedExchange(&running,1);
-        else {input_lease177.release();next_attempt=GetTickCount64()+2000;
-            auto status=backend.state();if(status!=deck174::BackendState::WaitingSteam&&status!=deck174::BackendState::WaitingDevice)InterlockedExchange(&errors,4);}
+        if(streaming)InterlockedExchange(&running,1);
+        else{
+            int n=WideCharToMultiByte(CP_UTF8,WC_ERR_INVALID_CHARS,manifest_path.data(),int(manifest_path.size()),nullptr,0,nullptr,nullptr);
+            if(n<=0){input_lease177.release();InterlockedIncrement(&errors);return;}std::string utf(size_t(n),'\0');WideCharToMultiByte(CP_UTF8,WC_ERR_INVALID_CHARS,manifest_path.data(),int(manifest_path.size()),utf.data(),n,nullptr,nullptr);
+            if(backend.open_existing(utf.c_str(),true))InterlockedExchange(&running,1);
+            else {input_lease177.release();next_attempt=GetTickCount64()+2000;
+                if(!deck174::retry_open(backend.state(),false))InterlockedExchange(&errors,4);}
+        }
     }
     if(!running||!input_window||!native_window_proc)return;
     DWORD pid{};GetWindowThreadProcessId(input_window,&pid);if(pid!=GetCurrentProcessId())return;
-    deck174::Frame frame;bool ok=backend.sample(clock_us(),GetForegroundWindow()==input_window,frame);
+    deck174::Frame frame;
+    const bool focused=GetForegroundWindow()==input_window;
+    bool ok=false;
+    if(transport){
+        const auto result=transport->receive(input_window,input_context,remote155::clock_us(),frame,remote_status);
+        if(result==remote155::Channel::Result::Pending&&focused)return;
+        ok=result==remote155::Channel::Result::Ready&&focused&&frame.focused;
+    }else ok=backend.sample(clock_us(),focused,frame);
     // The window thread may change menu ownership while Steam is sampling.
     // Never dispatch a frame under a different action set from its source.
     ok=ok&&input_context==controller181::context();
@@ -343,7 +355,7 @@ static void poll(HMODULE module){
     const bool modifier_owner188=ok&&output.accepted&&!output.help_blocked&&output.context==deck174::Context::RTS&&frame.focused&&GetForegroundWindow()==input_window;
     modifiers188.publish(modifier_owner188&&output.held(deck181::Control),modifier_owner188&&output.held(deck181::Shift),modifier_owner188?input_window:nullptr,GetTickCount64());
     // Controls help is rendered by our own bounded presentation channel.
-    deck181::trace_input(2,unsigned(backend.state()),unsigned(output.context),input_window,unsigned(posted),state?state->mode:0,state?unsigned(state->aiming):0,ok?&frame:nullptr);
+    deck181::trace_input(2,unsigned(streaming?remote_status:backend.state()),unsigned(output.context),input_window,unsigned(posted),state?state->mode:0,state?unsigned(state->aiming):0,ok?&frame:nullptr);
     if(!ok)controller181::clear_input();
     bool queued=true;AcquireSRWLockExclusive(&queue_lock);
     if(ok){
@@ -376,7 +388,7 @@ static void poll(HMODULE module){
         if(!PostMessageW(owned_window,message_id,175,0))InterlockedExchange(&posted,0);
     }
     // Deliver timestamped camera input before any optional image IO/decoding.
-    controller181::present();
+    if(!streaming)controller181::present();
 }
 static bool window(HWND window,UINT message,WPARAM w,LPARAM l){
     if(!stopping&&window==input_window&&
@@ -436,6 +448,8 @@ static bool window(HWND window,UINT message,WPARAM w,LPARAM l){
 static void stop(){
     if(InterlockedExchange(&stopping,1))return;
     deck177::battle_request().set(false);
+    if(device192::streaming())
+        if(auto* transport=remote155::battle_channel.load())transport->clear();
     controller181::clear_input();
     AcquireSRWLockExclusive(&queue_lock);mailbox.invalidate();rts_mailbox.invalidate();ReleaseSRWLockExclusive(&queue_lock);
     if(owned_window&&message_id){
@@ -458,6 +472,14 @@ static void focus_lost(HWND window){
 } // deck175
 static bool deck175_window(HWND window,UINT message,WPARAM w,LPARAM l){return deck175::window(window,message,w,l);}
 static void deck175_focus_lost(HWND window){deck175::focus_lost(window);}
+
+extern "C" __declspec(dllexport) bool __cdecl S2UPBindRemoteInput155(
+        remote155::Channel* channel,unsigned version,unsigned size){
+    if(!channel||version!=remote155::Channel::version||size!=sizeof(remote155::Channel)||
+       !device192::streaming())return false;
+    remote155::Channel* absent=nullptr;
+    return remote155::battle_channel.compare_exchange_strong(absent,channel);
+}
 
 extern "C" __declspec(dllexport) const deck181::InputTrace* __cdecl S2UPDeckInputProbe181(){return &deck181::input_trace;}
 

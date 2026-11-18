@@ -1,0 +1,37 @@
+{
+  "revision": 156,
+  "channel": "regular",
+  "base_revision": 155,
+  "last_verified_workshop_revision": 150,
+  "pack": "shogun2_unit_possession_workshop165.pack",
+  "pack_sha256": "3c87ca76d2e042bcaece8d282792b2a5438d90f9b2bb51657c95bfee732e1992",
+  "pack_bytes": 4753269,
+  "bridge_sha256": "17d03112f29fbe165b5d7b15bcf29e481769ac299fa55294de5c7a3d9f5f8c6f",
+  "component_sha256": {
+    "possession-v46.dll": "9d3edca43ea9f3a56b4808e24453c61e5c9e219437119410c1ecd98f694aaa05",
+    "possession-hud.exe": "d1280eff4f48fb98a6f05d3b6e032b2d8d62227a30aadc4172b502d56973867b",
+    "qte-playable-v79.dll": "0052c5628f7cad058c0e5f7f8abe7628560fa60e508afe34dd99756dce02c3ff",
+    "prepare-local-assets159.exe": "1eb0a9cbda9652ccb5acdf51448cb4f55fbfb1568da568b6f32bf362b762a4aa"
+  },
+  "offline_checks": {
+    "workshop_checks": 20,
+    "frontend_and_campaign_pack_readback": true,
+    "native_wall_release_fixture_passed": true,
+    "retail_and_reviewed_bugfix_decoded_instructions_matched": 917,
+    "full_adapter_suite_completed": false,
+    "baseline_and_candidate_combat_gait_fixture": "Both fail at Walking near a hostile missed the native combat gait."
+  },
+  "pc_staging": {
+    "verified": true,
+    "rollback_revision": 155,
+    "rollback_sha256": "8ee1015de0767f1bc04ab4cc2f23979986b7da160264d60505b5000253455039"
+  },
+  "gameplay": {
+    "pc_siege_owner_confirmed_soldier_rejoined_on_wall": true,
+    "pc_siege_owner_confirmed_formation_stayed_on_wall": true,
+    "pc_siege_owner_confirmed_explicit_move_order_worked": true,
+    "runtime_hash_checked_during_owner_test": false,
+    "revision156_deck_hardware_tested": false
+  },
+  "workshop_uploaded_as_part_of_this_update": false
+}

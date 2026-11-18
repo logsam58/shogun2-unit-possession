@@ -28,23 +28,14 @@ inline LRESULT CALLBACK cursor_window(HWND window,UINT message,WPARAM w,LPARAM l
  if(message==WM_MOUSEACTIVATE)return MA_NOACTIVATE;
  return DefWindowProcW(window,message,w,l);
 }
-class CursorRenderer {
- HWND window{};CursorActivity activity;HCURSOR image{};uint64_t redraw{};
- unsigned width{},height{},hot_x{},hot_y{};bool shown{};std::vector<uint32_t> pixels;
- bool create(HWND game){
-  if(window)return GetWindow(window,GW_OWNER)==game;
-  WNDCLASSEXW cls{sizeof cls};cls.lpfnWndProc=cursor_window;cls.hInstance=GetModuleHandleW(nullptr);cls.lpszClassName=L"S2UP-DeckNativeCursor194";
-  if(!RegisterClassExW(&cls)&&GetLastError()!=ERROR_CLASS_ALREADY_EXISTS)return false;
-  window=CreateWindowExW(WS_EX_LAYERED|WS_EX_TRANSPARENT|WS_EX_TOOLWINDOW|WS_EX_NOACTIVATE,cls.lpszClassName,L"Unit Possession native cursor",WS_POPUP,0,0,1,1,game,nullptr,cls.hInstance,nullptr);
-  return window!=nullptr;
- }
- static bool geometry(HCURSOR cursor,unsigned& w,unsigned& h,unsigned& hx,unsigned& hy){
+inline bool geometry(HCURSOR cursor,unsigned& w,unsigned& h,unsigned& hx,unsigned& hy){
   ICONINFO info{};if(!GetIconInfo(cursor,&info))return false;BITMAP bitmap{};bool ok=GetObjectW(info.hbmColor?info.hbmColor:info.hbmMask,sizeof bitmap,&bitmap)==sizeof bitmap;
   w=unsigned(bitmap.bmWidth);h=unsigned(bitmap.bmHeight)/(info.hbmColor?1:2);hx=info.xHotspot;hy=info.yHotspot;
   if(info.hbmColor)DeleteObject(info.hbmColor);if(info.hbmMask)DeleteObject(info.hbmMask);
   return ok&&w&&h&&w<=128&&h<=128&&hx<w&&hy<h;
  }
- bool render(HCURSOR cursor,POINT at){
+template<class Publish>
+bool raster_icon(HCURSOR cursor,std::vector<uint32_t>& pixels,Publish publish){
   unsigned w{},h{},hx{},hy{};if(!geometry(cursor,w,h,hx,hy))return false;
   BITMAPINFO info{};info.bmiHeader.biSize=sizeof(BITMAPINFOHEADER);info.bmiHeader.biWidth=LONG(w);info.bmiHeader.biHeight=-LONG(h);info.bmiHeader.biPlanes=1;info.bmiHeader.biBitCount=32;info.bmiHeader.biCompression=BI_RGB;
   HDC screen=GetDC(nullptr),dc=CreateCompatibleDC(screen);void* bits{};HBITMAP bitmap=CreateDIBSection(screen,&info,DIB_RGB_COLORS,&bits,nullptr,0);
@@ -60,10 +51,28 @@ class CursorRenderer {
     memset(bits,0,size_t(w)*h*4);ok=DrawIconEx(dc,0,0,cursor,int(w),int(h),0,nullptr,DI_MASK)!=FALSE;
     if(ok)for(size_t i=0;i<pixels.size();++i)pixels[i]=(rgba[i]&0x00ffffffu)==0x00ffffffu?0:(pixels[i]|0xff000000u);
    }
-   if(ok){memcpy(bits,pixels.data(),pixels.size()*4);POINT origin{at.x-LONG(hx),at.y-LONG(hy)},source{};SIZE size{LONG(w),LONG(h)};BLENDFUNCTION blend{AC_SRC_OVER,0,255,AC_SRC_ALPHA};ok=UpdateLayeredWindow(window,screen,&origin,&size,dc,&source,0,&blend,ULW_ALPHA)!=FALSE;}
+   if(ok){memcpy(bits,pixels.data(),pixels.size()*4);ok=publish(w,h,hx,hy,screen,dc);}
   }
   SelectObject(dc,previous);DeleteObject(bitmap);DeleteDC(dc);if(screen)ReleaseDC(nullptr,screen);
-  if(ok){width=w;height=h;hot_x=hx;hot_y=hy;image=cursor;}return ok;
+  return ok;
+ }
+class CursorRenderer {
+ HWND window{};CursorActivity activity;HCURSOR image{};uint64_t redraw{};
+ unsigned width{},height{},hot_x{},hot_y{};bool shown{};std::vector<uint32_t> pixels;
+ bool create(HWND game){
+  if(window)return GetWindow(window,GW_OWNER)==game;
+  WNDCLASSEXW cls{sizeof cls};cls.lpfnWndProc=cursor_window;cls.hInstance=GetModuleHandleW(nullptr);cls.lpszClassName=L"S2UP-DeckNativeCursor194";
+  if(!RegisterClassExW(&cls)&&GetLastError()!=ERROR_CLASS_ALREADY_EXISTS)return false;
+  window=CreateWindowExW(WS_EX_LAYERED|WS_EX_TRANSPARENT|WS_EX_TOOLWINDOW|WS_EX_NOACTIVATE,cls.lpszClassName,L"Unit Possession native cursor",WS_POPUP,0,0,1,1,game,nullptr,cls.hInstance,nullptr);
+  return window!=nullptr;
+ }
+ bool render(HCURSOR cursor,POINT at){
+  return raster_icon(cursor,pixels,[&](unsigned w,unsigned h,unsigned hx,unsigned hy,HDC screen,HDC dc){
+   POINT origin{at.x-LONG(hx),at.y-LONG(hy)},source{};
+   SIZE size{LONG(w),LONG(h)};BLENDFUNCTION blend{AC_SRC_OVER,0,255,AC_SRC_ALPHA};
+   if(!UpdateLayeredWindow(window,screen,&origin,&size,dc,&source,0,&blend,ULW_ALPHA))return false;
+   width=w;height=h;hot_x=hx;hot_y=hy;image=cursor;return true;
+  });
  }
  void hide(){if(window&&shown)ShowWindow(window,SW_HIDE);shown=false;}
 public:
@@ -74,16 +83,19 @@ public:
 #endif
  ~CursorRenderer(){hide();if(window)DestroyWindow(window);}
  void reset(){activity.reset();hide();}
- void tick(HWND game,bool allowed,bool touched,uint64_t now,bool campaign_pointer=false){
+ template<class CampaignPointer>
+ void tick(HWND game,bool allowed,bool touched,uint64_t now,CampaignPointer campaign_pointer){
   static const bool proton=GetProcAddress(GetModuleHandleW(L"ntdll.dll"),"wine_get_version")!=nullptr;
+  if(!proton||!allowed){reset();return;}
   DWORD pid{};RECT client{};POINT point{};
-  const bool focused=game&&IsWindow(game)&&GetWindowThreadProcessId(game,&pid)&&pid==GetCurrentProcessId()&&GetForegroundWindow()==game&&GetClientRect(game,&client)&&GetCursorPos(&point);
-  if(!activity.update(reinterpret_cast<uintptr_t>(game),allowed&&proton&&focused,touched,now)){hide();return;}
+  const bool focused=game&&IsWindow(game)&&GetWindowThreadProcessId(game,&pid)&&pid==GetCurrentProcessId()&&GetForegroundWindow()==game;
+  if(!activity.update(reinterpret_cast<uintptr_t>(game),focused,touched,now)||
+     !GetClientRect(game,&client)||!GetCursorPos(&point)){hide();return;}
   POINT local=point;if(!ScreenToClient(game,&local)||local.x<0||local.y<0||local.x>=client.right||local.y>=client.bottom){hide();return;}
   CURSORINFO cursor{sizeof cursor};
   HCURSOR shape{};
   if(GetCursorInfo(&cursor))shape=visible_shape(cursor);
-  if(!shape&&campaign_pointer){
+  if(!shape&&campaign_pointer()){
    // Gamescope can leave a hidden/suppressed cursor after the battle window
    // hands back focus. Draw a local pointer only during fresh campaign input.
    shape=reinterpret_cast<HCURSOR>(GetClassLongPtrW(game,GCLP_HCURSOR));

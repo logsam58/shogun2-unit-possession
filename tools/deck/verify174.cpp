@@ -69,4 +69,5 @@ int main(){
     TEST("cancelled prompt never starts or samples",{uint64_t elapsed=1;Measurement timer;Proof p;bool sampled=false;assert(!measure(timer,p,elapsed,[](){return uint64_t(1000000);},[](){return false;},[&](uint64_t,Frame&){sampled=true;return true;},[](){}));assert(timer.cancelled&&!timer.started&&!sampled&&elapsed==0);});
     TEST("onscreen summary exposes measured values and incomplete coverage",{Proof p;p.frames=150;p.presses[unsigned(Button::L4)]=7;p.presses[unsigned(Button::L3)]=2;p.presses[unsigned(Button::R3)]=3;p.axes[8].add(0);p.axes[8].add(1);Measurement timer;timer.start(1000000);auto text=result_text(p,BackendState::Ready,{},timer,90000000,0,-1,true);assert(text.find(L"revision 3")!=text.npos&&text.find(L"Measured time: 90.0 seconds")!=text.npos&&text.find(L"L4: 7")!=text.npos&&text.find(L"Stick clicks - L3: 2   R3: 3")!=text.npos&&text.find(L"coverage: INCOMPLETE")!=text.npos&&text.find(L"Send a photo of THIS screen")!=text.npos&&text.size()<3000);});
     std::cout<<"PASS "<<passed<<" Deck simulation/ABI checks; actual Deck/Proton verification pending\n";
+    return 0;
 }

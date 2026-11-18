@@ -62,7 +62,16 @@ struct MenuHost {
  Identity identity;static inline WPARAM buttons{};static inline deck178::Cursor cursor;static inline float wheel{};
  bool current(){ContextProof p;return native_context(p)&&p.owner_thread&&p.focused&&p.blocked&&p.identity==identity;}
  bool position(RECT& rect,POINT& point){return current()&&GetClientRect(input_window,&rect)&&rect.right>=200&&rect.bottom>=200&&GetCursorPos(&point)&&ScreenToClient(input_window,&point);}
- bool pointer(float dx,float dy){RECT rect{};POINT point{};if(!position(rect,point))return false;int x=point.x,y=point.y;if(!cursor.move(x,y,rect.right,rect.bottom,dx*rect.right,-dy*rect.bottom))return false;POINT screen{x,y};if(!ClientToScreen(input_window,&screen)||!SetCursorPos(screen.x,screen.y))return false;CallWindowProcW(native_window_proc,input_window,WM_MOUSEMOVE,buttons,MAKELPARAM(x,y));return true;}
+ bool pointer(float dx,float dy){
+  RECT rect{};POINT point{};if(!position(rect,point))return false;
+  int x=point.x,y=point.y;if(!cursor.move(x,y,rect.right,rect.bottom,dx*rect.right,-dy*rect.bottom))return false;
+  return deck178::deliver_pointer(point.x,point.y,x,y,device192::streaming(),buttons!=0,[&](int px,int py){
+   POINT screen{px,py};return ClientToScreen(input_window,&screen)&&SetCursorPos(screen.x,screen.y);
+  },[&](int px,int py){
+   CallWindowProcW(native_window_proc,input_window,WM_MOUSEMOVE,buttons,MAKELPARAM(px,py));
+   return true;
+  });
+ }
  bool button(bool left,bool down){RECT rect{};POINT point{};if(!position(rect,point))return false;WPARAM flag=left?MK_LBUTTON:MK_RBUTTON;if(down)buttons|=flag;else buttons&=~flag;CallWindowProcW(native_window_proc,input_window,left?(down?WM_LBUTTONDOWN:WM_LBUTTONUP):(down?WM_RBUTTONDOWN:WM_RBUTTONUP),buttons,MAKELPARAM(point.x,point.y));return true;}
  bool scroll(float delta){RECT rect{};POINT point{};if(!position(rect,point))return false;wheel+=delta*4.f;int notches=int(wheel);wheel-=notches;if(notches){ClientToScreen(input_window,&point);CallWindowProcW(native_window_proc,input_window,WM_MOUSEWHEEL,MAKEWPARAM(WORD(buttons),short(std::clamp(notches,-8,8)*WHEEL_DELTA)),MAKELPARAM(point.x,point.y));}return true;}
  void reset_cursor(){cursor.reset();}

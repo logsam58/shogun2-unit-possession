@@ -1,5 +1,6 @@
 #pragma once
 #include "remote_display130.h"
+#include "remote_cursor152.h"
 #include "device192.h"
 #include "frontend177.h" // retain verified file/glyph helpers, not old UI polling
 #include "menu179.h"
@@ -19,6 +20,7 @@
 #include "escape218.h"
 #include "battle_speech226.h"
 #include "startup_handoff222.h"
+#include "remote_input155.h"
 #include "native_ui185.h"
 #include "ui214.h"
 #include "view_help186.h"
@@ -45,9 +47,8 @@ static std::string root_token;static volatile LONG campaign_actions183{},button_
 static volatile LONG pointer_mode181{};
 // Unknown campaign state is modal until the original PanelManager getter reports.
 static volatile LONG campaign_panel188{1},city_details214{};
-static float camera_x{},camera_y{},camera_turn{},camera_zoom{};
-static uint64_t camera_tick{};
-static uintptr_t campaign_identity{};static DWORD ui_owner181{};static volatile LONG ui_tick181{};
+static deck181::CampaignMotion campaign_motion;
+static DWORD ui_owner181{};static volatile LONG ui_tick181{};
 static deck185::NativeInput native_input185;
 static deck218::Escape native_escape218;
 static uintptr_t keyboard_image185{};static volatile LONG keyboard_allowed185{};
@@ -81,15 +82,13 @@ static deck182::Presentation controller_glyphs;
 static bool attach(const std::string& token){
  bool campaign=token.compare(0,9,"campaign:")==0,menu=token.compare(0,5,"menu:")==0;
  if((!campaign&&!menu)||token.size()>96||token.find_first_of("\r\n")!=token.npos)return false;
- AcquireSRWLockExclusive(&lock);root_token=token;InterlockedIncrement(&button_epoch183);InterlockedExchange(&campaign_actions183,0);camera_x=camera_y=camera_turn=camera_zoom=0;camera_tick=0;campaign_identity=0;ui_owner181=GetCurrentThreadId();InterlockedExchange(&ui_tick181,LONG(GetTickCount()));ReleaseSRWLockExclusive(&lock);
+ AcquireSRWLockExclusive(&lock);root_token=token;InterlockedIncrement(&button_epoch183);InterlockedExchange(&campaign_actions183,0);campaign_motion.clear();ui_owner181=GetCurrentThreadId();InterlockedExchange(&ui_tick181,LONG(GetTickCount()));ReleaseSRWLockExclusive(&lock);
  deck185::panel_extent191_set(0,0);InterlockedExchange(&campaign_mode,campaign?1:0);InterlockedExchange(&campaign_panel188,1);InterlockedExchange(&pointer_mode181,0);return true;
 }
 static bool detach(const std::string& token);
 static bool camera_step(unsigned axis,int sign){
- bool result=false;const float quantum=axis==2?.01f:.125f;
  AcquireSRWLockExclusive(&lock);
- auto& value=axis==0?camera_x:axis==1?camera_y:camera_turn;
- if(GetTickCount64()>=camera_tick&&GetTickCount64()-camera_tick<=100&&value*sign>=quantum){value-=sign*quantum;result=true;}
+ const bool result=campaign_motion.legacy_step(axis,sign,deck181::campaign_clock_us());
  ReleaseSRWLockExclusive(&lock);return result;
 }
 
@@ -116,7 +115,7 @@ static BOOL CALLBACK find_window(HWND window,LPARAM value){
     }return TRUE;
 }
 struct Host {
-    HWND window{};uintptr_t speech{};WPARAM buttons{},modifiers183{};deck178::Cursor cursor;float wheel{};deck185::CursorIdle cursor_idle;deck193::DoubleClick click214;
+    HWND window{};uintptr_t speech{};bool streaming{};WPARAM buttons{},modifiers183{};deck178::Cursor cursor;float wheel{};deck185::CursorIdle cursor_idle;deck193::DoubleClick click214;
     void navigate(int direction){InterlockedExchange(&nav_waiting,1);InterlockedCompareExchange(&nav_pending,direction,0);}
     bool navigation_pending()const{return nav_waiting!=0;}
     void clear_navigation(){InterlockedExchange(&nav_pending,0);InterlockedExchange(&nav_waiting,0);InterlockedExchange(&target_pending,0);}
@@ -135,10 +134,11 @@ struct Host {
         clear_navigation();RECT rect{};POINT point{};if(!position(rect,point))return false;int x=point.x,y=point.y;
         if(!cursor.move(x,y,rect.right,rect.bottom,double(dx)*rect.right,-double(dy)*rect.bottom))return false;
         cursor_idle.activity(GetTickCount64());
-        POINT screen{x,y};if(!ClientToScreen(window,&screen)||!SetCursorPos(screen.x,screen.y))return false;
-        return PostMessageW(window,WM_MOUSEMOVE,buttons,MAKELPARAM(x,y))!=FALSE;
+        return deck178::deliver_pointer(point.x,point.y,x,y,streaming,buttons!=0,[&](int px,int py){
+            POINT screen{px,py};return ClientToScreen(window,&screen)&&SetCursorPos(screen.x,screen.y);
+        },[&](int px,int py){return PostMessageW(window,WM_MOUSEMOVE,buttons,MAKELPARAM(px,py))!=FALSE;});
     }
-    bool cursor_hidden_idle(){CURSORINFO info{sizeof info};return GetCursorInfo(&info)&&cursor_idle.ready(GetTickCount64(),(info.flags&CURSOR_SHOWING)!=0);}
+    bool cursor_hidden_idle(){CURSORINFO info{sizeof info};return !streaming&&GetCursorInfo(&info)&&cursor_idle.ready(GetTickCount64(),(info.flags&CURSOR_SHOWING)!=0);}
     bool park_camera(){
         // A cursor left at the screen edge must not add native edge-scrolling
         // to stick panning. Do not change the player's edge-scroll preference.
@@ -173,10 +173,6 @@ struct Host {
         if(!ClientToScreen(window,&point))return false;
         return PostMessageW(window,WM_MOUSEWHEEL,MAKEWPARAM(WORD(buttons),short(std::clamp(notches,-8,8)*WHEEL_DELTA)),MAKELPARAM(point.x,point.y))!=FALSE;
     }
-    bool zoom(float delta){
-        RECT rect{};POINT point{};if(!campaign_mode||!position(rect,point))return false;
-        AcquireSRWLockExclusive(&lock);bool ok=zoom181::enqueue(camera_zoom,delta);ReleaseSRWLockExclusive(&lock);return ok;
-    }
     void reset_cursor(){cursor.reset();}
     void release_owned(bool left,bool right){
         click214.reset();
@@ -206,12 +202,10 @@ static deck174::CameraAxes178 campaign_axes194(const deck174::Frame& frame){
  camera_frame.buttons&=~(deck174::bit(deck174::Button::L1)|deck174::bit(deck174::Button::R1));
  return deck174::camera_axes178(camera_frame,frontend177::config);
 }
-template<class H>static bool campaign_zoom181(const deck174::Frame& frame,float dt,H& host){
- if(!std::isfinite(dt)||dt<0||dt>.05f)return false;
- // Component deadzone keeps a tiny vertical offset during a horizontal turn
- // from slowly changing zoom. Reuse native wheel handling and its own limits.
- const float zoom=deck174::deadzone({0,frame.right_stick.y},frontend177::config.right_deadzone).y;
- return !zoom||host.zoom(-zoom*dt*2.f); // owner-requested campaign stick inversion only
+static float campaign_zoom_rate181(const deck174::Frame& frame){
+ // Component deadzone keeps a small vertical offset during a horizontal turn
+ // from changing zoom. Keep the existing inversion and sensitivity.
+ return -2.f*deck174::deadzone({0,frame.right_stick.y},frontend177::config.right_deadzone).y;
 }
 static uintptr_t campaign_camera181(uintptr_t engine){
  if(!engine)return 0;
@@ -219,12 +213,19 @@ static uintptr_t campaign_camera181(uintptr_t engine){
 }
 static bool camera_apply181(){
 #ifndef S2UP165_LUA_FIXTURE
- if(!campaign_mode||GetCurrentThreadId()!=ui_owner181||deck177::battle_request().active()||!game_window||GetWindowThreadProcessId(game_window,nullptr)!=GetCurrentThreadId())return false;
+ if(!campaign_mode||GetCurrentThreadId()!=ui_owner181||deck177::battle_request().active()||
+    !game_window||GetForegroundWindow()!=game_window||GetWindowThreadProcessId(game_window,nullptr)!=GetCurrentThreadId())return false;
+ AcquireSRWLockShared(&lock);const bool due=campaign_motion.ready(deck181::campaign_clock_us());ReleaseSRWLockShared(&lock);
+ if(!due)return false;
  const auto engine=reinterpret_cast<uintptr_t>(GetModuleHandleW(L"Empire.Retail.dll"));
  static uintptr_t checked_engine{};if(engine!=checked_engine){if(!engine||!deck175::native_guards(engine))return false;checked_engine=engine;}
  auto camera=campaign_camera181(engine);deck181::CampaignStep step;
- AcquireSRWLockExclusive(&lock);step={campaign_identity,camera_x,camera_y,camera_turn,camera_zoom,camera_tick};camera_x=camera_y=camera_turn=camera_zoom=0;ReleaseSRWLockExclusive(&lock);
- bool moved=deck181::apply_campaign(step,camera,GetTickCount64(),[&](unsigned slot,float amount){
+ AcquireSRWLockExclusive(&lock);const auto now=deck181::campaign_clock_us();
+ step=campaign_motion.consume(camera,now);ReleaseSRWLockExclusive(&lock);
+ const float wheel=step.zoom;
+ step.zoom=0;
+ if(!step.camera||!zoom181::enqueue(step.zoom,wheel))return false;
+ bool moved=deck181::apply_campaign(step,camera,now/1000,[&](unsigned slot,float amount){
   // Native methods retain map bounds/target updates and orientation mechanics.
   using Move=void(__thiscall*)(void*,float);
   if(campaign_camera181(engine)==camera)reinterpret_cast<Move>(*reinterpret_cast<uintptr_t*>(engine+0x16209f8+slot))(reinterpret_cast<void*>(camera),amount);
@@ -243,21 +244,60 @@ static bool camera_apply181(){
 }
 static DWORD WINAPI worker(void*){
     frontend177::owner=GetCurrentThreadId();deck179::Menu179 policy;deck178::Menu178 pointer_policy;Host host;bool prior_pointer=false;
-    uint64_t next_attempt{},next_glyph{},previous_sample{};unsigned glyph_attempts{};bool prior_campaign=false;deck174::Normalizer campaign_edges;deck183::CampaignButtons campaign_buttons183;deck188::HelpInput help188;deck188::HelpRenderer guide188;deck194::CursorRenderer cursor194;LONG button_epoch_seen183=button_epoch183;
+    host.streaming=device192::streaming();
+    const auto sample_glyphs=[&](uint64_t now,deck174::SteamBackend& backend){
+        if(!controller_channel.shared)controller_channel.open(GetCurrentProcessId(),true);
+        controller_glyphs.poll(now,[&](unsigned slot){deck181::Glyph glyph;return controller_channel.glyph(slot,glyph);},[&](unsigned slot){
+            const int origin=slot<24?deck174::steam006::digital[slot].origin:deck174::steam006::analog_origin[slot==24?4:slot==25?5:slot-26];
+            try{deck181::copy_glyph(controller_channel,backend,slot,origin);}catch(...){}
+        });
+    };
+    uint64_t next_attempt{},next_glyph{};unsigned glyph_attempts{};bool prior_campaign=false;deck174::Normalizer campaign_edges;deck183::CampaignButtons campaign_buttons183;deck188::HelpInput help188;deck188::HelpRenderer guide188;deck194::CursorRenderer cursor194;LONG button_epoch_seen183=button_epoch183;
+    const HANDLE waits[]{stop_event,host.streaming?remote155::channel().wake():nullptr};
     try{for(;;){
-        if(WaitForSingleObject(stop_event,8)!=WAIT_TIMEOUT)break;
+        const DWORD event=waits[1]?WaitForMultipleObjects(2,waits,FALSE,8):WaitForSingleObject(stop_event,8);
+        if(event!=WAIT_TIMEOUT&&event!=WAIT_OBJECT_0+1)break;
         auto engine=reinterpret_cast<uintptr_t>(GetModuleHandleW(L"Empire.Retail.dll"));
         HWND present188=GetForegroundWindow();DWORD present_pid188{};GetWindowThreadProcessId(present188,&present_pid188);
         guide188.tick(present_pid188==GetCurrentProcessId()?present188:nullptr,[&](unsigned slot,deck181::Glyph& glyph){return controller_channel.glyph(slot,glyph);});
         if(deck222::startup().active()||deck177::battle_request().active()||deck177::busy(deck177::Owner::Battle)){
             cursor194.reset();
             if(!keyboard_stop185()){remember("Campaign input handoff could not restore its native poll",sizeof("Campaign input handoff could not restore its native poll")-1);continue;}
-            if(frontend177::lease.handle){AcquireSRWLockExclusive(&lock);shortcut_click184.cancel(host);ReleaseSRWLockExclusive(&lock);policy.release(host);pointer_policy.release(host);frontend177::backend.close();deck181::Sample blank;controller_channel.publish(blank);frontend177::lease.release();}
-            AcquireSRWLockExclusive(&lock);camera_x=camera_y=camera_turn=camera_zoom=0;camera_tick=0;campaign_identity=0;snapshot={};ReleaseSRWLockExclusive(&lock);
-            deck181::trace_input(0,unsigned(frontend177::backend.state()),0,host.window,0,0,0);previous_sample=0;campaign_edges.reset();campaign_buttons183.reset();help188.reset();InterlockedExchange(&campaign_actions183,0);continue;
+            if(frontend177::lease.handle){
+                AcquireSRWLockExclusive(&lock);shortcut_click184.cancel(host);ReleaseSRWLockExclusive(&lock);
+                policy.release(host);pointer_policy.release(host);
+                if(!host.streaming)frontend177::backend.close();
+                deck181::Sample blank;controller_channel.publish(blank);frontend177::lease.release();
+            }
+            AcquireSRWLockExclusive(&lock);campaign_motion.clear();snapshot={};ReleaseSRWLockExclusive(&lock);
+            deck181::trace_input(0,unsigned(frontend177::backend.state()),0,host.window,0,0,0);campaign_edges.reset();campaign_buttons183.reset();help188.reset();InterlockedExchange(&campaign_actions183,0);
+            if(host.streaming&&!deck222::startup().active()&&deck177::battle_request().active()&&deck177::busy(deck177::Owner::Battle)){
+                auto& transport=remote155::channel();
+                remote155::Channel::Request request;
+                if(transport.request(request)){
+                    DWORD pid{};
+                    GetWindowThreadProcessId(request.window,&pid);
+                    if(pid==GetCurrentProcessId()&&IsWindowVisible(request.window)){
+                        auto& backend=frontend177::backend;
+                        backend.select_context(request.context);
+                        const auto now=GetTickCount64();
+                        if(!backend.initialized()&&now>=next_attempt){
+                            next_attempt=now+2000;
+                            backend.open_existing(frontend177::utf8(frontend177::manifest).c_str(),true);
+                        }
+                        deck174::Frame frame;
+                        const bool good=backend.sample(remote155::clock_us(),GetForegroundWindow()==request.window,frame);
+                        if(transport.publish(request,frame,backend.state(),good)&&good)sample_glyphs(now,backend);
+                    }else transport.publish(request,{},deck174::BackendState::WaitingDevice,false);
+                }
+            }
+            continue;
         }
+        if(host.streaming)remote155::channel().clear();
         if(!deck177::claim_frontend(frontend177::lease)){cursor194.reset();continue;}
-        if(deck222::startup().active()||deck177::battle_request().active()){cursor194.reset();if(keyboard_stop185())frontend177::lease.release();continue;}
+        // A request can arrive after claiming. The next worker turn drains
+        // keyboard/input and clears old samples before releasing the lease.
+        if(deck222::startup().active()||deck177::battle_request().active()){cursor194.reset();continue;}
         // Intro/menu transitions may replace the native window. Never keep
         // sending input to a destroyed trailer window.
         if(host.window&&!IsWindow(host.window)){policy.release(host);pointer_policy.release(host);host.window=nullptr;game_window=nullptr;}
@@ -278,7 +318,7 @@ static DWORD WINAPI worker(void*){
             if(!keyboard_start185(engine)){native_escape218.clear();InterlockedExchange(&keyboard_allowed185,0);campaign_keys185.clear();}
         }else if(!keyboard_stop185())continue;
         InterlockedExchange(&keyboard_allowed185,campaign&&host.focused()&&native_input185.enabled?1:0);
-        if(campaign!=prior_campaign){AcquireSRWLockExclusive(&lock);shortcut_click184.cancel(host);ReleaseSRWLockExclusive(&lock);policy.release(host);pointer_policy.release(host);campaign_edges.reset();campaign_buttons183.reset();help188.reset();InterlockedExchange(&campaign_actions183,0);previous_sample=0;prior_campaign=campaign;}
+        if(campaign!=prior_campaign){AcquireSRWLockExclusive(&lock);shortcut_click184.cancel(host);ReleaseSRWLockExclusive(&lock);policy.release(host);pointer_policy.release(host);campaign_edges.reset();campaign_buttons183.reset();help188.reset();InterlockedExchange(&campaign_actions183,0);prior_campaign=campaign;}
         if(button_epoch_seen183!=button_epoch183){button_epoch_seen183=button_epoch183;campaign_edges.reset();campaign_buttons183.reset();help188.reset();InterlockedExchange(&campaign_actions183,0);}
         backend.select_context(campaign?deck174::Context::Campaign:deck174::Context::Menu);
         if(!backend.initialized()&&now>=next_attempt){next_attempt=now+2000;backend.open_existing(frontend177::utf8(frontend177::manifest).c_str(),true);}
@@ -287,8 +327,9 @@ static DWORD WINAPI worker(void*){
             if(x>=0)host.target(x,y);InterlockedExchange(&nav_waiting,0);
         }
         bool pointer_mode=pointer_mode181!=0;
-        if(pointer_mode!=prior_pointer){policy.release(host);pointer_policy.release(host);campaign_edges.reset();campaign_buttons183.reset();help188.reset();InterlockedExchange(&campaign_actions183,0);previous_sample=0;host.clear_navigation();prior_pointer=pointer_mode;}
-        deck174::Frame frame;bool good=backend.sample(now*1000,host.focused(),frame);bool back=false;
+        if(pointer_mode!=prior_pointer){policy.release(host);pointer_policy.release(host);campaign_edges.reset();campaign_buttons183.reset();help188.reset();InterlockedExchange(&campaign_actions183,0);host.clear_navigation();prior_pointer=pointer_mode;}
+        const auto sample_us=deck181::campaign_clock_us();
+        deck174::Frame frame;bool good=backend.sample(sample_us,host.focused(),frame);bool back=false;
         deck181::trace_input(1,unsigned(backend.state()),unsigned(campaign?deck174::Context::Campaign:deck174::Context::Menu),host.window,0,0,0,good?&frame:nullptr);
         if(good){
             auto menu_frame=campaign?deck188::campaign_menu_frame189(frame,panel):deck188::menu_frame188(frame);
@@ -296,59 +337,59 @@ static DWORD WINAPI worker(void*){
             // Directional menus are deferred. Only right-pad touch moves the cursor;
             // a missing Lua navigation acknowledgement must never gate A/click.
             menu_frame.left_stick={};menu_frame.buttons&=~(deck174::bit(deck174::Button::Up)|deck174::bit(deck174::Button::Down)|deck174::bit(deck174::Button::Left)|deck174::bit(deck174::Button::Right));
-            deck174::Edges edges;bool armed=campaign_edges.accept(frame,now*1000,frontend177::config,edges);
+            deck174::Edges edges;bool armed=campaign_edges.accept(frame,sample_us,frontend177::config,edges);
+            const LONG camera_epoch=button_epoch183;
+            deck181::CampaignRate camera_rate;
             AcquireSRWLockExclusive(&lock);
             bool shortcut_owns184=shortcut_click184.phase!=0;
             shortcut_click184.step(now,unsigned(ui_frames),host,campaign&&host.focused()&&armed&&frame.left_trigger<frontend177::config.trigger_press&&frame.right_trigger<frontend177::config.trigger_press);
             ReleaseSRWLockExclusive(&lock);
-            auto help_result188=armed?help188.sample(frame,edges,now*1000,false):deck188::HelpInput::Result{};
+            auto help_result188=armed?help188.sample(frame,edges,sample_us,false):deck188::HelpInput::Result{};
             deck188::presentation188.publish(unsigned(campaign?deck174::Context::Campaign:deck174::Context::Menu),help188.open,help188.page,0);
             if(help_result188.blocked){
                 campaign_buttons183.reset();
                 pointer_policy.release(host);policy.release(host);campaign_keys185.clear(true);InterlockedExchange(&campaign_actions183,0);InterlockedExchange(&back_pending,0);InterlockedExchange(&pause_pending,0);
-                AcquireSRWLockExclusive(&lock);camera_x=camera_y=camera_turn=camera_zoom=0;camera_tick=0;ReleaseSRWLockExclusive(&lock);
+                AcquireSRWLockExclusive(&lock);campaign_motion.clear();ReleaseSRWLockExclusive(&lock);
                 if(!help188.open)campaign_edges.reset();
             }else{
             campaign_keys185.hold(campaign&&armed?unsigned(host.modifiers183):0,now,button_epoch183);
-            if(!shortcut_owns184)pointer_policy.sample(menu_frame,now*1000,frontend177::config,host,back);
+            if(!shortcut_owns184)pointer_policy.sample(menu_frame,sample_us,frontend177::config,host,back);
             if(back){if(DWORD(GetTickCount()-DWORD(ui_tick181))<250)InterlockedExchange(&back_pending,1);else host.escape();}
             if(armed){
                 menu_press181(campaign,DWORD(GetTickCount()-DWORD(ui_tick181))<250,edges,host);
                 if(campaign){
-                    unsigned actions=campaign_buttons183.sample(frame,edges,now*1000,!panel);
+                    unsigned actions=campaign_buttons183.sample(frame,edges,sample_us,!panel);
                     if(panel)actions&=(deck183::Arts|deck183::Finance|deck183::Diplomacy|deck183::Clan|(city_details214?(deck183::Next|deck183::Previous):0));
                     if(actions&&!shortcut_owns184)pointer_policy.release(host); // panel/selection commands cancel an owned drag safely
                     if(actions&deck183::Next)InterlockedExchange(&next_pending,1);if(actions&deck183::Previous)InterlockedExchange(&previous_pending,1);
                     campaign_keys185.put(actions&~deck183::Clan,now,button_epoch183);
                     InterlockedOr(&campaign_actions183,LONG(actions&~(deck183::Next|deck183::Previous|(deck185::CampaignKeys::handled&~deck183::Clan))));
-                    const float dt=previous_sample&&now>=previous_sample?float(std::min<uint64_t>(now-previous_sample,50))*.001f:0;
-                    if(!panel){
-                    const auto axes=campaign_axes194(frame);
-                    auto pan=axes.pan;
-                    if(!shortcut_owns184)campaign_cursor181(frame,pan,host);
-                    const float speed=20.f*frontend177::config.camera_pan_sensitivity*(axes.fast?2.f:1.f);
-                    const auto camera=campaign_camera181(engine);
-                    AcquireSRWLockExclusive(&lock);
-                    if(camera!=campaign_identity){camera_x=camera_y=camera_turn=camera_zoom=0;campaign_identity=camera;}
-                    camera_x=deck182::accumulate(camera_x,pan.x,dt*speed,4.f);camera_y=deck182::accumulate(camera_y,pan.y,dt*speed,4.f);
-                    camera_turn=deck182::accumulate(camera_turn,axes.turn,dt*1.5f*frontend177::config.camera_turn_sensitivity,.4f);
-                    camera_tick=now;ReleaseSRWLockExclusive(&lock);
-                    campaign_zoom181(frame,dt,host);
-                    } // original accepted map math only runs while no native panel is open
+                    if(!panel&&campaign_frame){
+                        const auto axes=campaign_axes194(frame);
+                        if(!shortcut_owns184)campaign_cursor181(frame,axes.pan,host);
+                        const float speed=20.f*frontend177::config.camera_pan_sensitivity*(axes.fast?2.f:1.f);
+                        camera_rate={axes.pan.x*speed,axes.pan.y*speed,
+                            axes.turn*1.5f*frontend177::config.camera_turn_sensitivity,campaign_zoom_rate181(frame)};
+                    }
                 }
             }
             } // help owns its buttons and cannot pass commands to the game
+            AcquireSRWLockExclusive(&lock);
+            if(camera_epoch==button_epoch183&&!campaign_panel188&&campaign_mode)
+                campaign_motion.publish(camera_rate,sample_us);
+            else campaign_motion.clear();
+            ReleaseSRWLockExclusive(&lock);
             const bool pointer_allowed=armed&&!help_result188.blocked;
             const bool ui_current=DWORD(GetTickCount()-DWORD(ui_tick181))<250;
-            const bool campaign_pointer=pointer_allowed&&campaign&&ui_current&&campaign_camera181(engine)!=0;
-            cursor194.tick(host.window,pointer_allowed,
-                (frame.buttons&deck174::bit(deck174::Button::RightPadTouch))!=0,now,campaign_pointer);
-            previous_sample=now;
+            cursor194.tick(host.window,pointer_allowed&&!host.streaming,
+                (frame.buttons&deck174::bit(deck174::Button::RightPadTouch))!=0,now,[&]{
+                    return campaign&&ui_current&&campaign_camera181(engine)!=0;
+                });
             if(!controller_channel.shared)controller_channel.open(GetCurrentProcessId(),true);
             deck181::Sample presence;presence.tick=now;presence.focused=host.focused()&&armed;presence.context=unsigned(campaign&&!panel&&!help188.open?deck174::Context::Campaign:deck174::Context::Menu);controller_channel.publish(presence);
-            controller_glyphs.poll(now,[&](unsigned slot){deck181::Glyph glyph;return controller_channel.glyph(slot,glyph);},[&](unsigned slot){int origin=slot<24?deck174::steam006::digital[slot].origin:deck174::steam006::analog_origin[slot==24?4:slot==25?5:slot-26];try{deck181::copy_glyph(controller_channel,backend,slot,origin);}catch(...){} });
+            sample_glyphs(now,backend);
         }
-        else{cursor194.reset();campaign_keys185.clear(true);AcquireSRWLockExclusive(&lock);shortcut_click184.cancel(host);ReleaseSRWLockExclusive(&lock);policy.release(host);pointer_policy.release(host);campaign_edges.reset();campaign_buttons183.reset();help188.reset();InterlockedExchange(&campaign_actions183,0);previous_sample=0;AcquireSRWLockExclusive(&lock);camera_x=camera_y=camera_turn=camera_zoom=0;camera_tick=0;campaign_identity=0;ReleaseSRWLockExclusive(&lock);deck181::Sample blank;controller_channel.publish(blank);}
+        else{cursor194.reset();campaign_keys185.clear(true);AcquireSRWLockExclusive(&lock);shortcut_click184.cancel(host);ReleaseSRWLockExclusive(&lock);policy.release(host);pointer_policy.release(host);campaign_edges.reset();campaign_buttons183.reset();help188.reset();InterlockedExchange(&campaign_actions183,0);AcquireSRWLockExclusive(&lock);campaign_motion.clear();ReleaseSRWLockExclusive(&lock);deck181::Sample blank;controller_channel.publish(blank);}
         if(good&&!frontend177::glyphs_ready&&glyph_attempts<3&&now>=next_glyph){
             ++glyph_attempts;next_glyph=now+1500;try{frontend177::prepare_glyphs();}catch(const std::exception& e){if(glyph_attempts==3)remember(e.what(),strlen(e.what()));}
         }
@@ -362,6 +403,7 @@ static DWORD WINAPI worker(void*){
         // frame alone is not an initialization error; report real errors only.
         if(error&&!notified&&host.focused()){policy.release(host);pointer_policy.release(host);notify();policy.normalizer.reset();}
     }}catch(const std::exception& e){remember(e.what(),strlen(e.what()));if(host.focused())notify();}
+    if(host.streaming)remote155::channel().clear();
     AcquireSRWLockExclusive(&lock);shortcut_click184.cancel(host);ReleaseSRWLockExclusive(&lock);
     if(!keyboard_stop185()){remember("Campaign input poll could not stop",sizeof("Campaign input poll could not stop")-1);return 0;}
     policy.release(host);pointer_policy.release(host);if(frontend177::lease.handle){deck181::Sample blank;controller_channel.publish(blank);}frontend177::stop();
@@ -388,11 +430,17 @@ static bool prepare(){
         return false;}
 }
 static bool stop(){
+#ifndef S2UP165_LUA_FIXTURE
+    streamcursor152::Cursor::cursor.close();
+#endif
     InterlockedExchange(&stopping,1);AcquireSRWLockShared(&lock);if(stop_event)SetEvent(stop_event);ReleaseSRWLockShared(&lock);return true;
 }
 static bool poll(){InterlockedExchange(&ui_tick181,LONG(GetTickCount()));ui_pause=InterlockedExchange(&pause_pending,0)!=0;ui_back=InterlockedExchange(&back_pending,0)!=0;ui_direction=InterlockedExchange(&nav_pending,0);return running&&!stopping;}
 static bool detach(const std::string& token){
- AcquireSRWLockExclusive(&lock);bool same=token==root_token;if(same){root_token.clear();InterlockedExchange(&campaign_actions183,0);camera_x=camera_y=camera_turn=camera_zoom=0;camera_tick=ui_tick181=0;campaign_identity=0;InterlockedExchange(&campaign_mode,0);}ReleaseSRWLockExclusive(&lock);
+ AcquireSRWLockExclusive(&lock);bool same=token==root_token;if(same){root_token.clear();InterlockedExchange(&campaign_actions183,0);campaign_motion.clear();ui_tick181=0;InterlockedExchange(&campaign_mode,0);}ReleaseSRWLockExclusive(&lock);
+#ifndef S2UP165_LUA_FIXTURE
+ if(same)streamcursor152::Cursor::cursor.close();
+#endif
  // Root destruction is a context change, not the lifetime of Steam Input.
  return true;
 }
@@ -440,7 +488,7 @@ static bool panel_state188(const std::string& value){
  if(InterlockedExchange(&campaign_panel188,modal)!=modal){
   InterlockedIncrement(&button_epoch183);campaign_keys185.clear(true);
   InterlockedExchange(&campaign_actions183,0);InterlockedExchange(&next_pending,0);InterlockedExchange(&previous_pending,0);
-  AcquireSRWLockExclusive(&lock);camera_x=camera_y=camera_turn=camera_zoom=0;camera_tick=0;ReleaseSRWLockExclusive(&lock);
+  AcquireSRWLockExclusive(&lock);campaign_motion.clear();ReleaseSRWLockExclusive(&lock);
  }return true;
 }
 static bool menu_fit209(const std::string& text){
@@ -541,11 +589,28 @@ MENU181(legend184,false) // retired export; no legend generation
 MENU181(glyphs,menu181::read().glyphs)
 MENU181(glyph_failed,menu181::read().glyph_failed)
 MENU181(cancel,menu181::ui_back)
+#ifndef S2UP165_LUA_FIXTURE
+static bool streamed_cursor_context152() {
+    if(!device192::streaming()||GetCurrentThreadId()!=menu181::ui_owner181||
+       !menu181::running||menu181::stopping||deck177::battle_request().active()||
+       deck177::busy(deck177::Owner::Battle))return false;
+    AcquireSRWLockShared(&menu181::lock);
+    const bool root=!menu181::root_token.empty();
+    const auto state=menu181::snapshot;
+    ReleaseSRWLockShared(&menu181::lock);
+    return streamcursor152::scope(true,root,false,state.ready&&state.focused,true);
+}
+#endif
 static bool menu_heartbeat181() {
     InterlockedIncrement(&menu181::ui_frames);
     if (!menu181::campaign_mode && GetCurrentThreadId() == menu181::ui_owner181 &&
         !deck177::battle_request().active())
         remote131::queue();
+#ifndef S2UP165_LUA_FIXTURE
+    if(device192::streaming())
+        streamcursor152::Cursor::cursor.pulse(menu181::game_window,streamed_cursor_context152(),
+                                             &streamed_cursor_context152);
+#endif
     return true;
 }
 MENU181(heartbeat,menu_heartbeat181())

@@ -25,7 +25,7 @@ Take control of a soldier in **Total War: SHOGUN 2**, fight in first or third pe
 
 Use the existing [Steam Workshop item](https://steamcommunity.com/sharedfiles/filedetails/?id=3825625050). The combined build uses that same item; a separate Deck subscription is unnecessary.
 
-**The last verified Workshop build is Revision 150.** The Remote Play support below is in the latest GitHub source. See the [changelog](CHANGELOG.md) and [build record](docs/current-release.json).
+**GitHub main is at Revision 156.** The last verified Workshop build is Revision 150. See the [changelog](CHANGELOG.md) and [build record](docs/current-release.json).
 
 No installer is provided. Fonts, artwork and audio are prepared from your own installed game.
 
